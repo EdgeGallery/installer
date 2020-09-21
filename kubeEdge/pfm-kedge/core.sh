@@ -2,8 +2,8 @@ OS_ID=$(grep '^ID=' /etc/os-release | cut -f2- -d= | sed -e 's/\"//g')
 OUTPUT=""
 KERNEL_ARCH=`uname -m`
 set -x
-source /tmp/platform-mgmt/utilities/env.sh
-source /tmp/platform-mgmt/utilities/common_utils.sh
+source /tmp/platform-mgmt/absolute/utilities/env.sh
+source /tmp/platform-mgmt/absolute/utilities/common_utils.sh
 
 function  show_help()
 {
