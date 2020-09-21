@@ -1,0 +1,32 @@
+alertmanager:
+  image:
+    tag: v0.18.0
+  persistentVolume:
+    enabled: false
+
+kubeStateMetrics:
+  image:
+    repository: carlosedp/kube-state-metrics
+    tag: v1.7.2
+
+pushgateway:
+  image:
+    tag: v1.0.1
+
+server:
+  image:
+    tag: v2.15.2
+  #service:
+    # nodePort: 30000
+    #type: NodePort
+  persistentVolume:
+    enabled: false
+
+nodeExporter:
+  image:
+    tag: v0.18.1
+
+configmapReload:
+  image:
+    repository: jimmidyson/configmap-reload
+    tag: latest-arm64

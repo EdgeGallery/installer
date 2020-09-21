@@ -1,0 +1,29 @@
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: hello1
+  annotations:
+    k8s.v1.cni.cncf.io/networks: default/mp1
+spec:
+  selector:
+    app: hello
+  ports:
+  - protocol: TCP
+    port: 80
+    targetPort: http
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: hello2
+  annotations:
+    k8s.v1.cni.cncf.io/networks: default/mm5
+spec:
+  selector:
+    app: hello
+  ports:
+  - protocol: TCP
+    port: 80
+    targetPort: http
+
