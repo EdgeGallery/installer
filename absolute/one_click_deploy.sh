@@ -46,15 +46,15 @@ function  setup_controller_k8s_cluster()
      if [[ $edgeOrController == "controller" && ($WHAT_TO_DO == "-i"  || $WHAT_TO_DO == "install") ]]; then
        ((controller_count=controller_count+1))
        PASS_FEATURE="k8s_cluster"
-       scp -r ../platform-mgmt ${nodeuser}@${nodeip}:/tmp/
+       scp -r ../../platform-mgmt ${nodeuser}@${nodeip}:/tmp/
        sshpass ssh ${nodeuser}@${nodeip} \
-       "export NODE_IP=$nodeip; cd /tmp/platform-mgmt/utilities ;
-        bash -x /tmp/platform-mgmt/utilities/deploy.sh $WHAT_TO_DO $PASS_FEATURE \
+       "export NODE_IP=$nodeip; cd /tmp/platform-mgmt/absolute/utilities ;
+        bash -x /tmp/platform-mgmt/absolute/utilities/deploy.sh $WHAT_TO_DO $PASS_FEATURE \
        $nodeip $edgeOrController $DEPLOY_TYPE" < /dev/null
      fi
      if [[ $edgeOrController == "controller" && $controller_count == 1 ]]; then
        sshpass ssh ${nodeuser}@${nodeip} \
-       "bash -x /tmp/platform-mgmt/utilities/init_k8s_cluster.sh" < /dev/null
+       "bash -x /tmp/platform-mgmt/absolute/utilities/init_k8s_cluster.sh" < /dev/null
        scp ${nodeuser}@${nodeip}:/tmp/kubeadm_join .
      elif [[ $edgeOrController == "controller" &&  $controller_count  -gt 1 ]]; then
        read join_command < kubeadm_join
@@ -88,7 +88,7 @@ function deploy_edgegallery()
        fi
        PASS_FEATURE=$FEATURE
        #copy k3s scripts to edge/controller node
-       scp -r ../platform-mgmt ${nodeuser}@${nodeip}:/tmp/
+       scp -r ../../platform-mgmt ${nodeuser}@${nodeip}:/tmp/
 
        if [[ $FEATURE == "all"  &&  $edgeOrController == "edge" ]]; then
          PASS_FEATURE="edge"
@@ -97,8 +97,8 @@ function deploy_edgegallery()
        fi
        #start deployment on edge/controller node
        sshpass ssh ${nodeuser}@${nodeip} \
-       "export NODE_IP=$nodeip; cd /tmp/platform-mgmt/utilities ;
-        bash -x /tmp/platform-mgmt/utilities/deploy.sh $WHAT_TO_DO $PASS_FEATURE \
+       "export NODE_IP=$nodeip; cd /tmp/platform-mgmt/absolute/utilities ;
+        bash -x /tmp/platform-mgmt/absolute/utilities/deploy.sh $WHAT_TO_DO $PASS_FEATURE \
        $nodeip $edgeOrController $DEPLOY_TYPE" < /dev/null
      fi
    done < nodelist.ini
