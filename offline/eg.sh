@@ -528,7 +528,7 @@ function install_prometheus()
 {
   info "[Deploying Prometheus  ......]" $BLUE
   if [ $KERNEL_ARCH == 'aarch64' ]; then
-    helm install mep-prometheus "$CHART_PREFIX"stable/prometheus"$PROM_CHART_SUFFIX" \
+    helm install --wait mep-prometheus "$CHART_PREFIX"stable/prometheus"$PROM_CHART_SUFFIX" \
     -f $PLATFORM_DIR/conf/override/prometheus_arm_values.yaml --version v9.3.1 \
     --set alertmanager.image.repository="$REGISTRY_URL"prom/alertmanager \
     --set configmapReload.image.repository="$REGISTRY_URL"jimmidyson/configmap-reload \
@@ -543,7 +543,7 @@ function install_prometheus()
     --set pushgateway.image.pullPolicy=IfNotPresent \
     --set kubeStateMetrics.image.pullPolicy=IfNotPresent
   else
-    helm install mep-prometheus "$CHART_PREFIX"stable/prometheus"$PROM_CHART_SUFFIX" \
+    helm install --wait mep-prometheus "$CHART_PREFIX"stable/prometheus"$PROM_CHART_SUFFIX" \
     -f $PLATFORM_DIR/conf/override/prometheus_x86_values.yaml --version v9.3.1 \
     --set alertmanager.image.repository="$REGISTRY_URL"prom/alertmanager \
     --set configmapReload.image.repository="$REGISTRY_URL"jimmidyson/configmap-reload \
@@ -559,13 +559,6 @@ function install_prometheus()
     --set kubeStateMetrics.image.pullPolicy=IfNotPresent
   fi
   if [ $? -eq 0 ]; then
-    wait "mep-prometheus-alertmanager" 1
-    wait "mep-prometheus-kube-state-metrics" 1
-    number_of_nodes=$(kubectl get nodes | wc -l)
-    ((number_of_nodes=number_of_nodes-1))
-    wait "mep-prometheus-node-exporter" $number_of_nodes
-    wait "mep-prometheus-pushgateway" 1
-    wait "mep-prometheus-server" 1
     info "[Deployed Prometheus  .......]" $GREEN
   else
     info "[Prometheus Deployment Failed]" $RED
@@ -584,7 +577,7 @@ function install_grafana()
 {
   info "[Deploying Grafana  .........]" $BLUE
   if [ $KERNEL_ARCH == 'aarch64' ]; then
-    helm install mep-grafana "$CHART_PREFIX"stable/grafana"$GRAFANA_CHART_SUFFIX" \
+    helm install --wait mep-grafana "$CHART_PREFIX"stable/grafana"$GRAFANA_CHART_SUFFIX" \
     -f $PLATFORM_DIR/conf/override/grafana_arm_values.yaml \
     --set image.repository="$REGISTRY_URL"grafana/grafana-arm64v8-linux \
     --set testFramework.image="$REGISTRY_URL"bats/bats \
@@ -597,7 +590,7 @@ function install_grafana()
     --set initChownData.image.pullPolicy=IfNotPresent \
     --set sidecar.image.pullPolicy=IfNotPresent
   else
-    helm install mep-grafana "$CHART_PREFIX"stable/grafana"$GRAFANA_CHART_SUFFIX" \
+    helm install --wait mep-grafana "$CHART_PREFIX"stable/grafana"$GRAFANA_CHART_SUFFIX" \
     -f $PLATFORM_DIR/conf/override/grafana_x86_values.yaml \
     --set image.repository="$REGISTRY_URL"grafana/grafana \
     --set testFramework.image="$REGISTRY_URL"bats/bats \
@@ -611,7 +604,6 @@ function install_grafana()
     --set sidecar.image.pullPolicy=IfNotPresent
   fi
   if [ $? -eq 0 ]; then
-    wait "mep-grafana" 1
     info "[Deployed Grafana  ..........]" $GREEN
   else
     info "[Grafana Deployment Failed  .]" $RED
@@ -676,26 +668,25 @@ function install_mep()
   _deploy_dns_metallb
   _deploy_network_isolation_multus
  
-  helm install mep-edgegallery "$CHART_PREFIX"edgegallery/mep"$CHART_SUFFIX" \
+  helm install --wait mep-edgegallery "$CHART_PREFIX"edgegallery/mep"$CHART_SUFFIX" \
   --set networkIsolation.phyInterface.mp1=$EG_NODE_EDGE_MP1 \
   --set networkIsolation.phyInterface.mm5=$EG_NODE_EDGE_MM5 \
-  --set images.mep.repository="$REGISTRY_URL"edgegallery/mep \
-  --set images.mepauth.repository="$REGISTRY_URL"edgegallery/mepauth \
-  --set images.dns.repository="$REGISTRY_URL"edgegallery/mep-dns-server \
-  --set images.kong.repository="$REGISTRY_URL"kong \
-  --set images.postgres.repository="$REGISTRY_URL"postgres \
-  --set images.mep.tag="$EG_IMAGE_TAG" \
-  --set images.mepauth.tag="$EG_IMAGE_TAG" \
-  --set images.dns.tag="$EG_IMAGE_TAG" \
-  --set images.mep.pullPolicy=IfNotPresent \
-  --set images.mepauth.pullPolicy=IfNotPresent \
-  --set images.dns.pullPolicy=IfNotPresent \
-  --set images.kong.pullPolicy=IfNotPresent \
-  --set images.postgres.pullPolicy=IfNotPresent \
-  --set ssl.secretName=mep-ssl
+  --set images.mep.repository=$mep_images_mep_repository \
+  --set images.mepauth.repository=$mep_images_mepauth_repository \
+  --set images.dns.repository=$mep_images_dns_repository \
+  --set images.kong.repository=$mep_images_kong_repository \
+  --set images.postgres.repository=$mep_images_postgres_repository \
+  --set images.mep.tag=$mep_images_mep_tag \
+  --set images.mepauth.tag=$mep_images_mepauth_tag \
+  --set images.dns.tag=$mep_images_dns_tag \
+  --set images.mep.pullPolicy=$mep_images_mep_pullPolicy \
+  --set images.mepauth.pullPolicy=$mep_images_mepauth_pullPolicy \
+  --set images.dns.pullPolicy=$mep_images_dns_pullPolicy \
+  --set images.kong.pullPolicy=$mep_images_kong_pullPolicy \
+  --set images.postgres.pullPolicy=$mep_images_postgres_pullPolicy \
+  --set ssl.secretName=$mep_ssl_secretName
 
   if [ $? -eq 0 ]; then
-    wait "mep" 2
     info "[Deployed MEP  .........]" $GREEN
   else
     info "[MEP Deployment Failed  ]" $RED
@@ -748,23 +739,20 @@ function install_mecm-mepm ()
     --from-literal=postgresLcmCntlrPassword=te9Fmv%qaq \
     --from-literal=postgresk8sPluginPassword=te9Fmv%qaq \
 
-  helm install mecm-mepm-edgegallery "$CHART_PREFIX"edgegallery/mecm-mepm"$CHART_SUFFIX" \
-    --set jwt.publicKeySecretName=mecm-mepm-jwt-public-secret \
-    --set mepm.secretName=edgegallery-mepm-secret \
-    --set ssl.secretName=mecm-mepm-ssl-secret \
-    --set images.lcmcontroller.repository="$REGISTRY_URL"edgegallery/mecm-applcm \
-    --set images.k8splugin.repository="$REGISTRY_URL"edgegallery/mecm-applcm-k8splugin \
-    --set images.postgres.repository="$REGISTRY_URL"postgres \
-    --set images.lcmcontroller.tag="$EG_IMAGE_TAG" \
-    --set images.k8splugin.tag="$EG_IMAGE_TAG" \
-    --set images.postgres.tag=12.3 \
-    --set images.lcmcontroller.pullPolicy=IfNotPresent \
-    --set images.k8splugin.pullPolicy=IfNotPresent \
-    --set images.postgres.pullPolicy=IfNotPresent
+  helm install --wait mecm-mepm-edgegallery "$CHART_PREFIX"edgegallery/mecm-mepm"$CHART_SUFFIX" \
+    --set jwt.publicKeySecretName=$mepm_jwt_publicKeySecretName \
+    --set mepm.secretName=$mepm_mepm_secretName \
+    --set ssl.secretName=$mepm_ssl_secretName \
+    --set images.lcmcontroller.repository=$mepm_images_lcmcontroller_repository \
+    --set images.k8splugin.repository=$mepm_images_k8splugin_repository \
+    --set images.postgres.repository=$mepm_images_postgres_repository \
+    --set images.lcmcontroller.tag=$mepm_images_lcmcontroller_tag \
+    --set images.k8splugin.tag=$mepm_images_k8splugin_tag \
+    --set images.postgres.tag=$mepm_images_postgres_tag \
+    --set images.lcmcontroller.pullPolicy=$mepm_images_lcmcontroller_pullPolicy \
+    --set images.k8splugin.pullPolicy=$mepm_images_k8splugin_pullPolicy \
+    --set images.postgres.pullPolicy=$mepm_images_postgres_pullPolicy
   if [ $? -eq 0 ]; then
-    wait "mepm-postgres" 1
-    wait "mecm-mepm-lcmcontroller" 1
-    wait "mecm-mepm-k8splugin" 1
     info "[Deployed MECM-MEPM  ........]" $GREEN
   else
     info "[MECM-MEPM Deployment Failed ]" $RED
@@ -802,26 +790,22 @@ function install_mecm-meo ()
     --from-literal=edgeRepoUserName=admin	 \
     --from-literal=edgeRepoPassword=admin123
 
-  helm install mecm-meo-edgegallery "$CHART_PREFIX"edgegallery/mecm-meo"$CHART_SUFFIX" \
-    --set ssl.secretName=mecm-ssl-secret \
-    --set mecm.secretName=edgegallery-mecm-secret \
-    --set images.inventory.repository="$REGISTRY_URL"edgegallery/mecm-inventory \
-    --set images.appo.repository="$REGISTRY_URL"edgegallery/mecm-appo \
-    --set images.apm.repository="$REGISTRY_URL"edgegallery/mecm-apm \
-    --set images.postgres.repository="$REGISTRY_URL"postgres \
-    --set images.inventory.tag="$EG_IMAGE_TAG" \
-    --set images.appo.tag="$EG_IMAGE_TAG" \
-    --set images.apm.tag="$EG_IMAGE_TAG" \
-    --set images.postgres.tag=12.3 \
-    --set images.inventory.pullPolicy=IfNotPresent \
-    --set images.appo.pullPolicy=IfNotPresent \
-    --set images.apm.pullPolicy=IfNotPresent \
-    --set images.postgres.pullPolicy=IfNotPresent
+  helm install --wait mecm-meo-edgegallery "$CHART_PREFIX"edgegallery/mecm-meo"$CHART_SUFFIX" \
+    --set ssl.secretName=$meo_ssl_secretName \
+    --set mecm.secretName=$meo_mecm_secretName \
+    --set images.inventory.repository=$meo_images_inventory_repository \
+    --set images.appo.repository=$meo_images_appo_repository \
+    --set images.apm.repository=$meo_images_apm_repository \
+    --set images.postgres.repository=$meo_images_postgres_repository \
+    --set images.inventory.tag=$meo_images_inventory_tag \
+    --set images.appo.tag=$meo_images_appo_tag \
+    --set images.apm.tag=$meo_images_apm_tag \
+    --set images.postgres.tag=$meo_images_postgres_tag \
+    --set images.inventory.pullPolicy=$meo_images_inventory_pullPolicy \
+    --set images.appo.pullPolicy=$meo_images_appo_pullPolicy \
+    --set images.apm.pullPolicy=$meo_images_apm_pullPolicy \
+    --set images.postgres.pullPolicy=$meo_images_postgres_pullPolicy
   if [ $? -eq 0 ]; then
-    wait "mecm-inventory" 1
-    wait "mecm-appo" 1
-    wait "mecm-apm" 1
-    wait "mecm-postgres" 1
     info "[Deployed MECM-MEO  .........]" $GREEN
   else
     info "[MECM-MEO Deployment Failed  ]" $RED
@@ -841,17 +825,16 @@ function install_mecm-fe ()
 {
   info "[Deploying MECM-FE  ........]" $BLUE
 
-  helm install mecm-fe-edgegallery "$CHART_PREFIX"edgegallery/mecm-fe"$CHART_SUFFIX" \
+  helm install --wait mecm-fe-edgegallery "$CHART_PREFIX"edgegallery/mecm-fe"$CHART_SUFFIX" \
     --set global.oauth2.authServerAddress=https://$NODEIP:$USER_MGMT \
-    --set images.mecmFe.repository="$REGISTRY_URL"edgegallery/mecm-fe \
-    --set images.initservicecenter.repository="$REGISTRY_URL"edgegallery/curl \
-    --set images.mecmFe.tag="$EG_IMAGE_TAG" \
-    --set images.mecmFe.pullPolicy=IfNotPresent \
-    --set images.initservicecenter.pullPolicy=IfNotPresent \
-    --set global.ssl.enabled=true \
-    --set global.ssl.secretName=edgegallery-ssl-secret
+    --set images.mecmFe.repository=$mecm_fe_images_mecmFe_repository \
+    --set images.initservicecenter.repository=$mecm_fe_images_initservicecenter_repository \
+    --set images.mecmFe.tag=$mecm_fe_images_mecmFe_tag \
+    --set images.mecmFe.pullPolicy=$mecm_fe_images_mecmFe_pullPolicy \
+    --set images.initservicecenter.pullPolicy=$mecm_fe_images_initservicecenter_pullPolicy \
+    --set global.ssl.enabled=$mecm_fe_global_ssl_enabled \
+    --set global.ssl.secretName=$mecm_fe_global_ssl_secretName
   if [ $? -eq 0 ]; then
-    wait "mecm-fe" 1
     info "[Deployed MECM-FE  ..........]" $GREEN
   else
     info "[MECM-FE Deployment Failed  .]" $RED
@@ -869,23 +852,21 @@ function uninstall_mecm-fe ()
 function install_appstore ()
 {
   info "[Deploying AppStore  ........]" $BLUE
-  helm install appstore-edgegallery "$CHART_PREFIX"edgegallery/appstore"$CHART_SUFFIX" \
+  helm install --wait appstore-edgegallery "$CHART_PREFIX"edgegallery/appstore"$CHART_SUFFIX" \
   --set global.oauth2.authServerAddress=https://$NODEIP:$USER_MGMT \
-  --set images.appstoreFe.repository="$REGISTRY_URL"edgegallery/appstore-fe \
-  --set images.appstoreBe.repository="$REGISTRY_URL"edgegallery/appstore-be \
-  --set images.postgres.repository="$REGISTRY_URL"postgres \
-  --set images.initservicecenter.repository="$REGISTRY_URL"curlimages/curl \
-  --set images.appstoreFe.tag="$EG_IMAGE_TAG" \
-  --set images.appstoreBe.tag="$EG_IMAGE_TAG" \
-  --set images.appstoreFe.pullPolicy=IfNotPresent \
-  --set images.appstoreBe.pullPolicy=IfNotPresent \
-  --set images.postgres.pullPolicy=IfNotPresent \
-  --set images.initservicecenter.pullPolicy=IfNotPresent \
-  --set global.ssl.enabled=true \
-  --set global.ssl.secretName=edgegallery-ssl-secret
+  --set images.appstoreFe.repository=$appstore_images_appstoreFe_repository \
+  --set images.appstoreBe.repository=$appstore_images_appstoreBe_repository \
+  --set images.postgres.repository=$appstore_images_postgres_repository \
+  --set images.initservicecenter.repository=$appstore_images_initservicecenter_repository \
+  --set images.appstoreFe.tag=$appstore_images_appstoreFe_tag \
+  --set images.appstoreBe.tag=$appstore_images_appstoreBe_tag \
+  --set images.appstoreFe.pullPolicy=$appstore_images_appstoreFe_pullPolicy \
+  --set images.appstoreBe.pullPolicy=$appstore_images_appstoreBe_pullPolicy \
+  --set images.postgres.pullPolicy=$appstore_images_postgres_pullPolicy \
+  --set images.initservicecenter.pullPolicy=$appstore_images_initservicecenter_pullPolicy \
+  --set global.ssl.enabled=$appstore_global_ssl_enabled \
+  --set global.ssl.secretName=$appstore_global_ssl_secretName
   if [ $? -eq 0 ]; then
-    wait "appstore-be" 2
-    wait "appstore-fe" 1
     info "[Deployed AppStore  .........]" $GREEN
   else
     info "[AppStore Deployment Failed  ]" $RED
@@ -903,29 +884,27 @@ function uninstall_appstore ()
 function install_developer ()
 {
   info "[Deploying Developer  .......]"  $BLUE
-  helm install developer-edgegallery "$CHART_PREFIX"edgegallery/developer"$CHART_SUFFIX" \
+  helm install --wait developer-edgegallery "$CHART_PREFIX"edgegallery/developer"$CHART_SUFFIX" \
   --set global.oauth2.authServerAddress=https://$NODEIP:$USER_MGMT \
-  --set images.developerFe.repository="$REGISTRY_URL"edgegallery/developer-fe \
-  --set images.developerBe.repository="$REGISTRY_URL"edgegallery/developer-be \
-  --set images.postgres.repository="$REGISTRY_URL"postgres \
-  --set images.toolChain.repository="$REGISTRY_URL"edgegallery/tool-chain \
-  --set images.portingAdvisor.repository="$REGISTRY_URL"edgegallery/porting-advisor \
-  --set images.initservicecenter.repository="$REGISTRY_URL"curlimages/curl \
-  --set images.developerFe.tag="$EG_IMAGE_TAG" \
-  --set images.developerBe.tag="$EG_IMAGE_TAG" \
-  --set images.toolChain.tag="$EG_IMAGE_TAG" \
-  --set images.portingAdvisor.tag="$EG_IMAGE_TAG" \
-  --set images.developerFe.pullPolicy=IfNotPresent \
-  --set images.developerBe.pullPolicy=IfNotPresent \
-  --set images.postgres.pullPolicy=IfNotPresent \
-  --set images.toolChain.pullPolicy=IfNotPresent \
-  --set images.portingAdvisor.pullPolicy=IfNotPresent \
-  --set images.initservicecenter.pullPolicy=IfNotPresent \
-  --set global.ssl.enabled=true \
-  --set global.ssl.secretName=edgegallery-ssl-secret
+  --set images.developerFe.repository=$developer_images_developerFe_repository \
+  --set images.developerBe.repository=$developer_images_developerBe_repository \
+  --set images.postgres.repository=$developer_images_postgres_repository \
+  --set images.toolChain.repository=$developer_images_toolChain_repository \
+  --set images.portingAdvisor.repository=$developer_images_portingAdvisor_repository \
+  --set images.initservicecenter.repository=$developer_images_initservicecenter_repository \
+  --set images.developerFe.tag=$developer_images_developerFe_tag \
+  --set images.developerBe.tag=$developer_images_developerBe_tag \
+  --set images.toolChain.tag=$developer_images_toolChain_tag \
+  --set images.portingAdvisor.tag=$developer_images_portingAdvisor_tag \
+  --set images.developerFe.pullPolicy=$developer_images_developerFe_pullPolicy \
+  --set images.developerBe.pullPolicy=$developer_images_developerBe_pullPolicy \
+  --set images.postgres.pullPolicy=$developer_images_postgres_pullPolicy \
+  --set images.toolChain.pullPolicy=$developer_images_toolChain_pullPolicy \
+  --set images.portingAdvisor.pullPolicy=$developer_images_portingAdvisor_pullPolicy \
+  --set images.initservicecenter.pullPolicy=$developer_images_initservicecenter_pullPolicy \
+  --set global.ssl.enabled=$developer_global_ssl_enabled \
+  --set global.ssl.secretName=$developer_global_ssl_secretName
   if [ $? -eq 0 ]; then
-    wait "developer-be" 2
-    wait "developer-fe" 1
     info "[Deployed Developer .........]" $GREEN
   else
     fail "[Developer Deployment Failed ]" $RED
@@ -943,13 +922,12 @@ function uninstall_developer ()
 function install_service-center ()
 {
   info "[Deploying ServiceCenter  ...]" $BLUE
-  helm install service-center-edgegallery "$CHART_PREFIX"edgegallery/servicecenter"$CHART_SUFFIX" \
-  --set images.repository="$REGISTRY_URL"edgegallery/service-center \
-  --set images.pullPolicy=IfNotPresent \
-  --set global.ssl.enabled=true \
-  --set global.ssl.secretName=edgegallery-ssl-secret
+  helm install --wait service-center-edgegallery "$CHART_PREFIX"edgegallery/servicecenter"$CHART_SUFFIX" \
+  --set images.repository=$servicecenter_images_repository \
+  --set images.pullPolicy=$servicecenter_images_pullPolicy \
+  --set global.ssl.enabled=$servicecenter_global_ssl_enabled \
+  --set global.ssl.secretName=$servicecenter_global_ssl_secretName
   if [ $? -eq 0 ]; then
-    wait "service-center" 1
     info "[Deployed ServiceCenter  ....]" $GREEN
   else
     info "[ServiceCenter Deployment Failed]" $RED
@@ -974,27 +952,24 @@ function install_user-mgmt ()
     --from-file=encryptedPrivateKey=$PLATFORM_DIR/conf/keys/encrypted_rsa_private_key.pem \
     --from-literal=encryptPassword=te9Fmv%qaq
 
-  helm install user-mgmt-edgegallery "$CHART_PREFIX"edgegallery/usermgmt"$CHART_SUFFIX" \
+  helm install --wait user-mgmt-edgegallery "$CHART_PREFIX"edgegallery/usermgmt"$CHART_SUFFIX" \
   --set global.oauth2.clients.appstore.clientUrl=https://$NODEIP:$APPSTORE_PORT,\
 global.oauth2.clients.developer.clientUrl=https://$NODEIP:$DEVELOPER_PORT,\
 global.oauth2.clients.mecm.clientUrl=https://$NODEIP:$MECM_PORT, \
---set jwt.secretName=user-mgmt-jwt-secret \
---set images.usermgmt.repository="$REGISTRY_URL"edgegallery/user-mgmt \
---set images.postgres.repository="$REGISTRY_URL"postgres \
---set images.redis.repository="$REGISTRY_URL"redis \
---set images.initservicecenter.repository="$REGISTRY_URL"curlimages/curl \
---set images.usermgmt.tag="$EG_IMAGE_TAG" \
---set images.usermgmt.pullPolicy=IfNotPresent \
---set images.postgres.pullPolicy=IfNotPresent \
---set images.redis.pullPolicy=IfNotPresent \
---set images.initservicecenter.pullPolicy=IfNotPresent \
---set global.ssl.enabled=true \
---set global.ssl.secretName=edgegallery-ssl-secret
+--set jwt.secretName=$usermgmt_jwt_secretName \
+--set images.usermgmt.repository=$usermgmt_images_usermgmt_repository \
+--set images.postgres.repository=$usermgmt_images_postgres_repository \
+--set images.redis.repository=$usermgmt_images_redis_repository \
+--set images.initservicecenter.repository=$usermgmt_images_initservicecenter_repository \
+--set images.usermgmt.tag=$usermgmt_images_usermgmt_tag \
+--set images.usermgmt.pullPolicy=$usermgmt_images_usermgmt_pullPolicy \
+--set images.postgres.pullPolicy=$usermgmt_images_postgres_pullPolicy \
+--set images.redis.pullPolicy=$usermgmt_images_redis_pullPolicy \
+--set images.initservicecenter.pullPolicy=$usermgmt_images_initservicecenter_pullPolicy \
+--set global.ssl.enabled=$usermgmt_global_ssl_enabled \
+--set global.ssl.secretName=$usermgmt_global_ssl_secretName
 
   if [ $? -eq 0 ]; then
-    wait "user-mgmt-redis" 1
-    wait "user-mgmt-postgres" 1
-    wait "user-mgmt" 3
     info "[Deployed UserMgmt  .........]" $GREEN
   else
     info "[UserMgmt Deployment Failed .]" $RED
@@ -1023,7 +998,7 @@ function append_deploy_n_arch_type_to_helm_command()
 
 function install_controller_with_ingress()
 {
-  HELM_COMMAND+="helm install ingress-edgegallery edgegallery/edgegallery "
+  HELM_COMMAND+="helm install --wait ingress-edgegallery edgegallery/edgegallery "
   HELM_COMMAND+="--set expose.type=ingress "
   HELM_COMMAND+="--set expose.ingress.hosts.auth=$auth_domain "
   HELM_COMMAND+="--set expose.ingress.hosts.appstore=$appstore_domain "
@@ -1041,7 +1016,7 @@ function install_controller_with_ingress()
 
 function install_ingress()
 {
-  helm install edgegallery-ingress "$CHART_PREFIX"edgegallery/edgegallery"$CHART_SUFFIX" \
+  helm install --wait edgegallery-ingress "$CHART_PREFIX"edgegallery/edgegallery"$CHART_SUFFIX" \
   --set global.oauth2.authServerAddress=http://$AUTH_DOMAIN_NAME \
   --set global.oauth2.clients.appstore.clientUrl=http://$APPSTORE_DOMAIN_NAME \
   --set global.oauth2.clients.developer.clientUrl=http://$DEVELOPER_DOMAIN_NAME \
@@ -1089,7 +1064,7 @@ function install_with_umbrella_chart()
   --from-file=encryptedPrivateKey=$PLATFORM_DIR/conf/keys/encrypted_rsa_private_key.pem \
   --from-literal=encryptPassword=te9Fmv%qaq
 
-  helm install offline-edgegallery "$CHART_PREFIX"edgegallery/edgegallery"$CHART_SUFFIX" \
+  helm install --wait offline-edgegallery "$CHART_PREFIX"edgegallery/edgegallery"$CHART_SUFFIX" \
 --set global.oauth2.authServerAddress=http://$NODEIP:$USER_MGMT \
 --set global.oauth2.clients.appstore.clientUrl=http://$NODEIP:$APPSTORE_PORT \
 --set global.oauth2.clients.developer.clientUrl=http://$NODEIP:$DEVELOPER_PORT \
@@ -1148,23 +1123,6 @@ function install_with_umbrella_chart()
 --set developer.images.portingAdvisor.pullPolicy=IfNotPresent \
 --set developer.images.curl.pullPolicy=IfNotPresent
   if [ $? -eq 0 ]; then
-    wait "service-center" 1
-    wait "user-mgmt-redis" 1
-    wait "user-mgmt-postgres" 1
-    wait "user-mgmt" 3
-    wait "api-handler-infra" 1
-    wait "bpmn-infra" 1
-    wait "catalog-db-adapter" 1
-    wait "request-db-adapter" 1
-    wait "vfc-catalog" 1
-    wait "mecesr" 1
-    wait "mariadb" 1
-    wait "mecm-fe" 1
-    wait "appstore-be" 2
-    wait "appstore-fe" 1
-    wait "tool-chain" 1
-    wait "developer-be" 2
-    wait "developer-fe" 1
     info "[Deployed Host components ...]" $GREEN
   else
     info "[Host components Deployment Failed]" $RED
@@ -1521,6 +1479,28 @@ function _print__help()
   info "        example: bash eg.sh -p host1-ip,host2-ip ROOT_PASSWORD" $GREEN
 }
 
+function print_env()
+{
+  info "Basic Settings" "$YELLOW"
+  info "WHAT_TO_DO=$WHAT_TO_DO" "$GREEN"
+  info "OFFLINE_MODE=$OFFLINE_MODE" "$GREEN"
+  info "EG_IMAGE_TAG=$EG_IMAGE_TAG" "$GREEN"
+
+  info "Topology Settings" "$YELLOW"
+  info "EG_NODE_DEPLOY_IP=$EG_NODE_DEPLOY_IP" "$GREEN"
+  info "EG_NODE_MASTER_IPS=$EG_NODE_MASTER_IPS" "$GREEN"
+  info "EG_NODE_WORKER_IPS=$EG_NODE_WORKER_IPS" "$GREEN"
+  info "EG_NODE_CONTROLLER_MASTER_IPS=$EG_NODE_CONTROLLER_MASTER_IPS" "$GREEN"
+  info "EG_NODE_CONTROLLER_WORKER_MASTER_IPS=$EG_NODE_CONTROLLER_WORKER_MASTER_IPS" "$GREEN"
+  info "EG_NODE_EDGE_MASTER_IPS=$EG_NODE_EDGE_MASTER_IPS" "$GREEN"
+  info "EG_NODE_EDGE_WORKER_IPS=$EG_NODE_EDGE_WORKER_IPS" "$GREEN"
+
+  info "Advanced Settings" "$YELLOW"
+  info "EG_NODE_EDGE_MP1=$EG_NODE_EDGE_MP1" "$GREEN"
+  info "EG_NODE_EDGE_MM5=$EG_NODE_EDGE_MM5" "$GREEN"
+  info "SKIP_K8S=$SKIP_K8S" "$GREEN"
+}
+
 function main()
 {
   if [[ ($1 == "--help" || $1 == "-h")  || ("$1" != "--install"  &&  "$1" != "-i" && "$1" != "--uninstall" && "$1" != "-u" && "$1" != "--prepare" && "$1" != "-p") ]]; then
@@ -1627,7 +1607,7 @@ function main()
   exec 1> >(tee -a "$log_file")  2>&1
 
   WHAT_TO_DO=$1
-
+  print_env
   #Input validation
   if [[ -n  $K8S_NODE_MASTER_IPS ]]; then
     if [[ -n $EG_NODE_MASTER_IPS || -n $EG_NODE_WORKER_IPS || -n $EG_NODE_CONTROLLER_MASTER_IPS
