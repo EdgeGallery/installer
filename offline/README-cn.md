@@ -62,9 +62,9 @@ EdgeGallery离线安装程序是基于ubuntu x86_64或arm64体系结构的给Kub
 
 vim env.sh                                      //编辑env文件
 
-OFFLINE_MODE = aio                              //修改离线安装模式
+export OFFLINE_MODE = aio                              //修改离线安装模式
 
-EG_NODE_MASTER_IPS = 192.168.99.100             //设置IP地址
+export EG_NODE_MASTER_IPS = 192.168.99.100             //设置IP地址
 
 //修改完env文件保存退出
 
@@ -78,9 +78,9 @@ bash eg.sh -i                                   //开始安装程序
 
 vim  env.sh                                      //编辑env文件
 
-OFFLINE_MODE = aio                               //修改离线安装模式
+export OFFLINE_MODE = aio                               //修改离线安装模式
 
-EG_NODE_CONTROLLER_MASTER_IPS = 192.168.99.101   //设置IP地址
+export EG_NODE_CONTROLLER_MASTER_IPS = 192.168.99.101   //设置IP地址
 
 //修改完env文件保存退出 
 
@@ -94,9 +94,9 @@ bash eg.sh -i                                  //开始安装程序
 
 vim env.sh                                       //编辑env文件
 
-OFFLINE_MODE = aio                               //修改离线安装模式         
+export OFFLINE_MODE = aio                               //修改离线安装模式         
 
-EG_NODE_EDGE_MASTER_IPS = 192.168.99.104         //设置IP地址
+export EG_NODE_EDGE_MASTER_IPS = 192.168.99.104         //设置IP地址
 
 //修改完env文件保存退出
 
@@ -110,15 +110,15 @@ bash eg.sh -i                                    //开始安装程序
 
 在之前解压缩的文件夹下修改env.sh配置文件 
 
-vim env.sh                                          //编辑env文件
+vim env.sh                                                   //编辑env文件
 
-OFFLINE_MODE = muno                                 //修改离线安装模式
+export OFFLINE_MODE = muno                                   //修改离线安装模式
 
-EG_NODE_DEPLOY_IP=192.168.99.100                    //设置deploy节点IP地址
+export EG_NODE_DEPLOY_IP = 192.168.99.100                    //设置deploy节点IP地址
+  
+export EG_NODE_MASTER_IPS = 192.168.99.101                   //设置master节点IP地址
 
-EG_NODE_MASTER_IPS = 192.168.99.101                 //设置master节点IP地址
-
-EG_NODE_WORKER_IPS= 192.168.99.102, 192.168.99.103  //设置work节点IP地址
+export EG_NODE_WORKER_IPS = 192.168.99.102, 192.168.99.103   //设置work节点IP地址
 
 //修改完env文件保存退出
 
@@ -132,13 +132,13 @@ bash eg.sh -i                                      //开始安装程序
 
 vim env.sh                                           //编辑env文件
 
-OFFLINE_MODE = muno                                  //修改离线安装模式
+export OFFLINE_MODE = muno                                  //修改离线安装模式
 
-EG_NODE_DEPLOY_IP=192.168.99.100                     //设置deploy节点IP地址
+export EG_NODE_DEPLOY_IP=192.168.99.100                     //设置deploy节点IP地址
 
-EG_NODE_CONTROLLER_MASTER_IPS = 192.168.99.101       //设置master节点IP地址
+export EG_NODE_CONTROLLER_MASTER_IPS = 192.168.99.101       //设置master节点IP地址
 
-EG_NODE_CONTROLLER_WORKER_IPS= 192.168.99.102, 192.168.99.103 //设置work节点IP地址
+export EG_NODE_CONTROLLER_WORKER_IPS= 192.168.99.102, 192.168.99.103 //设置work节点IP地址
 
 //修改完env文件保存退出
 
@@ -150,15 +150,15 @@ bash eg.sh -i                                        //开始安装程序
 
 在之前解压缩的文件夹下修改env.sh配置文件
 
-vim env.sh                                                //编辑env文件
+vim env.sh                                                      //编辑env文件
 
-OFFLINE_MODE = muno                                       //修改离线安装模式
+export OFFLINE_MODE = muno                                       //修改离线安装模式
 
-EG_NODE_DEPLOY_IP=192.168.99.100                          //设置deploy节点IP地址
+export EG_NODE_DEPLOY_IP=192.168.99.100                          //设置deploy节点IP地址
 
-EG_NODE_EDGE_MASTER_IPS = 192.168.99.104                  //设置master节点IP地址
+export EG_NODE_EDGE_MASTER_IPS = 192.168.99.104                  //设置master节点IP地址
 
-EG_NODE_EDGE_WORKER_IPS= 192.168.99.105, 192.168.99.106   //设置work节点IP地址
+export EG_NODE_EDGE_WORKER_IPS= 192.168.99.105, 192.168.99.106   //设置work节点IP地址
 
 //修改完env文件保存退出
 
@@ -166,7 +166,7 @@ source env.sh                                             //运行使编辑保�
 
 bash eg.sh -i                                             //开始安装程序
 
-三 Kubernetes部署
+三.Kubernetes部署
 
 ​      该安装程序还提供了通过在env.sh中设置env变量，仅部署kubernetes的选项：
 
@@ -174,9 +174,9 @@ bash eg.sh -i                                             //开始安装程序
 
  vim  env.sh                                   //编辑env文件
 
-OFFLINE_MODE=aio                             //修改离线安装模式
+export OFFLINE_MODE=aio                             //修改离线安装模式
 
-K8S_NODE_MASTER_IPS=192.168.100.120          //设置IP地址
+export K8S_NODE_MASTER_IPS=192.168.100.120          //设置IP地址
 
 //修改完env文件保存退出
 
@@ -188,13 +188,13 @@ bash eg.sh -i                                 //开始安装程序
 
 vim  env.sh                                  //编辑env文件
 
-OFFLINE_MODE=muno                            //修改离线安装模式
+export OFFLINE_MODE=muno                            //修改离线安装模式
 
-K8S_NODE_MASTER_IPS=192.168.100.120          //设置master节点IP地址  
+export K8S_NODE_MASTER_IPS=192.168.100.120          //设置master节点IP地址  
 
-K8S_NODE_WORKER_IPS=192.168.100.120          //设置work节点IP地址
+export K8S_NODE_WORKER_IPS=192.168.100.120          //设置work节点IP地址
 
-K8S_NODE_DEPLOY_IP=192.168.100.120           //设置deploy节点IP地址 
+export K8S_NODE_DEPLOY_IP=192.168.100.120           //设置deploy节点IP地址 
 
 //修改完env文件保存退出
 
