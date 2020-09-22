@@ -179,6 +179,7 @@ function _docker_images_download_eg() {
   info "download the edgegallery images list is : $1" $RED
   for image in $1;
   do
+    info "docker pulling $image" $RED
     docker pull $image;
     if [[ $? -ne 0 ]]; then
       info "docker pull $image Failed" $RED
@@ -355,6 +356,8 @@ EOF
 function _kubernetes_tool_download() {
     cp $CUR_DIR/conf/manifest/calico/calico.yaml $K8S_OFFLINE_DIR/k8s/
 
+    info "start to download kubernete tool" $RED
+
     curl -LO https://k8s.io/examples/application/nginx-app.yaml
     if [[ $? -ne 0 ]]; then
       info "curl -LO https://k8s.io/examples/application/nginx-app.yaml  Failed" $RED
@@ -401,9 +404,11 @@ function _kubernetes_tool_download() {
       fi
       mv $cmd $K8S_OFFLINE_DIR/k8s/;
     done
+    info "end of download kubernete tool" $RED
 }
 
 function _cni_download() {
+    info "start download cni tar file" $RED
     if [ $KERNEL_ARCH == 'x86_64' ]; then
         curl -LO  https://github.com/containernetworking/plugins/releases/download/v0.8.7/cni-plugins-linux-amd64-v0.8.7.tgz
 	tar -xvf cni-plugins-linux-amd64-v0.8.7.tgz -C $K8S_OFFLINE_DIR/cni/
@@ -412,7 +417,8 @@ function _cni_download() {
         curl -LO  https://github.com/containernetworking/plugins/releases/download/v0.8.7/cni-plugins-linux-arm64-v0.8.7.tgz
 	tar -xvf cni-plugins-linux-arm64-v0.8.7.tgz -C $K8S_OFFLINE_DIR/cni/
         rm cni-plugins-linux-arm64-v0.8.7.tgz
-    fi	
+    fi
+    info "end of download cni tar file" $RED	
 }
 
 function kubernetes_offline_installer() {
