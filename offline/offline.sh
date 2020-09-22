@@ -17,72 +17,79 @@ if [[ -z "$EG_IMAGE_TAG" ]]; then
 fi
 
 #CONTROLLER
-EG_IMAGE_LIST_CONTROLLER_X86_DEFAULT="swr.ap-southeast-1.myhuaweicloud.com/edgegallery/appstore-fe:$EG_IMAGE_TAG \
-swr.ap-southeast-1.myhuaweicloud.com/edgegallery/appstore-be:$EG_IMAGE_TAG \
-swr.ap-southeast-1.myhuaweicloud.com/edgegallery/developer-fe:$EG_IMAGE_TAG \
-swr.ap-southeast-1.myhuaweicloud.com/edgegallery/developer-be:$EG_IMAGE_TAG \
-swr.ap-southeast-1.myhuaweicloud.com/edgegallery/tool-chain:$EG_IMAGE_TAG \
-swr.ap-southeast-1.myhuaweicloud.com/edgegallery/porting-advisor:$EG_IMAGE_TAG \
-swr.ap-southeast-1.myhuaweicloud.com/edgegallery/mecm-fe:$EG_IMAGE_TAG \
-swr.ap-southeast-1.myhuaweicloud.com/edgegallery/mecm-inventory:$EG_IMAGE_TAG \
-swr.ap-southeast-1.myhuaweicloud.com/edgegallery/mecm-appo:$EG_IMAGE_TAG \
-swr.ap-southeast-1.myhuaweicloud.com/edgegallery/mecm-apm:$EG_IMAGE_TAG \
-swr.ap-southeast-1.myhuaweicloud.com/edgegallery/service-center:latest \
-swr.ap-southeast-1.myhuaweicloud.com/edgegallery/user-mgmt:$EG_IMAGE_TAG \
-swr.ap-southeast-1.myhuaweicloud.com/edgegallery/curl:latest \
-swr.ap-southeast-1.myhuaweicloud.com/edgegallery/redis:6.0.3 \
-swr.ap-southeast-1.myhuaweicloud.com/edgegallery/postgres:12.2"
+if [[ -z "$EG_IMAGE_LIST_CONTROLLER_X86_DEFAULT" ]]; then
+   EG_IMAGE_LIST_CONTROLLER_X86_DEFAULT="swr.ap-southeast-1.myhuaweicloud.com/edgegallery/appstore-fe:$EG_IMAGE_TAG \
+   swr.ap-southeast-1.myhuaweicloud.com/edgegallery/appstore-be:$EG_IMAGE_TAG \
+   swr.ap-southeast-1.myhuaweicloud.com/edgegallery/developer-fe:$EG_IMAGE_TAG \
+   swr.ap-southeast-1.myhuaweicloud.com/edgegallery/developer-be:$EG_IMAGE_TAG \
+   swr.ap-southeast-1.myhuaweicloud.com/edgegallery/tool-chain:$EG_IMAGE_TAG \
+   swr.ap-southeast-1.myhuaweicloud.com/edgegallery/porting-advisor:$EG_IMAGE_TAG \
+   swr.ap-southeast-1.myhuaweicloud.com/edgegallery/mecm-fe:$EG_IMAGE_TAG \
+   swr.ap-southeast-1.myhuaweicloud.com/edgegallery/mecm-inventory:$EG_IMAGE_TAG \
+   swr.ap-southeast-1.myhuaweicloud.com/edgegallery/mecm-appo:$EG_IMAGE_TAG \
+   swr.ap-southeast-1.myhuaweicloud.com/edgegallery/mecm-apm:$EG_IMAGE_TAG \
+   swr.ap-southeast-1.myhuaweicloud.com/edgegallery/service-center:latest \
+   swr.ap-southeast-1.myhuaweicloud.com/edgegallery/user-mgmt:$EG_IMAGE_TAG \
+   swr.ap-southeast-1.myhuaweicloud.com/edgegallery/curl:latest \
+   swr.ap-southeast-1.myhuaweicloud.com/edgegallery/redis:6.0.3 \
+   swr.ap-southeast-1.myhuaweicloud.com/edgegallery/postgres:12.2"
+fi
 EG_IMAGE_LIST_CONTROLLER_ARM64_DEFAULT=$EG_IMAGE_LIST_CONTROLLER_X86_DEFAULT
 EG_HELM_LIST_CONTROLLER_X86_DEFAULT="servicecenter usermgmt developer appstore mecm-fe mecm-meo"
 EG_HELM_LIST_CONTROLLER_ARM64_DEFAULT=$EG_HELM_LIST_CONTROLLER_X86_DEFAULT
 
 #EDGE
-EG_IMAGE_LIST_EDGE_X86_DEFAULT="swr.ap-southeast-1.myhuaweicloud.com/edgegallery/mepauth:$EG_IMAGE_TAG \
-swr.ap-southeast-1.myhuaweicloud.com/edgegallery/mep:$EG_IMAGE_TAG \
-swr.ap-southeast-1.myhuaweicloud.com/edgegallery/mep-dns-server:$EG_IMAGE_TAG \
-swr.ap-southeast-1.myhuaweicloud.com/edgegallery/edgegallery-secondary-ep-controller:latest \
-swr.ap-southeast-1.myhuaweicloud.com/edgegallery/mecm-applcm:$EG_IMAGE_TAG \
-swr.ap-southeast-1.myhuaweicloud.com/edgegallery/mecm-applcm-k8splugin:$EG_IMAGE_TAG \
-prom/alertmanager:v0.18.0 \
-prom/node-exporter:v0.18.0 \
-prom/prometheus:v2.13.1 \
-prom/pushgateway:v0.8.0 \
-quay.io/coreos/kube-state-metrics:v1.6.0 \
-jimmidyson/configmap-reload:v0.2.2 \
-curlimages/curl:latest \
-grafana/grafana:7.1.1 \
-bats/bats:v1.1.0 \
-busybox:1.31.1 \
-rabbitmq:3.7-management-alpine \
-nginx:stable \
-postgres:12.3 \
-kong:2.0.4-ubuntu \
-docker.io/nfvpe/multus:stable \
-docker.io/nfvpe/multus:stable-ppc64le"
-EG_IMAGE_LIST_EDGE_ARM64_DEFAULT="swr.ap-southeast-1.myhuaweicloud.com/edgegallery/mepauth:$EG_IMAGE_TAG \
-swr.ap-southeast-1.myhuaweicloud.com/edgegallery/mep:$EG_IMAGE_TAG \
-swr.ap-southeast-1.myhuaweicloud.com/edgegallery/mep-dns-server:$EG_IMAGE_TAG \
-swr.ap-southeast-1.myhuaweicloud.com/edgegallery/edgegallery-secondary-ep-controller:latest \
-swr.ap-southeast-1.myhuaweicloud.com/edgegallery/mecm-applcm:$EG_IMAGE_TAG \
-swr.ap-southeast-1.myhuaweicloud.com/edgegallery/mecm-applcm-k8splugin:$EG_IMAGE_TAG \
-prom/alertmanager:v0.18.0 \
-prom/node-exporter:v0.18.1 \
-prom/prometheus:v2.15.2 \
-prom/pushgateway:v1.0.1 \
-carlosedp/kube-state-metrics:v1.7.2 \
-jimmidyson/configmap-reload:latest-arm64 \
-kiwigrid/k8s-sidecar:0.1.151 \
-grafana/grafana-arm64v8-linux:6.5.2-ubuntu \
-lucashalbert/curl:arm64v8-7.66.0-r0 \
-arm64v8/rabbitmq:3.7-management-alpine \
-bats/bats:v1.1.0 \
-busybox:1.31.1 \
-rabbitmq:3.7-management-alpine \
-nginx:stable \
-postgres:12.3 \
-kong:2.0.4-ubuntu \
-docker.io/nfvpe/multus:stable \
-docker.io/nfvpe/multus:stable-ppc64le"
+if [[ -z "$EG_IMAGE_LIST_EDGE_X86_DEFAULT" ]]; then
+   EG_IMAGE_LIST_EDGE_X86_DEFAULT="swr.ap-southeast-1.myhuaweicloud.com/edgegallery/mepauth:$EG_IMAGE_TAG \
+   swr.ap-southeast-1.myhuaweicloud.com/edgegallery/mep:$EG_IMAGE_TAG \
+   swr.ap-southeast-1.myhuaweicloud.com/edgegallery/mep-dns-server:$EG_IMAGE_TAG \
+   swr.ap-southeast-1.myhuaweicloud.com/edgegallery/edgegallery-secondary-ep-controller:latest \
+   swr.ap-southeast-1.myhuaweicloud.com/edgegallery/mecm-applcm:$EG_IMAGE_TAG \
+   swr.ap-southeast-1.myhuaweicloud.com/edgegallery/mecm-applcm-k8splugin:$EG_IMAGE_TAG \
+   prom/alertmanager:v0.18.0 \
+   prom/node-exporter:v0.18.0 \
+   prom/prometheus:v2.13.1 \
+   prom/pushgateway:v0.8.0 \
+   quay.io/coreos/kube-state-metrics:v1.6.0 \
+   jimmidyson/configmap-reload:v0.2.2 \
+   curlimages/curl:latest \
+   grafana/grafana:7.1.1 \
+   bats/bats:v1.1.0 \
+   busybox:1.31.1 \
+   rabbitmq:3.7-management-alpine \
+   nginx:stable \
+   postgres:12.3 \
+   kong:2.0.4-ubuntu \
+   docker.io/nfvpe/multus:stable \
+   docker.io/nfvpe/multus:stable-ppc64le"
+fi 
+
+if [[ -z "$EG_IMAGE_LIST_EDGE_ARM64_DEFAULT" ]]; then
+   EG_IMAGE_LIST_EDGE_ARM64_DEFAULT="swr.ap-southeast-1.myhuaweicloud.com/edgegallery/mepauth:$EG_IMAGE_TAG \
+   swr.ap-southeast-1.myhuaweicloud.com/edgegallery/mep:$EG_IMAGE_TAG \
+   swr.ap-southeast-1.myhuaweicloud.com/edgegallery/mep-dns-server:$EG_IMAGE_TAG \
+   swr.ap-southeast-1.myhuaweicloud.com/edgegallery/edgegallery-secondary-ep-controller:latest \
+   swr.ap-southeast-1.myhuaweicloud.com/edgegallery/mecm-applcm:$EG_IMAGE_TAG \
+   swr.ap-southeast-1.myhuaweicloud.com/edgegallery/mecm-applcm-k8splugin:$EG_IMAGE_TAG \
+   prom/alertmanager:v0.18.0 \
+   prom/node-exporter:v0.18.1 \
+   prom/prometheus:v2.15.2 \
+   prom/pushgateway:v1.0.1 \
+   carlosedp/kube-state-metrics:v1.7.2 \
+   jimmidyson/configmap-reload:latest-arm64 \
+   kiwigrid/k8s-sidecar:0.1.151 \
+   grafana/grafana-arm64v8-linux:6.5.2-ubuntu \
+   lucashalbert/curl:arm64v8-7.66.0-r0 \
+   arm64v8/rabbitmq:3.7-management-alpine \
+   bats/bats:v1.1.0 \
+   busybox:1.31.1 \
+   rabbitmq:3.7-management-alpine \
+   nginx:stable \
+   postgres:12.3 \
+   kong:2.0.4-ubuntu \
+   docker.io/nfvpe/multus:stable \
+   docker.io/nfvpe/multus:stable-ppc64le"
+fi 
 EG_HELM_LIST_EDGE_X86_DEFAULT="mecm-mepm mep"
 EG_HELM_LIST_EDGE_ARM64_DEFAULT=$EG_HELM_LIST_EDGE_X86_DEFAULT
 
