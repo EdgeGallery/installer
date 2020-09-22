@@ -1652,8 +1652,8 @@ function main()
         _undeploy_k8s $EG_NODE_MASTER_IPS $EG_NODE_WORKER_IPS
       fi
     elif [ "$WHAT_TO_DO" == "-i" ] || [ "$WHAT_TO_DO" == "--install" ]; then
-      _deploy_eg
       PORTAL_IP=$(echo $EG_NODE_MASTER_IPS|cut -d "," -f1)
+      _deploy_eg
     fi
   elif [[ -n $EG_NODE_CONTROLLER_MASTER_IPS ]]; then
     if [[ -n $EG_NODE_EDGE_MASTER_IPS || -n $EG_NODE_EDGE_WORKER_IPS ]]; then
@@ -1676,8 +1676,8 @@ function main()
         _undeploy_k8s $EG_NODE_CONTROLLER_MASTER_IPS $EG_NODE_CONTROLLER_WORKER_IPS
       fi
     elif [ "$WHAT_TO_DO" == "-i" ] || [ "$WHAT_TO_DO" == "--install" ]; then
-      _deploy_controller
       PORTAL_IP=$(echo $EG_NODE_CONTROLLER_MASTER_IPS|cut -d "," -f1)
+      _deploy_controller
     fi
   elif [[ -n $EG_NODE_EDGE_MASTER_IPS ]]; then
     if [ "$OFFLINE_MODE" == "aio" ]; then EG_NODE_DEPLOY_IP=$(echo $EG_NODE_EDGE_MASTER_IPS|cut -d "," -f1); fi
@@ -1695,8 +1695,8 @@ function main()
         _undeploy_k8s $EG_NODE_EDGE_MASTER_IPS $EG_NODE_EDGE_WORKER_IPS
       fi
     elif [ "$WHAT_TO_DO" == "-i" ] || [ "$WHAT_TO_DO" == "--install" ]; then
-      _deploy_edge
       PORTAL_IP=$(echo $EG_NODE_EDGE_MASTER_IPS|cut -d "," -f1)
+      _deploy_edge
     fi
   else
     info "node IP values aren't set"  $RED
