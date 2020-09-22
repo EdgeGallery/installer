@@ -500,6 +500,7 @@ function _eg_deploy()
   MASTER_IP=$3
   if [[ $OFFLINE_MODE == "aio" ]]; then
     if [[ $internet_available == "true" ]]; then
+      public_ip=$(curl ip.sb)
       install_EdgeGallery $FEATURE $public_ip
       PORTAL_IP=$public_ip
     else
