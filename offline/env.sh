@@ -7,7 +7,7 @@
 # which accompanies this distribution, and is available at
 # http://www.apache.org/licenses/LICENSE-2.0
 #######################################################################################
-this_script_name=$(basename -- "$0")
+this_script_name=$( basename ${BASH_SOURCE} )
 image_tag_env=$(cat $this_script_name | grep "EG_IMAGE_TAG=" | grep -v "#export")
 $image_tag_env
 
