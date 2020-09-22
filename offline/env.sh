@@ -7,6 +7,9 @@
 # which accompanies this distribution, and is available at
 # http://www.apache.org/licenses/LICENSE-2.0
 #######################################################################################
+this_script_name=$(basename -- "$0")
+image_tag_env=$(cat $this_script_name | grep "EG_IMAGE_TAG=" | grep -v "#export")
+$image_tag_env
 
 #Set the following env as described in README and source it in console session
 #CAUTION: Set only those env required, otherwise unset other env variables
