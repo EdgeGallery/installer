@@ -889,18 +889,12 @@ function install_developer ()
   --set images.developerFe.repository=$developer_images_developerFe_repository \
   --set images.developerBe.repository=$developer_images_developerBe_repository \
   --set images.postgres.repository=$developer_images_postgres_repository \
-  --set images.toolChain.repository=$developer_images_toolChain_repository \
-  --set images.portingAdvisor.repository=$developer_images_portingAdvisor_repository \
   --set images.initservicecenter.repository=$developer_images_initservicecenter_repository \
   --set images.developerFe.tag=$developer_images_developerFe_tag \
   --set images.developerBe.tag=$developer_images_developerBe_tag \
-  --set images.toolChain.tag=$developer_images_toolChain_tag \
-  --set images.portingAdvisor.tag=$developer_images_portingAdvisor_tag \
   --set images.developerFe.pullPolicy=$developer_images_developerFe_pullPolicy \
   --set images.developerBe.pullPolicy=$developer_images_developerBe_pullPolicy \
   --set images.postgres.pullPolicy=$developer_images_postgres_pullPolicy \
-  --set images.toolChain.pullPolicy=$developer_images_toolChain_pullPolicy \
-  --set images.portingAdvisor.pullPolicy=$developer_images_portingAdvisor_pullPolicy \
   --set images.initservicecenter.pullPolicy=$developer_images_initservicecenter_pullPolicy \
   --set global.ssl.enabled=$developer_global_ssl_enabled \
   --set global.ssl.secretName=$developer_global_ssl_secretName
@@ -1047,8 +1041,6 @@ function install_ingress()
   --set developer.images.developerFe.repository="$REGISTRY_URL"edgegallery/developer-fe \
   --set developer.images.developerBe.repository="$REGISTRY_URL"edgegallery/developer-be \
   --set developer.images.postgres.repository="$REGISTRY_URL"postgres \
-  --set developer.images.toolChain.repository="$REGISTRY_URL"edgegallery/tool-chain \
-  --set developer.images.portingAdvisor.repository="$REGISTRY_URL"edgegallery/porting-advisor \
   --set developer.images.curl.repository="$REGISTRY_URL"curlimages/curl
 }
 
@@ -1113,14 +1105,10 @@ function install_with_umbrella_chart()
 --set developer.images.developerFe.repository="$REGISTRY_URL"edgegallery/developer-fe \
 --set developer.images.developerBe.repository="$REGISTRY_URL"edgegallery/developer-be \
 --set developer.images.postgres.repository="$REGISTRY_URL"postgres \
---set developer.images.toolChain.repository="$REGISTRY_URL"edgegallery/tool-chain \
---set developer.images.portingAdvisor.repository="$REGISTRY_URL"edgegallery/porting-advisor \
 --set developer.images.curl.repository="$REGISTRY_URL"curlimages/curl \
 --set developer.images.developerFe.pullPolicy=IfNotPresent \
 --set developer.images.developerBe.pullPolicy=IfNotPresent \
 --set developer.images.postgres.pullPolicy=IfNotPresent \
---set developer.images.toolChain.pullPolicy=IfNotPresent \
---set developer.images.portingAdvisor.pullPolicy=IfNotPresent \
 --set developer.images.curl.pullPolicy=IfNotPresent
   if [ $? -eq 0 ]; then
     info "[Deployed Host components ...]" $GREEN

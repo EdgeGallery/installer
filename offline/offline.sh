@@ -22,8 +22,6 @@ if [[ -z "$EG_IMAGE_LIST_CONTROLLER_X86_DEFAULT" ]]; then
    swr.ap-southeast-1.myhuaweicloud.com/edgegallery/appstore-be:$EG_IMAGE_TAG \
    swr.ap-southeast-1.myhuaweicloud.com/edgegallery/developer-fe:$EG_IMAGE_TAG \
    swr.ap-southeast-1.myhuaweicloud.com/edgegallery/developer-be:$EG_IMAGE_TAG \
-   swr.ap-southeast-1.myhuaweicloud.com/edgegallery/tool-chain:$EG_IMAGE_TAG \
-   swr.ap-southeast-1.myhuaweicloud.com/edgegallery/porting-advisor:$EG_IMAGE_TAG \
    swr.ap-southeast-1.myhuaweicloud.com/edgegallery/mecm-fe:$EG_IMAGE_TAG \
    swr.ap-southeast-1.myhuaweicloud.com/edgegallery/mecm-inventory:$EG_IMAGE_TAG \
    swr.ap-southeast-1.myhuaweicloud.com/edgegallery/mecm-appo:$EG_IMAGE_TAG \
