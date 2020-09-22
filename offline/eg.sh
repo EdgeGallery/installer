@@ -498,8 +498,13 @@ function _eg_deploy()
   FEATURE=$1
   DEPLOY_NODE_IP=$2
   MASTER_IP=$3
-  if [ $OFFLINE_MODE == "aio" ]; then
-    install_EdgeGallery $FEATURE $DEPLOY_NODE_IP
+  if [[ $OFFLINE_MODE == "aio" ]]; then
+    if [[ $internet_available == "true" ]]; then
+      install_EdgeGallery $FEATURE $public_ip
+      PORTAL_IP=$public_ip
+    else
+      install_EdgeGallery $FEATURE $DEPLOY_NODE_IP
+    fi
   else
     install_EdgeGallery $FEATURE $MASTER_IP
   fi
@@ -1594,6 +1599,11 @@ function main()
   log_file="$PWD/logs/"$TIMESTAMP"_eg$1.log"
   exec 1> >(tee -a "$log_file")  2>&1
 
+  if ping -q -c 1 -W 1 8.8.8.8 > /dev/null; then
+    internet_available=true
+  else
+    internet_available=false
+  fi
   WHAT_TO_DO=$1
   print_env
   #Input validation
