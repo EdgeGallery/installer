@@ -173,9 +173,10 @@ function _download_sshpass()
 }
 
 function _docker_images_download_eg() {
-  docker login -u $DOCKER_LOGIN_USERNAME  -p $DOCKER_LOGIN_PASSWORD swr.ap-southeast-1.myhuaweicloud.com
+  #docker login -u $DOCKER_LOGIN_USERNAME  -p $DOCKER_LOGIN_PASSWORD swr.ap-southeast-1.myhuaweicloud.com
   mkdir -p $TARBALL_PATH/eg_swr_images
-  EG_SWR_PATH=$TARBALL_PATH/eg_swr_images/
+  EG_SWR_PATH=$TARBALL_PATH/eg_swr_images/  
+  info "download the edgegallery images list is : $1" $RED
   for image in $1;
   do
     docker pull $image;
