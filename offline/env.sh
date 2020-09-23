@@ -119,7 +119,7 @@ export mecm_fe_global_ssl_secretName=edgegallery-ssl-secret
 #AppStore Values
 export appstore_images_appstoreFe_repository="$REGISTRY_URL"edgegallery/appstore-fe
 export appstore_images_appstoreBe_repository="$REGISTRY_URL"edgegallery/appstore-be
-export appstore_images_postgres_repository="$REGISTRY_URL"postgres
+export appstore_images_postgres_repository="$REGISTRY_URL"edgegallery/postgres
 export appstore_images_initservicecenter_repository="$REGISTRY_URL"curlimages/curl
 export appstore_images_appstoreFe_tag="$EG_IMAGE_TAG"
 export appstore_images_appstoreBe_tag="$EG_IMAGE_TAG"
