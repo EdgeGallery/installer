@@ -35,6 +35,7 @@ function deploy_kedge()
      edgeOrController=$(echo ${nodeinfo} | cut -d"|" -f1)
      nodeuser=$(echo ${nodeinfo} | cut -d"|" -f2)
      nodeip=$(echo ${nodeinfo} | cut -d"|" -f3)
+     conip=$(echo ${nodeinfo} | cut -d"|" -f4)
      nodeinterface=$(ifconfig | grep -B1 $nodeip | grep -o "^\w*")
      if [ $edgeOrController == "controller" ]; then
        controller_count=1
@@ -52,7 +53,7 @@ function deploy_kedge()
      scp -r ../../../platform-mgmt ${nodeuser}@${nodeip}:/tmp/
 
      if [[ $edgeOrController == "controller" ]]; then
-           CONTROLLERIP=${nodeip}
+           CONTROLLERIP=${conip}
      fi
 
      if [[ $FEATURE == "all"  &&  $edgeOrController == "edge" ]]; then
@@ -64,7 +65,7 @@ function deploy_kedge()
      sshpass ssh ${nodeuser}@${nodeip} \
      "export NODE_IP=$nodeip;
       bash -x /tmp/platform-mgmt/kubeEdge/pfm-kedge/core.sh $WHAT_TO_DO $PASS_FEATURE \
-     $nodeip $edgeOrController" < /dev/null
+     $nodeip $edgeOrController $conip" < /dev/null
      if [[ $edgeOrController == "controller" && ($WHAT_TO_DO == "-i"  || $WHAT_TO_DO == "install") ]]; then
        scp root@${nodeip}:/tmp/platform-mgmt/kubeEdge/pfm-kedge/tkn.txt tkn.txt
        while IFS= read -r line; do
