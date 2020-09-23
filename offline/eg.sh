@@ -536,6 +536,7 @@ function _eg_undeploy()
 function install_prometheus()
 {
   info "[Deploying Prometheus  ......]" $BLUE
+  info "[it would take maximum of 5mins .......]" $BLUE
   if [ $KERNEL_ARCH == 'aarch64' ]; then
     helm install --wait mep-prometheus "$CHART_PREFIX"stable/prometheus"$PROM_CHART_SUFFIX" \
     -f $PLATFORM_DIR/conf/override/prometheus_arm_values.yaml --version v9.3.1 \
@@ -585,6 +586,7 @@ function uninstall_prometheus()
 function install_grafana()
 {
   info "[Deploying Grafana  .........]" $BLUE
+  info "[it would take maximum of 5mins .......]" $BLUE
   if [ $KERNEL_ARCH == 'aarch64' ]; then
     helm install --wait mep-grafana "$CHART_PREFIX"stable/grafana"$GRAFANA_CHART_SUFFIX" \
     -f $PLATFORM_DIR/conf/override/grafana_arm_values.yaml \
@@ -630,6 +632,7 @@ function uninstall_grafana()
 function install_rabbitmq()
 {
   info "[Deploying Rabbitmq  ........]" $BLUE
+  info "[it would take maximum of 5mins .......]" $BLUE
   suffix=""
   if [[ $REGISTRY_URL != "" ]]; then
     suffix="_private_registry"
@@ -673,10 +676,10 @@ function uninstall_rabbitmq()
 function install_mep()
 {
   info "[Deploying MEP  .............]" $BLUE
-
+  info "[it would take maximum of 5mins .......]" $BLUE
   _deploy_dns_metallb
   _deploy_network_isolation_multus
- 
+
   helm install --wait mep-edgegallery "$CHART_PREFIX"edgegallery/mep"$CHART_SUFFIX" \
   --set networkIsolation.phyInterface.mp1=$EG_NODE_EDGE_MP1 \
   --set networkIsolation.phyInterface.mm5=$EG_NODE_EDGE_MM5 \
@@ -731,6 +734,8 @@ function uninstall_common-svc()
 function install_mecm-mepm ()
 {
   info "[Deploying MECM-MEPM  .......]" $BLUE
+  info "[it would take maximum of 5mins .......]" $BLUE
+
   ## Create a jwt public key secret for applcm
   kubectl create secret generic mecm-mepm-jwt-public-secret \
     --from-file=publicKey=$PLATFORM_DIR/conf/keys/rsa_public_key.pem
@@ -780,6 +785,7 @@ function uninstall_mecm-mepm ()
 function install_mecm-meo ()
 {
   info "[Deploying MECM-MEO  ........]" $BLUE
+  info "[it would take maximum of 5mins .......]" $BLUE
   ## Create a keystore secret
   kubectl create secret generic mecm-ssl-secret \
   --from-file=keystore.p12=$PLATFORM_DIR/conf/keys/keystore.p12 \
@@ -833,7 +839,7 @@ function uninstall_mecm-meo ()
 function install_mecm-fe ()
 {
   info "[Deploying MECM-FE  ........]" $BLUE
-
+  info "[it would take maximum of 5mins .......]" $BLUE
   helm install --wait mecm-fe-edgegallery "$CHART_PREFIX"edgegallery/mecm-fe"$CHART_SUFFIX" \
     --set global.oauth2.authServerAddress=https://$NODEIP:$USER_MGMT \
     --set images.mecmFe.repository=$mecm_fe_images_mecmFe_repository \
@@ -861,6 +867,7 @@ function uninstall_mecm-fe ()
 function install_appstore ()
 {
   info "[Deploying AppStore  ........]" $BLUE
+  info "[it would take maximum of 5mins .......]" $BLUE
   helm install --wait appstore-edgegallery "$CHART_PREFIX"edgegallery/appstore"$CHART_SUFFIX" \
   --set global.oauth2.authServerAddress=https://$NODEIP:$USER_MGMT \
   --set images.appstoreFe.repository=$appstore_images_appstoreFe_repository \
@@ -893,6 +900,7 @@ function uninstall_appstore ()
 function install_developer ()
 {
   info "[Deploying Developer  .......]"  $BLUE
+  info "[it would take maximum of 5mins .......]" $BLUE
   helm install --wait developer-edgegallery "$CHART_PREFIX"edgegallery/developer"$CHART_SUFFIX" \
   --set global.oauth2.authServerAddress=https://$NODEIP:$USER_MGMT \
   --set images.developerFe.repository=$developer_images_developerFe_repository \
@@ -925,6 +933,7 @@ function uninstall_developer ()
 function install_service-center ()
 {
   info "[Deploying ServiceCenter  ...]" $BLUE
+  info "[it would take maximum of 5mins .......]" $BLUE
   helm install --wait service-center-edgegallery "$CHART_PREFIX"edgegallery/servicecenter"$CHART_SUFFIX" \
   --set images.repository=$servicecenter_images_repository \
   --set images.pullPolicy=$servicecenter_images_pullPolicy \
@@ -948,7 +957,7 @@ function uninstall_service-center ()
 function install_user-mgmt ()
 {
   info "[Deploying UserMgmt  ........]" $BLUE
-
+  info "[it would take maximum of 5mins .......]" $BLUE
   ## Create a jwt secret for usermgmt
   kubectl create secret generic user-mgmt-jwt-secret \
     --from-file=publicKey=$PLATFORM_DIR/conf/keys/rsa_public_key.pem \
