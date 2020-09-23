@@ -41,6 +41,7 @@ FEATURE=$2
 NODEIP=$3
 echo $NODEIP
 EdgeOrController=$4
+CONTRIP=$5
 
 function verify_and_run()
 {
@@ -71,7 +72,7 @@ function verify_and_run()
 
 function install_ke_controller()
 {
-  keadm init
+  keadm init --advertise-address=$CONTRIP
   cd /tmp/platform-mgmt/kubeEdge/pfm-kedge
   rm tkn.txt
   echo "Wait for 5 seconds"

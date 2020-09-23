@@ -18,11 +18,12 @@ The hostname of the edge side as well as the controller side should be different
 
 ### Update nodelist.ini
 Update `platform-mgmt/kubeEdge/pfm-kedge/nodelist.ini` with Edge & Controller Node details. It should be added in the following order i.e controller node should become first followed by the edge node.
+KubeEdgeAdversiteIP is the ip address exposed by the cloud side and KubeEdgeJoinIP is the ip address to join with from edge.
 
 **Syntax:**
 ```
-<controller>|<username>|<IP>
-<edge>|<username>|<IP>
+<controller>|<username>|<IP>|<KubeEdgeAdversiteIP>
+<edge>|<username>|<IP>|<KubeEdgeJoinIP>
 ```
 
 
@@ -39,3 +40,6 @@ Use the following command:
 $ kubeEdge/pfm-kedge/
 $ bash one_click_deploy.sh -r all
 ```
+
+### Limitations
+Make sure Controller exosed IP and Edge Join IP are of same network.
