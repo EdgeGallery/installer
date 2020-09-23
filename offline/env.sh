@@ -73,7 +73,7 @@ export servicecenter_global_ssl_secretName=edgegallery-ssl-secret
 #UserMgmt Values
 export usermgmt_jwt_secretName=user-mgmt-jwt-secret
 export usermgmt_images_usermgmt_repository="$REGISTRY_URL"edgegallery/user-mgmt
-export usermgmt_images_postgres_repository="$REGISTRY_URL"postgres
+export usermgmt_images_postgres_repository="$REGISTRY_URL"edgegallery/postgres
 export usermgmt_images_redis_repository="$REGISTRY_URL"redis
 export usermgmt_images_initservicecenter_repository="$REGISTRY_URL"curlimages/curl
 export usermgmt_images_usermgmt_tag="$EG_IMAGE_TAG"
