@@ -22,6 +22,7 @@ $image_tag_env
 #CAUTION: Set only those env required, otherwise unset other env variables
 
 #export OFFLINE_MODE=
+#export PORTAL_IP=
 #export EG_NODE_DEPLOY_IP=
 #export EG_NODE_MASTER_IPS=
 #export EG_NODE_WORKER_IPS=
