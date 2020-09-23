@@ -13,7 +13,7 @@ EdgeGallery离线安装程序是基于ubuntu x86_64或arm64体系结构的给Kub
 
 场景
 
-![输入图片说明](https://images.gitee.com/uploads/images/2020/0921/161710_272b1560_8040887.png "图片2.png") 
+![输入图片说明](https://images.gitee.com/uploads/images/2020/0923/090906_afebe8b1_8040887.png "图片5.png")
 
 支持的系统版本
 
