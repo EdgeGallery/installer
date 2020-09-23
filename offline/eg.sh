@@ -37,7 +37,6 @@ fi
 K8S_OFFLINE_DIR=/tmp/remote-platform
 mkdir -p $K8S_OFFLINE_DIR
 
-PORTAL_IP=""
 DEVELOPER_PORT=30092
 APPSTORE_PORT=30091
 MECM_PORT=30093
@@ -505,17 +504,14 @@ function _eg_deploy()
   FEATURE=$1
   DEPLOY_NODE_IP=$2
   MASTER_IP=$3
-  if [[ $OFFLINE_MODE == "aio" ]]; then
-    if [[ $internet_available == "true" ]]; then
-      public_ip=$(curl ip.sb)
-      install_EdgeGallery $FEATURE $public_ip
-      PORTAL_IP=$public_ip
+  if [[ -z $PORTAL_IP ]]; then
+    if [[ $OFFLINE_MODE == "aio" ]]; then
+      PORTAL_IP=$DEPLOY_NODE_IP
     else
-      install_EdgeGallery $FEATURE $DEPLOY_NODE_IP
+      PORTAL_IP=$MASTER_IP
     fi
-  else
-    install_EdgeGallery $FEATURE $MASTER_IP
   fi
+  install_EdgeGallery $FEATURE $PORTAL_IP
 }
 
 function _eg_undeploy()
@@ -1659,7 +1655,6 @@ function main()
         _undeploy_k8s $EG_NODE_MASTER_IPS $EG_NODE_WORKER_IPS
       fi
     elif [ "$WHAT_TO_DO" == "-i" ] || [ "$WHAT_TO_DO" == "--install" ]; then
-      PORTAL_IP=$(echo $EG_NODE_MASTER_IPS|cut -d "," -f1)
       _deploy_eg
     fi
   elif [[ -n $EG_NODE_CONTROLLER_MASTER_IPS ]]; then
@@ -1683,7 +1678,6 @@ function main()
         _undeploy_k8s $EG_NODE_CONTROLLER_MASTER_IPS $EG_NODE_CONTROLLER_WORKER_IPS
       fi
     elif [ "$WHAT_TO_DO" == "-i" ] || [ "$WHAT_TO_DO" == "--install" ]; then
-      PORTAL_IP=$(echo $EG_NODE_CONTROLLER_MASTER_IPS|cut -d "," -f1)
       _deploy_controller
     fi
   elif [[ -n $EG_NODE_EDGE_MASTER_IPS ]]; then
@@ -1702,7 +1696,6 @@ function main()
         _undeploy_k8s $EG_NODE_EDGE_MASTER_IPS $EG_NODE_EDGE_WORKER_IPS
       fi
     elif [ "$WHAT_TO_DO" == "-i" ] || [ "$WHAT_TO_DO" == "--install" ]; then
-      PORTAL_IP=$(echo $EG_NODE_EDGE_MASTER_IPS|cut -d "," -f1)
       _deploy_edge
     fi
   else
