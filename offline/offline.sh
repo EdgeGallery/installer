@@ -497,7 +497,8 @@ function eg_offline_installer()
     EG_HELM_LIST="$EG_HELM_LIST_EDGE"
   fi
 
-  EG_INSTALLER_NAME=eg-$EG_MODE-$EG_NODE_ARCH-$EG_IMAGE_TAG-$(date +%Y-%m-%d-%H-%M-%S)
+  BUILD_NUMBER=$(date +%Y-%m-%d-%H-%M-%S)
+  EG_INSTALLER_NAME=eg-$EG_MODE-$EG_NODE_ARCH-$EG_IMAGE_TAG-$BUILD_NUMBER
 
   if [[ -z "$2" ]]; then
    TARBALL_PATH=$PWD/eg-offline
@@ -547,6 +548,8 @@ function eg_offline_installer()
   
   cp $CUR_DIR/eg.sh $TARBALL_PATH
   cp -r $CUR_DIR/conf/ $TARBALL_PATH
+  
+  echo "Edge Gallery $EG_IMAGE_TAG [Build: $BUILD_NUMBER]" > $TARBALL_PATH/version.txt
 
   cd $TARBALL_PATH/..
   tar -vcf $EG_INSTALLER_NAME.tar -C $TARBALL_PATH .
