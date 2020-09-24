@@ -178,6 +178,7 @@ function _kubernetes_tool_undeploy () {
     rm -rf /var/lib/etcd
     rm -rf /etc/kubernetes/
     rm -rf /etc/cni/net.d
+    rm -rf /opt/cni
     rm -rf /var/lib/kubelet
 
     iptables -F && iptables -t nat -F && iptables -t mangle -F && iptables -X
