@@ -35,11 +35,9 @@ $image_tag_env
 #export SKIP_K8S=
 #export EG_IMAGE_TAG=
 
-if [[ $OFFLINE_MODE == "aio" ]]; then
-  REGISTRY_URL=""
-else
-  PRIVATE_REGISTRY_IP=$(echo $EG_NODE_DEPLOY_IP|cut -d "," -f1)
-  REGISTRY_URL="$PRIVATE_REGISTRY_IP:5000/"
+REGISTRY_URL=""
+if [[ $OFFLINE_MODE == "muno" ]]; then
+  REGISTRY_URL="$EG_NODE_DEPLOY_IP:5000/"
 fi
 
 #MEP values
