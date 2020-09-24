@@ -46,6 +46,30 @@ dashboardProviders:
       options:
         path: /var/lib/grafana/dashboards/default
 
+#comment extraVolumeMounts for HTTP mode
+extraVolumeMounts:
+  - name: extra-volume
+    mountPath: /mnt/grafana
+    readOnly: true
+    existingClaim: task-pv-claim
+
+#comment grafana.ini for HTTP mode
+grafana.ini:
+  server:
+    protocol: https
+    cert_file: /mnt/grafana/tls.crt
+    cert_key: /mnt/grafana/tls.key
+
+#comment readinessProbe for HTTP mode
+readinessProbe:
+  httpGet:
+    scheme: HTTPS
+
+#comment livenessProbe for HTTP mode
+livenessProbe:
+  httpGet:
+    scheme: HTTPS
+
 dashboards:
   default:
     cluster-metrics:

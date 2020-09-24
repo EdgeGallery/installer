@@ -588,6 +588,14 @@ function install_grafana()
 {
   info "[Deploying Grafana  .........]" $BLUE
   info "[it would take maximum of 5mins .......]" $BLUE
+
+  rm -rf /mnt/grafana; mkdir -p /mnt/grafana
+  cp $PLATFORM_DIR/conf/keys/tls.key /mnt/grafana/
+  cp $PLATFORM_DIR/conf/keys/tls.crt /mnt/grafana/
+
+  kubectl apply -f $PLATFORM_DIR/conf/manifest/pv_pvc/pv-volume.yaml
+  kubectl apply -f $PLATFORM_DIR/conf/manifest/pv_pvc/pv-claim.yaml
+
   if [ $KERNEL_ARCH == 'aarch64' ]; then
     helm install --wait mep-grafana "$CHART_PREFIX"stable/grafana"$GRAFANA_CHART_SUFFIX" \
     -f $PLATFORM_DIR/conf/override/grafana_arm_values.yaml \
@@ -627,6 +635,11 @@ function uninstall_grafana()
 {
   info "[UnDeploying Grafana  .......]" $BLUE
   helm uninstall mep-grafana
+  kubectl delete pvc grafana-pv-claim
+  kubectl delete pv grafana-pv-volume
+  rm /mnt/grafana/tls.key
+  rm /mnt/grafana/tls.crt
+  rmdir /mnt/grafana
   info "[UnDeployed Grafana  ........]" $GREEN
 }
 
