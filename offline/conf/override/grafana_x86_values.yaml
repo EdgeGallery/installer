@@ -51,7 +51,7 @@ extraVolumeMounts:
   - name: extra-volume
     mountPath: /mnt/grafana
     readOnly: true
-    existingClaim: task-pv-claim
+    existingClaim: grafana-pv-claim
 
 #comment grafana.ini for HTTP mode
 grafana.ini:
