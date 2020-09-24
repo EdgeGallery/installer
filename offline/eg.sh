@@ -1435,6 +1435,9 @@ function _deploy_network_isolation_multus() {
     EG_NODE_EDGE_MM5=eth0
   fi
 
+  if [[ ! -d /opt/cni/bin ]]; then
+    mkdir -p /opt/cni/bin
+  fi
 
   cp $K8S_OFFLINE_DIR/cni/macvlan /opt/cni/bin/
   cp $K8S_OFFLINE_DIR/cni/host-local /opt/cni/bin/
