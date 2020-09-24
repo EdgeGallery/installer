@@ -57,7 +57,7 @@ calico/pod2daemon-flexvol:v3.15.1 \
 nginx:stable"
 
 function _docker_deploy() {
-    docker version
+    docker version >/dev/null
     if [[ $? != '0' ]]; then
       rm -rf /tmp/remote-platform/k8s/docker
       mkdir -p /tmp/remote-platform/k8s
@@ -101,7 +101,7 @@ function _docker_undeploy() {
 }
 
 function _docker_images_load() {
-    for image in $*; do IMAGE_NAME=`echo $image| sed -e "s/\//@/g"`; info "loading docker image $IMAGE_NAME ..." $YELLOW;  docker load --input $K8S_OFFLINE_DIR/docker/images/$IMAGE_NAME.tar.gz; done
+    for image in $*; do IMAGE_NAME=`echo $image| sed -e "s/\//@/g"`; docker load --input $K8S_OFFLINE_DIR/docker/images/$IMAGE_NAME.tar.gz; done
 }
 
 function _docker_images_remove() {
@@ -187,7 +187,7 @@ function _kubernetes_tool_undeploy () {
 }
 
 function kubernetes_deploy() {
-  kubectl cluster-info
+  kubectl cluster-info >/dev/null
   if [[ $? != 0 ]]; then
     export K8S_OFFLINE_DIR=${K8S_OFFLINE_DIR:-.}
     _docker_deploy
@@ -248,7 +248,7 @@ function kubernetes_undeploy() {
 
 function _install_sshpass ()
 {
-  sshpass -V
+  sshpass -V >/dev/null
   if [ $? -eq 0 ]; then
     info "sshpass already exists" $BLUE
   else
@@ -259,7 +259,7 @@ function _install_sshpass ()
 
 function _help_insecure_registry()
 {
-  grep  -i "insecure-registries" /etc/docker/daemon.json | grep "$PRIVATE_REGISTRY_IP:5000"
+  grep  -i "insecure-registries" /etc/docker/daemon.json | grep "$PRIVATE_REGISTRY_IP:5000" >/dev/null
   if [  $? != 0 ]; then
     mkdir -p /etc/docker
 cat <<EOF | tee /etc/docker/daemon.json
@@ -297,7 +297,7 @@ function _setup_insecure_registry ()
 function _load_and_run_docker_registry()
 {
   if [ "$OFFLINE_MODE" == "muno" ]; then
-    docker ps | grep registry
+    docker ps | grep registry >/dev/null
     if [ $? != 0 ]; then
       cd "$TARBALL_PATH"/registry
       docker load --input registry-2.tar.gz
@@ -314,7 +314,6 @@ function _load_swr_images_and_push_to_private_registry()
 
   for f in *.tar.gz;
   do
-    info "Loading docker image $f ..." $YELLOW 
     cat $f | docker load
     if [ "$OFFLINE_MODE" == "muno" ]; then
       IMAGE_NAME=`echo $f|rev|cut -c8-|rev|sed -e "s/\#/:/g" | sed -e "s/\@/\//g"`;
@@ -1315,7 +1314,7 @@ function setup_passwordless_ssh_advanced(){
 
   for node_ip in $NODELIST;
   do
-    sshpass ssh -o PubkeyAuthentication=yes  -o PasswordAuthentication=no $node_ip "exit 0"
+    sshpass ssh -o PubkeyAuthentication=yes  -o PasswordAuthentication=no $node_ip "exit 0" >/dev/null
     if [[ $? != 0 ]]; then
       flags="-o StrictHostKeyChecking=no"
     else
@@ -1335,7 +1334,7 @@ function password_less_ssh_check() {
     WORKER_LIST=`echo $2 | sed -e "s/,/ /g"`
     for node_ip in $MASTER_IP;
     do
-      sshpass ssh -o PubkeyAuthentication=yes  -o PasswordAuthentication=no $node_ip "exit 0"
+      sshpass ssh -o PubkeyAuthentication=yes  -o PasswordAuthentication=no $node_ip "exit 0" >/dev/null
       if [[ $? != 0 ]]; then
         info "Error: PasswordLess SSH is not setup among hosts" $RED
         info "Set PasswordLess SSH by running: bash eg.sh -p master-ip,worker-ip1,..worker-ipn ROOT_PASSWORD" $RED
@@ -1344,7 +1343,7 @@ function password_less_ssh_check() {
     done
     for node_ip in $WORKER_LIST;
     do
-      sshpass ssh -o PubkeyAuthentication=yes  -o PasswordAuthentication=no $node_ip "exit 0"
+      sshpass ssh -o PubkeyAuthentication=yes  -o PasswordAuthentication=no $node_ip "exit 0" >/dev/null
       if [[ $? != 0 ]]; then
         info "Error: PasswordLess SSH is not setup among hosts" $RED
         info "Set PasswordLess SSH by running: bash eg.sh -p master-ip,worker-ip1,..worker-ipn ROOT_PASSWORD" $RED
@@ -1556,9 +1555,9 @@ function main()
        [[ $EG_NODE_DEPLOY_IP ==  $EG_NODE_CONTROLLER_WORKER_IPS ]] || [[ $EG_NODE_DEPLOY_IP ==  $EG_NODE_EDGE_WORKER_IPS ]]; then
          info "EG_NODE_DEPLOY_IP and Worker node are same" $RED
       fi
-      hostname -I | grep $EG_NODE_DEPLOY_IP
+      hostname -I | grep $EG_NODE_DEPLOY_IP >/dev/null
       private_ip_list=$?
-      curl ip.sb | grep $EG_NODE_DEPLOY_IP
+      curl ip.sb | grep $EG_NODE_DEPLOY_IP >/dev/null
       public_ip=$?
       if [[ $public_ip != 0 && $private_ip_list != 0 ]]; then
         info "Have to Run eg.sh on Deploy Node" $RED
@@ -1667,9 +1666,9 @@ function main()
       exit 1
     fi
     if [ "$OFFLINE_MODE" == "aio" ]; then EG_NODE_DEPLOY_IP=$(echo $EG_NODE_MASTER_IPS|cut -d "," -f1); fi
-    hostname -I | grep $EG_NODE_DEPLOY_IP
+    hostname -I | grep $EG_NODE_DEPLOY_IP >/dev/null
     private_ip_list=$?
-    curl ip.sb | grep $EG_NODE_DEPLOY_IP
+    curl ip.sb | grep $EG_NODE_DEPLOY_IP >/dev/null
     public_ip=$?
     if [[ $public_ip != 0 && $private_ip_list != 0 ]]; then
       info "Have to Run eg.sh on EG_NODE_MASTER_IPS" $RED
@@ -1690,9 +1689,9 @@ function main()
       exit 1
     fi
     if [ "$OFFLINE_MODE" == "aio" ]; then EG_NODE_DEPLOY_IP=$(echo $EG_NODE_CONTROLLER_MASTER_IPS|cut -d "," -f1); fi
-    hostname -I | grep $EG_NODE_DEPLOY_IP
+    hostname -I | grep $EG_NODE_DEPLOY_IP >/dev/null
     private_ip_list=$?
-    curl ip.sb | grep $EG_NODE_DEPLOY_IP
+    curl ip.sb | grep $EG_NODE_DEPLOY_IP >/dev/null
     public_ip=$?
     if [[ $public_ip != 0 && $private_ip_list != 0 ]]; then
       info "Have to Run eg.sh on EG_NODE_CONTROLLER_MASTER_IPS" $RED
@@ -1708,9 +1707,9 @@ function main()
     fi
   elif [[ -n $EG_NODE_EDGE_MASTER_IPS ]]; then
     if [ "$OFFLINE_MODE" == "aio" ]; then EG_NODE_DEPLOY_IP=$(echo $EG_NODE_EDGE_MASTER_IPS|cut -d "," -f1); fi
-    hostname -I | grep $EG_NODE_DEPLOY_IP
+    hostname -I | grep $EG_NODE_DEPLOY_IP >/dev/null
     private_ip_list=$?
-    curl ip.sb | grep $EG_NODE_DEPLOY_IP
+    curl ip.sb | grep $EG_NODE_DEPLOY_IP >/dev/null
     public_ip=$?
     if [[ $public_ip != 0 && $private_ip_list != 0 ]]; then
       info "Have to Run eg.sh on EG_NODE_EDGE_MASTER_IPS" $RED
