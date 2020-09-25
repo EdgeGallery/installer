@@ -688,11 +688,11 @@ function uninstall_rabbitmq()
 
 function install_mep()
 {
-  info "[Deploying MEP  .............]" $BLUE
-  info "[it would take maximum of 5mins .......]" $BLUE
   _deploy_dns_metallb
   _deploy_network_isolation_multus
 
+  info "[Deploying MEP  .............]" $BLUE
+  info "[it would take maximum of 5mins .......]" $BLUE
   helm install --wait mep-edgegallery "$CHART_PREFIX"edgegallery/mep"$CHART_SUFFIX" \
   --set networkIsolation.phyInterface.mp1=$EG_NODE_EDGE_MP1 \
   --set networkIsolation.phyInterface.mm5=$EG_NODE_EDGE_MM5 \

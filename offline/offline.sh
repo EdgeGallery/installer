@@ -67,7 +67,6 @@ if [[ -z "$EG_IMAGE_LIST_EDGE_X86_DEFAULT" ]]; then
    postgres:12.3 \
    kong:2.0.4-ubuntu \
    docker.io/nfvpe/multus:stable \
-   docker.io/nfvpe/multus:stable-ppc64le \
    curlimages/curl:7.70.0 \
    metallb/speaker:v0.9.3 \
    metallb/controller:v0.9.3"
@@ -96,11 +95,11 @@ if [[ -z "$EG_IMAGE_LIST_EDGE_ARM64_DEFAULT" ]]; then
    nginx:stable \
    postgres:12.3 \
    kong:2.0.4-ubuntu \
-   docker.io/nfvpe/multus:stable \
-   docker.io/nfvpe/multus:stable-ppc64le \
+   metallb/speaker:v0.9.3 \
    metallb/controller:v0.9.3 \
-   metallb/speaker:v0.9.3"
+   docker.io/nfvpe/multus:stable-arm64v8"
 fi 
+
 EG_HELM_LIST_EDGE_X86_DEFAULT="mecm-mepm mep"
 EG_HELM_LIST_EDGE_ARM64_DEFAULT=$EG_HELM_LIST_EDGE_X86_DEFAULT
 
