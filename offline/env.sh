@@ -132,7 +132,7 @@ export appstore_global_ssl_secretName=edgegallery-ssl-secret
 #Developer Values
 export developer_images_developerFe_repository="$REGISTRY_URL"edgegallery/developer-fe
 export developer_images_developerBe_repository="$REGISTRY_URL"edgegallery/developer-be
-export developer_images_postgres_repository="$REGISTRY_URL"postgres
+export developer_images_postgres_repository="$REGISTRY_URL"edgegallery/postgres
 export developer_images_initservicecenter_repository="$REGISTRY_URL"edgegallery/curl
 export developer_images_developerFe_tag="$EG_IMAGE_TAG"
 export developer_images_developerBe_tag="$EG_IMAGE_TAG"
