@@ -1559,7 +1559,7 @@ function main()
       fi
       hostname -I | grep $EG_NODE_DEPLOY_IP >/dev/null
       private_ip_list=$?
-      curl ip.sb | grep $EG_NODE_DEPLOY_IP >/dev/null
+      curl ip.sb -s -m 2| grep $EG_NODE_DEPLOY_IP >/dev/null
       public_ip=$?
       if [[ $public_ip != 0 && $private_ip_list != 0 ]]; then
         info "Have to Run eg.sh on Deploy Node" $RED
@@ -1670,7 +1670,7 @@ function main()
     if [ "$OFFLINE_MODE" == "aio" ]; then EG_NODE_DEPLOY_IP=$(echo $EG_NODE_MASTER_IPS|cut -d "," -f1); fi
     hostname -I | grep $EG_NODE_DEPLOY_IP >/dev/null
     private_ip_list=$?
-    curl ip.sb | grep $EG_NODE_DEPLOY_IP >/dev/null
+    curl ip.sb -s -m 2| grep $EG_NODE_DEPLOY_IP >/dev/null
     public_ip=$?
     if [[ $public_ip != 0 && $private_ip_list != 0 ]]; then
       info "Have to Run eg.sh on EG_NODE_MASTER_IPS" $RED
@@ -1693,7 +1693,7 @@ function main()
     if [ "$OFFLINE_MODE" == "aio" ]; then EG_NODE_DEPLOY_IP=$(echo $EG_NODE_CONTROLLER_MASTER_IPS|cut -d "," -f1); fi
     hostname -I | grep $EG_NODE_DEPLOY_IP >/dev/null
     private_ip_list=$?
-    curl ip.sb | grep $EG_NODE_DEPLOY_IP >/dev/null
+    curl ip.sb -s -m 2| grep $EG_NODE_DEPLOY_IP >/dev/null
     public_ip=$?
     if [[ $public_ip != 0 && $private_ip_list != 0 ]]; then
       info "Have to Run eg.sh on EG_NODE_CONTROLLER_MASTER_IPS" $RED
@@ -1711,7 +1711,7 @@ function main()
     if [ "$OFFLINE_MODE" == "aio" ]; then EG_NODE_DEPLOY_IP=$(echo $EG_NODE_EDGE_MASTER_IPS|cut -d "," -f1); fi
     hostname -I | grep $EG_NODE_DEPLOY_IP >/dev/null
     private_ip_list=$?
-    curl ip.sb | grep $EG_NODE_DEPLOY_IP >/dev/null
+    curl ip.sb -s -m 2| grep $EG_NODE_DEPLOY_IP >/dev/null
     public_ip=$?
     if [[ $public_ip != 0 && $private_ip_list != 0 ]]; then
       info "Have to Run eg.sh on EG_NODE_EDGE_MASTER_IPS" $RED
