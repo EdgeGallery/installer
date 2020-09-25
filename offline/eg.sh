@@ -688,6 +688,7 @@ function uninstall_rabbitmq()
 
 function install_mep()
 {
+  info "[Setting up Network Isolation]" $BLUE
   _deploy_dns_metallb
   _deploy_network_isolation_multus
 
