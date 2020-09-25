@@ -493,7 +493,7 @@ function wait() {
     if [ $t == 150 ]; then
       info "[ISSUE: $1 $verb not in RUNNING state ]" $RED
       info "[Suggestion: check $1 pod's log  ......]" $RED
-      break
+      exit 1
     fi
     sleep 5
   done
@@ -1428,6 +1428,8 @@ function _deploy_dns_metallb() {
    kubectl apply -f $PLATFORM_DIR/conf/edge/metallb/config-map.yaml
 
    sleep 3
+   wait " controller-" 1
+   wait "speaker-" 1
    info "[Deployed DNS METALLB  ..............]" $GREEN
 }
 
@@ -1466,7 +1468,7 @@ function _deploy_network_isolation_multus() {
   ip link add eg-mm5 link $EG_NODE_EDGE_MM5 type macvlan mode bridge 
   ip addr add 100.1.1.100/24 dev eg-mm5
   ip link set dev eg-mm5 up
-
+  wait "kube-multus" 1
   info "[Deployed multus cni  ..............]" $GREEN
 }
 

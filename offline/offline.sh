@@ -67,8 +67,11 @@ if [[ -z "$EG_IMAGE_LIST_EDGE_X86_DEFAULT" ]]; then
    postgres:12.3 \
    kong:2.0.4-ubuntu \
    docker.io/nfvpe/multus:stable \
-   docker.io/nfvpe/multus:stable-ppc64le"
-fi 
+   docker.io/nfvpe/multus:stable-ppc64le \
+   curlimages/curl:7.70.0 \
+   metallb/speaker:v0.9.3 \
+   metallb/controller:v0.9.3"
+fi
 
 if [[ -z "$EG_IMAGE_LIST_EDGE_ARM64_DEFAULT" ]]; then
    EG_IMAGE_LIST_EDGE_ARM64_DEFAULT="swr.ap-southeast-1.myhuaweicloud.com/edgegallery/mepauth:$EG_IMAGE_TAG \
@@ -94,7 +97,9 @@ if [[ -z "$EG_IMAGE_LIST_EDGE_ARM64_DEFAULT" ]]; then
    postgres:12.3 \
    kong:2.0.4-ubuntu \
    docker.io/nfvpe/multus:stable \
-   docker.io/nfvpe/multus:stable-ppc64le"
+   docker.io/nfvpe/multus:stable-ppc64le \
+   metallb/controller:v0.9.3 \
+   metallb/speaker:v0.9.3"
 fi 
 EG_HELM_LIST_EDGE_X86_DEFAULT="mecm-mepm mep"
 EG_HELM_LIST_EDGE_ARM64_DEFAULT=$EG_HELM_LIST_EDGE_X86_DEFAULT
