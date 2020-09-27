@@ -57,7 +57,7 @@ calico/pod2daemon-flexvol:v3.15.1 \
 nginx:stable"
 
 function _docker_deploy() {
-    docker version >/dev/null
+    docker version >/dev/null 2>&1
     if [[ $? != '0' ]]; then
       rm -rf /tmp/remote-platform/k8s/docker
       mkdir -p /tmp/remote-platform/k8s
@@ -187,7 +187,7 @@ function _kubernetes_tool_undeploy () {
 }
 
 function kubernetes_deploy() {
-  kubectl cluster-info >/dev/null
+  kubectl cluster-info >/dev/null 2>&1
   if [[ $? != 0 ]]; then
     export K8S_OFFLINE_DIR=${K8S_OFFLINE_DIR:-.}
     _docker_deploy
@@ -357,7 +357,7 @@ function _setup_helm_repo()
   helm repo index edgegallery/
   helm repo index stable/
   docker run --name helm-repo -v "$TARBALL_PATH"/helm/helm-charts/:/usr/share/nginx/html:ro  -d -p 8080:80  nginx:stable
-  helm repo remove edgegallery stable;
+  helm repo remove edgegallery stable >/dev/null 2>&1;
   sleep 3
   helm repo add edgegallery http://${PRIVATE_REGISTRY_IP}:8080/edgegallery;
   helm repo add stable http://${PRIVATE_REGISTRY_IP}:8080/stable
@@ -365,7 +365,7 @@ function _setup_helm_repo()
 
 function cleanup_eg_ecosystem()
 {
-  helm repo remove edgegallery stable
+  helm repo remove edgegallery stable >/dev/null 2>&1
   docker stop helm-repo; docker rm -v helm-repo
   docker stop registry; docker rm -v registry
   docker image prune -a -f
@@ -511,6 +511,26 @@ function _eg_deploy()
       PORTAL_IP=$MASTER_IP
     fi
   fi
+  if [[ $FEATURE == 'edge' || $FEATURE == 'all' ]]; then
+    if [[ $OFFLINE_MODE == "aio" ]]; then
+      rm -rf /mnt/grafana; mkdir -p /mnt/grafana
+      cp $PLATFORM_DIR/conf/keys/tls.key /mnt/grafana/
+      cp $PLATFORM_DIR/conf/keys/tls.crt /mnt/grafana/
+      if [[ ! -d /opt/cni/bin ]]; then
+        mkdir -p /opt/cni/bin
+      fi
+      cp $K8S_OFFLINE_DIR/cni/macvlan /opt/cni/bin/
+      cp $K8S_OFFLINE_DIR/cni/host-local /opt/cni/bin/
+    else
+      sshpass ssh root@$MASTER_IP "rm -rf /mnt/grafana; mkdir -p /mnt/grafana"
+      scp $PLATFORM_DIR/conf/keys/tls.key root@$MASTER_IP:/mnt/grafana/
+      scp $PLATFORM_DIR/conf/keys/tls.crt root@$MASTER_IP:/mnt/grafana/
+
+      sshpass ssh root@$MASTER_IP "mkdir -p /opt/cni/bin"
+      scp $K8S_OFFLINE_DIR/cni/macvlan root@$MASTER_IP:/opt/cni/bin/
+      scp $K8S_OFFLINE_DIR/cni/host-local root@$MASTER_IP:/opt/cni/bin/
+    fi
+  fi
   install_EdgeGallery $FEATURE $PORTAL_IP
 }
 
@@ -587,10 +607,6 @@ function install_grafana()
 {
   info "[Deploying Grafana  .........]" $BLUE
   info "[it would take maximum of 5mins .......]" $BLUE
-
-  rm -rf /mnt/grafana; mkdir -p /mnt/grafana
-  cp $PLATFORM_DIR/conf/keys/tls.key /mnt/grafana/
-  cp $PLATFORM_DIR/conf/keys/tls.crt /mnt/grafana/
 
   kubectl apply -f $PLATFORM_DIR/conf/manifest/pv_pvc/pv-volume.yaml
   kubectl apply -f $PLATFORM_DIR/conf/manifest/pv_pvc/pv-claim.yaml
@@ -689,6 +705,12 @@ function uninstall_rabbitmq()
 function install_mep()
 {
   info "[Setting up Network Isolation]" $BLUE
+  number_of_nodes=$(kubectl get nodes |wc -l)
+  if [[ $number_of_nodes -ge 3 ]]; then
+    ((number_of_nodes=number_of_nodes-1))
+  else
+    number_of_nodes=1
+  fi
   _deploy_dns_metallb
   _deploy_network_isolation_multus
 
@@ -1370,6 +1392,12 @@ function _deploy_eg()
     scp root@$MASTER_IP:/root/.kube/config $HOME/.kube/
   fi
   configure_eg_ecosystem_on_remote $MASTER_IP $EG_NODE_WORKER_IPS
+  for node_ip in $EG_NODE_WORKER_IPS;
+  do
+    sshpass ssh root@$node_ip "mkdir -p /opt/cni/bin"
+    scp $K8S_OFFLINE_DIR/cni/macvlan root@$node_ip:/opt/cni/bin/
+    scp $K8S_OFFLINE_DIR/cni/host-local root@$node_ip:/opt/cni/bin/
+  done
   _eg_deploy all $EG_NODE_DEPLOY_IP $MASTER_IP
 }
 
@@ -1389,6 +1417,12 @@ function _deploy_controller()
     scp root@$MASTER_IP:/root/.kube/config $HOME/.kube/
   fi
   configure_eg_ecosystem_on_remote $MASTER_IP $EG_NODE_CONTROLLER_WORKER_IPS
+  for node_ip in $EG_NODE_CONTROLLER_WORKER_IPS;
+  do
+    sshpass ssh root@$node_ip "mkdir -p /opt/cni/bin"
+    scp $K8S_OFFLINE_DIR/cni/macvlan root@$node_ip:/opt/cni/bin/
+    scp $K8S_OFFLINE_DIR/cni/host-local root@$node_ip:/opt/cni/bin/
+  done
   _eg_deploy controller $EG_NODE_DEPLOY_IP $MASTER_IP
 }
 
@@ -1408,6 +1442,12 @@ function _deploy_edge()
     scp root@$MASTER_IP:/root/.kube/config $HOME/.kube/
   fi
   configure_eg_ecosystem_on_remote  $MASTER_IP $EG_NODE_EDGE_WORKER_IPS
+  for node_ip in $EG_NODE_EDGE_WORKER_IPS;
+  do
+    sshpass ssh root@$node_ip "mkdir -p /opt/cni/bin"
+    scp $K8S_OFFLINE_DIR/cni/macvlan root@$node_ip:/opt/cni/bin/
+    scp $K8S_OFFLINE_DIR/cni/host-local root@$node_ip:/opt/cni/bin/
+  done
   _eg_deploy edge $EG_NODE_DEPLOY_IP $MASTER_IP
 }
 
@@ -1423,6 +1463,8 @@ function _deploy_dns_metallb() {
    fi
 
    kubectl apply -f $PLATFORM_DIR/conf/edge/metallb/namespace.yaml
+
+   sed -i 's?image: metallb/controller:v0.9.3?image: '$REGISTRY_URL'metallb/controller:v0.9.3?g' $PLATFORM_DIR/conf/edge/metallb/metallb.yaml
    kubectl apply -f $PLATFORM_DIR/conf/edge/metallb/metallb.yaml
    kubectl create secret generic -n metallb-system memberlist --from-literal=secretkey="$(openssl rand -base64 128)"
    sed -i "s/192.168.100.120/${EG_NODE_DNS_LBS_IPS}/g" $PLATFORM_DIR/conf/edge/metallb/config-map.yaml
@@ -1430,7 +1472,7 @@ function _deploy_dns_metallb() {
 
    sleep 3
    wait " controller-" 1
-   wait "speaker-" 1
+   wait "speaker-" $number_of_nodes
    info "[Deployed DNS METALLB  ..............]" $GREEN
 }
 
@@ -1454,15 +1496,13 @@ function _deploy_network_isolation_multus() {
     EG_NODE_EDGE_MM5=eth0
   fi
 
-  if [[ ! -d /opt/cni/bin ]]; then
-    mkdir -p /opt/cni/bin
-  fi
-
-  cp $K8S_OFFLINE_DIR/cni/macvlan /opt/cni/bin/
-  cp $K8S_OFFLINE_DIR/cni/host-local /opt/cni/bin/
+  sed -i 's?image: docker.io/nfvpe/multus:stable?image: '$REGISTRY_URL'docker.io/nfvpe/multus:stable?g' $PLATFORM_DIR/conf/edge/network-isolation/multus.yaml
+  sed -i 's?image: docker.io/nfvpe/multus:stable-ppc64le?image: '$REGISTRY_URL'docker.io/nfvpe/multus:stable-ppc64le?g' $PLATFORM_DIR/conf/edge/network-isolation/multus.yaml
+  sed -i 's?image: docker.io/nfvpe/multus:stable-arm64v8?image: '$REGISTRY_URL'docker.io/nfvpe/multus:stable-arm64v8?g' $PLATFORM_DIR/conf/edge/network-isolation/multus.yaml
 
   kubectl apply -f $PLATFORM_DIR/conf/edge/network-isolation/multus.yaml
   kubectl apply -f $PLATFORM_DIR/conf/edge/network-isolation/eg-sp-rbac.yaml
+  sed -i 's?image: edgegallery/edgegallery-secondary-ep-controller:latest?image: '$REGISTRY_URL'edgegallery/edgegallery-secondary-ep-controller:latest?g' $PLATFORM_DIR/conf/edge/network-isolation/eg-sp-controller.yaml
   kubectl apply -f $PLATFORM_DIR/conf/edge/network-isolation/eg-sp-controller.yaml
 
   ip link add eg-mp1 link $EG_NODE_EDGE_MP1 type macvlan mode bridge 
@@ -1472,7 +1512,8 @@ function _deploy_network_isolation_multus() {
   ip link add eg-mm5 link $EG_NODE_EDGE_MM5 type macvlan mode bridge 
   ip addr add 100.1.1.100/24 dev eg-mm5
   ip link set dev eg-mm5 up
-  wait "kube-multus" 1
+
+  wait "kube-multus" $number_of_nodes
   info "[Deployed multus cni  ..............]" $GREEN
 }
 
