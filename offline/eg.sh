@@ -1430,7 +1430,7 @@ function _deploy_dns_metallb() {
 
    sleep 3
    wait " controller-" 1
-   wait "speaker-" 1
+   wait "speaker-" 2
    info "[Deployed DNS METALLB  ..............]" $GREEN
 }
 
