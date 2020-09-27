@@ -1430,12 +1430,15 @@ function _deploy_dns_metallb() {
 
    sleep 3
    wait " controller-" 1
-   wait "speaker-" 2
+   wait "speaker-" 1
    info "[Deployed DNS METALLB  ..............]" $GREEN
 }
 
 function _undeploy_dns_metallb() {
   info "Undeploying DNS METALLB  ..............]" $YELLOW
+  kubectl delete -f $PLATFORM_DIR/conf/edge/metallb/config-map.yaml
+  kubectl delete -f $PLATFORM_DIR/conf/edge/metallb/metallb.yaml
+  kubectl delete -f $PLATFORM_DIR/conf/edge/metallb/namespace.yaml
   kubectl delete secret memberlist -n metallb-system
   info "[Undeployed DNS METALLB  ..............]" $GREEN
 }
@@ -1475,8 +1478,10 @@ function _deploy_network_isolation_multus() {
 
 function _undeploy_network_isolation_multus() {
   info "[Undeploying multus cni  ..............]" $YELLOW
+  kubectl delete -f $PLATFORM_DIR/conf/edge/network-isolation/eg-sp-controller.yaml
+  kubectl delete -f $PLATFORM_DIR/conf/edge/network-isolation/eg-sp-rbac.yaml
+  kubectl delete -f $PLATFORM_DIR/conf/edge/network-isolation/multus.yaml
 	rm /opt/cni/bin/macvlan /opt/cni/bin/host-local
-	
   ip link set dev eg-mp1 down
 	ip link delete eg-mp1
 	
