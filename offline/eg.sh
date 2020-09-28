@@ -259,7 +259,7 @@ function _install_sshpass ()
 
 function _help_insecure_registry()
 {
-  grep  -i "insecure-registries" /etc/docker/daemon.json | grep "$PRIVATE_REGISTRY_IP:5000" >/dev/null
+  grep  -i "insecure-registries" /etc/docker/daemon.json | grep "$PRIVATE_REGISTRY_IP:5000" >/dev/null 2>&1
   if [  $? != 0 ]; then
     mkdir -p /etc/docker
 cat <<EOF | tee /etc/docker/daemon.json
@@ -789,6 +789,8 @@ function install_mecm-mepm ()
     --from-literal=postgresLcmCntlrPassword=te9Fmv%qaq \
     --from-literal=postgresk8sPluginPassword=te9Fmv%qaq \
 
+  kubectl apply -f $PLATFORM_DIR/conf/manifest/mepm/mepm-service-account.yaml
+
   helm install --wait mecm-mepm-edgegallery "$CHART_PREFIX"edgegallery/mecm-mepm"$CHART_SUFFIX" \
     --set jwt.publicKeySecretName=$mepm_jwt_publicKeySecretName \
     --set mepm.secretName=$mepm_mepm_secretName \
@@ -841,6 +843,16 @@ function install_mecm-meo ()
     --from-literal=edgeRepoUserName=admin	 \
     --from-literal=edgeRepoPassword=admin123
 
+  if [[ $OFFLINE_MODE == "muno" ]]; then
+    sshpass ssh root@$MASTER_IP "mkdir -p /tmp/remote-platform/;
+                                 rm /tmp/remote-platform/remote_fsgroup;
+                                 getent group docker | cut -d: -f3 > remote_fsgroup"
+    scp root@$MASTER_IP:/tmp/remote-platform/remote_fsgroup $K8S_OFFLINE_DIR
+    fs_group=$(cat $K8S_OFFLINE_DIR/remote_fsgroup)
+  else
+    fs_group=$(getent group docker | cut -d: -f3)
+  fi
+
   helm install --wait mecm-meo-edgegallery "$CHART_PREFIX"edgegallery/mecm-meo"$CHART_SUFFIX" \
     --set ssl.secretName=$meo_ssl_secretName \
     --set mecm.secretName=$meo_mecm_secretName \
@@ -855,7 +867,8 @@ function install_mecm-meo ()
     --set images.inventory.pullPolicy=$meo_images_inventory_pullPolicy \
     --set images.appo.pullPolicy=$meo_images_appo_pullPolicy \
     --set images.apm.pullPolicy=$meo_images_apm_pullPolicy \
-    --set images.postgres.pullPolicy=$meo_images_postgres_pullPolicy
+    --set images.postgres.pullPolicy=$meo_images_postgres_pullPolicy \
+    --set mecm.docker.fsgroup=$fs_group
   if [ $? -eq 0 ]; then
     info "[Deployed MECM-MEO  .........]" $GREEN
   else
@@ -1379,6 +1392,7 @@ function password_less_ssh_check() {
 function _deploy_eg()
 {
   password_less_ssh_check $EG_NODE_MASTER_IPS $EG_NODE_WORKER_IPS
+  WORKER_IPS=`echo $EG_NODE_WORKER_IPS | sed -e "s/,/ /g"`
   MASTER_IP=$(echo $EG_NODE_MASTER_IPS|cut -d "," -f1)
   setup_eg_ecosystem
   if [[ $OFFLINE_MODE == "muno" ]]; then
@@ -1408,6 +1422,7 @@ function _deploy_eg()
 function _deploy_controller()
 {
   password_less_ssh_check $EG_NODE_CONTROLLER_MASTER_IPS $EG_NODE_CONTROLLER_WORKER_IPS
+  WORKER_IPS=`echo $EG_NODE_CONTROLLER_WORKER_IPS | sed -e "s/,/ /g"`
   MASTER_IP=$(echo $EG_NODE_CONTROLLER_MASTER_IPS|cut -d "," -f1)
   setup_eg_ecosystem
   if [[ $OFFLINE_MODE == "muno" ]]; then
@@ -1433,6 +1448,7 @@ function _deploy_controller()
 function _deploy_edge()
 {
   password_less_ssh_check $EG_NODE_EDGE_MASTER_IPS $EG_NODE_EDGE_WORKER_IPS
+  WORKER_IPS=`echo $EG_NODE_EDGE_WORKER_IPS | sed -e "s/,/ /g"`
   MASTER_IP=$(echo $EG_NODE_EDGE_MASTER_IPS|cut -d "," -f1)
   setup_eg_ecosystem
   if [[ $OFFLINE_MODE == "muno" ]]; then
@@ -1489,6 +1505,16 @@ function _undeploy_dns_metallb() {
   info "[Undeployed DNS METALLB  ..............]" $GREEN
 }
 
+function _setup_interfaces() {
+  ip link add eg-mp1 link $EG_NODE_EDGE_MP1 type macvlan mode bridge
+  ip addr add 200.1.1.100/24 dev eg-mp1
+  ip link set dev eg-mp1 up
+
+  ip link add eg-mm5 link $EG_NODE_EDGE_MM5 type macvlan mode bridge
+  ip addr add 100.1.1.100/24 dev eg-mm5
+  ip link set dev eg-mm5 up
+}
+
 function _deploy_network_isolation_multus() {
   info "[Deploying multus cni  ..............]" $YELLOW
 
@@ -1501,7 +1527,6 @@ function _deploy_network_isolation_multus() {
   fi
 
   sed -i 's?image: docker.io/nfvpe/multus:stable?image: '$REGISTRY_URL'docker.io/nfvpe/multus:stable?g' $PLATFORM_DIR/conf/edge/network-isolation/multus.yaml
-  sed -i 's?image: docker.io/nfvpe/multus:stable-ppc64le?image: '$REGISTRY_URL'docker.io/nfvpe/multus:stable-ppc64le?g' $PLATFORM_DIR/conf/edge/network-isolation/multus.yaml
   sed -i 's?image: docker.io/nfvpe/multus:stable-arm64v8?image: '$REGISTRY_URL'docker.io/nfvpe/multus:stable-arm64v8?g' $PLATFORM_DIR/conf/edge/network-isolation/multus.yaml
 
   kubectl apply -f $PLATFORM_DIR/conf/edge/network-isolation/multus.yaml
@@ -1509,16 +1534,34 @@ function _deploy_network_isolation_multus() {
   sed -i 's?image: edgegallery/edgegallery-secondary-ep-controller:latest?image: '$REGISTRY_URL'edgegallery/edgegallery-secondary-ep-controller:latest?g' $PLATFORM_DIR/conf/edge/network-isolation/eg-sp-controller.yaml
   kubectl apply -f $PLATFORM_DIR/conf/edge/network-isolation/eg-sp-controller.yaml
 
-  ip link add eg-mp1 link $EG_NODE_EDGE_MP1 type macvlan mode bridge 
-  ip addr add 200.1.1.100/24 dev eg-mp1
-  ip link set dev eg-mp1 up
-
-  ip link add eg-mm5 link $EG_NODE_EDGE_MM5 type macvlan mode bridge 
-  ip addr add 100.1.1.100/24 dev eg-mm5
-  ip link set dev eg-mm5 up
+  if [[ $OFFLINE_MODE == "muno" ]]; then
+    for node_ip in $MASTER_IP;
+    do
+      sshpass ssh root@$node_ip "mkdir -p /tmp/remote-platform"
+      scp $TARBALL_PATH/eg.sh root@$node_ip:/tmp/remote-platform
+      sshpass ssh root@$node_ip "cd /tmp/remote-platform;source eg.sh ; _setup_interfaces"
+    done
+    for node_ip in $WORKER_IPS;
+    do
+      sshpass ssh root@$node_ip "mkdir -p /tmp/remote-platform"
+      scp $TARBALL_PATH/eg.sh root@$node_ip:/tmp/remote-platform
+      sshpass ssh root@$node_ip "cd /tmp/remote-platform;source eg.sh ; _setup_interfaces"
+    done
+  else
+    _setup_interfaces
+  fi
 
   wait "kube-multus" $number_of_nodes
   info "[Deployed multus cni  ..............]" $GREEN
+}
+
+function _cleanup_network_setup(){
+	rm /opt/cni/bin/macvlan /opt/cni/bin/host-local
+  ip link set dev eg-mp1 down
+	ip link delete eg-mp1
+
+  ip link set dev eg-mm5 down
+	ip link delete eg-mm5
 }
 
 function _undeploy_network_isolation_multus() {
@@ -1526,13 +1569,19 @@ function _undeploy_network_isolation_multus() {
   kubectl delete -f $PLATFORM_DIR/conf/edge/network-isolation/eg-sp-controller.yaml
   kubectl delete -f $PLATFORM_DIR/conf/edge/network-isolation/eg-sp-rbac.yaml
   kubectl delete -f $PLATFORM_DIR/conf/edge/network-isolation/multus.yaml
-	rm /opt/cni/bin/macvlan /opt/cni/bin/host-local
-  ip link set dev eg-mp1 down
-	ip link delete eg-mp1
-	
-  ip link set dev eg-mm5 down
-	ip link delete eg-mm5
-  
+
+  if [[ $OFFLINE_MODE == "muno" ]]; then
+    for node_ip in $MASTER_IP;
+    do
+      sshpass ssh root@$node_ip "cd /tmp/remote-platform;source eg.sh ; _cleanup_network_setup"
+    done
+    for node_ip in $WORKER_IPS;
+    do
+      sshpass ssh root@$node_ip "cd /tmp/remote-platform;source eg.sh ; _cleanup_network_setup"
+    done
+  else
+    _cleanup_network_setup
+  fi
   info "[Udeployed multus cni  ..............]" $GREEN
 }
 
