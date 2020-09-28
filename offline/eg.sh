@@ -844,9 +844,9 @@ function install_mecm-meo ()
     --from-literal=edgeRepoPassword=admin123
 
   if [[ $OFFLINE_MODE == "muno" ]]; then
-    sshpass ssh root@$MASTER_IP "mkdir -p /tmp/remote-platform/;
-                                 rm /tmp/remote-platform/remote_fsgroup;
-                                 getent group docker | cut -d: -f3 > remote_fsgroup"
+    sshpass ssh root@$MASTER_IP "rm -rf /tmp/remote-platform/remote_fsgroup;
+                                 mkdir -p /tmp/remote-platform/;
+                                 getent group docker | cut -d: -f3 > /tmp/remote-platform/remote_fsgroup"
     scp root@$MASTER_IP:/tmp/remote-platform/remote_fsgroup $K8S_OFFLINE_DIR
     fs_group=$(cat $K8S_OFFLINE_DIR/remote_fsgroup)
   else
