@@ -1539,13 +1539,15 @@ function _deploy_network_isolation_multus() {
     do
       sshpass ssh root@$node_ip "mkdir -p /tmp/remote-platform"
       scp $TARBALL_PATH/eg.sh root@$node_ip:/tmp/remote-platform
-      sshpass ssh root@$node_ip "cd /tmp/remote-platform;source eg.sh ; _setup_interfaces"
+      sshpass ssh root@$node_ip "cd /tmp/remote-platform;source eg.sh;
+      export EG_NODE_EDGE_MP1=$EG_NODE_EDGE_MP1;export EG_NODE_EDGE_MM5=$EG_NODE_EDGE_MM5;_setup_interfaces"
     done
     for node_ip in $WORKER_IPS;
     do
       sshpass ssh root@$node_ip "mkdir -p /tmp/remote-platform"
       scp $TARBALL_PATH/eg.sh root@$node_ip:/tmp/remote-platform
-      sshpass ssh root@$node_ip "cd /tmp/remote-platform;source eg.sh ; _setup_interfaces"
+      sshpass ssh root@$node_ip "cd /tmp/remote-platform;source eg.sh;
+      export EG_NODE_EDGE_MP1=$EG_NODE_EDGE_MP1;export EG_NODE_EDGE_MM5=$EG_NODE_EDGE_MM5;_setup_interfaces"
     done
   else
     _setup_interfaces
