@@ -104,7 +104,7 @@ EG_HELM_LIST_EDGE_X86_DEFAULT="mecm-mepm mep"
 EG_HELM_LIST_EDGE_ARM64_DEFAULT=$EG_HELM_LIST_EDGE_X86_DEFAULT
 
 if [[ -z $EG_HELM_REPO ]]; then
-  EG_HELM_REPO="http://119.8.55.191:30002/chartrepo/edgegallery_helm_chart"
+  EG_HELM_REPO="http://helm.edgegallery.org:30002/chartrepo/edgegallery_helm_chart"
 fi
 
 if [[ -z "$EG_IMAGE_LIST_CONTROLLER_X86" ]]; then
@@ -552,7 +552,7 @@ function eg_offline_installer()
   
   cp $CUR_DIR/eg.sh $TARBALL_PATH
   cp -r $CUR_DIR/conf/ $TARBALL_PATH
-  
+  rm -rf $TARBALL_PATH/conf/edge/network-isolation/test/
   echo "Edge Gallery $EG_IMAGE_TAG [Build: $BUILD_NUMBER]" > $TARBALL_PATH/version.txt
 
   cd $TARBALL_PATH/..
