@@ -1394,6 +1394,10 @@ function _deploy_eg()
   configure_eg_ecosystem_on_remote $MASTER_IP $EG_NODE_WORKER_IPS
   for node_ip in $EG_NODE_WORKER_IPS;
   do
+    sshpass ssh root@$node_ip "rm -rf /mnt/grafana; mkdir -p /mnt/grafana"
+    scp $PLATFORM_DIR/conf/keys/tls.key root@$node_ip:/mnt/grafana/
+    scp $PLATFORM_DIR/conf/keys/tls.crt root@$node_ip:/mnt/grafana/
+
     sshpass ssh root@$node_ip "mkdir -p /opt/cni/bin"
     scp $K8S_OFFLINE_DIR/cni/macvlan root@$node_ip:/opt/cni/bin/
     scp $K8S_OFFLINE_DIR/cni/host-local root@$node_ip:/opt/cni/bin/
