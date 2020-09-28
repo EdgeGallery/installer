@@ -817,6 +817,7 @@ function uninstall_mecm-mepm ()
     info "[UnDeploying MECM-MEPM  .....]" $BLUE
     helm uninstall mecm-mepm-edgegallery
     kubectl delete secret mecm-mepm-jwt-public-secret mecm-mepm-ssl-secret edgegallery-mepm-secret
+    kubectl delete -f $PLATFORM_DIR/conf/manifest/mepm/mepm-service-account.yaml
     info "[UnDeployed MECM-MEPM  ......]" $GREEN
 }
 
