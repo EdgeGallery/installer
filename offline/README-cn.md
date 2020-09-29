@@ -112,6 +112,23 @@ bash eg.sh -i                                    //开始安装程序
 
 ###  **二．多节点部署edgegallery场景** 
 
+
+
+- - 多节点安装需要配置ssh无密登录：
+- - 1）在deploy节点生生产密钥：
+- - ssh-keygen -t rsa      //生成密钥，指令执行过程中凡是需要输入的地方直接按回车建就行
+- - 2）在deploy节点将生成的id_rsa.pub文件copy到master和worker节点：
+- -  scp /root/.ssh/id_rsa.pub  (master IP):/root/.ssh      
+- - scp /root/.ssh/id_rsa.pub  (worker IP):/root/.ssh      
+- - 3）分别在deploy，master，worker节点执行免密：
+- - cat /root/.ssh/id_rsa.pub >> /root/.ssh/authorized_keys
+- - 设置/etc/ssh/ssh_config文件中
+- - StrictHostKeyChecking no   //vim编辑ssh_config文件将StrictHostKeyChecking参数设置为no
+- - systemctl restart sshd      //重启sshd服务
+- - systemctl status sshd         //查看sshd状态
+
+
+
  **1.edgegallery部署**     
 
 在之前解压缩的文件夹下修改env.sh配置文件 
