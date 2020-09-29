@@ -1507,12 +1507,13 @@ function _undeploy_dns_metallb() {
 }
 
 function _setup_interfaces() {
+  #These ip's range is betwen x.1.1.2~x.1.1.24 . Rest reserved for allocation to pods.
   ip link add eg-mp1 link $EG_NODE_EDGE_MP1 type macvlan mode bridge
-  ip addr add 200.1.1.100/24 dev eg-mp1
+  ip addr add 200.1.1.2/24 dev eg-mp1
   ip link set dev eg-mp1 up
 
   ip link add eg-mm5 link $EG_NODE_EDGE_MM5 type macvlan mode bridge
-  ip addr add 100.1.1.100/24 dev eg-mm5
+  ip addr add 100.1.1.2/24 dev eg-mm5
   ip link set dev eg-mm5 up
 }
 
