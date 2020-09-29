@@ -499,6 +499,28 @@ function wait() {
   done
 }
 
+function wait_for_ready_state() {
+  t=0
+  while true
+  do
+    kubectl -n kube-system get pods -o custom-columns=NAMESPACE:metadata.namespace,POD:metadata.name,PodIP:status.podIP,READY-true:status.containerStatuses[*].ready | grep false >/dev/null 2>&1
+    if [[ $? -ne 0 ]]; then
+      info "[k8s pods are in READY state ]" $GREEN
+      break
+    fi
+    info "[Lets wait for k8s pod's READY state]"  $YELLOW
+    t=$((t+5))
+    if [ $t == 150 ]; then
+      info "[ISSUE: k8s pods are not in READY state ]" $RED
+      info "[k8s deployment FAILED  ................]" $RED
+      info "[SUGGESTION: check logs of the below pods ..........]" $RED
+      kubectl -n kube-system get pods -o custom-columns=NAMESPACE:metadata.namespace,POD:metadata.name,PodIP:status.podIP,READY-true:status.containerStatuses[*].ready | grep false
+      exit 1
+    fi
+    sleep 5
+  done
+}
+
 function _eg_deploy()
 {
   FEATURE=$1
@@ -538,6 +560,8 @@ function _eg_undeploy()
 {
   FEATURE=$1
   MASTER_IP=$2
+  WORKER_IPS=$3
+  WORKER_IPS=`echo $WORKER_IPS | sed -e "s/,/ /g"`
   uninstall_EdgeGallery $FEATURE
   if [[ $SKIP_ECO_SYSTEM_UN_INSTALLATION != "true" ]]; then
     cleanup_eg_ecosystem
@@ -1406,6 +1430,15 @@ function _deploy_eg()
     mkdir -p $HOME/.kube
     scp root@$MASTER_IP:/root/.kube/config $HOME/.kube/
   fi
+  number_of_nodes=$(kubectl get nodes |wc -l)
+  if [[ $number_of_nodes -ge 3 ]]; then
+    ((number_of_nodes=number_of_nodes-1))
+  else
+    number_of_nodes=1
+  fi
+  wait "calico-node" $number_of_nodes
+  wait "kube-proxy" $number_of_nodes
+  wait_for_ready_state "calico-node" $number_of_nodes
   configure_eg_ecosystem_on_remote $MASTER_IP $EG_NODE_WORKER_IPS
   for node_ip in $EG_NODE_WORKER_IPS;
   do
@@ -1436,6 +1469,15 @@ function _deploy_controller()
     mkdir -p $HOME/.kube
     scp root@$MASTER_IP:/root/.kube/config $HOME/.kube/
   fi
+  number_of_nodes=$(kubectl get nodes |wc -l)
+  if [[ $number_of_nodes -ge 3 ]]; then
+    ((number_of_nodes=number_of_nodes-1))
+  else
+    number_of_nodes=1
+  fi
+  wait "calico-node" $number_of_nodes
+  wait "kube-proxy" $number_of_nodes
+  wait_for_ready_state "calico-node" $number_of_nodes
   configure_eg_ecosystem_on_remote $MASTER_IP $EG_NODE_CONTROLLER_WORKER_IPS
   for node_ip in $EG_NODE_CONTROLLER_WORKER_IPS;
   do
@@ -1462,6 +1504,15 @@ function _deploy_edge()
     mkdir -p $HOME/.kube
     scp root@$MASTER_IP:/root/.kube/config $HOME/.kube/
   fi
+  number_of_nodes=$(kubectl get nodes |wc -l)
+  if [[ $number_of_nodes -ge 3 ]]; then
+    ((number_of_nodes=number_of_nodes-1))
+  else
+    number_of_nodes=1
+  fi
+  wait "calico-node" $number_of_nodes
+  wait "kube-proxy" $number_of_nodes
+  wait_for_ready_state "calico-node" $number_of_nodes
   configure_eg_ecosystem_on_remote  $MASTER_IP $EG_NODE_EDGE_WORKER_IPS
   for node_ip in $EG_NODE_EDGE_WORKER_IPS;
   do
@@ -1782,7 +1833,7 @@ function main()
       exit 1
     fi
     if [ "$WHAT_TO_DO" == "-u" ] || [ "$WHAT_TO_DO" == "--uninstall" ]; then
-      _eg_undeploy $eg_undeploy_feature $(echo $EG_NODE_MASTER_IPS|cut -d "," -f1)
+      _eg_undeploy $eg_undeploy_feature $(echo $EG_NODE_MASTER_IPS|cut -d "," -f1) $EG_NODE_WORKER_IPS
       if [[ $SKIP_K8S_UN_INSTALLATION != "true" ]]; then
         _undeploy_k8s $EG_NODE_MASTER_IPS $EG_NODE_WORKER_IPS
       fi
@@ -1805,7 +1856,7 @@ function main()
       exit 1
     fi
     if [ "$WHAT_TO_DO" == "-u" ] || [ "$WHAT_TO_DO" == "--uninstall" ]; then
-      _eg_undeploy $controller_undeploy_feature $(echo $EG_NODE_CONTROLLER_MASTER_IPS|cut -d "," -f1)
+      _eg_undeploy $controller_undeploy_feature $(echo $EG_NODE_CONTROLLER_MASTER_IPS|cut -d "," -f1) $EG_NODE_CONTROLLER_WORKER_IPS
       if [[ $SKIP_K8S_UN_INSTALLATION != "true" ]]; then
         _undeploy_k8s $EG_NODE_CONTROLLER_MASTER_IPS $EG_NODE_CONTROLLER_WORKER_IPS
       fi
@@ -1823,7 +1874,7 @@ function main()
       exit 1
     fi
     if [ "$WHAT_TO_DO" == "-u" ] || [ "$WHAT_TO_DO" == "--uninstall" ]; then
-      _eg_undeploy $edge_undeploy_feature $(echo $EG_NODE_EDGE_MASTER_IPS|cut -d "," -f1)
+      _eg_undeploy $edge_undeploy_feature $(echo $EG_NODE_EDGE_MASTER_IPS|cut -d "," -f1) $EG_NODE_EDGE_WORKER_IPS
       if [[ $SKIP_K8S_UN_INSTALLATION != "true" ]]; then
         _undeploy_k8s $EG_NODE_EDGE_MASTER_IPS $EG_NODE_EDGE_WORKER_IPS
       fi
