@@ -1566,6 +1566,7 @@ function _cleanup_network_setup(){
 
   ip link set dev eg-mm5 down
 	ip link delete eg-mm5
+	rm /opt/cni/bin/multus
 }
 
 function _undeploy_network_isolation_multus() {
