@@ -146,6 +146,7 @@ k8s.gcr.io/kube-scheduler:v1.18.7 \
 k8s.gcr.io/pause:3.2 \
 k8s.gcr.io/coredns:1.6.7 \
 k8s.gcr.io/etcd:3.4.3-0 \
+k8s.gcr.io/metrics-server/metrics-server:v0.3.7 \
 calico/node:v3.15.1 \
 calico/cni:v3.15.1 \
 calico/kube-controllers:v3.15.1 \
@@ -441,6 +442,8 @@ function kubernetes_offline_installer() {
         _kubernetes_tool_download
         _cni_download
         _docker_images_download $K8S_DOCKER_IMAGES
+
+	cp $CUR_DIR/conf/manifest/metric/metric-server.yaml $K8S_OFFLINE_DIR/k8s/metric-server.yaml
 
         tar -vcf kubernetes_offline_installer.tar -C $K8S_OFFLINE_DIR .
         gzip kubernetes_offline_installer.tar
