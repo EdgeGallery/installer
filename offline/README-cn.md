@@ -27,7 +27,7 @@ EdgeGallery离线安装程序是基于ubuntu x86_64或arm64体系结构的给Kub
 
 2.在准备好的服务器上安装Ubuntu 18.04操作系统(ububntu 18.04是经过安装测试的版本)。
 
-3.下载离线安装程程序，下载地址http://159.138.137.155，根据具体安装环境下载对应的安装包，建议使用/all/v0.9-CodeFreeze.tar.gz这个安装包  
+3.下载离线安装程程序，[下载地址](http://159.138.137.155)，根据具体安装环境下载对应的安装包，建议使用/all/v0.9-CodeFreeze.tar.gz这个安装包  
 
 4.下载完安装包后解压即可（多节点安装，安装包需要上传到deploy node(也就是场景表中EG_NODE_DEPLOY_IP对应的机器）edgegallery安装的过程是在安装节点deploy node的机器上进行，deploy node只负责给其它节点安装edgegallery它本身不安装任何东西)。
 
