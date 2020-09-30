@@ -616,6 +616,8 @@ function install_prometheus()
     --set kubeStateMetrics.image.pullPolicy=IfNotPresent
   fi
   if [ $? -eq 0 ]; then
+    kubectl expose deployment mep-prometheus-server  --type=NodePort --name nodeport-mep-prometheus-server
+    kubectl patch service nodeport-mep-prometheus-server  --type='json' --patch='[{"op": "replace", "path": "/spec/ports/0/nodePort", "value":30009}]'
     info "[Deployed Prometheus  .......]" $GREEN
   else
     info "[Prometheus Deployment Failed]" $RED
