@@ -25,7 +25,7 @@ Pre-requsities
 * Extract to a folder
 * Prepare all the node as below
 
- _./eg.sh –prepare IP1, IP2, IP3 PASSWORD_ 
+ _./eg.sh –prepare IP1,IP2,IP3 PASSWORD_
 
 Deploy Modes
 ----------------
@@ -43,6 +43,9 @@ OFFLINE_MODE = aio
 
 EG_NODE_MASTER_IPS = 192.168.99.100
 
+*To Configure IP for EG Portals, By default, PORTAL_IP is set to EG_NODE_MASTER_IPS*
+PORTAL_IP=159.138.x.y
+
 *To Configure MEP MP1 & MM5 Interfaces, By default, these interfaces are set to eth0*
 
 EG_NODE_EDGE_MP1=eth1
@@ -59,6 +62,9 @@ Set following values in env.sh and run **source env.sh**
 OFFLINE_MODE = aio
 
 EG_NODE_CONTROLLER_MASTER_IPS = 192.168.99.101
+
+*To Configure IP for EG Portals, By default, PORTAL_IP is set to EG_NODE_CONTROLLER_MASTER_IPS*
+PORTAL_IP=159.138.x.y
 
 ./eg.sh -i
 
@@ -93,7 +99,10 @@ EG_NODE_DEPLOY_IP=192.168.99.100
 
 EG_NODE_MASTER_IPS = 192.168.99.101
 
-EG_NODE_WORKER_IPS= 192.168.99.102, 192.168.99.103
+EG_NODE_WORKER_IPS= 192.168.99.102,192.168.99.103
+
+*To Configure IP for EG Portals, By default, PORTAL_IP is set to EG_NODE_MASTER_IPS*
+PORTAL_IP=159.138.x.y
 
 *To Configure MEP MP1 & MM5 Interfaces, By default, these interfaces are set to eth0*
 
@@ -117,7 +126,10 @@ EG_NODE_DEPLOY_IP=192.168.99.100
 
 EG_NODE_CONTROLLER_MASTER_IPS = 192.168.99.101
 
-EG_NODE_CONTROLLER_WORKER_IPS= 192.168.99.102, 192.168.99.103
+EG_NODE_CONTROLLER_WORKER_IPS= 192.168.99.102,192.168.99.103
+
+*To Configure IP for EG Portals, By default, PORTAL_IP is set to EG_NODE_CONTROLLER_MASTER_IPS*
+PORTAL_IP=159.138.x.y
 
 ./eg.sh -i
 
@@ -132,7 +144,7 @@ EG_NODE_DEPLOY_IP=192.168.99.100
 
 EG_NODE_EDGE_MASTER_IPS = 192.168.99.104
 
-EG_NODE_EDGE_WORKER_IPS= 192.168.99.105, 192.168.99.106
+EG_NODE_EDGE_WORKER_IPS= 192.168.99.105,192.168.99.106
 
 *To Configure MEP MP1 & MM5 Interfaces, By default, these interfaces are set to eth0*
 
