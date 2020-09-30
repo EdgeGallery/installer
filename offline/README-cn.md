@@ -176,6 +176,8 @@ source env.sh                                       //运行使编辑保存完�
 
 bash eg.sh -i                                      //开始安装程序
 
+> 注意：Edgegallery在此模式下不支持MEP，请以aio模式部署以使用MEP。
+
  **2.edgegallery中心部署** 
 
 在之前解压缩的文件夹下修改env.sh配置文件
@@ -224,6 +226,8 @@ source env.sh                                             //运行使编辑保�
 
 bash eg.sh -i                                             //开始安装程序
 
+> 注意：Edgegallery在此模式下不支持MEP，请以aio模式部署以使用MEP。
+
 ###  **三.Kubernetes部署** 
 
 
@@ -248,8 +252,6 @@ bash eg.sh -i                                 //开始安装程序
 vim  env.sh                                  //编辑env文件
 
 export OFFLINE_MODE=muno                            //修改离线安装模式
-
-
 
 export K8S_NODE_MASTER_IPS=192.168.100.120          //设置master节点IP地址  
 
