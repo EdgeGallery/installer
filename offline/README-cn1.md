@@ -160,9 +160,9 @@ vim env.sh                                                   //编辑env文件
 
 export OFFLINE_MODE = muno                                   //修改离线安装模式
 
-export EG_NODE_EDGE_MP1=***                            //***master为网卡名
+export EG_NODE_EDGE_MP1=***                            //***为master网卡名
 
-export EG_NODE_EDGE_MM5=***                            //***master为网卡名
+export EG_NODE_EDGE_MM5=***                            //***为master为网卡名
 
 export EG_NODE_DEPLOY_IP = 192.168.99.100                    //设置deploy节点IP地址
   
@@ -186,9 +186,9 @@ vim env.sh                                           //编辑env文件
 
 export OFFLINE_MODE = muno                                  //修改离线安装模式
 
-export EG_NODE_EDGE_MP1=***                                      //***master为网卡名
+export EG_NODE_EDGE_MP1=***                                      //***为master网卡名
 
-export EG_NODE_EDGE_MM5=***                                      //***master为网卡名
+export EG_NODE_EDGE_MM5=***                                      //***为master网卡名
 
 export EG_NODE_DEPLOY_IP=192.168.99.100                     //设置deploy节点IP地址
 
@@ -210,9 +210,9 @@ vim env.sh                                                      //编辑env文�
 
 export OFFLINE_MODE = muno                                       //修改离线安装模式
 
-export EG_NODE_EDGE_MP1=***                                      //***master为网卡名
+export EG_NODE_EDGE_MP1=***                                      //***为master网卡名
 
-export EG_NODE_EDGE_MM5=***                                      //***master为网卡名
+export EG_NODE_EDGE_MM5=***                                      //***为master网卡名
 
 export EG_NODE_DEPLOY_IP=192.168.99.100                          //设置deploy节点IP地址
 
