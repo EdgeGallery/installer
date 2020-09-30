@@ -276,3 +276,32 @@ bash eg.sh -u all                 // 完全卸载所以程序
 bash eg.sh -u controller          //卸载中心节点
 
 bash eg.sh -u edge                //卸载边缘节点
+
+安装中问题汇总：
+\1. pod装置pending处理方法
+安装完成后pod状态正常为running状态，kubectl get pos --all-namespaces
+
+​ 如果status为pending状态：
+
+​ ![输入图片说明](https://images.gitee.com/uploads/images/2020/0930/174214_10fc1169_8040887.png "POD.png")
+
+A.检查虚机CPU，内存使用情况，确认资源是否够用。
+
+B.检查node或者pod有没有污点
+
+kubectl describe node | grep taint
+
+kubectl describe pod | grep taint
+
+如果存在污点删除污点后删除污点，
+
+kubectl taint nodes node1 key:NoSchedule- //node或者pod name
+
+\2. MEP安装DNS问题
+边缘环境测试，多网卡mp1和mm5网卡隔离，从mp1接口获取mep给的token失败
+
+该原因为DNS有问题导致。
+
+![输入图片说明](https://images.gitee.com/uploads/images/2020/0930/174238_7bdf76f3_8040887.png "DNS.png")
+
+DNS的53端口，由于环境安全策略屏蔽了该端口，在华为云上打开此端口问题解决
