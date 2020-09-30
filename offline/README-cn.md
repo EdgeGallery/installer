@@ -70,6 +70,10 @@ vim env.sh                                      //编辑env文件
 
 export OFFLINE_MODE = aio                              //修改离线安装模式
 
+export EG_NODE_EDGE_MP1=***                            //***为网卡名
+
+export EG_NODE_EDGE_MM5=***                            //***为网卡名
+
 export EG_NODE_MASTER_IPS = 192.168.99.100             //设置IP地址
 
 //修改完env文件保存退出
@@ -86,6 +90,10 @@ vim  env.sh                                      //编辑env文件
 
 export OFFLINE_MODE = aio                               //修改离线安装模式
 
+export EG_NODE_EDGE_MP1=***                            //***为网卡名
+
+export EG_NODE_EDGE_MM5=***                            //***为网卡名
+
 export EG_NODE_CONTROLLER_MASTER_IPS = 192.168.99.101   //设置IP地址
 
 //修改完env文件保存退出 
@@ -100,7 +108,11 @@ bash eg.sh -i                                  //开始安装程序
 
 vim env.sh                                       //编辑env文件
 
-export OFFLINE_MODE = aio                               //修改离线安装模式         
+export OFFLINE_MODE = aio                               //修改离线安装模式 
+
+export EG_NODE_EDGE_MP1=***                            //***为网卡名
+
+export EG_NODE_EDGE_MM5=***                            //***为网卡名        
 
 export EG_NODE_EDGE_MASTER_IPS = 192.168.99.104         //设置IP地址
 
@@ -148,6 +160,10 @@ vim env.sh                                                   //编辑env文件
 
 export OFFLINE_MODE = muno                                   //修改离线安装模式
 
+export EG_NODE_EDGE_MP1=***                            //***master为网卡名
+
+export EG_NODE_EDGE_MM5=***                            //***master为网卡名
+
 export EG_NODE_DEPLOY_IP = 192.168.99.100                    //设置deploy节点IP地址
   
 export EG_NODE_MASTER_IPS = 192.168.99.101                   //设置master节点IP地址
@@ -168,6 +184,10 @@ vim env.sh                                           //编辑env文件
 
 export OFFLINE_MODE = muno                                  //修改离线安装模式
 
+export EG_NODE_EDGE_MP1=***                                      //***master为网卡名
+
+export EG_NODE_EDGE_MM5=***                                      //***master为网卡名
+
 export EG_NODE_DEPLOY_IP=192.168.99.100                     //设置deploy节点IP地址
 
 export EG_NODE_CONTROLLER_MASTER_IPS = 192.168.99.101       //设置master节点IP地址
@@ -187,6 +207,10 @@ bash eg.sh -i                                        //开始安装程序
 vim env.sh                                                      //编辑env文件
 
 export OFFLINE_MODE = muno                                       //修改离线安装模式
+
+export EG_NODE_EDGE_MP1=***                                      //***master为网卡名
+
+export EG_NODE_EDGE_MM5=***                                      //***master为网卡名
 
 export EG_NODE_DEPLOY_IP=192.168.99.100                          //设置deploy节点IP地址
 
@@ -224,6 +248,8 @@ bash eg.sh -i                                 //开始安装程序
 vim  env.sh                                  //编辑env文件
 
 export OFFLINE_MODE=muno                            //修改离线安装模式
+
+
 
 export K8S_NODE_MASTER_IPS=192.168.100.120          //设置master节点IP地址  
 
