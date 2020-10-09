@@ -76,7 +76,7 @@ export EG_NODE_EDGE_MM5=***                            //***为网卡名
 
 export EG_NODE_MASTER_IPS = 192.168.99.100             //设置IP地址
 
-PORTAL_IP=159.138.x.y                        //如果需要要为edgegallery门户网站配置IP，默认情况下，PORTAL_IP设置为 
+PORTAL_IP=159.138.x.y                        //如果需要为edgegallery门户网站配置IP，默认情况下，PORTAL_IP设置为 
                                               EG_NODE_CONTROLLER_MASTER_IPS
 
 //修改完env文件保存退出
@@ -99,7 +99,7 @@ export EG_NODE_EDGE_MM5=***                            //***为网卡名
 
 export EG_NODE_CONTROLLER_MASTER_IPS = 192.168.99.101   //设置IP地址
 
-PORTAL_IP=159.138.x.y                        //如果需要要为edgegallery门户网站配置IP，默认情况下，PORTAL_IP设置为 
+PORTAL_IP=159.138.x.y                        //如果需要为edgegallery门户网站配置IP，默认情况下，PORTAL_IP设置为 
                                               EG_NODE_CONTROLLER_MASTER_IPS
 
 //修改完env文件保存退出 
@@ -176,7 +176,7 @@ export EG_NODE_MASTER_IPS = 192.168.99.101                   //设置master节�
 
 export EG_NODE_WORKER_IPS = 192.168.99.102, 192.168.99.103   //设置work节点IP地址
 
-PORTAL_IP=159.138.x.y                                    //如果需要要为edgegallery门户网站配置IP，默认情况下，
+PORTAL_IP=159.138.x.y                                    //如果需要为edgegallery门户网站配置IP，默认情况下，
                                                           PORTAL_IP设置为EG_NODE_CONTROLLER_MASTER_IPS
 
 //修改完env文件保存退出
@@ -205,7 +205,7 @@ export EG_NODE_CONTROLLER_MASTER_IPS = 192.168.99.101       //设置master节点
 
 export EG_NODE_CONTROLLER_WORKER_IPS= 192.168.99.102, 192.168.99.103 //设置work节点IP地址
 
-PORTAL_IP=159.138.x.y                                    //如果需要要为edgegallery门户网站配置IP，默认情况下，
+PORTAL_IP=159.138.x.y                                    //如果需要为edgegallery门户网站配置IP，默认情况下，
                                                           PORTAL_IP设置为EG_NODE_CONTROLLER_MASTER_IPS
 
 //修改完env文件保存退出
