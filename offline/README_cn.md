@@ -21,7 +21,7 @@ EdgeGallery离线安装程序是基于ubuntu x86_64或arm64体系结构的给Kub
 
  
 
-###### 部署先决条件：
+ **###### 部署先决条件：** 
 
 1.在部署前先通过上面的场景表，选择自己要部署的场景，准备好需要的服务器。
 
@@ -29,7 +29,7 @@ EdgeGallery离线安装程序是基于ubuntu x86_64或arm64体系结构的给Kub
 
 3.下载离线安装程序，下载地址[http://159.138.137.155，根据具体安装环境下载对应的安装包，建议使用0.9.tar.gz个安装包](http://159.138.137.177)
 
-4.下载完安装包后解压即可（多节点安装，安装包需要上传到deploy node(也就是场景表中EG_NODE_DEPLOY_IP对应的机器）edgegallery安装的过程是在安装节点deploy node的机器上进行，deploy节点作为安装容器和helm仓库使用)。
+4.下载完安装包后解压即可（多节点安装，安装包需要上传到deploy node(也就是场景表中EG_NODE_DEPLOY_IP对应的节点）edgegallery安装的过程是在安装节点deploy node的节点上进行，deploy节点作为安装容器和helm仓库使用)。
 
 5.该安装包里已经包含kubernetes安装程序，按照下面流程安装edgegallery时会自动先安装kubernetes。
 
