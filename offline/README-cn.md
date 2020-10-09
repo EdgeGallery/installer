@@ -54,9 +54,9 @@ EdgeGallery离线安装程序是基于ubuntu x86_64或arm64体系结构的给Kub
 
 安装程序如安装场景表中所列，支持单节点和多节点安装edgegallery,以下是各个场景下安装步骤:
 
-  edgegallery版本更新后PORTAL_IP在env.sh脚本中也可以添加，edgegallery场景部署中PORTAL_IP作为门户网址访问使用，通常我们使用的是master 
-  ip地址；在使用双网卡或网卡的安装时候，DEPLOY_IP,MASTER_IPS，WORKER_IPS一般使用的是局域网IP地址，PORTAL_IP可以使用公网IP作为外部地 
-  址。
+  edgegallery版本更新后PORTAL_IP在env.sh脚本中也可以添加，edgegallery场景部署中PORTAL_IP作为门户网址访问使用，通常我们使用的是 
+  CONTROLLER_MASTER_IPS地址；在使用双网卡或网卡的安装时候，DEPLOY_IP,MASTER_IPS，WORKER_IPS一般使用的是局域网IP地址，PORTAL_IP
+  可以使用公网IP作为外部地址。
  
 
 ### **一．单节点安装edgegallery场景：** 
@@ -75,6 +75,9 @@ export EG_NODE_EDGE_MP1=***                            //***为网卡名
 export EG_NODE_EDGE_MM5=***                            //***为网卡名
 
 export EG_NODE_MASTER_IPS = 192.168.99.100             //设置IP地址
+
+PORTAL_IP=159.138.x.y                        //如果需要要为edgegallery门户网站配置IP，默认情况下，PORTAL_IP设置为 
+                                              EG_NODE_CONTROLLER_MASTER_IPS
 
 //修改完env文件保存退出
 
@@ -95,6 +98,9 @@ export EG_NODE_EDGE_MP1=***                            //***为网卡名
 export EG_NODE_EDGE_MM5=***                            //***为网卡名
 
 export EG_NODE_CONTROLLER_MASTER_IPS = 192.168.99.101   //设置IP地址
+
+PORTAL_IP=159.138.x.y                        //如果需要要为edgegallery门户网站配置IP，默认情况下，PORTAL_IP设置为 
+                                              EG_NODE_CONTROLLER_MASTER_IPS
 
 //修改完env文件保存退出 
 
@@ -170,6 +176,9 @@ export EG_NODE_MASTER_IPS = 192.168.99.101                   //设置master节�
 
 export EG_NODE_WORKER_IPS = 192.168.99.102, 192.168.99.103   //设置work节点IP地址
 
+PORTAL_IP=159.138.x.y                                    //如果需要要为edgegallery门户网站配置IP，默认情况下，
+                                                          PORTAL_IP设置为EG_NODE_CONTROLLER_MASTER_IPS
+
 //修改完env文件保存退出
 
 source env.sh                                       //运行使编辑保存完的文件生效
@@ -195,6 +204,9 @@ export EG_NODE_DEPLOY_IP=192.168.99.100                     //设置deploy节点
 export EG_NODE_CONTROLLER_MASTER_IPS = 192.168.99.101       //设置master节点IP地址
 
 export EG_NODE_CONTROLLER_WORKER_IPS= 192.168.99.102, 192.168.99.103 //设置work节点IP地址
+
+PORTAL_IP=159.138.x.y                                    //如果需要要为edgegallery门户网站配置IP，默认情况下，
+                                                          PORTAL_IP设置为EG_NODE_CONTROLLER_MASTER_IPS
 
 //修改完env文件保存退出
 
