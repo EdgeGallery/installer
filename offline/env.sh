@@ -41,6 +41,10 @@ if [[ $OFFLINE_MODE == "muno" ]]; then
 fi
 
 #MEP values
+PG_ADMIN_PWD=""
+KONG_PG_PWD=""
+CERT_PWD=""
+
 export mep_images_mep_repository="$REGISTRY_URL"edgegallery/mep
 export mep_images_mepauth_repository="$REGISTRY_URL"edgegallery/mepauth
 export mep_images_dns_repository="$REGISTRY_URL"edgegallery/mep-dns-server

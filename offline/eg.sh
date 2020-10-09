@@ -731,6 +731,87 @@ function uninstall_rabbitmq()
   info "[UnDeployed Rabbitmq  .......]"  $BLUE
 }
 
+function _prepare_mep_ssl()
+{
+  set +o history
+  # initial variables
+  set +x
+
+  if [[ -z $PG_ADMIN_PWD ]]; then
+    PG_ADMIN_PWD=admin-Pass123
+  fi
+  if [[ -z $KONG_PG_PWD ]]; then
+    KONG_PG_PWD=kong-Pass123
+  fi
+  if [[ -z $CERT_PWD ]]; then
+    CERT_PWD=te9Fmv%qaq
+  fi
+  set -x
+
+  MEP_CERTS_DIR=/tmp/.mep_tmp_cer
+  CERT_NAME=${CERT_NAME:-mepserver}
+  DOMAIN_NAME=edgegallery
+
+  rm -rf ${MEP_CERTS_DIR}
+  mkdir -p ${MEP_CERTS_DIR}
+  cd ${MEP_CERTS_DIR} || exit
+
+  # generate ca certificate
+  openssl genrsa -out ca.key 2048
+  openssl req -new -key ca.key -subj /C=CN/ST=Peking/L=Beijing/O=edgegallery/CN=${DOMAIN_NAME} -out ca.csr
+  openssl x509 -req -days 365 -in ca.csr -extensions v3_ca -signkey ca.key -out ca.crt
+  # openssl ca -days 365 -in ca.csr -extensions v3_ca -keyfile ca.key -out ca.crt
+
+  # generate tls certificate
+  openssl genrsa -out ${CERT_NAME}_tls.key 2048
+  openssl rsa -in ${CERT_NAME}_tls.key -aes256 -passout pass:${CERT_PWD} -out ${CERT_NAME}_encryptedtls.key
+
+  echo -n ${CERT_PWD} > ${CERT_NAME}_cert_pwd
+
+  openssl req -new -key ${CERT_NAME}_tls.key -subj /C=CN/ST=Beijing/L=Beijing/O=edgegallery/CN=${DOMAIN_NAME} -out ${CERT_NAME}_tls.csr
+  openssl x509 -req -in ${CERT_NAME}_tls.csr -extensions v3_req -CA ca.crt -CAkey ca.key -CAcreateserial -out ${CERT_NAME}_tls.crt
+
+  # generate jwt public private key
+  openssl genrsa -out jwt_privatekey 2048
+  openssl rsa -in jwt_privatekey -pubout -out jwt_publickey
+  openssl rsa -in jwt_privatekey -aes256 -passout pass:${CERT_PWD} -out jwt_encrypted_privatekey
+
+  # remove unnecessary key file
+  rm ca.key
+  rm ca.csr
+  rm ca.crl
+  rm ${CERT_NAME}_tls.csr
+  rm jwt_privatekey
+
+  # setup read permission
+  cd ..
+  chmod 600 ${MEP_CERTS_DIR}/*
+
+  kubectl create ns mep
+
+  kubectl -n mep create secret generic pg-secret \
+    --from-literal=pg_admin_pwd=$PG_ADMIN_PWD \
+    --from-literal=kong_pg_pwd=$KONG_PG_PWD \
+    --from-file=server.key=${MEP_CERTS_DIR}/${CERT_NAME}_tls.key \
+    --from-file=server.crt=${MEP_CERTS_DIR}/${CERT_NAME}_tls.crt
+
+  kubectl -n mep create secret generic mep-ssl \
+    --from-literal=cert_pwd=$CERT_PWD \
+    --from-file=server.cer=${MEP_CERTS_DIR}/${CERT_NAME}_tls.crt \
+    --from-file=server_key.pem=${MEP_CERTS_DIR}/${CERT_NAME}_encryptedtls.key \
+    --from-file=trust.cer=${MEP_CERTS_DIR}/ca.crt
+
+  kubectl -n mep create secret generic mepauth-secret \
+    --from-file=server.crt=${MEP_CERTS_DIR}/${CERT_NAME}_tls.crt \
+    --from-file=server.key=${MEP_CERTS_DIR}/${CERT_NAME}_tls.key \
+    --from-file=ca.crt=${MEP_CERTS_DIR}/ca.crt \
+    --from-file=jwt_publickey=${MEP_CERTS_DIR}/jwt_publickey \
+    --from-file=jwt_encrypted_privatekey=${MEP_CERTS_DIR}/jwt_encrypted_privatekey
+
+  rm -rf ${MEP_CERTS_DIR}
+  set -o history
+}
+
 function install_mep()
 {
   info "[Setting up Network Isolation]" $BLUE
@@ -740,6 +821,8 @@ function install_mep()
   else
     number_of_nodes=1
   fi
+  _prepare_mep_ssl
+
   _deploy_dns_metallb
   _deploy_network_isolation_multus
 
@@ -773,10 +856,19 @@ function install_mep()
   info "[Deployed MEP  ..............]" $GREEN
 }
 
+function _remove_mep_ssl_config()
+{
+  kubectl delete secret pg-secret -n mep
+  kubectl delete secret mep-ssl -n mep
+  kubectl delete secret mepauth-secret -n mep
+  kubectl delete ns mep
+}
+
 function uninstall_mep()
 {
   info "[UnDeploying MEP  ...........]" $BLUE
   helm uninstall mep-edgegallery
+  _remove_mep_ssl_config
   _undeploy_network_isolation_multus
   _undeploy_dns_metallb
   info "[UnDeployed MEP  ............]" $GREEN
