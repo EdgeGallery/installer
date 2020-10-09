@@ -746,7 +746,6 @@ function _prepare_mep_ssl()
   if [[ -z $CERT_PWD ]]; then
     CERT_PWD=te9Fmv%qaq
   fi
-  set -x
 
   MEP_CERTS_DIR=/tmp/.mep_tmp_cer
   CERT_NAME=${CERT_NAME:-mepserver}
