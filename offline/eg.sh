@@ -1633,6 +1633,7 @@ function _deploy_dns_metallb() {
    kubectl apply -f $PLATFORM_DIR/conf/edge/metallb/namespace.yaml
 
    sed -i 's?image: metallb/controller:v0.9.3?image: '$REGISTRY_URL'metallb/controller:v0.9.3?g' $PLATFORM_DIR/conf/edge/metallb/metallb.yaml
+   sed -i 's?image: metallb/speaker:v0.9.3?image: '$REGISTRY_URL'metallb/speaker:v0.9.3?g' $PLATFORM_DIR/conf/edge/metallb/metallb.yaml
    kubectl apply -f $PLATFORM_DIR/conf/edge/metallb/metallb.yaml
    kubectl create secret generic -n metallb-system memberlist --from-literal=secretkey="$(openssl rand -base64 128)"
    sed -i "s/192.168.100.120/${EG_NODE_DNS_LBS_IPS}/g" $PLATFORM_DIR/conf/edge/metallb/config-map.yaml
