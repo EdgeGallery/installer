@@ -202,7 +202,7 @@ function kubernetes_deploy() {
         info "K8S_MASTER_IP is not set." $RED
       else
         kubeadm config images list
-        kubeadm init --apiserver-advertise-address=$K8S_MASTER_IP --pod-network-cidr=10.244.0.0/16 -v=5
+        kubeadm init --kubernetes-version=v1.18.7 --apiserver-advertise-address=$K8S_MASTER_IP --pod-network-cidr=10.244.0.0/16 -v=5
 
         mkdir -p ~/.kube
         cp -i /etc/kubernetes/admin.conf ~/.kube/config
