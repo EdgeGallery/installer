@@ -46,7 +46,7 @@ EG_NODE_MASTER_IPS = 192.168.99.100
 *To Configure IP for EG Portals, By default, PORTAL_IP is set to EG_NODE_MASTER_IPS*
 PORTAL_IP=159.138.x.y
 
-*To Configure MEP MP1 & MM5 Interfaces, By default, these interfaces are set to eth0*
+*To Configure MEP MP1 & MM5 Interfaces, By default, these interfaces are set to EG_NODE_MASTER_IPS's interface name*
 
 EG_NODE_EDGE_MP1=eth1
 
@@ -77,7 +77,7 @@ OFFLINE_MODE = aio
 
 EG_NODE_EDGE_MASTER_IPS = 192.168.99.104
 
-*To Configure MEP MP1 & MM5 Interfaces, By default, these interfaces are set to eth0*
+*To Configure MEP MP1 & MM5 Interfaces, By default, these interfaces are set to EG_NODE_EDGE_MASTER_IPS's interface name*
 
 EG_NODE_EDGE_MP1=eth1
 
@@ -104,7 +104,8 @@ EG_NODE_WORKER_IPS= 192.168.99.102,192.168.99.103
 *To Configure IP for EG Portals, By default, PORTAL_IP is set to EG_NODE_MASTER_IPS*
 PORTAL_IP=159.138.x.y
 
-*To Configure MEP MP1 & MM5 Interfaces, By default, these interfaces are set to eth0*
+*To Configure MEP MP1 & MM5 Interfaces, By default, these interfaces are set to EG_NODE_MASTER_IPS's interface name
+and EG_NODE_WORKER_IPS's interface name on master and worker nodes respectively*
 
 EG_NODE_EDGE_MP1=eth1
 
@@ -146,7 +147,8 @@ EG_NODE_EDGE_MASTER_IPS = 192.168.99.104
 
 EG_NODE_EDGE_WORKER_IPS= 192.168.99.105,192.168.99.106
 
-*To Configure MEP MP1 & MM5 Interfaces, By default, these interfaces are set to eth0*
+*To Configure MEP MP1 & MM5 Interfaces, By default, these interfaces are set to EG_NODE_EDGE_MASTER_IPS's interface name
+ and EG_NODE_EDGE_WORKER_IPS's interface name on master and worker nodes respectively*
 
 EG_NODE_EDGE_MP1=eth1
 
