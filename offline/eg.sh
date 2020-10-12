@@ -1655,6 +1655,14 @@ function _undeploy_dns_metallb() {
 }
 
 function _setup_interfaces() {
+  if [[ -z $EG_NODE_EDGE_MP1 ]]; then
+    EG_NODE_EDGE_MP1=$(ip a | grep -B2 $NODEIP | head -n1 | cut -d ":" -f2 |cut -d " " -f2)
+  fi
+
+  if [[ -z $EG_NODE_EDGE_MM5 ]]; then
+      EG_NODE_EDGE_MM5=$(ip a | grep -B2 $NODEIP | head -n1 | cut -d ":" -f2 |cut -d " " -f2)
+  fi
+
   #These ip's range is betwen x.1.1.2~x.1.1.24 . Rest reserved for allocation to pods.
   ip link add eg-mp1 link $EG_NODE_EDGE_MP1 type macvlan mode bridge
   ip addr add 200.1.1.2/24 dev eg-mp1
@@ -1667,14 +1675,6 @@ function _setup_interfaces() {
 
 function _deploy_network_isolation_multus() {
   info "[Deploying multus cni  ..............]" $YELLOW
-
-  if [[ -z $EG_NODE_EDGE_MP1 ]]; then
-      EG_NODE_EDGE_MP1=eth0
-  fi
-
-  if [[ -z $EG_NODE_EDGE_MM5 ]]; then
-    EG_NODE_EDGE_MM5=eth0
-  fi
 
   sed -i 's?image: docker.io/nfvpe/multus:stable?image: '$REGISTRY_URL'docker.io/nfvpe/multus:stable?g' $PLATFORM_DIR/conf/edge/network-isolation/multus.yaml
   sed -i 's?image: docker.io/nfvpe/multus:stable-arm64v8?image: '$REGISTRY_URL'docker.io/nfvpe/multus:stable-arm64v8?g' $PLATFORM_DIR/conf/edge/network-isolation/multus.yaml
@@ -1689,14 +1689,14 @@ function _deploy_network_isolation_multus() {
     do
       sshpass ssh root@$node_ip "mkdir -p /tmp/remote-platform"
       scp $TARBALL_PATH/eg.sh root@$node_ip:/tmp/remote-platform
-      sshpass ssh root@$node_ip "cd /tmp/remote-platform;source eg.sh;
+      sshpass ssh root@$node_ip "cd /tmp/remote-platform;source eg.sh;export NODEIP=$node_ip;
       export EG_NODE_EDGE_MP1=$EG_NODE_EDGE_MP1;export EG_NODE_EDGE_MM5=$EG_NODE_EDGE_MM5;_setup_interfaces"
     done
     for node_ip in $WORKER_IPS;
     do
       sshpass ssh root@$node_ip "mkdir -p /tmp/remote-platform"
       scp $TARBALL_PATH/eg.sh root@$node_ip:/tmp/remote-platform
-      sshpass ssh root@$node_ip "cd /tmp/remote-platform;source eg.sh;
+      sshpass ssh root@$node_ip "cd /tmp/remote-platform;source eg.sh;export NODEIP=$node_ip;
       export EG_NODE_EDGE_MP1=$EG_NODE_EDGE_MP1;export EG_NODE_EDGE_MM5=$EG_NODE_EDGE_MM5;_setup_interfaces"
     done
   else
