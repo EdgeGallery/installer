@@ -35,7 +35,7 @@ EdgeGallery离线安装程序是基于ubuntu x86_64或arm64体系结构的给Kub
 
 #### **部署流程演示图：**
 
-![输入图片说明](https://images.gitee.com/uploads/images/2020/0921/161738_6be158df_8040887.png "图片3.png") 
+![输入图片说明](https://images.gitee.com/uploads/images/2020/1014/150744_e9b82e90_8040887.png "流程.png")
 
  
 
@@ -303,7 +303,6 @@ B.检查node或者pod有没有污点
 
 kubectl describe node | grep taint
 
-kubectl describe pod | grep taint
 
 如果存在污点删除污点后删除污点，
 
