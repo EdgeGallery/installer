@@ -53,6 +53,7 @@ if [[ -z "$EG_IMAGE_LIST_EDGE_X86_DEFAULT" ]]; then
    swr.ap-southeast-1.myhuaweicloud.com/edgegallery/edgegallery-secondary-ep-controller:latest \
    swr.ap-southeast-1.myhuaweicloud.com/edgegallery/mecm-applcm:$EG_IMAGE_TAG \
    swr.ap-southeast-1.myhuaweicloud.com/edgegallery/mecm-applcm-k8splugin:$EG_IMAGE_TAG \
+   swr.ap-southeast-1.myhuaweicloud.com/edgegallery/deploy-tool:latest \
    prom/alertmanager:v0.18.0 \
    prom/node-exporter:v0.18.0 \
    prom/prometheus:v2.13.1 \
@@ -80,6 +81,7 @@ if [[ -z "$EG_IMAGE_LIST_EDGE_ARM64_DEFAULT" ]]; then
    swr.ap-southeast-1.myhuaweicloud.com/edgegallery/edgegallery-secondary-ep-controller:latest \
    swr.ap-southeast-1.myhuaweicloud.com/edgegallery/mecm-applcm:$EG_IMAGE_TAG \
    swr.ap-southeast-1.myhuaweicloud.com/edgegallery/mecm-applcm-k8splugin:$EG_IMAGE_TAG \
+   swr.ap-southeast-1.myhuaweicloud.com/edgegallery/deploy-tool:latest \
    prom/alertmanager:v0.18.0 \
    prom/node-exporter:v0.18.1 \
    prom/prometheus:v2.15.2 \
