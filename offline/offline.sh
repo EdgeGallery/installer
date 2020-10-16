@@ -38,7 +38,8 @@ if [[ -z "$EG_IMAGE_LIST_CONTROLLER_X86_DEFAULT" ]]; then
    swr.ap-southeast-1.myhuaweicloud.com/edgegallery/user-mgmt:$EG_IMAGE_TAG \
    swr.ap-southeast-1.myhuaweicloud.com/edgegallery/curl:latest \
    swr.ap-southeast-1.myhuaweicloud.com/edgegallery/redis:6.0.3 \
-   swr.ap-southeast-1.myhuaweicloud.com/edgegallery/postgres:12.2"
+   swr.ap-southeast-1.myhuaweicloud.com/edgegallery/postgres:12.2 \
+   swr.ap-southeast-1.myhuaweicloud.com/edgegallery/deploy-tool:latest"
 fi
 EG_IMAGE_LIST_CONTROLLER_ARM64_DEFAULT=$EG_IMAGE_LIST_CONTROLLER_X86_DEFAULT
 EG_HELM_LIST_CONTROLLER_X86_DEFAULT="servicecenter usermgmt developer appstore mecm-fe mecm-meo"
