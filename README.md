@@ -1,4 +1,4 @@
-Edge gallery installer  on ubuntu x86_64 or arm64 architecture available at http://159.138.137.155
+Edge gallery installer  on ubuntu x86_64 or arm64 architecture available at http://http://release.edgegallery.org/
 
 For more details, please [refer](offline/README_en.md)
 
