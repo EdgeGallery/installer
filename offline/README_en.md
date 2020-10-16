@@ -21,7 +21,7 @@ Pre-requsities
 ---------------
 
 * Install Ubuntu 18.04 operating system on all those nodes and set same root password and connect them into network as planned.
-* Download offline installer from FTP server **http://159.138.137.155**. And installers are available for edge, controller and full stack separately for x86 and arm64 architectures.
+* Download offline installer from FTP server **http://release.edgegallery.org/**. And installers are available for edge, controller and full stack separately for x86 and arm64 architectures.
 * Extract to a folder
 * Prepare all the node as below
 
