@@ -821,7 +821,6 @@ function install_mep()
     number_of_nodes=1
   fi
   _prepare_mep_ssl
-
   _deploy_dns_metallb
   _deploy_network_isolation_multus
 
@@ -1326,7 +1325,6 @@ function install_EdgeGallery ()
   if [ -z "$DEPLOY_TYPE" ]; then
     DEPLOY_TYPE="nodePort"
   fi
-  create_ssl_certs
   if [[ $FEATURE == 'edge' || $FEATURE == 'all' ]]; then
     install_mep
     install_mecm-mepm
@@ -1662,11 +1660,11 @@ function _undeploy_dns_metallb() {
 
 function _setup_interfaces() {
   if [[ -z $EG_NODE_EDGE_MP1 ]]; then
-    EG_NODE_EDGE_MP1=$(ip a | grep -B2 $NODEIP | head -n1 | cut -d ":" -f2 |cut -d " " -f2)
+    EG_NODE_EDGE_MP1=$(ip a | grep -B2 $PRIVATE_IP | head -n1 | cut -d ":" -f2 |cut -d " " -f2)
   fi
 
   if [[ -z $EG_NODE_EDGE_MM5 ]]; then
-      EG_NODE_EDGE_MM5=$(ip a | grep -B2 $NODEIP | head -n1 | cut -d ":" -f2 |cut -d " " -f2)
+      EG_NODE_EDGE_MM5=$(ip a | grep -B2 $PRIVATE_IP | head -n1 | cut -d ":" -f2 |cut -d " " -f2)
   fi
 
   #These ip's range is betwen x.1.1.2~x.1.1.24 . Rest reserved for allocation to pods.
@@ -1695,17 +1693,18 @@ function _deploy_network_isolation_multus() {
     do
       sshpass ssh root@$node_ip "mkdir -p /tmp/remote-platform"
       scp $TARBALL_PATH/eg.sh root@$node_ip:/tmp/remote-platform
-      sshpass ssh root@$node_ip "cd /tmp/remote-platform;source eg.sh;export NODEIP=$node_ip;
+      sshpass ssh root@$node_ip "cd /tmp/remote-platform;source eg.sh;export PRIVATE_IP=$node_ip;
       export EG_NODE_EDGE_MP1=$EG_NODE_EDGE_MP1;export EG_NODE_EDGE_MM5=$EG_NODE_EDGE_MM5;_setup_interfaces"
     done
     for node_ip in $WORKER_IPS;
     do
       sshpass ssh root@$node_ip "mkdir -p /tmp/remote-platform"
       scp $TARBALL_PATH/eg.sh root@$node_ip:/tmp/remote-platform
-      sshpass ssh root@$node_ip "cd /tmp/remote-platform;source eg.sh;export NODEIP=$node_ip;
+      sshpass ssh root@$node_ip "cd /tmp/remote-platform;source eg.sh;export PRIVATE_IP=$node_ip;
       export EG_NODE_EDGE_MP1=$EG_NODE_EDGE_MP1;export EG_NODE_EDGE_MM5=$EG_NODE_EDGE_MM5;_setup_interfaces"
     done
   else
+    PRIVATE_IP=$DEPLOY_NODE_IP
     _setup_interfaces
   fi
 
@@ -1941,6 +1940,7 @@ function main()
         _undeploy_k8s $EG_NODE_MASTER_IPS $EG_NODE_WORKER_IPS
       fi
     elif [ "$WHAT_TO_DO" == "-i" ] || [ "$WHAT_TO_DO" == "--install" ]; then
+      create_ssl_certs
       _deploy_eg
     fi
   elif [[ -n $EG_NODE_CONTROLLER_MASTER_IPS ]]; then
@@ -1964,6 +1964,7 @@ function main()
         _undeploy_k8s $EG_NODE_CONTROLLER_MASTER_IPS $EG_NODE_CONTROLLER_WORKER_IPS
       fi
     elif [ "$WHAT_TO_DO" == "-i" ] || [ "$WHAT_TO_DO" == "--install" ]; then
+      create_ssl_certs
       _deploy_controller
     fi
   elif [[ -n $EG_NODE_EDGE_MASTER_IPS ]]; then
@@ -1982,6 +1983,7 @@ function main()
         _undeploy_k8s $EG_NODE_EDGE_MASTER_IPS $EG_NODE_EDGE_WORKER_IPS
       fi
     elif [ "$WHAT_TO_DO" == "-i" ] || [ "$WHAT_TO_DO" == "--install" ]; then
+      create_ssl_certs
       _deploy_edge
     fi
   else
