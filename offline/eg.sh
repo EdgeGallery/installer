@@ -1314,6 +1314,11 @@ function uninstall_umbrella_chart()
   info "[UnDeployed Host Components .]" $GREEN
 }
 
+function create_ssl_certs()
+{
+  docker run -v $PLATFORM_DIR/conf/keys/:/certs edgegallery/deploy-tool:latest
+}
+
 function install_EdgeGallery ()
 {
   FEATURE=$1
@@ -1327,6 +1332,7 @@ function install_EdgeGallery ()
     install_common-svc
   fi
   if [[ ($FEATURE == 'controller' || $FEATURE == 'all') && ($DEPLOY_TYPE == 'nodePort') ]]; then
+    create_ssl_certs
     kubectl create secret generic edgegallery-ssl-secret \
     --from-file=keystore.p12=$PLATFORM_DIR/conf/keys/keystore.p12 \
     --from-literal=keystorePassword=te9Fmv%qaq \
