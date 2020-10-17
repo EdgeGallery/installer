@@ -1540,6 +1540,7 @@ function _deploy_eg()
   wait "kube-proxy" $number_of_nodes
   wait_for_ready_state "calico-node" $number_of_nodes
   configure_eg_ecosystem_on_remote $MASTER_IP $EG_NODE_WORKER_IPS
+  create_ssl_certs
   for node_ip in $EG_NODE_WORKER_IPS;
   do
     sshpass ssh root@$node_ip "rm -rf /mnt/grafana; mkdir -p /mnt/grafana"
@@ -1579,6 +1580,7 @@ function _deploy_controller()
   wait "kube-proxy" $number_of_nodes
   wait_for_ready_state "calico-node" $number_of_nodes
   configure_eg_ecosystem_on_remote $MASTER_IP $EG_NODE_CONTROLLER_WORKER_IPS
+  create_ssl_certs
   for node_ip in $EG_NODE_CONTROLLER_WORKER_IPS;
   do
     sshpass ssh root@$node_ip "mkdir -p /opt/cni/bin"
@@ -1614,6 +1616,7 @@ function _deploy_edge()
   wait "kube-proxy" $number_of_nodes
   wait_for_ready_state "calico-node" $number_of_nodes
   configure_eg_ecosystem_on_remote  $MASTER_IP $EG_NODE_EDGE_WORKER_IPS
+  create_ssl_certs
   for node_ip in $EG_NODE_EDGE_WORKER_IPS;
   do
     sshpass ssh root@$node_ip "mkdir -p /opt/cni/bin"
@@ -1940,7 +1943,6 @@ function main()
         _undeploy_k8s $EG_NODE_MASTER_IPS $EG_NODE_WORKER_IPS
       fi
     elif [ "$WHAT_TO_DO" == "-i" ] || [ "$WHAT_TO_DO" == "--install" ]; then
-      create_ssl_certs
       _deploy_eg
     fi
   elif [[ -n $EG_NODE_CONTROLLER_MASTER_IPS ]]; then
@@ -1964,7 +1966,6 @@ function main()
         _undeploy_k8s $EG_NODE_CONTROLLER_MASTER_IPS $EG_NODE_CONTROLLER_WORKER_IPS
       fi
     elif [ "$WHAT_TO_DO" == "-i" ] || [ "$WHAT_TO_DO" == "--install" ]; then
-      create_ssl_certs
       _deploy_controller
     fi
   elif [[ -n $EG_NODE_EDGE_MASTER_IPS ]]; then
@@ -1983,7 +1984,6 @@ function main()
         _undeploy_k8s $EG_NODE_EDGE_MASTER_IPS $EG_NODE_EDGE_WORKER_IPS
       fi
     elif [ "$WHAT_TO_DO" == "-i" ] || [ "$WHAT_TO_DO" == "--install" ]; then
-      create_ssl_certs
       _deploy_edge
     fi
   else
