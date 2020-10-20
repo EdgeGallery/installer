@@ -21,8 +21,6 @@ metadata:
 spec:
   serviceAccount: edgegallery-secondary-ep-controller
   containers:
-    - name: edgegallery-secondary-ep-controller
-      image: edgegallery/edgegallery-secondary-ep-controller:latest
-      imagePullPolicy: IfNotPresent
-      command: [ "/bin/sh", "-c", "--" ]
-      args: [ "edgegallery-secondary-ep-controller" ]
+  - name: edgegallery-secondary-ep-controller
+    image: edgegallery/edgegallery-secondary-ep-controller:latest
+    imagePullPolicy: IfNotPresent
