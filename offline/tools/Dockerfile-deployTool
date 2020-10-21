@@ -1,0 +1,29 @@
+FROM ubuntu:16.04
+RUN apt-get update
+RUN apt-get install -y build-essential cmake zlib1g-dev libcppunit-dev git subversion wget && rm -rf /var/lib/apt/lists/*
+RUN wget https://www.openssl.org/source/openssl-1.0.2g.tar.gz -O - | tar -xz
+WORKDIR /openssl-1.0.2g
+RUN ./config --prefix=/usr/local/openssl --openssldir=/usr/local/openssl && make && make install
+RUN mkdir /certs
+
+# Install OpenJDK-8
+RUN apt-get update && \
+    apt-get install -y openjdk-8-jdk && \
+    apt-get install -y ant && \
+    apt-get clean;
+
+# Fix certificate issues
+RUN apt-get update && \
+    apt-get install ca-certificates-java && \
+    apt-get clean && \
+    update-ca-certificates -f;
+
+# Setup JAVA_HOME -- useful for docker commandline
+ENV JAVA_HOME /usr/lib/jvm/java-8-openjdk-amd64/
+RUN export JAVA_HOME
+ENV CERT_VALIDITY_IN_DAYS 30
+
+#Certifcates will be copied at /certs; docker run -v host-path:/certs image-name
+CMD echo "preparing ssl certs"; mkdir -p /tmp/ssl-eg-keys-certs 2>&1 >/dev/null; cd /tmp/ssl-eg-keys-certs || exit 2>&1 >/dev/null; openssl genrsa -out rsa_private_key.pem 2048 2>&1 >/dev/null; openssl rsa -in rsa_private_key.pem -pubout -out rsa_public_key.pem 2>&1 >/dev/null; openssl pkcs8 -topk8 -inform PEM -in rsa_private_key.pem -outform PEM -passout pass:te9Fmv%qaq -out encrypted_rsa_private_key.pem 2>&1 >/dev/null; openssl genrsa -out ca.key 2048 2>&1 >/dev/null; openssl req -new -key ca.key -subj /C=CN/ST=Beijing/L=Biejing/O=edgegallery/CN=edgegallery.org -out ca.csr 2>&1 >/dev/null; openssl x509 -req -days $CERT_VALIDITY_IN_DAYS -in ca.csr -extensions v3_ca -signkey ca.key -out ca.crt 2>&1 >/dev/null; openssl genrsa -out tls.key 2048 2>&1 >/dev/null;openssl rsa -in tls.key -aes256 -passout pass:te9Fmv%qaq -out encryptedtls.key 2>&1 >/dev/null;openssl req -new -key tls.key -subj /C=CN/ST=Beijing/L=Biejing/O=edgegallery/CN=edgegallery.org -out tls.csr 2>&1 >/dev/null; openssl x509 -req -in tls.csr -extensions v3_usr -CA ca.crt -CAkey ca.key -CAcreateserial -out tls.crt 2>&1 >/dev/null; keytool -genkey -alias edgegallery \
+  -dname "CN=edgegallery,OU=edgegallery,O=edgegallery,L=edgegallery,ST=edgegallery,C=CN" \
+  -storetype PKCS12 -keyalg RSA -keysize 2048 -storepass te9Fmv%qaq -keystore keystore.p12 -validity $CERT_VALIDITY_IN_DAYS 2>&1 >/dev/null; yes yes | keytool -importcert -file ca.crt -alias clientkey -keystore keystore.jks -storepass te9Fmv%qaq 2>&1 >/dev/null; rm ca.csr ca.key ca.srl tls.csr 2>&1 >/dev/null; cp -r /tmp/ssl-eg-keys-certs/* /certs 2>&1 >/dev/null; rm -rf /tmp/ssl-eg-keys-certs/ 2>&1 >/dev/null;  exit 0;
