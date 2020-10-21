@@ -1315,7 +1315,12 @@ function uninstall_umbrella_chart()
 
 function create_ssl_certs()
 {
-  docker run -v $PLATFORM_DIR/conf/keys/:/certs edgegallery/deploy-tool:latest
+  if [[ -z $CERT_VALIDITY_IN_DAYS ]]; then
+    env=""
+  else
+    env="-e CERT_VALIDITY_IN_DAYS=$CERT_VALIDITY_IN_DAYS"
+  fi
+  docker run $env -v $PLATFORM_DIR/conf/keys/:/certs edgegallery/deploy-tool:latest
 }
 
 function install_EdgeGallery ()

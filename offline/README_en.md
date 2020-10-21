@@ -211,3 +211,11 @@ Following additional options are available for setting
 * EG_IMAGE_LIST_CONTROLLER_X86, EG_IMAGE_LIST_CONTROLLER_ARM64, EG_IMAGE_LIST_EDGE_X86, EG_IMAGE_LIST_EDGE_ARM64 - Set to required images for deploying the components of edge gallery.
 
 
+Advanced Configuration
+====================
+
+Set following values in env.sh and run **source env.sh**
+
+*To Configure the validity of ssl certs in days, default value of CERT_VALIDITY_IN_DAYS is 30*
+
+CERT_VALIDITY_IN_DAYS=365

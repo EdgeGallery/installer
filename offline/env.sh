@@ -40,6 +40,9 @@ if [[ $OFFLINE_MODE == "muno" ]]; then
   REGISTRY_URL="$EG_NODE_DEPLOY_IP:5000/"
 fi
 
+##SSL certs validity
+#export CERT_VALIDITY_IN_DAYS=
+
 #MEP values
 PG_ADMIN_PWD=""
 KONG_PG_PWD=""
