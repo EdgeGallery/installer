@@ -25,9 +25,16 @@ EdgeGallery离线安装程序是基于ubuntu x86_64或arm64体系结构的给Kub
 
 1.在部署前先通过上面的场景表，选择自己要部署的场景，准备好需要的服务器。
 
+   部署服务器最低配置建议使用：4CPU,16G内存，100G硬盘，单网卡或者多网卡。
+   根据需求准备服务器：
+   做普通测试简单操作可按照最低配置部署成单节点，最少需要一台服务器。
+   现实环境是中心和边缘时分开的，中心（deploy节点，master节点，worker节点）三台服务器，
+   边缘最少一个，如果按照现实环境搭建测试环境，则最少需要4台服务器。
+
+
 2.在准备好的服务器上安装Ubuntu 18.04操作系统(ububntu 18.04是经过安装测试的版本)。
 
-3.下载离线安装程程序，[下载地址](http://159.138.137.155)，根据具建议使用0.9.tar.gz这个安装包建议使用/all/v0.9-CodeFreeze.tar.gz这个安装包  
+3.下载离线安装程程序，[下载地址](http://release.edgegallery.org/，根据具建议使用EdgeGallery_V0.9.tar.gz这个安装包
 
 4.下载完安装包后解压即可（多节点安装，安装包需要上传到deploy node(也就是场景表中EG_NODE_DEPLOY_IP对应的机器）edgegallery安装的过程是在安装节点deploy node的机器上进行，deploy节点作为安装容器和helm仓库使用)。
 
@@ -316,3 +323,4 @@ kubectl taint nodes node1 key:NoSchedule- //node或者pod name
 ![输入图片说明](https://images.gitee.com/uploads/images/2020/0930/174238_7bdf76f3_8040887.png "DNS.png")
 
 DNS的53端口，由于环境安全策略屏蔽了该端口，在华为云上打开此端口问题解决
+
