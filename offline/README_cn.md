@@ -24,10 +24,17 @@ EdgeGallery离线安装程序是基于ubuntu x86_64或arm64体系结构的给Kub
  **###### 部署先决条件：** 
 
 1.在部署前先通过上面的场景表，选择自己要部署的场景，准备好需要的服务器。
+  
+   部署服务器最低配置建议使用：4CPU,16G内存，100G硬盘，单网卡或者多网卡。
+   根据需求准备服务器：
+   做普通测试简单操作可按照最低配置部署成单节点，最少需要一台服务器。
+   现实环境是中心和边缘时分开的，中心（deploy节点，master节点，worker节点）三台服务器，
+   边缘最少一个，如果按照现实环境搭建测试环境，则最少需要4台服务器。
 
 2.在准备好的服务器上安装Ubuntu 18.04操作系统(ububntu 18.04是经过安装测试的版本)。
 
-3.下载离线安装程序，下载地址[http://159.138.137.155，根据具体安装环境下载对应的安装包，建议使用0.9.tar.gz个安装包](http://159.138.137.177)
+3.下载离线安装程序，下载地址http://release.edgegallery.org/，根据具体安装环境下载对应的安装包，建议使用EdgeGallery_V0.9.tar.gz个安装 
+  包
 
 4.下载完安装包后解压即可（多节点安装，安装包需要上传到deploy node(也就是场景表中EG_NODE_DEPLOY_IP对应的节点）edgegallery安装的过程是在安装节点deploy node的节点上进行，deploy节点作为安装容器和helm仓库使用)。
 
@@ -35,16 +42,10 @@ EdgeGallery离线安装程序是基于ubuntu x86_64或arm64体系结构的给Kub
 
 ##### **部署流程演示图：**
 
-![输入图片说明](https://images.gitee.com/uploads/images/2020/1015/092716_272e1512_8040887.png "流程.png")
+![输入图片说明](https://images.gitee.com/uploads/images/2020/1022/110125_0f5f5d1a_8040887.png "屏幕截图.png")
  
 
  
-
-###### 手动实例化流程：
-
- 
-
-![输入图片说明](https://images.gitee.com/uploads/images/2020/1009/145232_50eadcdd_8040887.png "图片4.png")
 
  
 
@@ -256,6 +257,45 @@ export K8S_NODE_DEPLOY_IP=192.168.100.120           //设置deploy节点IP地址
 source env.sh                                //运行使编辑保存完的文件生效
 
 bash eg.sh -i                                //开始安装程序
+
+
+
+###### 手动实例化流程：
+
+ 
+
+![输入图片说明](https://images.gitee.com/uploads/images/2020/1009/145232_50eadcdd_8040887.png "图片4.png")
+
+
+手段实例化测试验证注意点：
+APPLCM注册：在MECM上完成APPLCM注册
+![输入图片说明](https://images.gitee.com/uploads/images/2020/1022/110538_88adc97b_8040887.png "屏幕截图.png")
+
+（IP地址为边缘节点IP，端口目前为30204）
+![输入图片说明](https://images.gitee.com/uploads/images/2020/1022/110637_0cbf2f5a_8040887.png "屏幕截图.png")
+
+边缘节点注册：
+
+![输入图片说明](https://images.gitee.com/uploads/images/2020/1022/110723_522cace2_8040887.png "屏幕截图.png")
+
+配置文件上传：
+配置文件为要注册的边缘节点/root/.kube/下config文件，下载并保存改文件在自己电脑上，在此位置上次配置文件。
+
+![输入图片说明](https://images.gitee.com/uploads/images/2020/1022/110900_5ce7240f_8040887.png "屏幕截图.png")
+
+ 在中心节点配置数据库：
+
+ kubectl exec -it developer-be-postgres-0 /bin/sh
+
+ psql -U developer developerdb
+
+ 下面为一条指令，IP地址为边缘节点IP
+
+ insert into tbl_service_host(host_id, name, address, architecture, status, protocol, ip, os, port_range_min, port_range_max, 
+ port, delete) values ('3c55ac26-60e9-42c0-958b-1bf7ea4da60a', 'Node1', 'XIAN', 'X86', 'NORMAL', 'https', '192.168.101.245', 
+ 'Ubuntu', 30000, 32767, 30204, null);
+
+ 配置完成退出
 
 #### **卸载**
 
