@@ -202,14 +202,12 @@ function kubernetes_deploy() {
         info "K8S_MASTER_IP is not set." $RED
       else
         kubeadm config images list
-        kubeadm init --apiserver-advertise-address=$K8S_MASTER_IP --pod-network-cidr=10.244.0.0/16 -v=5
+        kubeadm init --kubernetes-version=v1.18.7 --apiserver-advertise-address=$K8S_MASTER_IP --pod-network-cidr=10.244.0.0/16 -v=5
 
         mkdir -p ~/.kube
         cp -i /etc/kubernetes/admin.conf ~/.kube/config
 
         kubectl apply -f $K8S_OFFLINE_DIR/k8s/calico.yaml
-
-	kubectl apply -f $K8S_OFFLINE_DIR/k8s/metric-server.yaml
 
         kubectl taint nodes --all node-role.kubernetes.io/master-
 
@@ -566,6 +564,7 @@ function _eg_undeploy()
   WORKER_IPS=$3
   WORKER_IPS=`echo $WORKER_IPS | sed -e "s/,/ /g"`
   uninstall_EdgeGallery $FEATURE
+  kubectl delete -f $K8S_OFFLINE_DIR/k8s/metric-server.yaml
   if [[ $SKIP_ECO_SYSTEM_UN_INSTALLATION != "true" ]]; then
     cleanup_eg_ecosystem
   fi
@@ -1316,7 +1315,12 @@ function uninstall_umbrella_chart()
 
 function create_ssl_certs()
 {
-  docker run -v $PLATFORM_DIR/conf/keys/:/certs edgegallery/deploy-tool:latest
+  if [[ -z $CERT_VALIDITY_IN_DAYS ]]; then
+    env=""
+  else
+    env="-e CERT_VALIDITY_IN_DAYS=$CERT_VALIDITY_IN_DAYS"
+  fi
+  docker run $env -v $PLATFORM_DIR/conf/keys/:/certs edgegallery/deploy-tool:latest
 }
 
 function install_EdgeGallery ()
@@ -1541,6 +1545,7 @@ function _deploy_eg()
   wait "kube-proxy" $number_of_nodes
   wait_for_ready_state "calico-node" $number_of_nodes
   configure_eg_ecosystem_on_remote $MASTER_IP $EG_NODE_WORKER_IPS
+  kubectl apply -f $K8S_OFFLINE_DIR/k8s/metric-server.yaml
   create_ssl_certs
   for node_ip in $EG_NODE_WORKER_IPS;
   do
@@ -1581,6 +1586,7 @@ function _deploy_controller()
   wait "kube-proxy" $number_of_nodes
   wait_for_ready_state "calico-node" $number_of_nodes
   configure_eg_ecosystem_on_remote $MASTER_IP $EG_NODE_CONTROLLER_WORKER_IPS
+  kubectl apply -f $K8S_OFFLINE_DIR/k8s/metric-server.yaml
   create_ssl_certs
   for node_ip in $EG_NODE_CONTROLLER_WORKER_IPS;
   do
@@ -1617,6 +1623,7 @@ function _deploy_edge()
   wait "kube-proxy" $number_of_nodes
   wait_for_ready_state "calico-node" $number_of_nodes
   configure_eg_ecosystem_on_remote  $MASTER_IP $EG_NODE_EDGE_WORKER_IPS
+  kubectl apply -f $K8S_OFFLINE_DIR/k8s/metric-server.yaml
   create_ssl_certs
   for node_ip in $EG_NODE_EDGE_WORKER_IPS;
   do
