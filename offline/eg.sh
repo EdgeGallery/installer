@@ -209,8 +209,6 @@ function kubernetes_deploy() {
 
         kubectl apply -f $K8S_OFFLINE_DIR/k8s/calico.yaml
 
-	kubectl apply -f $K8S_OFFLINE_DIR/k8s/metric-server.yaml
-
         kubectl taint nodes --all node-role.kubernetes.io/master-
 
         kubectl get all --all-namespaces
@@ -566,6 +564,7 @@ function _eg_undeploy()
   WORKER_IPS=$3
   WORKER_IPS=`echo $WORKER_IPS | sed -e "s/,/ /g"`
   uninstall_EdgeGallery $FEATURE
+  kubectl delete -f $K8S_OFFLINE_DIR/k8s/metric-server.yaml
   if [[ $SKIP_ECO_SYSTEM_UN_INSTALLATION != "true" ]]; then
     cleanup_eg_ecosystem
   fi
@@ -1545,6 +1544,7 @@ function _deploy_eg()
   wait "kube-proxy" $number_of_nodes
   wait_for_ready_state "calico-node" $number_of_nodes
   configure_eg_ecosystem_on_remote $MASTER_IP $EG_NODE_WORKER_IPS
+  kubectl apply -f $K8S_OFFLINE_DIR/k8s/metric-server.yaml
   create_ssl_certs
   for node_ip in $EG_NODE_WORKER_IPS;
   do
@@ -1585,6 +1585,7 @@ function _deploy_controller()
   wait "kube-proxy" $number_of_nodes
   wait_for_ready_state "calico-node" $number_of_nodes
   configure_eg_ecosystem_on_remote $MASTER_IP $EG_NODE_CONTROLLER_WORKER_IPS
+  kubectl apply -f $K8S_OFFLINE_DIR/k8s/metric-server.yaml
   create_ssl_certs
   for node_ip in $EG_NODE_CONTROLLER_WORKER_IPS;
   do
@@ -1621,6 +1622,7 @@ function _deploy_edge()
   wait "kube-proxy" $number_of_nodes
   wait_for_ready_state "calico-node" $number_of_nodes
   configure_eg_ecosystem_on_remote  $MASTER_IP $EG_NODE_EDGE_WORKER_IPS
+  kubectl apply -f $K8S_OFFLINE_DIR/k8s/metric-server.yaml
   create_ssl_certs
   for node_ip in $EG_NODE_EDGE_WORKER_IPS;
   do
