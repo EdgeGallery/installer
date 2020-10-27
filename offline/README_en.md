@@ -216,6 +216,6 @@ Advanced Configuration
 
 Set following values in env.sh and run **source env.sh**
 
-*To Configure the validity of ssl certs in days, default value of CERT_VALIDITY_IN_DAYS is 30*
+*To Configure the validity of ssl certs in days, default value of CERT_VALIDITY_IN_DAYS is 365*
 
-CERT_VALIDITY_IN_DAYS=365
+CERT_VALIDITY_IN_DAYS=30
