@@ -13,7 +13,7 @@ EdgeGallery离线安装程序是基于ubuntu x86_64或arm64体系结构的给Kub
 
 场景
 
-![输入图片说明](https://images.gitee.com/uploads/images/2020/1009/140037_9654cdf4_8040887.png "EXCEL.png")
+![输入图片说明](https://images.gitee.com/uploads/images/2020/1027/174124_13799a58_8040887.png "屏幕截图.png")
 
 支持的系统版本
 
@@ -42,7 +42,7 @@ EdgeGallery离线安装程序是基于ubuntu x86_64或arm64体系结构的给Kub
 
 #### **部署流程演示图：**
 
-![输入图片说明](https://images.gitee.com/uploads/images/2020/1014/150744_e9b82e90_8040887.png "流程.png")
+![输入图片说明](https://images.gitee.com/uploads/images/2020/1027/174217_3eb4e54f_8040887.png "屏幕截图.png")
 
  
 
@@ -52,8 +52,6 @@ EdgeGallery离线安装程序是基于ubuntu x86_64或arm64体系结构的给Kub
 
  
 
-#### **手动实例化图示：**
-![输入图片说明](https://images.gitee.com/uploads/images/2020/0921/161759_6f13ae7a_8040887.png "图片4.png")
 
  
 
@@ -283,6 +281,78 @@ export K8S_NODE_DEPLOY_IP=192.168.100.120           //设置deploy节点IP地址
 source env.sh                                //运行使编辑保存完的文件生效
 
 bash eg.sh -i                                //开始安装程序
+
+
+#### **手动实例化图示：**
+![输入图片说明](https://images.gitee.com/uploads/images/2020/0921/161759_6f13ae7a_8040887.png "图片4.png")
+
+测试验证注意点：
+
+APPLCM注册：
+
+在MECM上完成APPLCM注册。
+
+![输入图片说明](https://images.gitee.com/uploads/images/2020/1027/174517_a702a2bb_8040887.png "屏幕截图.png")
+
+(IP地址为边缘节点IP,端口30204)
+
+![输入图片说明](https://images.gitee.com/uploads/images/2020/1027/174556_6517a16a_8040887.png "屏幕截图.png")
+
+边缘节点注册：
+
+![输入图片说明](https://images.gitee.com/uploads/images/2020/1027/174634_bdcdae73_8040887.png "屏幕截图.png")
+
+配置文件上传：
+
+配置文件为要注册的边缘节点/root/.kube/ 下config文件，下载并保存该文件在自己电脑上，在此位置上传配置文件。
+
+![输入图片说明](https://images.gitee.com/uploads/images/2020/1027/174710_1f35f6cf_8040887.png "屏幕截图.png")
+
+在中心节点配置数据库：
+  kubectl exec -it developer-be-postgres-0 /bin/sh         //进去容器
+ 
+ psql -U developer developerdb                      
+ 
+下面为1条指令，IP地址为边缘节点IP
+  
+insert into tbl_service_host(host_id, name, address, architecture, status, protocol, ip, os, port_range_min, port_range_max, 
+port, delete) values ('3c55ac26-60e9-42c0-958b-1bf7ea4da60a', 'Node1', 'XIAN', 'X86', 'NORMAL', 'https', '192.168.101.245', 
+'Ubuntu', 30000, 32767, 30204, null);
+  
+配置完成后退出。
+
+在Developer（30092）网页上完成部署测试：
+
+添加新项目：
+
+![输入图片说明](https://images.gitee.com/uploads/images/2020/1027/174841_a53b87e1_8040887.png "屏幕截图.png")
+
+基本信息填写：
+
+![输入图片说明](https://images.gitee.com/uploads/images/2020/1027/174949_78233167_8040887.png "屏幕截图.png")
+
+按照上述选择完成项目创建。
+
+构建&测试：
+
+![输入图片说明](https://images.gitee.com/uploads/images/2020/1027/175822_5ea52a73_8040887.png "屏幕截图.png")
+
+参数配置：
+
+![输入图片说明](https://images.gitee.com/uploads/images/2020/1027/175924_e2df337c_8040887.png "屏幕截图.png")
+
+选择之前插入的边缘节点服务器信息:
+
+![输入图片说明](https://images.gitee.com/uploads/images/2020/1027/180035_d5ebfa02_8040887.png "屏幕截图.png")
+
+完成构建测试：
+
+![输入图片说明](https://images.gitee.com/uploads/images/2020/1027/180115_f721ee5e_8040887.png "屏幕截图.png")
+
+发布到应用商店：
+
+![输入图片说明](https://images.gitee.com/uploads/images/2020/1027/180153_9ed9eb8f_8040887.png "屏幕截图.png")
+
 
 #### **卸载**
 
