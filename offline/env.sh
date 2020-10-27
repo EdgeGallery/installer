@@ -41,7 +41,7 @@ if [[ $OFFLINE_MODE == "muno" ]]; then
 fi
 
 ##SSL certs validity
-#export CERT_VALIDITY_IN_DAYS=
+export CERT_VALIDITY_IN_DAYS=365
 
 #MEP values
 PG_ADMIN_PWD=""
