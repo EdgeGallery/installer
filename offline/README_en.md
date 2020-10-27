@@ -21,11 +21,11 @@ Pre-requsities
 ---------------
 
 * Install Ubuntu 18.04 operating system on all those nodes and set same root password and connect them into network as planned.
-* Download offline installer from FTP server **http://159.138.137.155**. And installers are available for edge, controller and full stack separately for x86 and arm64 architectures.
+* Download offline installer from FTP server **http://release.edgegallery.org/**. And installers are available for edge, controller and full stack separately for x86 and arm64 architectures.
 * Extract to a folder
 * Prepare all the node as below
 
- _./eg.sh –prepare IP1, IP2, IP3 PASSWORD_ 
+ _./eg.sh –prepare IP1,IP2,IP3 PASSWORD_
 
 Deploy Modes
 ----------------
@@ -43,7 +43,10 @@ OFFLINE_MODE = aio
 
 EG_NODE_MASTER_IPS = 192.168.99.100
 
-*To Configure MEP MP1 & MM5 Interfaces, By default, these interfaces are set to eth0*
+*To Configure IP for EG Portals, By default, PORTAL_IP is set to EG_NODE_MASTER_IPS*
+PORTAL_IP=159.138.x.y
+
+*To Configure MEP MP1 & MM5 Interfaces, By default, these interfaces are set to EG_NODE_MASTER_IPS's interface name*
 
 EG_NODE_EDGE_MP1=eth1
 
@@ -60,6 +63,9 @@ OFFLINE_MODE = aio
 
 EG_NODE_CONTROLLER_MASTER_IPS = 192.168.99.101
 
+*To Configure IP for EG Portals, By default, PORTAL_IP is set to EG_NODE_CONTROLLER_MASTER_IPS*
+PORTAL_IP=159.138.x.y
+
 ./eg.sh -i
 
 
@@ -71,7 +77,7 @@ OFFLINE_MODE = aio
 
 EG_NODE_EDGE_MASTER_IPS = 192.168.99.104
 
-*To Configure MEP MP1 & MM5 Interfaces, By default, these interfaces are set to eth0*
+*To Configure MEP MP1 & MM5 Interfaces, By default, these interfaces are set to EG_NODE_EDGE_MASTER_IPS's interface name*
 
 EG_NODE_EDGE_MP1=eth1
 
@@ -93,9 +99,13 @@ EG_NODE_DEPLOY_IP=192.168.99.100
 
 EG_NODE_MASTER_IPS = 192.168.99.101
 
-EG_NODE_WORKER_IPS= 192.168.99.102, 192.168.99.103
+EG_NODE_WORKER_IPS= 192.168.99.102,192.168.99.103
 
-*To Configure MEP MP1 & MM5 Interfaces, By default, these interfaces are set to eth0*
+*To Configure IP for EG Portals, By default, PORTAL_IP is set to EG_NODE_MASTER_IPS*
+PORTAL_IP=159.138.x.y
+
+*To Configure MEP MP1 & MM5 Interfaces, By default, these interfaces are set to EG_NODE_MASTER_IPS's interface name
+and EG_NODE_WORKER_IPS's interface name on master and worker nodes respectively*
 
 EG_NODE_EDGE_MP1=eth1
 
@@ -117,7 +127,10 @@ EG_NODE_DEPLOY_IP=192.168.99.100
 
 EG_NODE_CONTROLLER_MASTER_IPS = 192.168.99.101
 
-EG_NODE_CONTROLLER_WORKER_IPS= 192.168.99.102, 192.168.99.103
+EG_NODE_CONTROLLER_WORKER_IPS= 192.168.99.102,192.168.99.103
+
+*To Configure IP for EG Portals, By default, PORTAL_IP is set to EG_NODE_CONTROLLER_MASTER_IPS*
+PORTAL_IP=159.138.x.y
 
 ./eg.sh -i
 
@@ -132,9 +145,10 @@ EG_NODE_DEPLOY_IP=192.168.99.100
 
 EG_NODE_EDGE_MASTER_IPS = 192.168.99.104
 
-EG_NODE_EDGE_WORKER_IPS= 192.168.99.105, 192.168.99.106
+EG_NODE_EDGE_WORKER_IPS= 192.168.99.105,192.168.99.106
 
-*To Configure MEP MP1 & MM5 Interfaces, By default, these interfaces are set to eth0*
+*To Configure MEP MP1 & MM5 Interfaces, By default, these interfaces are set to EG_NODE_EDGE_MASTER_IPS's interface name
+ and EG_NODE_EDGE_WORKER_IPS's interface name on master and worker nodes respectively*
 
 EG_NODE_EDGE_MP1=eth1
 
@@ -197,3 +211,11 @@ Following additional options are available for setting
 * EG_IMAGE_LIST_CONTROLLER_X86, EG_IMAGE_LIST_CONTROLLER_ARM64, EG_IMAGE_LIST_EDGE_X86, EG_IMAGE_LIST_EDGE_ARM64 - Set to required images for deploying the components of edge gallery.
 
 
+Advanced Configuration
+====================
+
+Set following values in env.sh and run **source env.sh**
+
+*To Configure the validity of ssl certs in days, default value of CERT_VALIDITY_IN_DAYS is 365*
+
+CERT_VALIDITY_IN_DAYS=30
