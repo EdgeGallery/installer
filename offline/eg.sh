@@ -755,31 +755,31 @@ function _prepare_mep_ssl()
   cd ${MEP_CERTS_DIR} || exit
 
   # generate ca certificate
-  openssl genrsa -out ca.key 2048
-  openssl req -new -key ca.key -subj /C=CN/ST=Peking/L=Beijing/O=edgegallery/CN=${DOMAIN_NAME} -out ca.csr
-  openssl x509 -req -days 365 -in ca.csr -extensions v3_ca -signkey ca.key -out ca.crt
+  openssl genrsa -out ca.key 2048 2>&1 >/dev/null
+  openssl req -new -key ca.key -subj /C=CN/ST=Peking/L=Beijing/O=edgegallery/CN=${DOMAIN_NAME} -out ca.csr 2>&1 >/dev/null
+  openssl x509 -req -days 365 -in ca.csr -extensions v3_ca -signkey ca.key -out ca.crt 2>&1 >/dev/null
   # openssl ca -days 365 -in ca.csr -extensions v3_ca -keyfile ca.key -out ca.crt
 
   # generate tls certificate
-  openssl genrsa -out ${CERT_NAME}_tls.key 2048
-  openssl rsa -in ${CERT_NAME}_tls.key -aes256 -passout pass:${CERT_PWD} -out ${CERT_NAME}_encryptedtls.key
+  openssl genrsa -out ${CERT_NAME}_tls.key 2048 2>&1 >/dev/null
+  openssl rsa -in ${CERT_NAME}_tls.key -aes256 -passout pass:${CERT_PWD} -out ${CERT_NAME}_encryptedtls.key 2>&1 >/dev/null
 
-  echo -n ${CERT_PWD} > ${CERT_NAME}_cert_pwd
+  echo -n ${CERT_PWD} > ${CERT_NAME}_cert_pwd 2>&1 >/dev/null
 
-  openssl req -new -key ${CERT_NAME}_tls.key -subj /C=CN/ST=Beijing/L=Beijing/O=edgegallery/CN=${DOMAIN_NAME} -out ${CERT_NAME}_tls.csr
-  openssl x509 -req -days 365 -in ${CERT_NAME}_tls.csr -extensions v3_req -CA ca.crt -CAkey ca.key -CAcreateserial -out ${CERT_NAME}_tls.crt
+  openssl req -new -key ${CERT_NAME}_tls.key -subj /C=CN/ST=Beijing/L=Beijing/O=edgegallery/CN=${DOMAIN_NAME} -out ${CERT_NAME}_tls.csr 2>&1 >/dev/null
+  openssl x509 -req -days 365 -in ${CERT_NAME}_tls.csr -extensions v3_req -CA ca.crt -CAkey ca.key -CAcreateserial -out ${CERT_NAME}_tls.crt 2>&1 >/dev/null
 
   # generate jwt public private key
-  openssl genrsa -out jwt_privatekey 2048
-  openssl rsa -in jwt_privatekey -pubout -out jwt_publickey
-  openssl rsa -in jwt_privatekey -aes256 -passout pass:${CERT_PWD} -out jwt_encrypted_privatekey
+  openssl genrsa -out jwt_privatekey 2048 2>&1 >/dev/null
+  openssl rsa -in jwt_privatekey -pubout -out jwt_publickey 2>&1 >/dev/null
+  openssl rsa -in jwt_privatekey -aes256 -passout pass:${CERT_PWD} -out jwt_encrypted_privatekey 2>&1 >/dev/null
 
   # remove unnecessary key file
-  rm ca.key
-  rm ca.csr
-  rm ca.crl
-  rm ${CERT_NAME}_tls.csr
-  rm jwt_privatekey
+  rm ca.key 2>&1 >/dev/null
+  rm ca.csr 2>&1 >/dev/null
+  rm ca.crl 2>&1 >/dev/null
+  rm ${CERT_NAME}_tls.csr 2>&1 >/dev/null
+  rm jwt_privatekey 2>&1 >/dev/null
 
   # setup read permission
   cd ..
@@ -806,7 +806,7 @@ function _prepare_mep_ssl()
     --from-file=jwt_publickey=${MEP_CERTS_DIR}/jwt_publickey \
     --from-file=jwt_encrypted_privatekey=${MEP_CERTS_DIR}/jwt_encrypted_privatekey
 
-  rm -rf ${MEP_CERTS_DIR}
+  rm -rf ${MEP_CERTS_DIR} 2>&1 >/dev/null
   set -o history
 }
 
