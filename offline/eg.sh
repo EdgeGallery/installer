@@ -767,7 +767,7 @@ function _prepare_mep_ssl()
   echo -n ${CERT_PWD} > ${CERT_NAME}_cert_pwd
 
   openssl req -new -key ${CERT_NAME}_tls.key -subj /C=CN/ST=Beijing/L=Beijing/O=edgegallery/CN=${DOMAIN_NAME} -out ${CERT_NAME}_tls.csr
-  openssl x509 -req -in ${CERT_NAME}_tls.csr -extensions v3_req -CA ca.crt -CAkey ca.key -CAcreateserial -out ${CERT_NAME}_tls.crt
+  openssl x509 -req -days 365 -in ${CERT_NAME}_tls.csr -extensions v3_req -CA ca.crt -CAkey ca.key -CAcreateserial -out ${CERT_NAME}_tls.crt
 
   # generate jwt public private key
   openssl genrsa -out jwt_privatekey 2048
