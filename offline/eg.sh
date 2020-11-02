@@ -841,7 +841,8 @@ function install_mep()
   --set images.dns.pullPolicy=$mep_images_dns_pullPolicy \
   --set images.kong.pullPolicy=$mep_images_kong_pullPolicy \
   --set images.postgres.pullPolicy=$mep_images_postgres_pullPolicy \
-  --set ssl.secretName=$mep_ssl_secretName
+  --set ssl.secretName=$mep_ssl_secretName \
+  --set global.persistence.enabled=$ENABLE_PERSISTENCE
 
   if [ $? -eq 0 ]; then
     info "[Deployed MEP  .........]" $GREEN
@@ -921,7 +922,8 @@ function install_mecm-mepm ()
     --set images.postgres.tag=$mepm_images_postgres_tag \
     --set images.lcmcontroller.pullPolicy=$mepm_images_lcmcontroller_pullPolicy \
     --set images.k8splugin.pullPolicy=$mepm_images_k8splugin_pullPolicy \
-    --set images.postgres.pullPolicy=$mepm_images_postgres_pullPolicy
+    --set images.postgres.pullPolicy=$mepm_images_postgres_pullPolicy \
+    --set global.persistence.enabled=$ENABLE_PERSISTENCE
   if [ $? -eq 0 ]; then
     info "[Deployed MECM-MEPM  ........]" $GREEN
   else
@@ -987,7 +989,8 @@ function install_mecm-meo ()
     --set images.appo.pullPolicy=$meo_images_appo_pullPolicy \
     --set images.apm.pullPolicy=$meo_images_apm_pullPolicy \
     --set images.postgres.pullPolicy=$meo_images_postgres_pullPolicy \
-    --set mecm.docker.fsgroup=$fs_group
+    --set mecm.docker.fsgroup=$fs_group \
+    --set global.persistence.enabled=$ENABLE_PERSISTENCE
   if [ $? -eq 0 ]; then
     info "[Deployed MECM-MEO  .........]" $GREEN
   else
@@ -1016,7 +1019,8 @@ function install_mecm-fe ()
     --set images.mecmFe.pullPolicy=$mecm_fe_images_mecmFe_pullPolicy \
     --set images.initservicecenter.pullPolicy=$mecm_fe_images_initservicecenter_pullPolicy \
     --set global.ssl.enabled=$mecm_fe_global_ssl_enabled \
-    --set global.ssl.secretName=$mecm_fe_global_ssl_secretName
+    --set global.ssl.secretName=$mecm_fe_global_ssl_secretName \
+    --set global.persistence.enabled=$ENABLE_PERSISTENCE
   if [ $? -eq 0 ]; then
     info "[Deployed MECM-FE  ..........]" $GREEN
   else
@@ -1049,7 +1053,8 @@ function install_appstore ()
   --set images.postgres.pullPolicy=$appstore_images_postgres_pullPolicy \
   --set images.initservicecenter.pullPolicy=$appstore_images_initservicecenter_pullPolicy \
   --set global.ssl.enabled=$appstore_global_ssl_enabled \
-  --set global.ssl.secretName=$appstore_global_ssl_secretName
+  --set global.ssl.secretName=$appstore_global_ssl_secretName \
+  --set global.persistence.enabled=$ENABLE_PERSISTENCE
   if [ $? -eq 0 ]; then
     info "[Deployed AppStore  .........]" $GREEN
   else
@@ -1087,7 +1092,8 @@ function install_developer ()
   --set images.toolChain.pullPolicy=$developer_images_toolChain_pullPolicy \
   --set images.portingAdvisor.pullPolicy=$developer_images_portingAdvisor_pullPolicy \
   --set global.ssl.enabled=$developer_global_ssl_enabled \
-  --set global.ssl.secretName=$developer_global_ssl_secretName
+  --set global.ssl.secretName=$developer_global_ssl_secretName \
+  --set global.persistence.enabled=$ENABLE_PERSISTENCE
   if [ $? -eq 0 ]; then
     info "[Deployed Developer .........]" $GREEN
   else
@@ -1152,7 +1158,8 @@ global.oauth2.clients.mecm.clientUrl=https://$NODEIP:$MECM_PORT, \
 --set images.redis.pullPolicy=$usermgmt_images_redis_pullPolicy \
 --set images.initservicecenter.pullPolicy=$usermgmt_images_initservicecenter_pullPolicy \
 --set global.ssl.enabled=$usermgmt_global_ssl_enabled \
---set global.ssl.secretName=$usermgmt_global_ssl_secretName
+--set global.ssl.secretName=$usermgmt_global_ssl_secretName \
+--set global.persistence.enabled=$ENABLE_PERSISTENCE
 
   if [ $? -eq 0 ]; then
     info "[Deployed UserMgmt  .........]" $GREEN
@@ -1327,6 +1334,32 @@ function create_ssl_certs()
   docker run $env -v $PLATFORM_DIR/conf/keys/:/certs edgegallery/deploy-tool:latest
 }
 
+function install_nfs-client-provisioner()
+{
+  info "[Deploying nfs-client-provisioner]"
+  if [ $KERNEL_ARCH == 'aarch64' ]; then
+    set_image_value="--set image.repository=vbouchaud/nfs-client-provisioner --set image.tag=v3.1.1"
+  else
+    set_image_value=""
+  fi
+
+  helm install --wait  nfs-client-provisioner --set nfs.server=$NFS_SERVER_IP \
+       --set nfs.path=$NFS_PATH  $set_image_value "$CHART_PREFIX"stable/nfs-client-provisioner"$NFS_CHART_SUFFIX"
+  if [ $? -eq 0 ]; then
+    info "[Deployed nfs-client-provisioner]" $GREEN
+  else
+    info "[nfs-client-provisioner Deployment Failed]" $RED
+    exit 1
+  fi
+}
+
+function uninstall_nfs-client-provisioner()
+{
+  info "[UnDeploying nfs-client-provisioner]"
+  helm uninstall nfs-client-provisioner
+  info "[UnDeployed nfs-client-provisioner]" $GREEN
+}
+
 function install_EdgeGallery ()
 {
   FEATURE=$1
@@ -1334,6 +1367,15 @@ function install_EdgeGallery ()
   if [ -z "$DEPLOY_TYPE" ]; then
     DEPLOY_TYPE="nodePort"
   fi
+
+  if [[ $ENABLE_PERSISTENCE == "true" ]]; then
+    if [[ -z $NFS_SERVER_IP || -z $NFS_PATH ]]; then
+      info "[Both NFS_SERVER_IP and NFS_PATH values must be set for enabling persistence]" $RED
+      exit 1
+    fi
+    install_nfs-client-provisioner
+  fi
+
   if [[ $FEATURE == 'edge' || $FEATURE == 'all' ]]; then
     install_mep
     install_mecm-mepm
@@ -1382,6 +1424,7 @@ function uninstall_EdgeGallery ()
    elif [[ ($FEATURE == 'controller' || $FEATURE == 'all') && ($DEPLOY_TYPE == 'ingress') ]]; then
      uninstall_controller_with_ingress
    fi
+   uninstall_nfs-client-provisioner
 }
 #================================wrapper of k8s and eg===========================================
 function _parse_arguments ()
@@ -1890,6 +1933,7 @@ function main()
     CHART_SUFFIX="-1.0.1.tgz"
     PROM_CHART_SUFFIX="-9.3.1.tgz"
     GRAFANA_CHART_SUFFIX="-5.5.5.tgz"
+    NFS_CHART_SUFFIX="-1.2.8.tgz"
     REGISTRY_URL=""
   else
     CHART_PREFIX=""

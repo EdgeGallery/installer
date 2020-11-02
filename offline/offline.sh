@@ -105,6 +105,13 @@ if [[ -z "$EG_IMAGE_LIST_EDGE_ARM64_DEFAULT" ]]; then
    docker.io/nfvpe/multus:stable-arm64v8"
 fi 
 
+#COMMON
+if [[ `arch` == "x86_64" ]]; then
+  CLIENT_PROVISIONER="quay.io/external_storage/nfs-client-provisioner:v3.1.0-k8s1.11"
+elif [[ `arch` == "aarch64" ]]; then
+  CLIENT_PROVISIONER="vbouchaud/nfs-client-provisioner:v3.1.1"
+fi
+
 EG_HELM_LIST_EDGE_X86_DEFAULT="mecm-mepm mep"
 EG_HELM_LIST_EDGE_ARM64_DEFAULT=$EG_HELM_LIST_EDGE_X86_DEFAULT
 
@@ -499,13 +506,13 @@ function eg_offline_installer()
   fi
 
   if [[ "$EG_MODE" == "all" ]]; then
-    EG_IMAGE_LIST="$EG_IMAGE_LIST_CONTROLLER $EG_IMAGE_LIST_EDGE"
+    EG_IMAGE_LIST="$EG_IMAGE_LIST_CONTROLLER $EG_IMAGE_LIST_EDGE $CLIENT_PROVISIONER"
     EG_HELM_LIST="$EG_HELM_LIST_CONTROLLER $EG_HELM_LIST_EDGE"
   elif [[ "$EG_MODE" == "controller" ]]; then
-    EG_IMAGE_LIST="$EG_IMAGE_LIST_CONTROLLER"
+    EG_IMAGE_LIST="$EG_IMAGE_LIST_CONTROLLER $CLIENT_PROVISIONER"
     EG_HELM_LIST="$EG_HELM_LIST_CONTROLLER"
   elif [[ "$EG_MODE" == "edge" ]]; then
-    EG_IMAGE_LIST="$EG_IMAGE_LIST_EDGE"
+    EG_IMAGE_LIST="$EG_IMAGE_LIST_EDGE $CLIENT_PROVISIONER"
     EG_HELM_LIST="$EG_HELM_LIST_EDGE"
   fi
 
