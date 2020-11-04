@@ -824,10 +824,21 @@ function install_mep()
   _deploy_network_isolation_multus
 
   info "[Deploying MEP  .............]" $BLUE
+  if [[ $KERNEL_ARCH == 'x86_64' && $OFFLINE_MODE == 'muno' ]] ; then
+    ipam_type=whereabouts
+    phyif_mp1=vxlan-mp1
+    phyif_mm5=vxlan-mm5
+  else
+    ipam_type=host-local
+    phyif_mp1=$EG_NODE_EDGE_MP1
+    phyif_mm5=$EG_NODE_EDGE_MM5
+  fi
+
   info "[it would take maximum of 5mins .......]" $BLUE
   helm install --wait mep-edgegallery "$CHART_PREFIX"edgegallery/mep"$CHART_SUFFIX" \
-  --set networkIsolation.phyInterface.mp1=$EG_NODE_EDGE_MP1 \
-  --set networkIsolation.phyInterface.mm5=$EG_NODE_EDGE_MM5 \
+  --set networkIsolation.ipamType=$ipam_type \
+  --set networkIsolation.phyInterface.mp1=$phyif_mp1 \
+  --set networkIsolation.phyInterface.mm5=$phyif_mm5 \
   --set images.mep.repository=$mep_images_mep_repository \
   --set images.mepauth.repository=$mep_images_mepauth_repository \
   --set images.dns.repository=$mep_images_dns_repository \
@@ -1674,6 +1685,7 @@ function _undeploy_dns_metallb() {
 }
 
 function _setup_interfaces() {
+  KERNEL_ARCH=$(uname -m)
   if [[ -z $EG_NODE_EDGE_MP1 ]]; then
     EG_NODE_EDGE_MP1=$(ip a | grep -B2 $PRIVATE_IP | head -n1 | cut -d ":" -f2 |cut -d " " -f2)
   fi
@@ -1681,15 +1693,35 @@ function _setup_interfaces() {
   if [[ -z $EG_NODE_EDGE_MM5 ]]; then
       EG_NODE_EDGE_MM5=$(ip a | grep -B2 $PRIVATE_IP | head -n1 | cut -d ":" -f2 |cut -d " " -f2)
   fi
+  ip_prefix=$1
+  if [[ $1 -gt 24 ]]; then
+      info "[Can't support more that 24 node....]" $GREEN
+      exit 1
+  fi
+  if [[ $KERNEL_ARCH == 'x86_64' && $OFFLINE_MODE == 'muno' ]] ; then
+      ip link add vxlan-mp1 type vxlan id 100 group 239.1.1.1 dstport 4789 dev $EG_NODE_EDGE_MP1
+      ip link set vxlan-mp1 up
 
-  #These ip's range is betwen x.1.1.2~x.1.1.24 . Rest reserved for allocation to pods.
-  ip link add eg-mp1 link $EG_NODE_EDGE_MP1 type macvlan mode bridge
-  ip addr add 200.1.1.2/24 dev eg-mp1
-  ip link set dev eg-mp1 up
+      ip link add vxlan-mm5 type vxlan id 200 group 239.1.1.1 dstport 4789 dev $EG_NODE_EDGE_MM5
+      ip link set vxlan-mm5 up
 
-  ip link add eg-mm5 link $EG_NODE_EDGE_MM5 type macvlan mode bridge
-  ip addr add 100.1.1.2/24 dev eg-mm5
-  ip link set dev eg-mm5 up
+      #These ip's range is betwen x.1.1.2~x.1.1.24 . Rest reserved for allocation to pods.
+      ip link add eg-mp1 link vxlan-mp1 type macvlan mode bridge
+      ip addr add 200.1.1.$ip_prefix/24 dev eg-mp1
+      ip link set dev eg-mp1 up
+
+      ip link add eg-mm5 link vxlan-mm5 type macvlan mode bridge
+      ip addr add 100.1.1.$ip_prefix/24 dev eg-mm5
+      ip link set dev eg-mm5 up
+   else
+      ip link add eg-mp1 link $EG_NODE_EDGE_MP1 type macvlan mode bridge
+      ip addr add 200.1.1.$ip_prefix/24 dev eg-mp1
+      ip link set dev eg-mp1 up
+
+      ip link add eg-mm5 link $EG_NODE_EDGE_MM5 type macvlan mode bridge
+      ip addr add 100.1.1.$ip_prefix/24 dev eg-mm5
+      ip link set dev eg-mm5 up
+   fi
 }
 
 function _deploy_network_isolation_multus() {
@@ -1703,24 +1735,32 @@ function _deploy_network_isolation_multus() {
   sed -i 's?image: edgegallery/edgegallery-secondary-ep-controller:latest?image: '$REGISTRY_URL'edgegallery/edgegallery-secondary-ep-controller:latest?g' $PLATFORM_DIR/conf/edge/network-isolation/eg-sp-controller.yaml
   kubectl apply -f $PLATFORM_DIR/conf/edge/network-isolation/eg-sp-controller.yaml
 
+  if [[ $KERNEL_ARCH == 'x86_64' && $OFFLINE_MODE == 'muno' ]] ; then
+    kubectl apply -f $PLATFORM_DIR/conf/edge/network-isolation/whereabouts-daemonset-install.yaml
+    kubectl apply -f $PLATFORM_DIR/conf/edge/network-isolation/whereabouts.cni.cncf.io_ippools.yaml
+  fi
+
+  ip_prefix_count=2
   if [[ $OFFLINE_MODE == "muno" ]]; then
     for node_ip in $MASTER_IP;
     do
       sshpass ssh root@$node_ip "mkdir -p /tmp/remote-platform"
       scp $TARBALL_PATH/eg.sh root@$node_ip:/tmp/remote-platform
       sshpass ssh root@$node_ip "cd /tmp/remote-platform;source eg.sh;export PRIVATE_IP=$node_ip;
-      export EG_NODE_EDGE_MP1=$EG_NODE_EDGE_MP1;export EG_NODE_EDGE_MM5=$EG_NODE_EDGE_MM5;_setup_interfaces"
+      export EG_NODE_EDGE_MP1=$EG_NODE_EDGE_MP1;export EG_NODE_EDGE_MM5=$EG_NODE_EDGE_MM5;export OFFLINE_MODE=$OFFLINE_MODE;_setup_interfaces $ip_prefix_count"
+      ip_prefix_count=$(( ip_prefix_count + 1 ))
     done
     for node_ip in $WORKER_IPS;
     do
       sshpass ssh root@$node_ip "mkdir -p /tmp/remote-platform"
       scp $TARBALL_PATH/eg.sh root@$node_ip:/tmp/remote-platform
       sshpass ssh root@$node_ip "cd /tmp/remote-platform;source eg.sh;export PRIVATE_IP=$node_ip;
-      export EG_NODE_EDGE_MP1=$EG_NODE_EDGE_MP1;export EG_NODE_EDGE_MM5=$EG_NODE_EDGE_MM5;_setup_interfaces"
+      export EG_NODE_EDGE_MP1=$EG_NODE_EDGE_MP1;export EG_NODE_EDGE_MM5=$EG_NODE_EDGE_MM5;export OFFLINE_MODE=$OFFLINE_MODE;_setup_interfaces $ip_prefix_count"
+      ip_prefix_count=$(( ip_prefix_count + 1 ))
     done
   else
     PRIVATE_IP=$DEPLOY_NODE_IP
-    _setup_interfaces
+    _setup_interfaces $ip_prefix_count
   fi
 
   wait "kube-multus" $number_of_nodes
@@ -1728,13 +1768,18 @@ function _deploy_network_isolation_multus() {
 }
 
 function _cleanup_network_setup(){
-	rm /opt/cni/bin/macvlan /opt/cni/bin/host-local
+  KERNEL_ARCH=$(uname -m)
+  rm /opt/cni/bin/macvlan /opt/cni/bin/host-local
   ip link set dev eg-mp1 down
-	ip link delete eg-mp1
+  ip link delete eg-mp1
 
   ip link set dev eg-mm5 down
-	ip link delete eg-mm5
-	rm /opt/cni/bin/multus
+  ip link delete eg-mm5
+  rm /opt/cni/bin/multus
+  if [[ $KERNEL_ARCH == 'x86_64' && $OFFLINE_MODE == 'muno' ]]; then
+      ip link delete vxlan-mp1
+      ip link delete vxlan-mm5
+  fi
 }
 
 function _undeploy_network_isolation_multus() {
@@ -1743,14 +1788,19 @@ function _undeploy_network_isolation_multus() {
   kubectl delete -f $PLATFORM_DIR/conf/edge/network-isolation/eg-sp-rbac.yaml
   kubectl delete -f $PLATFORM_DIR/conf/edge/network-isolation/multus.yaml
 
+  if [[ $KERNEL_ARCH == 'x86_64' && $OFFLINE_MODE == 'muno' ]] ; then
+    kubectl delete -f $PLATFORM_DIR/conf/edge/network-isolation/whereabouts-daemonset-install.yaml
+    kubectl delete -f $PLATFORM_DIR/conf/edge/network-isolation/whereabouts.cni.cncf.io_ippools.yaml
+  fi
+
   if [[ $OFFLINE_MODE == "muno" ]]; then
     for node_ip in $MASTER_IP;
     do
-      sshpass ssh root@$node_ip "cd /tmp/remote-platform;source eg.sh ; _cleanup_network_setup"
+      sshpass ssh root@$node_ip "cd /tmp/remote-platform;source eg.sh ;export OFFLINE_MODE=$OFFLINE_MODE; _cleanup_network_setup"
     done
     for node_ip in $WORKER_IPS;
     do
-      sshpass ssh root@$node_ip "cd /tmp/remote-platform;source eg.sh ; _cleanup_network_setup"
+      sshpass ssh root@$node_ip "cd /tmp/remote-platform;source eg.sh ;export OFFLINE_MODE=$OFFLINE_MODE; _cleanup_network_setup"
     done
   else
     _cleanup_network_setup

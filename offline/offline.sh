@@ -71,6 +71,7 @@ if [[ -z "$EG_IMAGE_LIST_EDGE_X86_DEFAULT" ]]; then
    postgres:12.3 \
    kong:2.0.4-ubuntu \
    docker.io/nfvpe/multus:stable \
+   docker.io/dougbtv/whereabouts:latest \
    curlimages/curl:7.70.0 \
    metallb/speaker:v0.9.3 \
    metallb/controller:v0.9.3"
