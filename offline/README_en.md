@@ -219,3 +219,29 @@ Set following values in env.sh and run **source env.sh**
 *To Configure the validity of ssl certs in days, default value of CERT_VALIDITY_IN_DAYS is 365*
 
 CERT_VALIDITY_IN_DAYS=30
+
+*To Enable persistence volume, default value of ENABLE_PERSISTENCE is "false"*
+
+ENABLE_PERSISTENCE="true"
+
+NFS_SERVER_IP="nfs-server-ip"
+
+NFS_PATH="nfs-server-exported-path"
+
+nfs server:
+
+```
+    apt update
+    apt install nfs-kernel-server
+    mkdir /var/nfs/general -p
+    chmod -R 777 /var/nfs/final/
+    add below line in /etc/exportfs
+      /var/nfs/final    *(rw,no_root_squash,sync)
+    systemctl restart nfs-kernel-server
+``` 
+on deploy-node and master node:
+
+``` 
+    apt update
+    apt install nfs-common
+```

@@ -40,6 +40,12 @@ if [[ $OFFLINE_MODE == "muno" ]]; then
   REGISTRY_URL="$EG_NODE_DEPLOY_IP:5000/"
 fi
 
+##ENABLE_PERSISTENCE
+#set "true" to enable persistence storage
+export ENABLE_PERSISTENCE="false"
+export NFS_SERVER_IP=""
+export NFS_PATH=""
+
 ##SSL certs validity
 export CERT_VALIDITY_IN_DAYS=365
 
