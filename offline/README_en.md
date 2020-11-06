@@ -234,12 +234,12 @@ nfs server:
     apt update
     apt install nfs-kernel-server
     mkdir /var/nfs/general -p
-    chmod -R 777 /var/nfs/final/
+    chmod -R 777 /var/nfs/general/
     add below line in /etc/exportfs
-      /var/nfs/final    *(rw,no_root_squash,sync)
+      /var/nfs/general    *(rw,no_root_squash,sync)
     systemctl restart nfs-kernel-server
 ``` 
-on deploy-node and master node:
+on deploy-node, master & worker nodes:
 
 ``` 
     apt update
