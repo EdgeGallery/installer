@@ -24,6 +24,28 @@ if [[ -z "$EG_IMAGE_TAG" ]]; then
    EG_IMAGE_TAG=latest
 fi
 
+if [[ "$SYNC_UP_DOCKER_IMAGES" != "false" && "$SYNC_UP_DOCKER_IMAGES" != "true" ]]; then
+  SYNC_UP_DOCKER_IMAGES="true"
+fi
+
+if [[ "$SYNC_UP_HELM_CHARTS" != "false" && "$SYNC_UP_HELM_CHARTS" != "true" ]]; then
+  SYNC_UP_HELM_CHARTS="true"
+fi
+
+if [[ "$ONLY_UPDATE_CACHE" != "false" && "$ONLY_UPDATE_CACHE" != "true" ]]; then
+  ONLY_UPDATE_CACHE="false"
+fi
+
+if [[ -z $DOCKER_IMAGE_CACHE_PATH ]]; then
+  DOCKER_IMAGE_CACHE_PATH=/tmp/docker_image_cache
+fi
+mkdir -p $DOCKER_IMAGE_CACHE_PATH
+
+if [[ -z $HELM_CHART_CACHE_PATH ]]; then
+  HELM_CHART_CACHE_PATH=/tmp/helm_chart_cache
+fi
+mkdir -p $HELM_CHART_CACHE_PATH
+
 #CONTROLLER
 if [[ -z "$EG_IMAGE_LIST_CONTROLLER_X86_DEFAULT" ]]; then
    EG_IMAGE_LIST_CONTROLLER_X86_DEFAULT="swr.ap-southeast-1.myhuaweicloud.com/edgegallery/appstore-fe:$EG_IMAGE_TAG \
@@ -43,6 +65,8 @@ if [[ -z "$EG_IMAGE_LIST_CONTROLLER_X86_DEFAULT" ]]; then
    swr.ap-southeast-1.myhuaweicloud.com/edgegallery/tool-chain:$EG_IMAGE_TAG \
    swr.ap-southeast-1.myhuaweicloud.com/edgegallery/porting-advisor:latest"
 fi
+COMMON_EDGE_CONTROLLER_LIST="postgres:12.3"
+
 EG_IMAGE_LIST_CONTROLLER_ARM64_DEFAULT=$EG_IMAGE_LIST_CONTROLLER_X86_DEFAULT
 EG_HELM_LIST_CONTROLLER_X86_DEFAULT="servicecenter usermgmt developer appstore mecm-fe mecm-meo"
 EG_HELM_LIST_CONTROLLER_ARM64_DEFAULT=$EG_HELM_LIST_CONTROLLER_X86_DEFAULT
@@ -203,24 +227,39 @@ function _docker_images_download_eg() {
   info "download the edgegallery images list is : $1" $RED
   for image in $1;
   do
-    info "docker pulling $image" $RED
-    docker pull $image;
-    if [[ $? -ne 0 ]]; then
-      info "docker pull $image Failed" $RED
-      if [[ $image != "kong:2.0.4-alpine" ]]; then
-        exit 1
-      fi
-    fi
+    new_image=$image
     repo=$(echo ${image} | cut -d"/" -f1);
     #for new repo need to update this check
     if [ $repo == "swr.ap-southeast-1.myhuaweicloud.com" ]; then
       organization=$(echo ${image} | cut -d"/" -f2)
       image_n_tag=$(echo ${image} | cut -d"/" -f3)
-      docker image tag $image "$organization"/"$image_n_tag"
-      image="$organization"/"$image_n_tag"
+      new_image="$organization"/"$image_n_tag"
     fi
-    IMAGE_NAME=`echo $image| sed -e "s/\:/#/g" | sed -e "s/\//@/g"`;
-    docker save $image | gzip > $EG_SWR_PATH/$IMAGE_NAME.tar.gz
+    IMAGE_NAME=`echo $new_image| sed -e "s/\:/#/g" | sed -e "s/\//@/g"`;
+
+    if [[ "$SYNC_UP_DOCKER_IMAGES" == "true" ]]; then
+      info "docker pulling $image" $RED
+      docker pull $image;
+      if [[ $? -ne 0 ]]; then
+        info "docker pull $image Failed" $RED
+        if [[ $image != "kong:2.0.4-alpine" ]]; then
+          exit 1
+        fi
+      fi
+      #for new repo need to update this check
+      if [ $repo == "swr.ap-southeast-1.myhuaweicloud.com" ]; then
+        docker image tag $image "$organization"/"$image_n_tag"
+      fi
+      IMAGE_NAME=`echo $new_image| sed -e "s/\:/#/g" | sed -e "s/\//@/g"`;
+      docker save $new_image | gzip > $EG_SWR_PATH/$IMAGE_NAME.tar.gz
+    else
+      info "Using $image from Installer Cache"  $RED
+      if  ! cp $DOCKER_IMAGE_CACHE_PATH/$IMAGE_NAME.tar.gz $EG_SWR_PATH ; then
+        info "$image doesn't exist in Installer Cache"  $RED
+        suggest_cache_update
+        exit 1
+      fi
+    fi
   done
 }
 
@@ -266,61 +305,84 @@ function _download_helm_charts()
     rm -rf helm-charts
   fi
 
-  _help_install_helm_binary
-
-  helm repo remove eg
-  helm repo add eg $EG_HELM_REPO
   mkdir -p edgegallery/
   mkdir -p stable
-  cd edgegallery || exit
+  if [[ $SYNC_UP_HELM_CHARTS == "true" ]]; then
+    _help_install_helm_binary
 
-  CHART_LIST=$1
-  ENABLE_METRICS=$2
+    helm repo remove eg
+    helm repo add eg $EG_HELM_REPO
+    cd edgegallery || exit
 
-  for chart in $CHART_LIST;
-    do
-      helm pull eg/$chart
+    CHART_LIST=$1
+    ENABLE_METRICS=$2
+
+    for chart in $CHART_LIST;
+      do
+        helm pull eg/$chart
+        if [[ $? -ne 0 ]]; then
+          info "helm pull $EG_HELM_REPO/$chart Failed" $RED
+          exit 1
+        fi
+      done
+    cd ../stable
+
+    if [[ $ENABLE_METRICS == "YES" ]]; then
+      wget -N https://kubernetes-charts.storage.googleapis.com/grafana-5.5.5.tgz
       if [[ $? -ne 0 ]]; then
-        info "helm pull $EG_HELM_REPO/$chart Failed" $RED
+        info "grafana-5.5.5.tgz download got Failed" $RED
         exit 1
       fi
-    done
-  cd ../stable
+      wget -N https://kubernetes-charts.storage.googleapis.com/prometheus-9.3.1.tgz
+      if [[ $? -ne 0 ]]; then
+        info "prometheus-9.3.1.tgz download got Failed" $RED
+        exit 1
+      fi
+    fi
 
-  if [[ $ENABLE_METRICS == "YES" ]]; then
-    wget -N https://kubernetes-charts.storage.googleapis.com/grafana-5.5.5.tgz
+    wget -N https://kubernetes-charts.storage.googleapis.com/nginx-ingress-1.41.2.tgz
     if [[ $? -ne 0 ]]; then
-      info "grafana-5.5.5.tgz download got Failed" $RED
+      info "nginx-ingress-1.41.2.tgz download got Failed" $RED
       exit 1
     fi
-    wget -N https://kubernetes-charts.storage.googleapis.com/prometheus-9.3.1.tgz
+    wget -N https://kubernetes-charts.storage.googleapis.com/nfs-client-provisioner-1.2.8.tgz
     if [[ $? -ne 0 ]]; then
-      info "prometheus-9.3.1.tgz download got Failed" $RED
+      info "nfs-client-provisioner-1.2.8.tgz download got Failed" $RED
       exit 1
     fi
-  fi 
-
-  wget -N https://kubernetes-charts.storage.googleapis.com/nginx-ingress-1.41.2.tgz
-  if [[ $? -ne 0 ]]; then
-    info "nginx-ingress-1.41.2.tgz download got Failed" $RED
-    exit 1
-  fi
-  wget -N https://kubernetes-charts.storage.googleapis.com/nfs-client-provisioner-1.2.8.tgz
-  if [[ $? -ne 0 ]]; then
-    info "nfs-client-provisioner-1.2.8.tgz download got Failed" $RED
-    exit 1
+  else
+    info "Using helm charts from Installer Cache"  $RED
+    if ! cp $HELM_CHART_CACHE_PATH/edgegallery . -r; then
+      info "eg charts doesn't exist in Installer Cache"  $RED
+      suggest_cache_update
+      exit 1
+    fi
+    if ! cp $HELM_CHART_CACHE_PATH/stable . -r; then
+      info "stable charts doesn't exist in Installer Cache" $RED
+      suggest_cache_update
+      exit 1
+    fi
   fi
 }
 
 function _download_docker_registry()
 {
   mkdir -p $TARBALL_PATH/registry
-  docker pull registry:2
-  if [[ $? -ne 0 ]]; then
-    info "docker pull registry:2 Failed" $RED
-    exit 1
+  if [[ "$SYNC_UP_DOCKER_IMAGES" == "true" ]]; then
+    docker pull registry:2
+    if [[ $? -ne 0 ]]; then
+      info "docker pull registry:2 Failed" $RED
+      exit 1
+    fi
+    docker save registry:2 | gzip > $TARBALL_PATH/registry/registry-2.tar.gz
+  else
+    info "Using registry:2 from Installer Cache"  $RED
+    if ! cp $DOCKER_IMAGE_CACHE_PATH/registry-2.tar.gz $TARBALL_PATH/registry/ ; then
+      info "registry:2 doesn't exist in Installer Cache"  $RED
+      suggest_cache_update
+      exit 1
+    fi
   fi
-  docker save registry:2 | gzip > $TARBALL_PATH/registry/registry-2.tar.gz
 }
 
 
@@ -336,14 +398,23 @@ function _docker_download() {
 function _docker_images_download() {
     for image in $*;
     do
+    IMAGE_NAME=`echo $image| sed -e "s/\//@/g"`;
+    if [[ "$SYNC_UP_DOCKER_IMAGES" == "true" ]]; then
       docker pull $image;
       if [[ $? -ne 0 ]]; then
         info "docker pull $image Failed" $RED
         exit 1
       fi
-      IMAGE_NAME=`echo $image| sed -e "s/\//@/g"`;
       docker save --output $K8S_OFFLINE_DIR/docker/images/$IMAGE_NAME.tar $image;
       gzip -f $K8S_OFFLINE_DIR/docker/images/$IMAGE_NAME.tar;
+    else
+      info "Using $image from Installer Cache"  $RED
+      if ! cp $DOCKER_IMAGE_CACHE_PATH/$IMAGE_NAME.tar.gz $K8S_OFFLINE_DIR/docker/images/ ; then
+        info "$image doesn't exist in Installer Cache"  $RED
+        suggest_cache_update
+        exit 1
+      fi
+    fi
     done
 }
 
@@ -460,6 +531,10 @@ function kubernetes_offline_installer() {
 
         tar -vcf kubernetes_offline_installer.tar -C $K8S_OFFLINE_DIR .
         gzip kubernetes_offline_installer.tar
+  if [[ "$SYNC_UP_DOCKER_IMAGES" == "true" ]]; then
+    info "Updating Installer Cache with k8s docker images" $RED
+    mv $K8S_OFFLINE_DIR/docker/images/* $DOCKER_IMAGE_CACHE_PATH/
+	fi
 	rm -rf $K8S_OFFLINE_DIR
 }
 
@@ -467,12 +542,22 @@ function ftp_setup() {
 	cat << EOF > /root/eg-users.conf
 EOF
 
-	mkdir /root/eg 
+	mkdir /root/eg
 	docker rm -f eg-ftp 
 
 	docker run --name eg-ftp -v /root/eg:/home/eg/ftp  -v /root/eg-users.conf:/etc/sftp/users.conf:ro -p 30099:22 -d atmoz/sftp
 }
 
+function suggest_cache_update()
+{
+    info "Suggestion: Update Installer cache first, by performing below steps" $RED
+    info "  Update Installer Cache with 1,2 steps"
+    info "  1. export ONLY_UPDATE_CACHE=true; unset SYNC_UP_DOCKER_IMAGES; unset SYNC_UP_HELM_CHARTS"  $RED
+    info "  2. ./offline.sh $EG_MODE $INPUT_PATH" $RED
+    info "  Below commands for preparing tarball"
+    info "  3. unset ONLY_UPDATE_CACHE;export SYNC_UP_DOCKER_IMAGES=false;export SYNC_UP_HELM_CHARTS=false;" $RED
+    info "  4. ./offline.sh $EG_MODE $INPUT_PATH" $RED
+}
 
 # $1: EG_COMP = all OR controller OR edge, by default all
 function eg_offline_installer()
@@ -510,7 +595,7 @@ function eg_offline_installer()
     EG_IMAGE_LIST="$EG_IMAGE_LIST_CONTROLLER $EG_IMAGE_LIST_EDGE $CLIENT_PROVISIONER"
     EG_HELM_LIST="$EG_HELM_LIST_CONTROLLER $EG_HELM_LIST_EDGE"
   elif [[ "$EG_MODE" == "controller" ]]; then
-    EG_IMAGE_LIST="$EG_IMAGE_LIST_CONTROLLER $CLIENT_PROVISIONER"
+    EG_IMAGE_LIST="$EG_IMAGE_LIST_CONTROLLER $CLIENT_PROVISIONER $COMMON_EDGE_CONTROLLER_LIST"
     EG_HELM_LIST="$EG_HELM_LIST_CONTROLLER"
   elif [[ "$EG_MODE" == "edge" ]]; then
     EG_IMAGE_LIST="$EG_IMAGE_LIST_EDGE $CLIENT_PROVISIONER"
@@ -523,59 +608,100 @@ function eg_offline_installer()
   if [[ -z "$2" ]]; then
    TARBALL_PATH=$PWD/eg-offline
   else
+   INPUT_PATH=$2
    TARBALL_PATH=$2/eg-offline
   fi
 
   rm -rf $TARBALL_PATH
   mkdir -p $TARBALL_PATH
 
-  echo ===============================
-  echo Buiding Edge Gallery installer 
-  echo ===============================
-  echo "ARCH: " $EG_NODE_ARCH
-  echo "MODE: " $EG_MODE
-  echo EG_IMAGE_LIST: $EG_IMAGE_LIST
-  echo EG_HELM_LIST: $EG_HELM_LIST
-  echo INSTALLER PATH: $TARBALL_PATH/../$EG_INSTALLER_NAME.tar.gz
-  echo ===============================
+  if [[ "$ONLY_UPDATE_CACHE" == "false" ]]; then
+    echo ===============================
+    echo Buiding Edge Gallery installer
+    echo ===============================
+    echo "ARCH: " $EG_NODE_ARCH
+    echo "MODE: " $EG_MODE
+    echo EG_IMAGE_LIST: $EG_IMAGE_LIST
+    echo EG_HELM_LIST: $EG_HELM_LIST
+    echo INSTALLER PATH: $TARBALL_PATH/../$EG_INSTALLER_NAME.tar.gz
+    echo ===============================
 
-  _download_sshpass
+    _download_sshpass
 
-  kubernetes_offline_installer
+    kubernetes_offline_installer
 
-  _docker_images_download_eg "$EG_IMAGE_LIST"
+    _docker_images_download_eg "$EG_IMAGE_LIST"
 
-  _download_helm_binary
+    _download_helm_binary
 
-  if [[ "$EG_MODE" == "all" || "$EG_MODE" == "edge" ]]; then
-    _download_helm_charts "$EG_HELM_LIST" "YES"
+    if [[ "$EG_MODE" == "all" || "$EG_MODE" == "edge" ]]; then
+      _download_helm_charts "$EG_HELM_LIST" "YES"
+    else
+      _download_helm_charts "$EG_HELM_LIST"
+    fi
+
+    _download_docker_registry
+
+    cp $CUR_DIR/LICENSE $TARBALL_PATH
+    cp $CUR_DIR/README.md $TARBALL_PATH
+    cp $CUR_DIR/env.sh $TARBALL_PATH
+
+    echo "#####################################################" >>  $TARBALL_PATH/env.sh
+    echo "#CAUTION:: PLEASE DONOT CHANGE BELOW ENV VARS ::" >>  $TARBALL_PATH/env.sh
+    echo "export EG_IMAGE_TAG=$EG_IMAGE_TAG" >>  $TARBALL_PATH/env.sh
+    echo "export EG_NODE_ARCH=$EG_NODE_ARCH" >>  $TARBALL_PATH/env.sh
+    echo "export EG_MODE=$EG_MODE" >>  $TARBALL_PATH/env.sh
+    echo "#####################################################" >>  $TARBALL_PATH/env.sh
+
+    cp $CUR_DIR/eg.sh $TARBALL_PATH
+    cp -r $CUR_DIR/conf/ $TARBALL_PATH
+    rm -rf $TARBALL_PATH/conf/edge/network-isolation/test/
+    echo "Edge Gallery $EG_IMAGE_TAG [Build: $BUILD_NUMBER]" > $TARBALL_PATH/version.txt
+
+    cd $TARBALL_PATH/..
+    tar -vcf $EG_INSTALLER_NAME.tar -C $TARBALL_PATH .
+    gzip $EG_INSTALLER_NAME.tar
+
+    if [[ "$SYNC_UP_DOCKER_IMAGES" == "true" ]]; then
+      info "Updating Installer Cache with eg docker images" $RED
+      mv $TARBALL_PATH/registry/registry-2.tar.gz $DOCKER_IMAGE_CACHE_PATH/
+      mv $EG_SWR_PATH/* $DOCKER_IMAGE_CACHE_PATH/
+    fi
+
+    if [[ "$SYNC_UP_HELM_CHARTS" == "true" ]]; then
+      rm -rf $HELM_CHART_CACHE_PATH/edgegallery
+      rm -rf $HELM_CHART_CACHE_PATH/stable
+      info "Updating Installer Cache with helm charts" $RED
+      mv $TARBALL_PATH/helm/helm-charts/* $HELM_CHART_CACHE_PATH
+    fi
+
+    echo "INSTALLER: "$TARBALL_PATH/../$EG_INSTALLER_NAME.tar.gz
   else
-    _download_helm_charts "$EG_HELM_LIST"
+    info "Updating Installer Cache" $RED
+    if [[ "$SYNC_UP_DOCKER_IMAGES" != "true" || "$SYNC_UP_HELM_CHARTS" != "true" ]]; then
+      info "when ONLY_UPDATE_CACHE is true SYNC_UP_DOCKER_IMAGES & SYNC_UP_HELM_CHARTS can't be set as false" $RED
+      exit 1
+    fi
+    rm -rf $K8S_OFFLINE_DIR
+    mkdir -p $K8S_OFFLINE_DIR $K8S_OFFLINE_DIR/docker $K8S_OFFLINE_DIR/docker/images
+    _docker_images_download $K8S_DOCKER_IMAGES
+    _docker_images_download_eg "$EG_IMAGE_LIST"
+    _download_docker_registry
+    if [[ "$EG_MODE" == "all" || "$EG_MODE" == "edge" ]]; then
+      _download_helm_charts "$EG_HELM_LIST" "YES"
+    else
+      _download_helm_charts "$EG_HELM_LIST"
+    fi
+    info "Updating Installer Cache with eg docker images" $RED
+    mv $TARBALL_PATH/registry/registry-2.tar.gz $DOCKER_IMAGE_CACHE_PATH/
+    mv $EG_SWR_PATH/* $DOCKER_IMAGE_CACHE_PATH/
+    rm -rf $HELM_CHART_CACHE_PATH/edgegallery
+    rm -rf $HELM_CHART_CACHE_PATH/stable
+    info "Updating Installer Cache with helm charts" $RED
+    mv $TARBALL_PATH/helm/helm-charts/* $HELM_CHART_CACHE_PATH
+    mv $K8S_OFFLINE_DIR/docker/images/* $DOCKER_IMAGE_CACHE_PATH/
+    rm -rf $TARBALL_PATH
   fi
-
-  _download_docker_registry
-
-  cp $CUR_DIR/LICENSE $TARBALL_PATH
-  cp $CUR_DIR/README.md $TARBALL_PATH
-  cp $CUR_DIR/env.sh $TARBALL_PATH
-
-  echo "#####################################################" >>  $TARBALL_PATH/env.sh
-  echo "#CAUTION:: PLEASE DONOT CHANGE BELOW ENV VARS ::" >>  $TARBALL_PATH/env.sh
-  echo "export EG_IMAGE_TAG=$EG_IMAGE_TAG" >>  $TARBALL_PATH/env.sh
-  echo "export EG_NODE_ARCH=$EG_NODE_ARCH" >>  $TARBALL_PATH/env.sh
-  echo "export EG_MODE=$EG_MODE" >>  $TARBALL_PATH/env.sh
-  echo "#####################################################" >>  $TARBALL_PATH/env.sh
-  
-  cp $CUR_DIR/eg.sh $TARBALL_PATH
-  cp -r $CUR_DIR/conf/ $TARBALL_PATH
-  rm -rf $TARBALL_PATH/conf/edge/network-isolation/test/
-  echo "Edge Gallery $EG_IMAGE_TAG [Build: $BUILD_NUMBER]" > $TARBALL_PATH/version.txt
-
-  cd $TARBALL_PATH/..
-  tar -vcf $EG_INSTALLER_NAME.tar -C $TARBALL_PATH .
-  gzip $EG_INSTALLER_NAME.tar
-
-  echo "INSTALLER: "$TARBALL_PATH/../$EG_INSTALLER_NAME.tar.gz
   cd $LWD
   exit 0
 }
