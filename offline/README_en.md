@@ -210,6 +210,15 @@ Following additional options are available for setting
 
 * EG_IMAGE_LIST_CONTROLLER_X86, EG_IMAGE_LIST_CONTROLLER_ARM64, EG_IMAGE_LIST_EDGE_X86, EG_IMAGE_LIST_EDGE_ARM64 - Set to required images for deploying the components of edge gallery.
 
+* ONLY_UPDATE_CACHE - Set this to true, to just update installer cache with eg docker images, eg helm charts & do nothing. Default value: false
+
+* SYNC_UP_DOCKER_IMAGES - Set this to false, to save time by using docker images from installer cache. Default value: true
+
+* SYNC_UP_HELM_CHARTS - Set this to false, to save time by using helm charts from installer cache. Default value: true
+
+* DOCKER_IMAGE_CACHE_PATH - Set the path of Docker image cache. Default value: /tmp/docker_image_cache
+
+* HELM_CHART_CACHE_PATH - Set the path of Helm chart cache. Default value: /tmp/helm_chart_cache
 
 Advanced Configuration
 ====================
