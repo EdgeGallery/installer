@@ -70,7 +70,7 @@ function _docker_deploy() {
 Description=Docker Daemon
 
 [Service]
-ExecStart=/usr/bin/dockerd
+ExecStart=/usr/bin/dockerd --bip "192.168.1.1/24"
 
 [Install]
 WantedBy=multi-user.target
