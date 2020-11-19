@@ -29,6 +29,7 @@ SKIP_K8S=$SKIP_K8S
 TARBALL_PATH=$PWD
 PLATFORM_DIR=$PWD
 KERNEL_ARCH=`uname -m`
+INSTALLER_INDEX=""
 if [ $KERNEL_ARCH == 'aarch64' ]; then
   arch="arm64"
 else
@@ -312,7 +313,7 @@ function _load_swr_images_and_push_to_private_registry()
   IP=$PRIVATE_REGISTRY_IP
   PORT="5000"
   cd "$TARBALL_PATH"/eg_swr_images
-
+  if ! resilient_utility "read" ":DEPLOYED"; then
   for f in *.tar.gz;
   do
     cat $f | docker load
@@ -322,6 +323,7 @@ function _load_swr_images_and_push_to_private_registry()
       docker push $IP:$PORT/$IMAGE_NAME
     fi
   done
+  fi
 }
 
 function _help_install_helm_binary()
@@ -357,7 +359,11 @@ function _setup_helm_repo()
   cd "$TARBALL_PATH"/helm/helm-charts/ || exit
   helm repo index edgegallery/
   helm repo index stable/
-  docker run --name helm-repo -v "$TARBALL_PATH"/helm/helm-charts/:/usr/share/nginx/html:ro  -d -p 8080:80  nginx:stable
+  return_value=$(docker ps | grep helm-repo)
+  return_value=$?
+  if [[ $return_value -ne 0 ]]; then
+    docker run --name helm-repo -v "$TARBALL_PATH"/helm/helm-charts/:/usr/share/nginx/html:ro  -d -p 8080:80  nginx:stable
+  fi
   helm repo remove edgegallery stable >/dev/null 2>&1;
   sleep 3
   helm repo add edgegallery http://${PRIVATE_REGISTRY_IP}:8080/edgegallery;
@@ -375,6 +381,9 @@ function cleanup_eg_ecosystem()
 
 function setup_eg_ecosystem()
 {
+  if ! resilient_utility "read" ":DEPLOYED"; then
+    return 0
+  fi
   tar -xf $TARBALL_PATH/kubernetes_offline_installer.tar.gz -C $K8S_OFFLINE_DIR;
   export K8S_NODE_TYPE=WORKER; kubernetes_deploy;
   if [ "$OFFLINE_MODE" == "muno" ]; then
@@ -441,7 +450,7 @@ function log() {
   set +x
   fname=$(caller 0 | awk '{print $2}')
   fline=$(caller 0 | awk '{print $1}')
-  echo; echo -e "$2 $(basename $0) $fname:$fline ($(date)) $1 $NC"
+  echo; echo -e "$CYAN $INSTALLER_INDEX $2 $(basename $0) $fname:$fline ($(date)) $1 $NC"
   if [[ -n "$setx" ]]; then
     set -x;
   else
@@ -452,7 +461,7 @@ function log() {
 function info() {
   setx=${-//[^x]/}
   set +x
-  echo -e "$2 $1 $NC"
+  echo -e "$CYAN $INSTALLER_INDEX $2 $1 $NC"
   if [[ -n "$setx" ]]; then
     set -x;
   else
@@ -473,6 +482,12 @@ function fail() {
 
 function wait() {
   t=0
+  if [[ $3 == "yes" ]]; then
+    return=$3
+  else
+    return="no"
+  fi
+
   while true
   do
     if [[ $2 -gt 1 ]]; then
@@ -494,7 +509,11 @@ function wait() {
     if [ $t == 150 ]; then
       info "[ISSUE: $1 $verb not in RUNNING state ]" $RED
       info "[Suggestion: check $1 pod's log  ......]" $RED
-      exit 1
+      if [[ $return == "yes" ]]; then
+        return 1
+      else
+        exit 1
+      fi
     fi
     sleep 5
   done
@@ -581,46 +600,54 @@ function _eg_undeploy()
 
 function install_prometheus()
 {
-  info "[Deploying Prometheus  ......]" $BLUE
-  info "[it would take maximum of 5mins .......]" $BLUE
-  if [ $KERNEL_ARCH == 'aarch64' ]; then
-    helm install --wait mep-prometheus "$CHART_PREFIX"stable/prometheus"$PROM_CHART_SUFFIX" \
-    -f $PLATFORM_DIR/conf/override/prometheus_arm_values.yaml --version v9.3.1 \
-    --set alertmanager.image.repository="$REGISTRY_URL"prom/alertmanager \
-    --set configmapReload.image.repository="$REGISTRY_URL"jimmidyson/configmap-reload \
-    --set nodeExporter.image.repository="$REGISTRY_URL"prom/node-exporter \
-    --set server.image.repository="$REGISTRY_URL"prom/prometheus \
-    --set pushgateway.image.repository="$REGISTRY_URL"prom/pushgateway \
-    --set kubeStateMetrics.image.repository="$REGISTRY_URL"carlosedp/kube-state-metrics \
-    --set alertmanager.image.pullPolicy=IfNotPresent \
-    --set configmapReload.image.pullPolicy=IfNotPresent \
-    --set nodeExporter.image.pullPolicy=IfNotPresent \
-    --set server.image.pullPolicy=IfNotPresent \
-    --set pushgateway.image.pullPolicy=IfNotPresent \
-    --set kubeStateMetrics.image.pullPolicy=IfNotPresent
-  else
-    helm install --wait mep-prometheus "$CHART_PREFIX"stable/prometheus"$PROM_CHART_SUFFIX" \
-    -f $PLATFORM_DIR/conf/override/prometheus_x86_values.yaml --version v9.3.1 \
-    --set alertmanager.image.repository="$REGISTRY_URL"prom/alertmanager \
-    --set configmapReload.image.repository="$REGISTRY_URL"jimmidyson/configmap-reload \
-    --set nodeExporter.image.repository="$REGISTRY_URL"prom/node-exporter \
-    --set server.image.repository="$REGISTRY_URL"prom/prometheus \
-    --set pushgateway.image.repository="$REGISTRY_URL"prom/pushgateway \
-    --set kubeStateMetrics.image.repository="$REGISTRY_URL"quay.io/coreos/kube-state-metrics \
-    --set alertmanager.image.pullPolicy=IfNotPresent \
-    --set configmapReload.image.pullPolicy=IfNotPresent \
-    --set nodeExporter.image.pullPolicy=IfNotPresent \
-    --set server.image.pullPolicy=IfNotPresent \
-    --set pushgateway.image.pullPolicy=IfNotPresent \
-    --set kubeStateMetrics.image.pullPolicy=IfNotPresent
+  if resilient_utility "read" "PROMETHEUS:FAILED";then
+    uninstall_prometheus
   fi
-  if [ $? -eq 0 ]; then
-    kubectl expose deployment mep-prometheus-server  --type=NodePort --name nodeport-mep-prometheus-server
-    kubectl patch service nodeport-mep-prometheus-server  --type='json' --patch='[{"op": "replace", "path": "/spec/ports/0/nodePort", "value":30009}]'
-    info "[Deployed Prometheus  .......]" $GREEN
-  else
-    info "[Prometheus Deployment Failed]" $RED
-    exit 1
+
+  if resilient_utility "read" "PROMETHEUS:UN_DEPLOYED";then
+    info "[Deploying Prometheus  ......]" $BLUE
+    info "[it would take maximum of 5mins .......]" $BLUE
+    if [ $KERNEL_ARCH == 'aarch64' ]; then
+      helm install --wait mep-prometheus "$CHART_PREFIX"stable/prometheus"$PROM_CHART_SUFFIX" \
+      -f $PLATFORM_DIR/conf/override/prometheus_arm_values.yaml --version v9.3.1 \
+      --set alertmanager.image.repository="$REGISTRY_URL"prom/alertmanager \
+      --set configmapReload.image.repository="$REGISTRY_URL"jimmidyson/configmap-reload \
+      --set nodeExporter.image.repository="$REGISTRY_URL"prom/node-exporter \
+      --set server.image.repository="$REGISTRY_URL"prom/prometheus \
+      --set pushgateway.image.repository="$REGISTRY_URL"prom/pushgateway \
+      --set kubeStateMetrics.image.repository="$REGISTRY_URL"carlosedp/kube-state-metrics \
+      --set alertmanager.image.pullPolicy=IfNotPresent \
+      --set configmapReload.image.pullPolicy=IfNotPresent \
+      --set nodeExporter.image.pullPolicy=IfNotPresent \
+      --set server.image.pullPolicy=IfNotPresent \
+      --set pushgateway.image.pullPolicy=IfNotPresent \
+      --set kubeStateMetrics.image.pullPolicy=IfNotPresent
+    else
+      helm install --wait mep-prometheus "$CHART_PREFIX"stable/prometheus"$PROM_CHART_SUFFIX" \
+      -f $PLATFORM_DIR/conf/override/prometheus_x86_values.yaml --version v9.3.1 \
+      --set alertmanager.image.repository="$REGISTRY_URL"prom/alertmanager \
+      --set configmapReload.image.repository="$REGISTRY_URL"jimmidyson/configmap-reload \
+      --set nodeExporter.image.repository="$REGISTRY_URL"prom/node-exporter \
+      --set server.image.repository="$REGISTRY_URL"prom/prometheus \
+      --set pushgateway.image.repository="$REGISTRY_URL"prom/pushgateway \
+      --set kubeStateMetrics.image.repository="$REGISTRY_URL"quay.io/coreos/kube-state-metrics \
+      --set alertmanager.image.pullPolicy=IfNotPresent \
+      --set configmapReload.image.pullPolicy=IfNotPresent \
+      --set nodeExporter.image.pullPolicy=IfNotPresent \
+      --set server.image.pullPolicy=IfNotPresent \
+      --set pushgateway.image.pullPolicy=IfNotPresent \
+      --set kubeStateMetrics.image.pullPolicy=IfNotPresent
+    fi
+    if [ $? -eq 0 ]; then
+      kubectl expose deployment mep-prometheus-server  --type=NodePort --name nodeport-mep-prometheus-server
+      kubectl patch service nodeport-mep-prometheus-server  --type='json' --patch='[{"op": "replace", "path": "/spec/ports/0/nodePort", "value":30009}]'
+      info "[Deployed Prometheus  .......]" $GREEN
+      resilient_utility "write" "PROMETHEUS:DEPLOYED"
+    else
+      info "[Prometheus Deployment Failed]" $RED
+      resilient_utility "write" "PROMETHEUS:FAILED"
+      exit 1
+    fi
   fi
 }
 
@@ -628,49 +655,58 @@ function uninstall_prometheus()
 {
   info "[UnDeploying Prometheus  ....]" $BLUE
   helm uninstall mep-prometheus
+  resilient_utility "write" "PROMETHEUS:UN_DEPLOYED"
   info "[UnDeploying Prometheus  ....]" $GREEN
 }
 
 function install_grafana()
 {
-  info "[Deploying Grafana  .........]" $BLUE
-  info "[it would take maximum of 5mins .......]" $BLUE
-
-  kubectl apply -f $PLATFORM_DIR/conf/manifest/pv_pvc/pv-volume.yaml
-  kubectl apply -f $PLATFORM_DIR/conf/manifest/pv_pvc/pv-claim.yaml
-
-  if [ $KERNEL_ARCH == 'aarch64' ]; then
-    helm install --wait mep-grafana "$CHART_PREFIX"stable/grafana"$GRAFANA_CHART_SUFFIX" \
-    -f $PLATFORM_DIR/conf/override/grafana_arm_values.yaml \
-    --set image.repository="$REGISTRY_URL"grafana/grafana-arm64v8-linux \
-    --set testFramework.image="$REGISTRY_URL"bats/bats \
-    --set downloadDashboardsImage.repository="$REGISTRY_URL"lucashalbert/curl \
-    --set initChownData.image.repository="$REGISTRY_URL"busybox \
-    --set sidecar.image.repository="$REGISTRY_URL"kiwigrid/k8s-sidecar \
-    --set image.pullPolicy=IfNotPresent \
-    --set testFramework.pullPolicy=IfNotPresent \
-    --set downloadDashboardsImage.pullPolicy=IfNotPresent \
-    --set initChownData.image.pullPolicy=IfNotPresent \
-    --set sidecar.image.pullPolicy=IfNotPresent
-  else
-    helm install --wait mep-grafana "$CHART_PREFIX"stable/grafana"$GRAFANA_CHART_SUFFIX" \
-    -f $PLATFORM_DIR/conf/override/grafana_x86_values.yaml \
-    --set image.repository="$REGISTRY_URL"grafana/grafana \
-    --set testFramework.image="$REGISTRY_URL"bats/bats \
-    --set downloadDashboardsImage.repository="$REGISTRY_URL"curlimages/curl \
-    --set initChownData.image.repository="$REGISTRY_URL"busybox \
-    --set sidecar.image.repository="$REGISTRY_URL"kiwigrid/k8s-sidecar \
-    --set image.pullPolicy=IfNotPresent \
-    --set testFramework.imagePullPolicy=IfNotPresent \
-    --set downloadDashboardsImage.pullPolicy=IfNotPresent \
-    --set initChownData.image.pullPolicy=IfNotPresent \
-    --set sidecar.image.pullPolicy=IfNotPresent
+  if resilient_utility "read" "GRAFANA:FAILED";then
+    uninstall_grafana
   fi
-  if [ $? -eq 0 ]; then
-    info "[Deployed Grafana  ..........]" $GREEN
-  else
-    info "[Grafana Deployment Failed  .]" $RED
-    exit 1
+
+  if resilient_utility "read" "GRAFANA:UN_DEPLOYED";then
+    info "[Deploying Grafana  .........]" $BLUE
+    info "[it would take maximum of 5mins .......]" $BLUE
+
+    kubectl apply -f $PLATFORM_DIR/conf/manifest/pv_pvc/pv-volume.yaml
+    kubectl apply -f $PLATFORM_DIR/conf/manifest/pv_pvc/pv-claim.yaml
+
+    if [ $KERNEL_ARCH == 'aarch64' ]; then
+      helm install --wait mep-grafana "$CHART_PREFIX"stable/grafana"$GRAFANA_CHART_SUFFIX" \
+      -f $PLATFORM_DIR/conf/override/grafana_arm_values.yaml \
+      --set image.repository="$REGISTRY_URL"grafana/grafana-arm64v8-linux \
+      --set testFramework.image="$REGISTRY_URL"bats/bats \
+      --set downloadDashboardsImage.repository="$REGISTRY_URL"lucashalbert/curl \
+      --set initChownData.image.repository="$REGISTRY_URL"busybox \
+      --set sidecar.image.repository="$REGISTRY_URL"kiwigrid/k8s-sidecar \
+      --set image.pullPolicy=IfNotPresent \
+      --set testFramework.pullPolicy=IfNotPresent \
+      --set downloadDashboardsImage.pullPolicy=IfNotPresent \
+      --set initChownData.image.pullPolicy=IfNotPresent \
+      --set sidecar.image.pullPolicy=IfNotPresent
+    else
+      helm install --wait mep-grafana "$CHART_PREFIX"stable/grafana"$GRAFANA_CHART_SUFFIX" \
+      -f $PLATFORM_DIR/conf/override/grafana_x86_values.yaml \
+      --set image.repository="$REGISTRY_URL"grafana/grafana \
+      --set testFramework.image="$REGISTRY_URL"bats/bats \
+      --set downloadDashboardsImage.repository="$REGISTRY_URL"curlimages/curl \
+      --set initChownData.image.repository="$REGISTRY_URL"busybox \
+      --set sidecar.image.repository="$REGISTRY_URL"kiwigrid/k8s-sidecar \
+      --set image.pullPolicy=IfNotPresent \
+      --set testFramework.imagePullPolicy=IfNotPresent \
+      --set downloadDashboardsImage.pullPolicy=IfNotPresent \
+      --set initChownData.image.pullPolicy=IfNotPresent \
+      --set sidecar.image.pullPolicy=IfNotPresent
+    fi
+    if [ $? -eq 0 ]; then
+      info "[Deployed Grafana  ..........]" $GREEN
+      resilient_utility "write" "GRAFANA:DEPLOYED"
+    else
+      info "[Grafana Deployment Failed  .]" $RED
+      resilient_utility "write" "GRAFANA:FAILED"
+      exit 1
+    fi
   fi
 }
 
@@ -683,34 +719,44 @@ function uninstall_grafana()
   rm /mnt/grafana/tls.key
   rm /mnt/grafana/tls.crt
   rmdir /mnt/grafana
+  resilient_utility "write" "GRAFANA:UN_DEPLOYED"
   info "[UnDeployed Grafana  ........]" $GREEN
 }
 
 function install_rabbitmq()
 {
-  info "[Deploying Rabbitmq  ........]" $BLUE
-  info "[it would take maximum of 5mins .......]" $BLUE
-  suffix=""
-  if [[ $REGISTRY_URL != "" ]]; then
-    suffix="_private_registry"
-    cp $PLATFORM_DIR/conf/manifest/rabbitmq/statefulset_x86.yaml $PLATFORM_DIR/conf/manifest/rabbitmq/statefulset_x86_private_registry.yaml
-    cp $PLATFORM_DIR/conf/manifest/rabbitmq/statefulset_arm.yaml $PLATFORM_DIR/conf/manifest/rabbitmq/statefulset_arm_private_registry.yaml
-    sed -i 's?image: rabbitmq:3.7-management-alpine?image: '$REGISTRY_URL'rabbitmq:3.7-management-alpine?g' $PLATFORM_DIR/conf/manifest/rabbitmq/statefulset_x86_private_registry.yaml
-    sed -i 's?image: arm64v8/rabbitmq:3.7-management-alpine?image: '$REGISTRY_URL'arm64v8/rabbitmq:3.7-management-alpine?g' $PLATFORM_DIR/conf/manifest/rabbitmq/statefulset_arm_private_registry.yaml
+  if resilient_utility "read" "RABBITMQ:FAILED";then
+    uninstall_rabbitmq
   fi
-  cd $PLATFORM_DIR/conf/manifest/rabbitmq
-  if [ $KERNEL_ARCH == 'aarch64' ]; then
-    kubectl apply -f common
-    kubectl apply -f statefulset_arm$suffix.yaml
-  else
-    kubectl apply -f common
-    kubectl apply -f statefulset_x86$suffix.yaml
-  fi
-  if [ $? -eq 0 ]; then
-    wait "rabbitmq" 1
-    info "[Deployed Rabbitmq  .........]" $GREEN
-  else
-    info "[Rabbitmq Deployment Failed  ]" $RED
+
+  if resilient_utility "read" "RABBITMQ:UN_DEPLOYED" ;then
+    info "[Deploying Rabbitmq  ........]" $BLUE
+    info "[it would take maximum of 5mins .......]" $BLUE
+    suffix=""
+    if [[ $REGISTRY_URL != "" ]]; then
+      suffix="_private_registry"
+      cp $PLATFORM_DIR/conf/manifest/rabbitmq/statefulset_x86.yaml $PLATFORM_DIR/conf/manifest/rabbitmq/statefulset_x86_private_registry.yaml
+      cp $PLATFORM_DIR/conf/manifest/rabbitmq/statefulset_arm.yaml $PLATFORM_DIR/conf/manifest/rabbitmq/statefulset_arm_private_registry.yaml
+      sed -i 's?image: rabbitmq:3.7-management-alpine?image: '$REGISTRY_URL'rabbitmq:3.7-management-alpine?g' $PLATFORM_DIR/conf/manifest/rabbitmq/statefulset_x86_private_registry.yaml
+      sed -i 's?image: arm64v8/rabbitmq:3.7-management-alpine?image: '$REGISTRY_URL'arm64v8/rabbitmq:3.7-management-alpine?g' $PLATFORM_DIR/conf/manifest/rabbitmq/statefulset_arm_private_registry.yaml
+    fi
+    cd $PLATFORM_DIR/conf/manifest/rabbitmq
+    if [ $KERNEL_ARCH == 'aarch64' ]; then
+      kubectl apply -f common
+      kubectl apply -f statefulset_arm$suffix.yaml
+    else
+      kubectl apply -f common
+      kubectl apply -f statefulset_x86$suffix.yaml
+    fi
+    wait "rabbitmq" 1 yes
+    if [ $? -eq 0 ]; then
+      info "[Deployed Rabbitmq  .........]" $GREEN
+      resilient_utility "write" "RABBITMQ:DEPLOYED"
+    else
+      info "[Rabbitmq Deployment Failed  ]" $RED
+      resilient_utility "write" "RABBITMQ:FAILED"
+      exit 1
+    fi
   fi
 }
 
@@ -727,6 +773,7 @@ function uninstall_rabbitmq()
     kubectl delete -f statefulset_x86.yaml
     kubectl delete -f statefulset_x86_private_registry.yaml
   fi
+  resilient_utility "write" "RABBITMQ:UN_DEPLOYED"
   info "[UnDeployed Rabbitmq  .......]"  $BLUE
 }
 
@@ -812,57 +859,67 @@ function _prepare_mep_ssl()
 
 function install_mep()
 {
-  info "[Setting up Network Isolation]" $BLUE
-  number_of_nodes=$(kubectl get nodes |wc -l)
-  if [[ $number_of_nodes -ge 3 ]]; then
-    ((number_of_nodes=number_of_nodes-1))
-  else
-    number_of_nodes=1
-  fi
-  _prepare_mep_ssl
-  _deploy_dns_metallb
-  _deploy_network_isolation_multus
-
-  info "[Deploying MEP  .............]" $BLUE
-  if [[ $KERNEL_ARCH == 'x86_64' && $OFFLINE_MODE == 'muno' ]] ; then
-    ipam_type=whereabouts
-    phyif_mp1=vxlan-mp1
-    phyif_mm5=vxlan-mm5
-  else
-    ipam_type=host-local
-    phyif_mp1=$EG_NODE_EDGE_MP1
-    phyif_mm5=$EG_NODE_EDGE_MM5
+  if resilient_utility "read" "MEP:FAILED";then
+    uninstall_mep
   fi
 
-  info "[it would take maximum of 5mins .......]" $BLUE
-  helm install --wait mep-edgegallery "$CHART_PREFIX"edgegallery/mep"$CHART_SUFFIX" \
-  --set networkIsolation.ipamType=$ipam_type \
-  --set networkIsolation.phyInterface.mp1=$phyif_mp1 \
-  --set networkIsolation.phyInterface.mm5=$phyif_mm5 \
-  --set images.mep.repository=$mep_images_mep_repository \
-  --set images.mepauth.repository=$mep_images_mepauth_repository \
-  --set images.dns.repository=$mep_images_dns_repository \
-  --set images.kong.repository=$mep_images_kong_repository \
-  --set images.postgres.repository=$mep_images_postgres_repository \
-  --set images.mep.tag=$mep_images_mep_tag \
-  --set images.mepauth.tag=$mep_images_mepauth_tag \
-  --set images.dns.tag=$mep_images_dns_tag \
-  --set images.mep.pullPolicy=$mep_images_mep_pullPolicy \
-  --set images.mepauth.pullPolicy=$mep_images_mepauth_pullPolicy \
-  --set images.dns.pullPolicy=$mep_images_dns_pullPolicy \
-  --set images.kong.pullPolicy=$mep_images_kong_pullPolicy \
-  --set images.postgres.pullPolicy=$mep_images_postgres_pullPolicy \
-  --set ssl.secretName=$mep_ssl_secretName \
-  --set global.persistence.enabled=$ENABLE_PERSISTENCE
+  if resilient_utility "read" "MEP:UN_DEPLOYED";then
+    number_of_nodes=$(kubectl get nodes |wc -l)
+    if [[ $number_of_nodes -ge 3 ]]; then
+      ((number_of_nodes=number_of_nodes-1))
+    else
+      number_of_nodes=1
+    fi
+    INSTALLER_INDEX="E.1.1:"
+    _prepare_mep_ssl
+    INSTALLER_INDEX="E.1.2:"
+    _deploy_dns_metallb
+    INSTALLER_INDEX="E.1.3:"
+    info "[Setting up Network Isolation]" $BLUE
+    _deploy_network_isolation_multus
+    INSTALLER_INDEX="E.1.4:"
 
-  if [ $? -eq 0 ]; then
-    info "[Deployed MEP  .........]" $GREEN
-  else
-    info "[MEP Deployment Failed  ]" $RED
-    exit 1
+    info "[Deploying MEP  .............]" $BLUE
+    if [[ $KERNEL_ARCH == 'x86_64' && $OFFLINE_MODE == 'muno' ]] ; then
+      ipam_type=whereabouts
+      phyif_mp1=vxlan-mp1
+      phyif_mm5=vxlan-mm5
+    else
+      ipam_type=host-local
+      phyif_mp1=$EG_NODE_EDGE_MP1
+      phyif_mm5=$EG_NODE_EDGE_MM5
+    fi
+    info "[it would take maximum of 5mins .......]" $BLUE
+    helm install --wait mep-edgegallery "$CHART_PREFIX"edgegallery/mep"$CHART_SUFFIX" \
+    --set networkIsolation.ipamType=$ipam_type \
+    --set networkIsolation.phyInterface.mp1=$phyif_mp1 \
+    --set networkIsolation.phyInterface.mm5=$phyif_mm5 \
+    --set images.mep.repository=$mep_images_mep_repository \
+    --set images.mepauth.repository=$mep_images_mepauth_repository \
+    --set images.dns.repository=$mep_images_dns_repository \
+    --set images.kong.repository=$mep_images_kong_repository \
+    --set images.postgres.repository=$mep_images_postgres_repository \
+    --set images.mep.tag=$mep_images_mep_tag \
+    --set images.mepauth.tag=$mep_images_mepauth_tag \
+    --set images.dns.tag=$mep_images_dns_tag \
+    --set images.mep.pullPolicy=$mep_images_mep_pullPolicy \
+    --set images.mepauth.pullPolicy=$mep_images_mepauth_pullPolicy \
+    --set images.dns.pullPolicy=$mep_images_dns_pullPolicy \
+    --set images.kong.pullPolicy=$mep_images_kong_pullPolicy \
+    --set images.postgres.pullPolicy=$mep_images_postgres_pullPolicy \
+    --set ssl.secretName=$mep_ssl_secretName \
+    --set global.persistence.enabled=$ENABLE_PERSISTENCE
+
+    if [ $? -eq 0 ]; then
+      info "[Deployed MEP  .........]" $GREEN
+      resilient_utility "write" "MEP:DEPLOYED"
+    else
+      info "[MEP Deployment Failed  ]" $RED
+      resilient_utility "write" "MEP:FAILED"
+      exit 1
+    fi
+    info "[Deployed MEP  ..............]" $GREEN
   fi
-  
-  info "[Deployed MEP  ..............]" $GREEN
 }
 
 function _remove_mep_ssl_config()
@@ -880,13 +937,17 @@ function uninstall_mep()
   _remove_mep_ssl_config
   _undeploy_network_isolation_multus
   _undeploy_dns_metallb
+  resilient_utility "write" "MEP:UN_DEPLOYED"
   info "[UnDeployed MEP  ............]" $GREEN
 }
 
 function install_common-svc()
 {
+  INSTALLER_INDEX="E.3.1:"
   install_prometheus
+  INSTALLER_INDEX="E.3.2:"
   install_grafana
+  INSTALLER_INDEX="E.3.3:"
   install_rabbitmq
 }
 
@@ -899,29 +960,34 @@ function uninstall_common-svc()
 
 function install_mecm-mepm ()
 {
-  info "[Deploying MECM-MEPM  .......]" $BLUE
-  info "[it would take maximum of 5mins .......]" $BLUE
+  if resilient_utility "read" "MECM_MEPM:FAILED";then
+    uninstall_mecm-mepm
+  fi
 
-  ## Create a jwt public key secret for applcm
-  kubectl create secret generic mecm-mepm-jwt-public-secret \
-    --from-file=publicKey=$PLATFORM_DIR/conf/keys/rsa_public_key.pem
+  if resilient_utility "read" "MECM_MEPM:UN_DEPLOYED";then
+    info "[Deploying MECM-MEPM  .......]" $BLUE
+    info "[it would take maximum of 5mins .......]" $BLUE
 
-  ## Create a ssl secret
-  kubectl create secret generic mecm-mepm-ssl-secret \
-    --from-file=server_tls.key=$PLATFORM_DIR/conf/keys/tls.key \
-    --from-file=server_tls.crt=$PLATFORM_DIR/conf/keys/tls.crt \
-    --from-file=ca.crt=$PLATFORM_DIR/conf/keys/ca.crt
+    ## Create a jwt public key secret for applcm
+    kubectl create secret generic mecm-mepm-jwt-public-secret \
+      --from-file=publicKey=$PLATFORM_DIR/conf/keys/rsa_public_key.pem
 
-  ## Create a mecm-mepm secret with postgres_init.sql file to create necessary db's
-  kubectl create secret generic edgegallery-mepm-secret \
-    --from-file=postgres_init.sql=$PLATFORM_DIR/conf/keys/postgres_init.sql \
-    --from-literal=postgresPassword=te9Fmv%qaq \
-    --from-literal=postgresLcmCntlrPassword=te9Fmv%qaq \
-    --from-literal=postgresk8sPluginPassword=te9Fmv%qaq \
+    ## Create a ssl secret
+    kubectl create secret generic mecm-mepm-ssl-secret \
+      --from-file=server_tls.key=$PLATFORM_DIR/conf/keys/tls.key \
+      --from-file=server_tls.crt=$PLATFORM_DIR/conf/keys/tls.crt \
+      --from-file=ca.crt=$PLATFORM_DIR/conf/keys/ca.crt
 
-  kubectl apply -f $PLATFORM_DIR/conf/manifest/mepm/mepm-service-account.yaml
+    ## Create a mecm-mepm secret with postgres_init.sql file to create necessary db's
+    kubectl create secret generic edgegallery-mepm-secret \
+      --from-file=postgres_init.sql=$PLATFORM_DIR/conf/keys/postgres_init.sql \
+      --from-literal=postgresPassword=te9Fmv%qaq \
+      --from-literal=postgresLcmCntlrPassword=te9Fmv%qaq \
+      --from-literal=postgresk8sPluginPassword=te9Fmv%qaq \
 
-  helm install --wait mecm-mepm-edgegallery "$CHART_PREFIX"edgegallery/mecm-mepm"$CHART_SUFFIX" \
+    kubectl apply -f $PLATFORM_DIR/conf/manifest/mepm/mepm-service-account.yaml
+
+    helm install --wait mecm-mepm-edgegallery "$CHART_PREFIX"edgegallery/mecm-mepm"$CHART_SUFFIX" \
     --set jwt.publicKeySecretName=$mepm_jwt_publicKeySecretName \
     --set mepm.secretName=$mepm_mepm_secretName \
     --set ssl.secretName=$mepm_ssl_secretName \
@@ -935,11 +1001,14 @@ function install_mecm-mepm ()
     --set images.k8splugin.pullPolicy=$mepm_images_k8splugin_pullPolicy \
     --set images.postgres.pullPolicy=$mepm_images_postgres_pullPolicy \
     --set global.persistence.enabled=$ENABLE_PERSISTENCE
-  if [ $? -eq 0 ]; then
-    info "[Deployed MECM-MEPM  ........]" $GREEN
-  else
-    info "[MECM-MEPM Deployment Failed ]" $RED
-    exit 1
+    if [ $? -eq 0 ]; then
+      info "[Deployed MECM-MEPM  ........]" $GREEN
+      resilient_utility "write" "MECM_MEPM:DEPLOYED"
+    else
+      info "[MECM-MEPM Deployment Failed ]" $RED
+      resilient_utility "write" "MECM_MEPM:FAILED"
+      exit 1
+    fi
   fi
 }
 
@@ -949,43 +1018,49 @@ function uninstall_mecm-mepm ()
     helm uninstall mecm-mepm-edgegallery
     kubectl delete secret mecm-mepm-jwt-public-secret mecm-mepm-ssl-secret edgegallery-mepm-secret
     kubectl delete -f $PLATFORM_DIR/conf/manifest/mepm/mepm-service-account.yaml
+    resilient_utility "write" "MECM_MEPM:UN_DEPLOYED"
     info "[UnDeployed MECM-MEPM  ......]" $GREEN
 }
 
 function install_mecm-meo ()
 {
-  info "[Deploying MECM-MEO  ........]" $BLUE
-  info "[it would take maximum of 5mins .......]" $BLUE
-  ## Create a keystore secret
-  kubectl create secret generic mecm-ssl-secret \
-  --from-file=keystore.p12=$PLATFORM_DIR/conf/keys/keystore.p12 \
-  --from-file=keystore.jks=$PLATFORM_DIR/conf/keys/keystore.jks \
-  --from-literal=keystorePassword=te9Fmv%qaq \
-  --from-literal=keystoreType=PKCS12 \
-  --from-literal=keyAlias=edgegallery \
-  --from-literal=truststorePassword=te9Fmv%qaq
-
-  ## Create a mecm-meo secret with postgres_init.sql file to create necessary db's
-  kubectl create secret generic edgegallery-mecm-secret \
-    --from-file=postgres_init.sql=$PLATFORM_DIR/conf/keys/postgres_init.sql \
-    --from-literal=postgresPassword=te9Fmv%qaq \
-    --from-literal=postgresApmPassword=te9Fmv%qaq \
-    --from-literal=postgresAppoPassword=te9Fmv%qaq \
-    --from-literal=postgresInventoryPassword=te9Fmv%qaq \
-    --from-literal=edgeRepoUserName=admin	 \
-    --from-literal=edgeRepoPassword=admin123
-
-  if [[ $OFFLINE_MODE == "muno" ]]; then
-    sshpass ssh root@$MASTER_IP "rm -rf /tmp/remote-platform/remote_fsgroup;
-                                 mkdir -p /tmp/remote-platform/;
-                                 getent group docker | cut -d: -f3 > /tmp/remote-platform/remote_fsgroup"
-    scp root@$MASTER_IP:/tmp/remote-platform/remote_fsgroup $K8S_OFFLINE_DIR
-    fs_group=$(cat $K8S_OFFLINE_DIR/remote_fsgroup)
-  else
-    fs_group=$(getent group docker | cut -d: -f3)
+  if resilient_utility "read" "MECM_MEO:FAILED";then
+    uninstall_mecm-meo
   fi
 
-  helm install --wait mecm-meo-edgegallery "$CHART_PREFIX"edgegallery/mecm-meo"$CHART_SUFFIX" \
+  if resilient_utility "read" "MECM_MEO:UN_DEPLOYED";then
+    info "[Deploying MECM-MEO  ........]" $BLUE
+    info "[it would take maximum of 5mins .......]" $BLUE
+    ## Create a keystore secret
+    kubectl create secret generic mecm-ssl-secret \
+    --from-file=keystore.p12=$PLATFORM_DIR/conf/keys/keystore.p12 \
+    --from-file=keystore.jks=$PLATFORM_DIR/conf/keys/keystore.jks \
+    --from-literal=keystorePassword=te9Fmv%qaq \
+    --from-literal=keystoreType=PKCS12 \
+    --from-literal=keyAlias=edgegallery \
+    --from-literal=truststorePassword=te9Fmv%qaq
+
+    ## Create a mecm-meo secret with postgres_init.sql file to create necessary db's
+    kubectl create secret generic edgegallery-mecm-secret \
+      --from-file=postgres_init.sql=$PLATFORM_DIR/conf/keys/postgres_init.sql \
+      --from-literal=postgresPassword=te9Fmv%qaq \
+      --from-literal=postgresApmPassword=te9Fmv%qaq \
+      --from-literal=postgresAppoPassword=te9Fmv%qaq \
+      --from-literal=postgresInventoryPassword=te9Fmv%qaq \
+      --from-literal=edgeRepoUserName=admin	 \
+      --from-literal=edgeRepoPassword=admin123
+
+    if [[ $OFFLINE_MODE == "muno" ]]; then
+      sshpass ssh root@$MASTER_IP "rm -rf /tmp/remote-platform/remote_fsgroup;
+                                 mkdir -p /tmp/remote-platform/;
+                                 getent group docker | cut -d: -f3 > /tmp/remote-platform/remote_fsgroup"
+      scp root@$MASTER_IP:/tmp/remote-platform/remote_fsgroup $K8S_OFFLINE_DIR
+      fs_group=$(cat $K8S_OFFLINE_DIR/remote_fsgroup)
+    else
+      fs_group=$(getent group docker | cut -d: -f3)
+    fi
+
+    helm install --wait mecm-meo-edgegallery "$CHART_PREFIX"edgegallery/mecm-meo"$CHART_SUFFIX" \
     --set ssl.secretName=$meo_ssl_secretName \
     --set mecm.secretName=$meo_mecm_secretName \
     --set images.inventory.repository=$meo_images_inventory_repository \
@@ -1002,11 +1077,14 @@ function install_mecm-meo ()
     --set images.postgres.pullPolicy=$meo_images_postgres_pullPolicy \
     --set mecm.docker.fsgroup=$fs_group \
     --set global.persistence.enabled=$ENABLE_PERSISTENCE
-  if [ $? -eq 0 ]; then
-    info "[Deployed MECM-MEO  .........]" $GREEN
-  else
-    info "[MECM-MEO Deployment Failed  ]" $RED
-    exit 1
+    if [ $? -eq 0 ]; then
+      info "[Deployed MECM-MEO  .........]" $GREEN
+      resilient_utility "write" "MECM_MEO:DEPLOYED"
+    else
+      info "[MECM-MEO Deployment Failed  ]" $RED
+      resilient_utility "write" "MECM_MEO:FAILED"
+      exit 1
+    fi
   fi
 }
 
@@ -1015,14 +1093,20 @@ function uninstall_mecm-meo ()
     info "[UnDeploying MECM-MEO  ........]" $BLUE
     helm uninstall mecm-meo-edgegallery
     kubectl delete secret mecm-ssl-secret edgegallery-mecm-secret
+    resilient_utility "write" "MECM_MEO:UN_DEPLOYED"
     info "[UnDeployed MECM-MEO  .......]" $GREEN
 }
 
 function install_mecm-fe ()
 {
-  info "[Deploying MECM-FE  ........]" $BLUE
-  info "[it would take maximum of 5mins .......]" $BLUE
-  helm install --wait mecm-fe-edgegallery "$CHART_PREFIX"edgegallery/mecm-fe"$CHART_SUFFIX" \
+  if resilient_utility "read" "MECM_FE:FAILED";then
+    uninstall_mecm-fe
+  fi
+
+  if resilient_utility "read" "MECM_FE:UN_DEPLOYED";then
+    info "[Deploying MECM-FE  ........]" $BLUE
+    info "[it would take maximum of 5mins .......]" $BLUE
+    helm install --wait mecm-fe-edgegallery "$CHART_PREFIX"edgegallery/mecm-fe"$CHART_SUFFIX" \
     --set global.oauth2.authServerAddress=https://$NODEIP:$USER_MGMT \
     --set images.mecmFe.repository=$mecm_fe_images_mecmFe_repository \
     --set images.initservicecenter.repository=$mecm_fe_images_initservicecenter_repository \
@@ -1032,11 +1116,14 @@ function install_mecm-fe ()
     --set global.ssl.enabled=$mecm_fe_global_ssl_enabled \
     --set global.ssl.secretName=$mecm_fe_global_ssl_secretName \
     --set global.persistence.enabled=$ENABLE_PERSISTENCE
-  if [ $? -eq 0 ]; then
-    info "[Deployed MECM-FE  ..........]" $GREEN
-  else
-    info "[MECM-FE Deployment Failed  .]" $RED
-    exit 1
+    if [ $? -eq 0 ]; then
+      info "[Deployed MECM-FE  ..........]" $GREEN
+      resilient_utility "write" "MECM_FE:DEPLOYED"
+    else
+      info "[MECM-FE Deployment Failed  .]" $RED
+      resilient_utility "write" "MECM_FE:FAILED"
+      exit 1
+    fi
   fi
 }
 
@@ -1044,33 +1131,42 @@ function uninstall_mecm-fe ()
 {
     info "[UnDeploying MECM-FE  .......]" $BLUE
     helm uninstall mecm-fe-edgegallery
+    resilient_utility "write" "MECM_FE:UN_DEPLOYED"
     info "[UnDeployed MECM-FE  ........]" $GREEN
 }
 
 function install_appstore ()
 {
-  info "[Deploying AppStore  ........]" $BLUE
-  info "[it would take maximum of 5mins .......]" $BLUE
-  helm install --wait appstore-edgegallery "$CHART_PREFIX"edgegallery/appstore"$CHART_SUFFIX" \
-  --set global.oauth2.authServerAddress=https://$NODEIP:$USER_MGMT \
-  --set images.appstoreFe.repository=$appstore_images_appstoreFe_repository \
-  --set images.appstoreBe.repository=$appstore_images_appstoreBe_repository \
-  --set images.postgres.repository=$appstore_images_postgres_repository \
-  --set images.initservicecenter.repository=$appstore_images_initservicecenter_repository \
-  --set images.appstoreFe.tag=$appstore_images_appstoreFe_tag \
-  --set images.appstoreBe.tag=$appstore_images_appstoreBe_tag \
-  --set images.appstoreFe.pullPolicy=$appstore_images_appstoreFe_pullPolicy \
-  --set images.appstoreBe.pullPolicy=$appstore_images_appstoreBe_pullPolicy \
-  --set images.postgres.pullPolicy=$appstore_images_postgres_pullPolicy \
-  --set images.initservicecenter.pullPolicy=$appstore_images_initservicecenter_pullPolicy \
-  --set global.ssl.enabled=$appstore_global_ssl_enabled \
-  --set global.ssl.secretName=$appstore_global_ssl_secretName \
-  --set global.persistence.enabled=$ENABLE_PERSISTENCE
-  if [ $? -eq 0 ]; then
-    info "[Deployed AppStore  .........]" $GREEN
-  else
-    info "[AppStore Deployment Failed  ]" $RED
-    exit 1
+  if resilient_utility "read" "APPSTORE:FAILED";then
+    uninstall_appstore
+  fi
+
+  if resilient_utility "read" "APPSTORE:UN_DEPLOYED";then
+    info "[Deploying AppStore  ........]" $BLUE
+    info "[it would take maximum of 5mins .......]" $BLUE
+    helm install --wait appstore-edgegallery "$CHART_PREFIX"edgegallery/appstore"$CHART_SUFFIX" \
+    --set global.oauth2.authServerAddress=https://$NODEIP:$USER_MGMT \
+    --set images.appstoreFe.repository=$appstore_images_appstoreFe_repository \
+    --set images.appstoreBe.repository=$appstore_images_appstoreBe_repository \
+    --set images.postgres.repository=$appstore_images_postgres_repository \
+    --set images.initservicecenter.repository=$appstore_images_initservicecenter_repository \
+    --set images.appstoreFe.tag=$appstore_images_appstoreFe_tag \
+    --set images.appstoreBe.tag=$appstore_images_appstoreBe_tag \
+    --set images.appstoreFe.pullPolicy=$appstore_images_appstoreFe_pullPolicy \
+    --set images.appstoreBe.pullPolicy=$appstore_images_appstoreBe_pullPolicy \
+    --set images.postgres.pullPolicy=$appstore_images_postgres_pullPolicy \
+    --set images.initservicecenter.pullPolicy=$appstore_images_initservicecenter_pullPolicy \
+    --set global.ssl.enabled=$appstore_global_ssl_enabled \
+    --set global.ssl.secretName=$appstore_global_ssl_secretName \
+    --set global.persistence.enabled=$ENABLE_PERSISTENCE
+    if [ $? -eq 0 ]; then
+      info "[Deployed AppStore  .........]" $GREEN
+      resilient_utility "write" "APPSTORE:DEPLOYED"
+    else
+      info "[AppStore Deployment Failed  ]" $RED
+      resilient_utility "write" "APPSTORE:FAILED"
+      exit 1
+    fi
   fi
 }
 
@@ -1078,38 +1174,47 @@ function uninstall_appstore ()
 {
   info "[UnDeploying AppStore  ......]" $BLUE
   helm uninstall appstore-edgegallery
+  resilient_utility "write" "APPSTORE:UN_DEPLOYED"
   info "[UnDeployed AppStore  .......]" $GREEN
 }
 
 function install_developer ()
 {
-  info "[Deploying Developer  .......]"  $BLUE
-  info "[it would take maximum of 5mins .......]" $BLUE
-  helm install --wait developer-edgegallery "$CHART_PREFIX"edgegallery/developer"$CHART_SUFFIX" \
-  --set global.oauth2.authServerAddress=https://$NODEIP:$USER_MGMT \
-  --set images.developerFe.repository=$developer_images_developerFe_repository \
-  --set images.developerBe.repository=$developer_images_developerBe_repository \
-  --set images.postgres.repository=$developer_images_postgres_repository \
-  --set images.initservicecenter.repository=$developer_images_initservicecenter_repository \
-  --set images.toolChain.repository=$developer_images_toolChain_repository \
-  --set images.portingAdvisor.repository=$developer_images_portingAdvisor_repository \
-  --set images.developerFe.tag=$developer_images_developerFe_tag \
-  --set images.developerBe.tag=$developer_images_developerBe_tag \
-  --set images.toolChain.tag=$developer_images_toolChain_tag \
-  --set images.developerFe.pullPolicy=$developer_images_developerFe_pullPolicy \
-  --set images.developerBe.pullPolicy=$developer_images_developerBe_pullPolicy \
-  --set images.postgres.pullPolicy=$developer_images_postgres_pullPolicy \
-  --set images.initservicecenter.pullPolicy=$developer_images_initservicecenter_pullPolicy \
-  --set images.toolChain.pullPolicy=$developer_images_toolChain_pullPolicy \
-  --set images.portingAdvisor.pullPolicy=$developer_images_portingAdvisor_pullPolicy \
-  --set global.ssl.enabled=$developer_global_ssl_enabled \
-  --set global.ssl.secretName=$developer_global_ssl_secretName \
-  --set global.persistence.enabled=$ENABLE_PERSISTENCE
-  if [ $? -eq 0 ]; then
-    info "[Deployed Developer .........]" $GREEN
-  else
-    fail "[Developer Deployment Failed ]" $RED
-    exit 1
+  if resilient_utility "read" "DEVELOPER:FAILED";then
+    uninstall_developer
+  fi
+
+  if resilient_utility "read" "DEVELOPER:UN_DEPLOYED";then
+    info "[Deploying Developer  .......]"  $BLUE
+    info "[it would take maximum of 5mins .......]" $BLUE
+    helm install --wait developer-edgegallery "$CHART_PREFIX"edgegallery/developer"$CHART_SUFFIX" \
+    --set global.oauth2.authServerAddress=https://$NODEIP:$USER_MGMT \
+    --set images.developerFe.repository=$developer_images_developerFe_repository \
+    --set images.developerBe.repository=$developer_images_developerBe_repository \
+    --set images.postgres.repository=$developer_images_postgres_repository \
+    --set images.initservicecenter.repository=$developer_images_initservicecenter_repository \
+    --set images.toolChain.repository=$developer_images_toolChain_repository \
+    --set images.portingAdvisor.repository=$developer_images_portingAdvisor_repository \
+    --set images.developerFe.tag=$developer_images_developerFe_tag \
+    --set images.developerBe.tag=$developer_images_developerBe_tag \
+    --set images.toolChain.tag=$developer_images_toolChain_tag \
+    --set images.developerFe.pullPolicy=$developer_images_developerFe_pullPolicy \
+    --set images.developerBe.pullPolicy=$developer_images_developerBe_pullPolicy \
+    --set images.postgres.pullPolicy=$developer_images_postgres_pullPolicy \
+    --set images.initservicecenter.pullPolicy=$developer_images_initservicecenter_pullPolicy \
+    --set images.toolChain.pullPolicy=$developer_images_toolChain_pullPolicy \
+    --set images.portingAdvisor.pullPolicy=$developer_images_portingAdvisor_pullPolicy \
+    --set global.ssl.enabled=$developer_global_ssl_enabled \
+    --set global.ssl.secretName=$developer_global_ssl_secretName \
+    --set global.persistence.enabled=$ENABLE_PERSISTENCE
+    if [ $? -eq 0 ]; then
+      info "[Deployed Developer .........]" $GREEN
+      resilient_utility "write" "DEVELOPER:DEPLOYED"
+    else
+      fail "[Developer Deployment Failed ]" $RED
+      resilient_utility "write" "DEVELOPER:FAILED"
+      exit 1
+    fi
   fi
 }
 
@@ -1117,23 +1222,32 @@ function uninstall_developer ()
 {
   info "[UnDeploying Developer  .....]" $BLUE
   helm uninstall developer-edgegallery
+  resilient_utility "write" "DEVELOPER:UN_DEPLOYED"
   info "[UnDeployed Developer  ......]" $GREEN
 }
 
 function install_service-center ()
 {
-  info "[Deploying ServiceCenter  ...]" $BLUE
-  info "[it would take maximum of 5mins .......]" $BLUE
-  helm install --wait service-center-edgegallery "$CHART_PREFIX"edgegallery/servicecenter"$CHART_SUFFIX" \
-  --set images.repository=$servicecenter_images_repository \
-  --set images.pullPolicy=$servicecenter_images_pullPolicy \
-  --set global.ssl.enabled=$servicecenter_global_ssl_enabled \
-  --set global.ssl.secretName=$servicecenter_global_ssl_secretName
-  if [ $? -eq 0 ]; then
-    info "[Deployed ServiceCenter  ....]" $GREEN
-  else
-    info "[ServiceCenter Deployment Failed]" $RED
-    exit 1
+  if resilient_utility "read" "SERVICE_CENTER:FAILED";then
+    uninstall_service-center
+  fi
+
+  if resilient_utility "read" "SERVICE_CENTER:UN_DEPLOYED";then
+    info "[Deploying ServiceCenter  ...]" $BLUE
+    info "[it would take maximum of 5mins .......]" $BLUE
+    helm install --wait service-center-edgegallery "$CHART_PREFIX"edgegallery/servicecenter"$CHART_SUFFIX" \
+    --set images.repository=$servicecenter_images_repository \
+    --set images.pullPolicy=$servicecenter_images_pullPolicy \
+    --set global.ssl.enabled=$servicecenter_global_ssl_enabled \
+    --set global.ssl.secretName=$servicecenter_global_ssl_secretName
+    if [ $? -eq 0 ]; then
+      info "[Deployed ServiceCenter  ....]" $GREEN
+      resilient_utility "write" "SERVICE_CENTER:DEPLOYED"
+    else
+      info "[ServiceCenter Deployment Failed]" $RED
+      resilient_utility "write" "SERVICE_CENTER:FAILED"
+      exit 1
+    fi
   fi
 }
 
@@ -1141,42 +1255,51 @@ function uninstall_service-center ()
 {
   info "[UnDeploying ServiceCenter  .]" $BLUE
   helm uninstall service-center-edgegallery
-  info "[UnDeployed ServiceCenter  ..]"
+  resilient_utility "write" "SERVICE_CENTER:UN_DEPLOYED"
+  info "[UnDeployed ServiceCenter  ..]" $GREEN
 }
 
 function install_user-mgmt ()
 {
-  info "[Deploying UserMgmt  ........]" $BLUE
-  info "[it would take maximum of 5mins .......]" $BLUE
-  ## Create a jwt secret for usermgmt
-  kubectl create secret generic user-mgmt-jwt-secret \
-    --from-file=publicKey=$PLATFORM_DIR/conf/keys/rsa_public_key.pem \
-    --from-file=encryptedPrivateKey=$PLATFORM_DIR/conf/keys/encrypted_rsa_private_key.pem \
-    --from-literal=encryptPassword=te9Fmv%qaq
+  if resilient_utility "read" "USER_MGMT:FAILED";then
+    uninstall_user-mgmt
+  fi
 
-  helm install --wait user-mgmt-edgegallery "$CHART_PREFIX"edgegallery/usermgmt"$CHART_SUFFIX" \
-  --set global.oauth2.clients.appstore.clientUrl=https://$NODEIP:$APPSTORE_PORT,\
+  if resilient_utility "read" "USER_MGMT:UN_DEPLOYED";then
+    info "[Deploying UserMgmt  ........]" $BLUE
+    info "[it would take maximum of 5mins .......]" $BLUE
+    ## Create a jwt secret for usermgmt
+    kubectl create secret generic user-mgmt-jwt-secret \
+      --from-file=publicKey=$PLATFORM_DIR/conf/keys/rsa_public_key.pem \
+      --from-file=encryptedPrivateKey=$PLATFORM_DIR/conf/keys/encrypted_rsa_private_key.pem \
+      --from-literal=encryptPassword=te9Fmv%qaq
+
+    helm install --wait user-mgmt-edgegallery "$CHART_PREFIX"edgegallery/usermgmt"$CHART_SUFFIX" \
+    --set global.oauth2.clients.appstore.clientUrl=https://$NODEIP:$APPSTORE_PORT,\
 global.oauth2.clients.developer.clientUrl=https://$NODEIP:$DEVELOPER_PORT,\
 global.oauth2.clients.mecm.clientUrl=https://$NODEIP:$MECM_PORT, \
---set jwt.secretName=$usermgmt_jwt_secretName \
---set images.usermgmt.repository=$usermgmt_images_usermgmt_repository \
---set images.postgres.repository=$usermgmt_images_postgres_repository \
---set images.redis.repository=$usermgmt_images_redis_repository \
---set images.initservicecenter.repository=$usermgmt_images_initservicecenter_repository \
---set images.usermgmt.tag=$usermgmt_images_usermgmt_tag \
---set images.usermgmt.pullPolicy=$usermgmt_images_usermgmt_pullPolicy \
---set images.postgres.pullPolicy=$usermgmt_images_postgres_pullPolicy \
---set images.redis.pullPolicy=$usermgmt_images_redis_pullPolicy \
---set images.initservicecenter.pullPolicy=$usermgmt_images_initservicecenter_pullPolicy \
---set global.ssl.enabled=$usermgmt_global_ssl_enabled \
---set global.ssl.secretName=$usermgmt_global_ssl_secretName \
---set global.persistence.enabled=$ENABLE_PERSISTENCE
+    --set jwt.secretName=$usermgmt_jwt_secretName \
+    --set images.usermgmt.repository=$usermgmt_images_usermgmt_repository \
+    --set images.postgres.repository=$usermgmt_images_postgres_repository \
+    --set images.redis.repository=$usermgmt_images_redis_repository \
+    --set images.initservicecenter.repository=$usermgmt_images_initservicecenter_repository \
+    --set images.usermgmt.tag=$usermgmt_images_usermgmt_tag \
+    --set images.usermgmt.pullPolicy=$usermgmt_images_usermgmt_pullPolicy \
+    --set images.postgres.pullPolicy=$usermgmt_images_postgres_pullPolicy \
+    --set images.redis.pullPolicy=$usermgmt_images_redis_pullPolicy \
+    --set images.initservicecenter.pullPolicy=$usermgmt_images_initservicecenter_pullPolicy \
+    --set global.ssl.enabled=$usermgmt_global_ssl_enabled \
+    --set global.ssl.secretName=$usermgmt_global_ssl_secretName \
+    --set global.persistence.enabled=$ENABLE_PERSISTENCE
 
-  if [ $? -eq 0 ]; then
-    info "[Deployed UserMgmt  .........]" $GREEN
-  else
-    info "[UserMgmt Deployment Failed .]" $RED
-    exit 1
+    if [ $? -eq 0 ]; then
+      info "[Deployed UserMgmt  .........]" $GREEN
+      resilient_utility "write" "USER_MGMT:DEPLOYED"
+    else
+      info "[UserMgmt Deployment Failed .]" $RED
+      resilient_utility "write" "USER_MGMT:FAILED"
+      exit 1
+    fi
   fi
 }
 
@@ -1185,6 +1308,7 @@ function uninstall_user-mgmt ()
   info "[UnDeploying UserMgmt  ......]" $BLUE
   helm uninstall user-mgmt-edgegallery
   kubectl delete secret user-mgmt-jwt-secret
+  resilient_utility "write" "USER_MGMT:UN_DEPLOYED"
   info "[UnDeployed UserMgmt  .......]" $GREEN
 }
 
@@ -1337,12 +1461,14 @@ function uninstall_umbrella_chart()
 
 function create_ssl_certs()
 {
-  if [[ -z $CERT_VALIDITY_IN_DAYS ]]; then
-    env=""
-  else
-    env="-e CERT_VALIDITY_IN_DAYS=$CERT_VALIDITY_IN_DAYS"
+  if ! resilient_utility "read" ":DEPLOYED"; then
+    if [[ -z $CERT_VALIDITY_IN_DAYS ]]; then
+      env=""
+    else
+      env="-e CERT_VALIDITY_IN_DAYS=$CERT_VALIDITY_IN_DAYS"
+    fi
+    docker run $env -v $PLATFORM_DIR/conf/keys/:/certs edgegallery/deploy-tool:latest
   fi
-  docker run $env -v $PLATFORM_DIR/conf/keys/:/certs edgegallery/deploy-tool:latest
 }
 
 function install_nfs-client-provisioner()
@@ -1371,6 +1497,24 @@ function uninstall_nfs-client-provisioner()
   info "[UnDeployed nfs-client-provisioner]" $GREEN
 }
 
+function resilient_utility ()
+{
+  resilient_to_do=$1
+  key=$2
+  if [[ $resilient_to_do == "read" ]]; then
+    value=$(cat $PLATFORM_DIR/conf/installer-footprint | grep "$key")
+    value=$?
+    if [[ $value -eq 0 ]]; then
+      return 0
+    else
+      return 1
+    fi
+  elif [[ $resilient_to_do == "write" ]]; then
+    module=$(echo "$key"| cut -d: -f1)
+    sed -i "s?$module:.*?$key?g" $PLATFORM_DIR/conf/installer-footprint
+  fi
+}
+
 function install_EdgeGallery ()
 {
   FEATURE=$1
@@ -1388,26 +1532,39 @@ function install_EdgeGallery ()
   fi
 
   if [[ $FEATURE == 'edge' || $FEATURE == 'all' ]]; then
+    INSTALLER_INDEX="E.1:"
     install_mep
+    INSTALLER_INDEX="E.2:"
     install_mecm-mepm
+    INSTALLER_INDEX="E.3:"
     install_common-svc
+    INSTALLER_INDEX=""
   fi
   if [[ ($FEATURE == 'controller' || $FEATURE == 'all') && ($DEPLOY_TYPE == 'nodePort') ]]; then
-    kubectl create secret generic edgegallery-ssl-secret \
-    --from-file=keystore.p12=$PLATFORM_DIR/conf/keys/keystore.p12 \
-    --from-literal=keystorePassword=te9Fmv%qaq \
-    --from-literal=keystoreType=PKCS12 \
-    --from-literal=keyAlias=edgegallery \
-    --from-file=trust.cer=$PLATFORM_DIR/conf/keys/ca.crt \
-    --from-file=server.cer=$PLATFORM_DIR/conf/keys/tls.crt \
-    --from-file=server_key.pem=$PLATFORM_DIR/conf/keys/encryptedtls.key \
-    --from-literal=cert_pwd=te9Fmv%qaq
+    if ! resilient_utility "read" "SERVICE_CENTER:DEPLOYED"; then
+      kubectl create secret generic edgegallery-ssl-secret \
+      --from-file=keystore.p12=$PLATFORM_DIR/conf/keys/keystore.p12 \
+      --from-literal=keystorePassword=te9Fmv%qaq \
+      --from-literal=keystoreType=PKCS12 \
+      --from-literal=keyAlias=edgegallery \
+      --from-file=trust.cer=$PLATFORM_DIR/conf/keys/ca.crt \
+      --from-file=server.cer=$PLATFORM_DIR/conf/keys/tls.crt \
+      --from-file=server_key.pem=$PLATFORM_DIR/conf/keys/encryptedtls.key \
+      --from-literal=cert_pwd=te9Fmv%qaq
+    fi
+    INSTALLER_INDEX="C.1:"
     install_service-center
+    INSTALLER_INDEX="C.2:"
     install_user-mgmt
+    INSTALLER_INDEX="C.3:"
     install_mecm-meo
+    INSTALLER_INDEX="C.4:"
     install_mecm-fe
+    INSTALLER_INDEX="C.5:"
     install_appstore
+    INSTALLER_INDEX="C.6:"
     install_developer
+    INSTALLER_INDEX=""
   elif [[ ($FEATURE == 'controller' || $FEATURE == 'all') && ($DEPLOY_TYPE == 'ingress') ]]; then
     install_controller_with_ingress
   fi
@@ -1420,16 +1577,25 @@ function uninstall_EdgeGallery ()
      DEPLOY_TYPE="nodePort"
    fi
    if [[ $FEATURE == 'edge' || $FEATURE == 'all' ]]; then
+     INSTALLER_INDEX="E.1:"
      uninstall_mep
+     INSTALLER_INDEX="E.2:"
      uninstall_mecm-mepm
+     INSTALLER_INDEX="E.3:"
      uninstall_common-svc
    fi
    if [[ ($FEATURE == 'controller' || $FEATURE == 'all') && ($DEPLOY_TYPE == 'nodePort') ]]; then
+     INSTALLER_INDEX="C.1:"
      uninstall_mecm-fe
+     INSTALLER_INDEX="C.2:"
      uninstall_mecm-meo
+     INSTALLER_INDEX="C.3:"
      uninstall_appstore
+     INSTALLER_INDEX="C.4:"
      uninstall_developer
+     INSTALLER_INDEX="C.5:"
      uninstall_user-mgmt
+     INSTALLER_INDEX="C.6:"
      uninstall_service-center
      kubectl delete secret edgegallery-ssl-secret
    elif [[ ($FEATURE == 'controller' || $FEATURE == 'all') && ($DEPLOY_TYPE == 'ingress') ]]; then
@@ -1473,6 +1639,10 @@ function _undeploy_k8s()
 
 function _deploy_k8s()
 {
+  if resilient_utility "read" ":DEPLOYED"; then
+    return 0
+  fi
+
   #just taking the first master IP, multiple master IP's aren't supported yet
   MASTER_IP=$(echo $1|cut -d "," -f1)
   export K8S_MASTER_IP=$MASTER_IP; export K8S_NODE_TYPE=MASTER;
@@ -1603,7 +1773,9 @@ function _deploy_eg()
   wait "kube-proxy" $number_of_nodes
   wait_for_ready_state "calico-node" $number_of_nodes
   configure_eg_ecosystem_on_remote $MASTER_IP $EG_NODE_WORKER_IPS
-  kubectl apply -f $K8S_OFFLINE_DIR/k8s/metric-server.yaml
+  if ! resilient_utility "read" ":DEPLOYED"; then
+    kubectl apply -f $K8S_OFFLINE_DIR/k8s/metric-server.yaml
+  fi
   create_ssl_certs
   for node_ip in $EG_NODE_WORKER_IPS;
   do
@@ -1644,7 +1816,9 @@ function _deploy_controller()
   wait "kube-proxy" $number_of_nodes
   wait_for_ready_state "calico-node" $number_of_nodes
   configure_eg_ecosystem_on_remote $MASTER_IP $EG_NODE_CONTROLLER_WORKER_IPS
-  kubectl apply -f $K8S_OFFLINE_DIR/k8s/metric-server.yaml
+  if ! resilient_utility "read" ":DEPLOYED"; then
+    kubectl apply -f $K8S_OFFLINE_DIR/k8s/metric-server.yaml
+  fi
   create_ssl_certs
   for node_ip in $EG_NODE_CONTROLLER_WORKER_IPS;
   do
@@ -1681,7 +1855,9 @@ function _deploy_edge()
   wait "kube-proxy" $number_of_nodes
   wait_for_ready_state "calico-node" $number_of_nodes
   configure_eg_ecosystem_on_remote  $MASTER_IP $EG_NODE_EDGE_WORKER_IPS
-  kubectl apply -f $K8S_OFFLINE_DIR/k8s/metric-server.yaml
+  if ! resilient_utility "read" ":DEPLOYED"; then
+    kubectl apply -f $K8S_OFFLINE_DIR/k8s/metric-server.yaml
+  fi
   create_ssl_certs
   for node_ip in $EG_NODE_EDGE_WORKER_IPS;
   do
@@ -1713,8 +1889,14 @@ function _deploy_dns_metallb() {
    kubectl apply -f $PLATFORM_DIR/conf/edge/metallb/config-map.yaml
 
    sleep 3
-   wait " controller-" 1
-   wait "speaker-" $number_of_nodes
+   wait " controller-" 1 yes
+   cont_return=$?
+   wait "speaker-" $number_of_nodes yes
+   speaker_return=$?
+   if [[ $cont_return -eq 1 || $speaker_return -eq 1 ]]; then
+     resilient_utility "write" "MEP:FAILED"
+     exit 1
+   fi
    info "[Deployed DNS METALLB  ..............]" $GREEN
 }
 
@@ -1806,7 +1988,11 @@ function _deploy_network_isolation_multus() {
     _setup_interfaces $ip_prefix_count
   fi
 
-  wait "kube-multus" $number_of_nodes
+  wait "kube-multus" $number_of_nodes yes
+  if [[ $? -eq 1 ]]; then
+    resilient_utility "write" "MEP:FAILED"
+    exit 1
+  fi
   info "[Deployed multus cni  ..............]" $GREEN
 }
 
