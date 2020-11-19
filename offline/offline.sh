@@ -90,7 +90,6 @@ if [[ -z "$EG_IMAGE_LIST_EDGE_X86_DEFAULT" ]]; then
    grafana/grafana:7.1.1 \
    bats/bats:v1.1.0 \
    busybox:1.31.1 \
-   rabbitmq:3.7-management-alpine \
    nginx:stable \
    postgres:12.3 \
    kong:2.0.4-ubuntu \
@@ -118,10 +117,8 @@ if [[ -z "$EG_IMAGE_LIST_EDGE_ARM64_DEFAULT" ]]; then
    kiwigrid/k8s-sidecar:0.1.151 \
    grafana/grafana-arm64v8-linux:6.5.2-ubuntu \
    lucashalbert/curl:arm64v8-7.66.0-r0 \
-   arm64v8/rabbitmq:3.7-management-alpine \
    bats/bats:v1.1.0 \
    busybox:1.31.1 \
-   rabbitmq:3.7-management-alpine \
    nginx:stable \
    postgres:12.3 \
    kong:2.0.4-ubuntu \

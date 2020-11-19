@@ -723,60 +723,6 @@ function uninstall_grafana()
   info "[UnDeployed Grafana  ........]" $GREEN
 }
 
-function install_rabbitmq()
-{
-  if resilient_utility "read" "RABBITMQ:FAILED";then
-    uninstall_rabbitmq
-  fi
-
-  if resilient_utility "read" "RABBITMQ:UN_DEPLOYED" ;then
-    info "[Deploying Rabbitmq  ........]" $BLUE
-    info "[it would take maximum of 5mins .......]" $BLUE
-    suffix=""
-    if [[ $REGISTRY_URL != "" ]]; then
-      suffix="_private_registry"
-      cp $PLATFORM_DIR/conf/manifest/rabbitmq/statefulset_x86.yaml $PLATFORM_DIR/conf/manifest/rabbitmq/statefulset_x86_private_registry.yaml
-      cp $PLATFORM_DIR/conf/manifest/rabbitmq/statefulset_arm.yaml $PLATFORM_DIR/conf/manifest/rabbitmq/statefulset_arm_private_registry.yaml
-      sed -i 's?image: rabbitmq:3.7-management-alpine?image: '$REGISTRY_URL'rabbitmq:3.7-management-alpine?g' $PLATFORM_DIR/conf/manifest/rabbitmq/statefulset_x86_private_registry.yaml
-      sed -i 's?image: arm64v8/rabbitmq:3.7-management-alpine?image: '$REGISTRY_URL'arm64v8/rabbitmq:3.7-management-alpine?g' $PLATFORM_DIR/conf/manifest/rabbitmq/statefulset_arm_private_registry.yaml
-    fi
-    cd $PLATFORM_DIR/conf/manifest/rabbitmq
-    if [ $KERNEL_ARCH == 'aarch64' ]; then
-      kubectl apply -f common
-      kubectl apply -f statefulset_arm$suffix.yaml
-    else
-      kubectl apply -f common
-      kubectl apply -f statefulset_x86$suffix.yaml
-    fi
-    wait "rabbitmq" 1 yes
-    if [ $? -eq 0 ]; then
-      info "[Deployed Rabbitmq  .........]" $GREEN
-      resilient_utility "write" "RABBITMQ:DEPLOYED"
-    else
-      info "[Rabbitmq Deployment Failed  ]" $RED
-      resilient_utility "write" "RABBITMQ:FAILED"
-      exit 1
-    fi
-  fi
-}
-
-function uninstall_rabbitmq()
-{
-  info "[UnDeploying Rabbitmq  ......]"  $BLUE
-  cd $PLATFORM_DIR/conf/manifest/rabbitmq
-  if [ $KERNEL_ARCH == 'aarch64' ]; then
-    kubectl delete -f common
-    kubectl delete -f statefulset_arm.yaml
-    kubectl delete -f statefulset_arm_private_registry.yaml
-  else
-    kubectl delete -f common
-    kubectl delete -f statefulset_x86.yaml
-    kubectl delete -f statefulset_x86_private_registry.yaml
-  fi
-  resilient_utility "write" "RABBITMQ:UN_DEPLOYED"
-  info "[UnDeployed Rabbitmq  .......]"  $BLUE
-}
-
 function _prepare_mep_ssl()
 {
   set +o history
@@ -947,15 +893,12 @@ function install_common-svc()
   install_prometheus
   INSTALLER_INDEX="E.3.2:"
   install_grafana
-  INSTALLER_INDEX="E.3.3:"
-  install_rabbitmq
 }
 
 function uninstall_common-svc()
 {
   uninstall_prometheus
   uninstall_grafana
-  uninstall_rabbitmq
 }
 
 function install_mecm-mepm ()
