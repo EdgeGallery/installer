@@ -2109,7 +2109,7 @@ function main()
 
   if [[ $OFFLINE_MODE == "aio" ]]; then
     CHART_PREFIX="$TARBALL_PATH/helm/helm-charts/"
-    CHART_SUFFIX="-1.0.1.tgz"
+    CHART_SUFFIX="-1.0.0.tgz"
     PROM_CHART_SUFFIX="-9.3.1.tgz"
     GRAFANA_CHART_SUFFIX="-5.5.5.tgz"
     NFS_CHART_SUFFIX="-1.2.8.tgz"
