@@ -63,12 +63,14 @@ if [[ -z "$EG_IMAGE_LIST_CONTROLLER_X86_DEFAULT" ]]; then
    swr.ap-southeast-1.myhuaweicloud.com/edgegallery/postgres:12.2 \
    swr.ap-southeast-1.myhuaweicloud.com/edgegallery/deploy-tool:latest \
    swr.ap-southeast-1.myhuaweicloud.com/edgegallery/tool-chain:$EG_IMAGE_TAG \
-   swr.ap-southeast-1.myhuaweicloud.com/edgegallery/porting-advisor:latest"
+   swr.ap-southeast-1.myhuaweicloud.com/edgegallery/porting-advisor:latest \
+   swr.ap-southeast-1.myhuaweicloud.com/edgegallery/atp-fe:$EG_IMAGE_TAG \
+   swr.ap-southeast-1.myhuaweicloud.com/edgegallery/atp-be:$EG_IMAGE_TAG"
 fi
 COMMON_EDGE_CONTROLLER_LIST="postgres:12.3"
 
 EG_IMAGE_LIST_CONTROLLER_ARM64_DEFAULT=$EG_IMAGE_LIST_CONTROLLER_X86_DEFAULT
-EG_HELM_LIST_CONTROLLER_X86_DEFAULT="servicecenter usermgmt developer appstore mecm-fe mecm-meo"
+EG_HELM_LIST_CONTROLLER_X86_DEFAULT="servicecenter usermgmt developer appstore mecm-fe mecm-meo atp"
 EG_HELM_LIST_CONTROLLER_ARM64_DEFAULT=$EG_HELM_LIST_CONTROLLER_X86_DEFAULT
 
 #EDGE

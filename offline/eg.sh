@@ -1169,6 +1169,46 @@ function uninstall_developer ()
   info "[UnDeployed Developer  ......]" $GREEN
 }
 
+function install_atp()
+{
+  if resilient_utility "read" "ATP:FAILED";then
+    uninstall_atp
+  fi
+
+  if resilient_utility "read" "ATP:UN_DEPLOYED";then
+    info "[Deploying ATP  ...........]"  $BLUE
+    info "[it would take maximum of 5mins .......]" $BLUE
+    helm install --wait atp-edgegallery "$CHART_PREFIX"edgegallery/atp"$CHART_SUFFIX" \
+    --set images.atpFe.repository=$atp_images_atpFe_repository \
+    --set images.atp.repository=$atp_images_atp_repository \
+    --set images.postgres.repository=$atp_images_postgres_repository \
+    --set images.initservicecenter.repository=$atp_images_initservicecenter_repository \
+    --set images.atpFe.tag=$atp_images_atpFe_tag \
+    --set images.atp.tag=$atp_images_atp_tag \
+    --set images.postgres.tag=$atp_images_postgres_tag \
+    --set images.atpFe.pullPolicy=$atp_images_atpFe_pullPolicy \
+    --set images.atp.pullPolicy=$atp_images_atp_pullPolicy \
+    --set images.postgres.pullPolicy=$atp_images_postgres_pullPolicy \
+    --set images.initservicecenter.pullPolicy=$atp_images_initservicecenter_pullPolicy
+    if [ $? -eq 0 ]; then
+      info "[Deployed ATP ...........]" $GREEN
+      resilient_utility "write" "ATP:DEPLOYED"
+    else
+      fail "[ATP Deployment Failed ..]" $RED
+      resilient_utility "write" "ATP:FAILED"
+      exit 1
+    fi
+  fi
+}
+
+function uninstall_atp ()
+{
+  info "[UnDeploying ATP  ...........]" $BLUE
+  helm uninstall atp-edgegallery
+  resilient_utility "write" "ATP:UN_DEPLOYED"
+  info "[UnDeployed ATP  ............]" $GREEN
+}
+
 function install_service-center ()
 {
   if resilient_utility "read" "SERVICE_CENTER:FAILED";then
@@ -1507,6 +1547,8 @@ function install_EdgeGallery ()
     install_appstore
     INSTALLER_INDEX="C.6:"
     install_developer
+    INSTALLER_INDEX="C.7:"
+    install_atp
     INSTALLER_INDEX=""
   elif [[ ($FEATURE == 'controller' || $FEATURE == 'all') && ($DEPLOY_TYPE == 'ingress') ]]; then
     install_controller_with_ingress
@@ -1540,6 +1582,9 @@ function uninstall_EdgeGallery ()
      uninstall_user-mgmt
      INSTALLER_INDEX="C.6:"
      uninstall_service-center
+     INSTALLER_INDEX="C.7:"
+     uninstall_atp
+     INSTALLER_INDEX=""
      kubectl delete secret edgegallery-ssl-secret
    elif [[ ($FEATURE == 'controller' || $FEATURE == 'all') && ($DEPLOY_TYPE == 'ingress') ]]; then
      uninstall_controller_with_ingress
