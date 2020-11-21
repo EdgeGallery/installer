@@ -160,3 +160,16 @@ export developer_images_toolChain_pullPolicy=IfNotPresent
 export developer_images_portingAdvisor_pullPolicy=IfNotPresent
 export developer_global_ssl_enabled=true
 export developer_global_ssl_secretName=edgegallery-ssl-secret
+
+#ATP Values
+export atp_images_atpFe_repository="$REGISTRY_URL"edgegallery/atp-fe
+export atp_images_atp_repository="$REGISTRY_URL"edgegallery/atp-be
+export atp_images_postgres_repository="$REGISTRY_URL"edgegallery/postgres
+export atp_images_initservicecenter_repository="$REGISTRY_URL"edgegallery/curl
+export atp_images_atpFe_tag="$EG_IMAGE_TAG"
+export atp_images_atp_tag="$EG_IMAGE_TAG"
+export atp_images_postgres_tag=12.2
+export atp_images_atpFe_pullPolicy=IfNotPresent
+export atp_images_atp_pullPolicy=IfNotPresent
+export atp_images_postgres_pullPolicy=IfNotPresent
+export atp_images_initservicecenter_pullPolicy=IfNotPresent
