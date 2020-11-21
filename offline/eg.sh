@@ -381,7 +381,7 @@ function cleanup_eg_ecosystem()
 
 function setup_eg_ecosystem()
 {
-  if ! resilient_utility "read" ":DEPLOYED"; then
+  if resilient_utility "read" ":DEPLOYED"; then
     return 0
   fi
   tar -xf $TARBALL_PATH/kubernetes_offline_installer.tar.gz -C $K8S_OFFLINE_DIR;
@@ -1154,7 +1154,7 @@ function install_developer ()
       info "[Deployed Developer .........]" $GREEN
       resilient_utility "write" "DEVELOPER:DEPLOYED"
     else
-      fail "[Developer Deployment Failed ]" $RED
+      info "[Developer Deployment Failed ]" $RED
       resilient_utility "write" "DEVELOPER:FAILED"
       exit 1
     fi
@@ -1194,7 +1194,7 @@ function install_atp()
       info "[Deployed ATP ...........]" $GREEN
       resilient_utility "write" "ATP:DEPLOYED"
     else
-      fail "[ATP Deployment Failed ..]" $RED
+      info "[ATP Deployment Failed ..]" $RED
       resilient_utility "write" "ATP:FAILED"
       exit 1
     fi
