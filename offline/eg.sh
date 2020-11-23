@@ -1189,7 +1189,9 @@ function install_atp()
     --set images.atpFe.pullPolicy=$atp_images_atpFe_pullPolicy \
     --set images.atp.pullPolicy=$atp_images_atp_pullPolicy \
     --set images.postgres.pullPolicy=$atp_images_postgres_pullPolicy \
-    --set images.initservicecenter.pullPolicy=$atp_images_initservicecenter_pullPolicy
+    --set images.initservicecenter.pullPolicy=$atp_images_initservicecenter_pullPolicy \
+    --set global.ssl.enabled=$atp_global_ssl_enabled \
+    --set global.ssl.secretName=$atp_global_ssl_secretName
     if [ $? -eq 0 ]; then
       info "[Deployed ATP ...........]" $GREEN
       resilient_utility "write" "ATP:DEPLOYED"
