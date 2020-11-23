@@ -173,3 +173,5 @@ export atp_images_atpFe_pullPolicy=IfNotPresent
 export atp_images_atp_pullPolicy=IfNotPresent
 export atp_images_postgres_pullPolicy=IfNotPresent
 export atp_images_initservicecenter_pullPolicy=IfNotPresent
+export atp_global_ssl_enabled=true
+export atp_global_ssl_secretName=edgegallery-ssl-secret
