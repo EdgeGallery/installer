@@ -1180,6 +1180,7 @@ function install_atp()
     info "[Deploying ATP  ...........]"  $BLUE
     info "[it would take maximum of 5mins .......]" $BLUE
     helm install --wait atp-edgegallery "$CHART_PREFIX"edgegallery/atp"$CHART_SUFFIX" \
+    --set global.oauth2.authServerAddress=https://$NODEIP:$USER_MGMT \
     --set images.atpFe.repository=$atp_images_atpFe_repository \
     --set images.atp.repository=$atp_images_atp_repository \
     --set images.postgres.repository=$atp_images_postgres_repository \
