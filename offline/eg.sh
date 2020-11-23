@@ -41,6 +41,7 @@ mkdir -p $K8S_OFFLINE_DIR
 DEVELOPER_PORT=30092
 APPSTORE_PORT=30091
 MECM_PORT=30093
+ATP_PORT=30094
 USER_MGMT=30067
 
 #===========================k8s-offline=========================================
@@ -1262,7 +1263,8 @@ function install_user-mgmt ()
     helm install --wait user-mgmt-edgegallery "$CHART_PREFIX"edgegallery/usermgmt"$CHART_SUFFIX" \
     --set global.oauth2.clients.appstore.clientUrl=https://$NODEIP:$APPSTORE_PORT,\
 global.oauth2.clients.developer.clientUrl=https://$NODEIP:$DEVELOPER_PORT,\
-global.oauth2.clients.mecm.clientUrl=https://$NODEIP:$MECM_PORT, \
+global.oauth2.clients.mecm.clientUrl=https://$NODEIP:$MECM_PORT,\
+global.oauth2.clients.atp.clientUrl=https://$NODEIP:$ATP_PORT, \
     --set jwt.secretName=$usermgmt_jwt_secretName \
     --set images.usermgmt.repository=$usermgmt_images_usermgmt_repository \
     --set images.postgres.repository=$usermgmt_images_postgres_repository \
