@@ -874,7 +874,7 @@ function _remove_mep_ssl_config()
   kubectl delete secret pg-secret -n mep
   kubectl delete secret mep-ssl -n mep
   kubectl delete secret mepauth-secret -n mep
-  kubectl delete ns mep
+  #kubectl delete ns mep
 }
 
 function uninstall_mep()
@@ -1897,7 +1897,7 @@ function _undeploy_dns_metallb() {
   info "Undeploying DNS METALLB  ..............]" $YELLOW
   kubectl delete -f $PLATFORM_DIR/conf/edge/metallb/config-map.yaml
   kubectl delete -f $PLATFORM_DIR/conf/edge/metallb/metallb.yaml
-  kubectl delete -f $PLATFORM_DIR/conf/edge/metallb/namespace.yaml
+  #kubectl delete -f $PLATFORM_DIR/conf/edge/metallb/namespace.yaml
   kubectl delete secret memberlist -n metallb-system
   info "[Undeployed DNS METALLB  ..............]" $GREEN
 }
