@@ -20,6 +20,15 @@ CUR_DIR=$(dirname $(readlink -f "$0"))
 
 KERNEL_ARCH=`uname -m`
 
+if [[ $PATCH != "true" ]]; then
+  PATCH="false"
+else
+  if [[ -z $PATCH_ID ]]; then
+    info "Mention PATCH_ID" $RED
+    exit 1
+  fi
+fi
+
 if [[ -z "$EG_IMAGE_TAG" ]]; then
    EG_IMAGE_TAG=latest
 fi
@@ -47,7 +56,7 @@ fi
 mkdir -p $HELM_CHART_CACHE_PATH
 
 #CONTROLLER
-if [[ -z "$EG_IMAGE_LIST_CONTROLLER_X86_DEFAULT" ]]; then
+if [[ -z "$EG_IMAGE_LIST_CONTROLLER_X86_DEFAULT" && $PATCH != "true" ]]; then
    EG_IMAGE_LIST_CONTROLLER_X86_DEFAULT="swr.ap-southeast-1.myhuaweicloud.com/edgegallery/appstore-fe:$EG_IMAGE_TAG \
    swr.ap-southeast-1.myhuaweicloud.com/edgegallery/appstore-be:$EG_IMAGE_TAG \
    swr.ap-southeast-1.myhuaweicloud.com/edgegallery/developer-fe:$EG_IMAGE_TAG \
@@ -69,12 +78,18 @@ if [[ -z "$EG_IMAGE_LIST_CONTROLLER_X86_DEFAULT" ]]; then
 fi
 COMMON_EDGE_CONTROLLER_LIST="postgres:12.3"
 
-EG_IMAGE_LIST_CONTROLLER_ARM64_DEFAULT=$EG_IMAGE_LIST_CONTROLLER_X86_DEFAULT
-EG_HELM_LIST_CONTROLLER_X86_DEFAULT="servicecenter usermgmt developer appstore mecm-fe mecm-meo atp"
-EG_HELM_LIST_CONTROLLER_ARM64_DEFAULT=$EG_HELM_LIST_CONTROLLER_X86_DEFAULT
+if [[ -z $EG_IMAGE_LIST_CONTROLLER_ARM64_DEFAULT && $PATCH != "true" ]]; then
+  EG_IMAGE_LIST_CONTROLLER_ARM64_DEFAULT=$EG_IMAGE_LIST_CONTROLLER_X86_DEFAULT
+fi
+if [[ -z $EG_HELM_LIST_CONTROLLER_X86_DEFAULT && $PATCH != "true" ]]; then
+  EG_HELM_LIST_CONTROLLER_X86_DEFAULT="servicecenter usermgmt developer appstore mecm-fe mecm-meo atp"
+fi
+if [[ -z $EG_HELM_LIST_CONTROLLER_ARM64_DEFAULT && $PATCH != "true" ]]; then
+  EG_HELM_LIST_CONTROLLER_ARM64_DEFAULT=$EG_HELM_LIST_CONTROLLER_X86_DEFAULT
+fi
 
 #EDGE
-if [[ -z "$EG_IMAGE_LIST_EDGE_X86_DEFAULT" ]]; then
+if [[ -z "$EG_IMAGE_LIST_EDGE_X86_DEFAULT" && $PATCH != "true" ]]; then
    EG_IMAGE_LIST_EDGE_X86_DEFAULT="swr.ap-southeast-1.myhuaweicloud.com/edgegallery/mepauth:$EG_IMAGE_TAG \
    swr.ap-southeast-1.myhuaweicloud.com/edgegallery/mep:$EG_IMAGE_TAG \
    swr.ap-southeast-1.myhuaweicloud.com/edgegallery/mep-dns-server:$EG_IMAGE_TAG \
@@ -102,7 +117,7 @@ if [[ -z "$EG_IMAGE_LIST_EDGE_X86_DEFAULT" ]]; then
    metallb/controller:v0.9.3"
 fi
 
-if [[ -z "$EG_IMAGE_LIST_EDGE_ARM64_DEFAULT" ]]; then
+if [[ -z "$EG_IMAGE_LIST_EDGE_ARM64_DEFAULT" && $PATCH != "true" ]]; then
    EG_IMAGE_LIST_EDGE_ARM64_DEFAULT="swr.ap-southeast-1.myhuaweicloud.com/edgegallery/mepauth:$EG_IMAGE_TAG \
    swr.ap-southeast-1.myhuaweicloud.com/edgegallery/mep:$EG_IMAGE_TAG \
    swr.ap-southeast-1.myhuaweicloud.com/edgegallery/mep-dns-server:$EG_IMAGE_TAG \
@@ -136,11 +151,25 @@ elif [[ `arch` == "aarch64" ]]; then
   CLIENT_PROVISIONER="vbouchaud/nfs-client-provisioner:v3.1.1"
 fi
 
-EG_HELM_LIST_EDGE_X86_DEFAULT="mecm-mepm mep"
-EG_HELM_LIST_EDGE_ARM64_DEFAULT=$EG_HELM_LIST_EDGE_X86_DEFAULT
+if [[ -z $EG_HELM_LIST_EDGE_X86_DEFAULT && $PATCH != "true" ]]; then
+  EG_HELM_LIST_EDGE_X86_DEFAULT="mecm-mepm mep"
+fi
+
+if [[ -z $EG_IMAGE_LIST_CONTROLLER_ARM64_DEFAULT && $PATCH != "true" ]]; then
+  EG_HELM_LIST_EDGE_ARM64_DEFAULT=$EG_HELM_LIST_EDGE_X86_DEFAULT
+fi
 
 if [[ -z $EG_HELM_REPO ]]; then
   EG_HELM_REPO="http://helm.edgegallery.org:30002/chartrepo/edgegallery_helm_chart"
+fi
+
+APPEND_HELM_PULL_COMMAND=""
+if [[ -n $EG_HELM_REPO_USERNAME ]]; then
+  APPEND_HELM_PULL_COMMAND=$APPEND_HELM_PULL_COMMAND" --user $EG_HELM_REPO_USERNAME"
+fi
+
+if [[ -n $EG_HELM_REPO_PASSWORD ]]; then
+  APPEND_HELM_PULL_COMMAND=$APPEND_HELM_PULL_COMMAND" --pass $EG_HELM_REPO_PASSWORD"
 fi
 
 if [[ -z "$EG_IMAGE_LIST_CONTROLLER_X86" ]]; then
@@ -318,36 +347,38 @@ function _download_helm_charts()
 
     for chart in $CHART_LIST;
       do
-        helm pull eg/$chart
+        helm pull eg/$chart $APPEND_HELM_PULL_COMMAND
         if [[ $? -ne 0 ]]; then
           info "helm pull $EG_HELM_REPO/$chart Failed" $RED
           exit 1
         fi
       done
-    cd ../stable
 
-    if [[ $ENABLE_METRICS == "YES" ]]; then
-      wget -N https://kubernetes-charts.storage.googleapis.com/grafana-5.5.5.tgz
+    if [[ $PATCh == "false" ]]; then
+      cd ../stable
+
+      if [[ $ENABLE_METRICS == "YES" ]]; then
+        wget -N https://kubernetes-charts.storage.googleapis.com/grafana-5.5.5.tgz
+        if [[ $? -ne 0 ]]; then
+          info "grafana-5.5.5.tgz download got Failed" $RED
+          exit 1
+        fi
+        wget -N https://kubernetes-charts.storage.googleapis.com/prometheus-9.3.1.tgz
+        if [[ $? -ne 0 ]]; then
+          info "prometheus-9.3.1.tgz download got Failed" $RED
+          exit 1
+        fi
+      fi
+      wget -N https://kubernetes-charts.storage.googleapis.com/nginx-ingress-1.41.2.tgz
       if [[ $? -ne 0 ]]; then
-        info "grafana-5.5.5.tgz download got Failed" $RED
+        info "nginx-ingress-1.41.2.tgz download got Failed" $RED
         exit 1
       fi
-      wget -N https://kubernetes-charts.storage.googleapis.com/prometheus-9.3.1.tgz
+      wget -N https://kubernetes-charts.storage.googleapis.com/nfs-client-provisioner-1.2.8.tgz
       if [[ $? -ne 0 ]]; then
-        info "prometheus-9.3.1.tgz download got Failed" $RED
+        info "nfs-client-provisioner-1.2.8.tgz download got Failed" $RED
         exit 1
       fi
-    fi
-
-    wget -N https://kubernetes-charts.storage.googleapis.com/nginx-ingress-1.41.2.tgz
-    if [[ $? -ne 0 ]]; then
-      info "nginx-ingress-1.41.2.tgz download got Failed" $RED
-      exit 1
-    fi
-    wget -N https://kubernetes-charts.storage.googleapis.com/nfs-client-provisioner-1.2.8.tgz
-    if [[ $? -ne 0 ]]; then
-      info "nfs-client-provisioner-1.2.8.tgz download got Failed" $RED
-      exit 1
     fi
   else
     info "Using helm charts from Installer Cache"  $RED
@@ -603,7 +634,9 @@ function eg_offline_installer()
 
   BUILD_NUMBER=$(date +%Y-%m-%d-%H-%M-%S)
   EG_INSTALLER_NAME=eg-$EG_MODE-$EG_NODE_ARCH-$EG_IMAGE_TAG-$BUILD_NUMBER
-
+  if [[ $PATCH == "true" ]]; then
+    EG_INSTALLER_NAME="patch-"$EG_INSTALLER_NAME
+  fi
   if [[ -z "$2" ]]; then
    TARBALL_PATH=$PWD/eg-offline
   else
@@ -625,13 +658,30 @@ function eg_offline_installer()
     echo INSTALLER PATH: $TARBALL_PATH/../$EG_INSTALLER_NAME.tar.gz
     echo ===============================
 
-    _download_sshpass
+    if [[ $PATCH != "true" ]]; then
+      _download_sshpass
+      kubernetes_offline_installer
+      _download_helm_binary
+      _download_docker_registry
+      cp $CUR_DIR/LICENSE $TARBALL_PATH
+      cp $CUR_DIR/README.md $TARBALL_PATH
+      cp $CUR_DIR/env.sh $TARBALL_PATH
 
-    kubernetes_offline_installer
+      echo "#####################################################" >>  $TARBALL_PATH/env.sh
+      echo "#CAUTION:: PLEASE DONOT CHANGE BELOW ENV VARS ::" >>  $TARBALL_PATH/env.sh
+      echo "export EG_IMAGE_TAG=$EG_IMAGE_TAG" >>  $TARBALL_PATH/env.sh
+      echo "export EG_NODE_ARCH=$EG_NODE_ARCH" >>  $TARBALL_PATH/env.sh
+      echo "export EG_MODE=$EG_MODE" >>  $TARBALL_PATH/env.sh
+      echo "#####################################################" >>  $TARBALL_PATH/env.sh
+
+      cp $CUR_DIR/eg.sh $TARBALL_PATH
+      cp -r $CUR_DIR/conf/ $TARBALL_PATH
+      rm -rf $TARBALL_PATH/conf/edge/network-isolation/test/
+    else
+      cp -r $CUR_DIR/patch/$PATCH_ID/* $TARBALL_PATH
+    fi
 
     _docker_images_download_eg "$EG_IMAGE_LIST"
-
-    _download_helm_binary
 
     if [[ "$EG_MODE" == "all" || "$EG_MODE" == "edge" ]]; then
       _download_helm_charts "$EG_HELM_LIST" "YES"
@@ -639,35 +689,24 @@ function eg_offline_installer()
       _download_helm_charts "$EG_HELM_LIST"
     fi
 
-    _download_docker_registry
-
-    cp $CUR_DIR/LICENSE $TARBALL_PATH
-    cp $CUR_DIR/README.md $TARBALL_PATH
-    cp $CUR_DIR/env.sh $TARBALL_PATH
-
-    echo "#####################################################" >>  $TARBALL_PATH/env.sh
-    echo "#CAUTION:: PLEASE DONOT CHANGE BELOW ENV VARS ::" >>  $TARBALL_PATH/env.sh
-    echo "export EG_IMAGE_TAG=$EG_IMAGE_TAG" >>  $TARBALL_PATH/env.sh
-    echo "export EG_NODE_ARCH=$EG_NODE_ARCH" >>  $TARBALL_PATH/env.sh
-    echo "export EG_MODE=$EG_MODE" >>  $TARBALL_PATH/env.sh
-    echo "#####################################################" >>  $TARBALL_PATH/env.sh
-
-    cp $CUR_DIR/eg.sh $TARBALL_PATH
-    cp -r $CUR_DIR/conf/ $TARBALL_PATH
-    rm -rf $TARBALL_PATH/conf/edge/network-isolation/test/
-    echo "Edge Gallery $EG_IMAGE_TAG [Build: $BUILD_NUMBER]" > $TARBALL_PATH/version.txt
+    if [[ $PATCH != "true" ]]; then
+      echo "Edge Gallery $EG_IMAGE_TAG [Build: $BUILD_NUMBER]" > $TARBALL_PATH/version.txt
+    else
+      echo "version: $PATCH_ID" > $TARBALL_PATH/version.txt
+      echo "base_version: latest" >> $TARBALL_PATH/version.txt
+    fi
 
     cd $TARBALL_PATH/..
     tar -vcf $EG_INSTALLER_NAME.tar -C $TARBALL_PATH .
     gzip $EG_INSTALLER_NAME.tar
 
-    if [[ "$SYNC_UP_DOCKER_IMAGES" == "true" ]]; then
+    if [[ "$SYNC_UP_DOCKER_IMAGES" == "true" && $PATCH != "true" ]]; then
       info "Updating Installer Cache with eg docker images" $RED
       mv $TARBALL_PATH/registry/registry-2.tar.gz $DOCKER_IMAGE_CACHE_PATH/
       mv $EG_SWR_PATH/* $DOCKER_IMAGE_CACHE_PATH/
     fi
 
-    if [[ "$SYNC_UP_HELM_CHARTS" == "true" ]]; then
+    if [[ "$SYNC_UP_HELM_CHARTS" == "true" && $PATCH != "true" ]]; then
       rm -rf $HELM_CHART_CACHE_PATH/edgegallery
       rm -rf $HELM_CHART_CACHE_PATH/stable
       info "Updating Installer Cache with helm charts" $RED
