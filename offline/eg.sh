@@ -1773,7 +1773,7 @@ function _deploy_eg()
     kubectl apply -f $K8S_OFFLINE_DIR/k8s/metric-server.yaml
   fi
   create_ssl_certs
-  for node_ip in $EG_NODE_WORKER_IPS;
+  for node_ip in $WORKER_IPS;
   do
     sshpass ssh root@$node_ip "rm -rf /mnt/grafana; mkdir -p /mnt/grafana"
     scp $PLATFORM_DIR/conf/keys/tls.key root@$node_ip:/mnt/grafana/
@@ -1816,7 +1816,7 @@ function _deploy_controller()
     kubectl apply -f $K8S_OFFLINE_DIR/k8s/metric-server.yaml
   fi
   create_ssl_certs
-  for node_ip in $EG_NODE_CONTROLLER_WORKER_IPS;
+  for node_ip in $WORKER_IPS;
   do
     sshpass ssh root@$node_ip "mkdir -p /opt/cni/bin"
     scp $K8S_OFFLINE_DIR/cni/macvlan root@$node_ip:/opt/cni/bin/
@@ -1855,7 +1855,7 @@ function _deploy_edge()
     kubectl apply -f $K8S_OFFLINE_DIR/k8s/metric-server.yaml
   fi
   create_ssl_certs
-  for node_ip in $EG_NODE_EDGE_WORKER_IPS;
+  for node_ip in $WORKER_IPS;
   do
     sshpass ssh root@$node_ip "mkdir -p /opt/cni/bin"
     scp $K8S_OFFLINE_DIR/cni/macvlan root@$node_ip:/opt/cni/bin/
