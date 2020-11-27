@@ -1959,6 +1959,11 @@ function _deploy_network_isolation_multus() {
   if [[ $KERNEL_ARCH == 'x86_64' && $OFFLINE_MODE == 'muno' ]] ; then
     kubectl apply -f $PLATFORM_DIR/conf/edge/network-isolation/whereabouts-daemonset-install.yaml
     kubectl apply -f $PLATFORM_DIR/conf/edge/network-isolation/whereabouts.cni.cncf.io_ippools.yaml
+    wait "whereabouts" $number_of_nodes yes
+    if [[ $? -eq 1 ]]; then
+      resilient_utility "write" "MEP:FAILED"
+      exit 1
+    fi
   fi
 
   ip_prefix_count=2
