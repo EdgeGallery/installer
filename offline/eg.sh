@@ -600,6 +600,7 @@ function _eg_undeploy()
       fi
     done
   fi
+  rm -rf ~/.eg/
 }
 
 function install_prometheus()
@@ -2292,6 +2293,8 @@ function main()
       fi
       print_eg_logo
       info "EdgeGallery Got Deployed SuccessFully ....." $GREEN
+      mkdir -p ~/.eg
+      cat version.txt > ~/.eg/version
       exit 0
     else
       info "EdgeGallery Deployment Failed ....." $RED
