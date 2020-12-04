@@ -354,7 +354,7 @@ function _download_helm_charts()
         fi
       done
 
-    if [[ $PATCh == "false" ]]; then
+    if [[ $PATCH == "false" ]]; then
       cd ../stable
 
       if [[ $ENABLE_METRICS == "YES" ]]; then
