@@ -831,7 +831,7 @@ function install_mep()
     INSTALLER_INDEX="E.1.4:"
 
     info "[Deploying MEP  .............]" $BLUE
-    if [[ $KERNEL_ARCH == 'x86_64' && $OFFLINE_MODE == 'muno' ]] ; then
+    if [[ $OFFLINE_MODE == 'muno' ]] ; then
       ipam_type=whereabouts
       phyif_mp1=vxlan-mp1
       phyif_mm5=vxlan-mm5
@@ -1920,7 +1920,7 @@ function _setup_interfaces() {
       info "[Can't support more that 24 node....]" $GREEN
       exit 1
   fi
-  if [[ $KERNEL_ARCH == 'x86_64' && $OFFLINE_MODE == 'muno' ]] ; then
+  if [[ $OFFLINE_MODE == 'muno' ]] ; then
       ip link add vxlan-mp1 type vxlan id 100 group 239.1.1.1 dstport 4789 dev $EG_NODE_EDGE_MP1
       ip link set vxlan-mp1 up
 
@@ -1957,7 +1957,10 @@ function _deploy_network_isolation_multus() {
   sed -i 's?image: edgegallery/edgegallery-secondary-ep-controller:latest?image: '$REGISTRY_URL'edgegallery/edgegallery-secondary-ep-controller:latest?g' $PLATFORM_DIR/conf/edge/network-isolation/eg-sp-controller.yaml
   kubectl apply -f $PLATFORM_DIR/conf/edge/network-isolation/eg-sp-controller.yaml
 
-  if [[ $KERNEL_ARCH == 'x86_64' && $OFFLINE_MODE == 'muno' ]] ; then
+  if [[ $OFFLINE_MODE == 'muno' ]] ; then
+    sed -i 's?image: docker.io/dougbtv/whereabouts:latest?image: '$REGISTRY_URL'docker.io/dougbtv/whereabouts:latest?g' $PLATFORM_DIR/conf/edge/network-isolation/whereabouts-daemonset-install.yaml
+    sed -i 's?image: edgegallery/whereabouts-arm64:latest?image: '$REGISTRY_URL'edgegallery/whereabouts-arm64:latest?g' $PLATFORM_DIR/conf/edge/network-isolation/whereabouts-daemonset-install.yaml
+
     kubectl apply -f $PLATFORM_DIR/conf/edge/network-isolation/whereabouts-daemonset-install.yaml
     kubectl apply -f $PLATFORM_DIR/conf/edge/network-isolation/whereabouts.cni.cncf.io_ippools.yaml
     wait "whereabouts" $number_of_nodes yes
@@ -2007,7 +2010,7 @@ function _cleanup_network_setup(){
   ip link set dev eg-mm5 down
   ip link delete eg-mm5
   rm /opt/cni/bin/multus
-  if [[ $KERNEL_ARCH == 'x86_64' && $OFFLINE_MODE == 'muno' ]]; then
+  if [[ $OFFLINE_MODE == 'muno' ]]; then
       ip link delete vxlan-mp1
       ip link delete vxlan-mm5
   fi
@@ -2019,7 +2022,7 @@ function _undeploy_network_isolation_multus() {
   kubectl delete -f $PLATFORM_DIR/conf/edge/network-isolation/eg-sp-rbac.yaml
   kubectl delete -f $PLATFORM_DIR/conf/edge/network-isolation/multus.yaml
 
-  if [[ $KERNEL_ARCH == 'x86_64' && $OFFLINE_MODE == 'muno' ]] ; then
+  if [[ $OFFLINE_MODE == 'muno' ]] ; then
     kubectl delete -f $PLATFORM_DIR/conf/edge/network-isolation/whereabouts-daemonset-install.yaml
     kubectl delete -f $PLATFORM_DIR/conf/edge/network-isolation/whereabouts.cni.cncf.io_ippools.yaml
   fi

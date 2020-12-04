@@ -141,7 +141,8 @@ if [[ -z "$EG_IMAGE_LIST_EDGE_ARM64_DEFAULT" && $PATCH != "true" ]]; then
    kong:2.0.4-ubuntu \
    metallb/speaker:v0.9.3 \
    metallb/controller:v0.9.3 \
-   docker.io/nfvpe/multus:stable-arm64v8"
+   docker.io/nfvpe/multus:stable-arm64v8 \
+   swr.ap-southeast-1.myhuaweicloud.com/edgegallery/whereabouts-arm64:latest"
 fi 
 
 #COMMON
