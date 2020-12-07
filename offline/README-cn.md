@@ -73,13 +73,13 @@ EdgeGallery离线安装程序是基于ubuntu x86_64或arm64体系结构的给Kub
 
 vim env.sh                                      //编辑env文件
 
-export OFFLINE_MODE = aio                              //修改离线安装模式
+export OFFLINE_MODE=aio                              //设置离线安装模式
 
 export EG_NODE_EDGE_MP1=***                            //***为网卡名
 
 export EG_NODE_EDGE_MM5=***                            //***为网卡名
 
-export EG_NODE_MASTER_IPS = 192.168.99.100             //设置IP地址
+export EG_NODE_MASTER_IPS=192.168.99.100             //设置IP地址
 
 PORTAL_IP=159.138.x.y                        //如果需要为edgegallery门户网站配置IP，默认情况下，PORTAL_IP设置为 
                                               EG_NODE_CONTROLLER_MASTER_IPS
@@ -96,13 +96,13 @@ bash eg.sh -i                                   //开始安装程序
 
 vim  env.sh                                      //编辑env文件
 
-export OFFLINE_MODE = aio                               //修改离线安装模式
+export OFFLINE_MODE=aio                               //设置离线安装模式
 
 export EG_NODE_EDGE_MP1=***                            //***为网卡名
 
 export EG_NODE_EDGE_MM5=***                            //***为网卡名
 
-export EG_NODE_CONTROLLER_MASTER_IPS = 192.168.99.101   //设置IP地址
+export EG_NODE_CONTROLLER_MASTER_IPS=192.168.99.101   //设置IP地址
 
 PORTAL_IP=159.138.x.y                        //如果需要为edgegallery门户网站配置IP，默认情况下，PORTAL_IP设置为 
                                               EG_NODE_CONTROLLER_MASTER_IPS
@@ -119,13 +119,13 @@ bash eg.sh -i                                  //开始安装程序
 
 vim env.sh                                       //编辑env文件
 
-export OFFLINE_MODE = aio                               //修改离线安装模式 
+export OFFLINE_MODE=aio                               //设置离线安装模式 
 
 export EG_NODE_EDGE_MP1=***                            //***为网卡名
 
 export EG_NODE_EDGE_MM5=***                            //***为网卡名        
 
-export EG_NODE_EDGE_MASTER_IPS = 192.168.99.104         //设置IP地址
+export EG_NODE_EDGE_MASTER_IPS=192.168.99.104         //设置IP地址
 
 //修改完env文件保存退出
 
@@ -141,7 +141,7 @@ bash eg.sh -i                                    //开始安装程序
 
  1）在deploy节点生生产密钥：
 
-    ssh-keygen -t rsa      //生成密钥，指令执行过程中凡是需要输入的地方直接按回车建就行
+    ssh-keygen     //生成密钥，指令执行过程中凡是需要输入的地方直接按回车建就行
 
  2）在deploy节点将生成的id_rsa.pub文件copy到master和worker节点：
 
@@ -169,17 +169,17 @@ bash eg.sh -i                                    //开始安装程序
 
 vim env.sh                                                   //编辑env文件
 
-export OFFLINE_MODE = muno                                   //修改离线安装模式
+export OFFLINE_MODE=muno                                   //设置离线安装模式
 
 export EG_NODE_EDGE_MP1=***                            //***为master网卡名
 
 export EG_NODE_EDGE_MM5=***                            //***为master为网卡名
 
-export EG_NODE_DEPLOY_IP = 192.168.99.100                    //设置deploy节点IP地址
+export EG_NODE_DEPLOY_IP=192.168.99.100                    //设置deploy节点IP地址
   
-export EG_NODE_MASTER_IPS = 192.168.99.101                   //设置master节点IP地址
+export EG_NODE_MASTER_IPS=192.168.99.101                   //设置master节点IP地址
 
-export EG_NODE_WORKER_IPS = 192.168.99.102, 192.168.99.103   //设置work节点IP地址
+export EG_NODE_WORKER_IPS=192.168.99.102,192.168.99.103   //设置work节点IP地址
 
 PORTAL_IP=159.138.x.y                                    //如果需要为edgegallery门户网站配置IP，默认情况下，
                                                           PORTAL_IP设置为EG_NODE_CONTROLLER_MASTER_IPS
@@ -198,7 +198,7 @@ bash eg.sh -i                                      //开始安装程序
 
 vim env.sh                                           //编辑env文件
 
-export OFFLINE_MODE = muno                                  //修改离线安装模式
+export OFFLINE_MODE=muno                                  //设置离线安装模式
 
 export EG_NODE_EDGE_MP1=***                                      //***为master网卡名
 
@@ -206,9 +206,9 @@ export EG_NODE_EDGE_MM5=***                                      //***为master�
 
 export EG_NODE_DEPLOY_IP=192.168.99.100                     //设置deploy节点IP地址
 
-export EG_NODE_CONTROLLER_MASTER_IPS = 192.168.99.101       //设置master节点IP地址
+export EG_NODE_CONTROLLER_MASTER_IPS=192.168.99.101       //设置master节点IP地址
 
-export EG_NODE_CONTROLLER_WORKER_IPS= 192.168.99.102, 192.168.99.103 //设置work节点IP地址
+export EG_NODE_CONTROLLER_WORKER_IPS=192.168.99.102,192.168.99.103 //设置work节点IP地址
 
 PORTAL_IP=159.138.x.y                                    //如果需要为edgegallery门户网站配置IP，默认情况下，
                                                           PORTAL_IP设置为EG_NODE_CONTROLLER_MASTER_IPS
@@ -225,7 +225,7 @@ bash eg.sh -i                                        //开始安装程序
 
 vim env.sh                                                      //编辑env文件
 
-export OFFLINE_MODE = muno                                       //修改离线安装模式
+export OFFLINE_MODE=muno                                       //设置离线安装模式
 
 export EG_NODE_EDGE_MP1=***                                      //***为master网卡名
 
@@ -233,9 +233,9 @@ export EG_NODE_EDGE_MM5=***                                      //***为master�
 
 export EG_NODE_DEPLOY_IP=192.168.99.100                          //设置deploy节点IP地址
 
-export EG_NODE_EDGE_MASTER_IPS = 192.168.99.104                  //设置master节点IP地址
+export EG_NODE_EDGE_MASTER_IPS=192.168.99.104                  //设置master节点IP地址
 
-export EG_NODE_EDGE_WORKER_IPS= 192.168.99.105, 192.168.99.106   //设置work节点IP地址
+export EG_NODE_EDGE_WORKER_IPS=192.168.99.105,192.168.99.106   //设置work节点IP地址
 
 //修改完env文件保存退出
 
@@ -254,7 +254,7 @@ bash eg.sh -i                                             //开始安装程序
 
  vim  env.sh                                   //编辑env文件
 
-export OFFLINE_MODE=aio                             //修改离线安装模式
+export OFFLINE_MODE=aio                             //设置离线安装模式
 
 export K8S_NODE_MASTER_IPS=192.168.100.120          //设置IP地址
 
@@ -383,7 +383,7 @@ kubectl describe node | grep taint
 
 如果存在污点删除污点后删除污点，
 
-kubectl taint nodes node1 key:NoSchedule- //node或者pod name
+kubectl taint node hostname key:NoSchedule- //hostname为本机名称
 
 \2. MEP安装DNS问题
 边缘环境测试，多网卡mp1和mm5网卡隔离，从mp1接口获取mep给的token失败
