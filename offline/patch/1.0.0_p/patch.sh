@@ -24,6 +24,9 @@ WHAT_TO_DO=$1
 if [[ $OFFLINE_MODE == "muno" ]]; then
   PRIVATE_REGISTRY_IP="$EG_NODE_DEPLOY_IP"
   PORT="5000"
+  REGISTRY_URL="$PRIVATE_REGISTRY_IP:$PORT/"
+else
+  REGISTRY_URL=""
 fi
 
 function load_docker_images_n_helm_charts()
@@ -34,8 +37,8 @@ function load_docker_images_n_helm_charts()
     cat $f | docker load
     if [ "$OFFLINE_MODE" == "muno" ]; then
       IMAGE_NAME=`echo $f|rev|cut -c8-|rev|sed -e "s/\#/:/g" | sed -e "s/\@/\//g"`;
-      docker image tag $IMAGE_NAME ${PRIVATE_REGISTRY_IP}:$PORT/$IMAGE_NAME
-      docker push ${PRIVATE_REGISTRY_IP}:$PORT/$IMAGE_NAME
+      docker image tag $IMAGE_NAME ${REGISTRY_URL}/$IMAGE_NAME
+      docker push ${REGISTRY_URL}/$IMAGE_NAME
     fi
   done
 }
@@ -73,7 +76,7 @@ function install_patch_component()
   --set networkIsolation.ipamType=$ipam_type \
   --set networkIsolation.phyInterface.mp1=$phyif_mp1 \
   --set networkIsolation.phyInterface.mm5=$phyif_mm5 \
-  --set images.mep.repository=$mep_images_mep_repository \
+  --set images.mep.repository="$REGISTRY_URL"$mep_images_mep_repository \
   --set images.mepauth.repository=$mep_images_mepauth_repository \
   --set images.dns.repository=$mep_images_dns_repository \
   --set images.kong.repository=$mep_images_kong_repository \
