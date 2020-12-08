@@ -146,9 +146,9 @@ if [[ -z "$EG_IMAGE_LIST_EDGE_ARM64_DEFAULT" && $PATCH != "true" ]]; then
 fi 
 
 #COMMON
-if [[ `arch` == "x86_64" ]]; then
+if [[ `arch` == "x86_64" && $PATCH != "true"  ]]; then
   CLIENT_PROVISIONER="quay.io/external_storage/nfs-client-provisioner:v3.1.0-k8s1.11"
-elif [[ `arch` == "aarch64" ]]; then
+elif [[ `arch` == "aarch64" && $PATCH != "true"  ]]; then
   CLIENT_PROVISIONER="vbouchaud/nfs-client-provisioner:v3.1.1"
 fi
 
@@ -663,6 +663,7 @@ function eg_offline_installer()
       _download_sshpass
       kubernetes_offline_installer
       _download_helm_binary
+      _help_install_helm_binary
       _download_docker_registry
       cp $CUR_DIR/LICENSE $TARBALL_PATH
       cp $CUR_DIR/README.md $TARBALL_PATH
