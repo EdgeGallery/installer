@@ -1,5 +1,5 @@
 
-**THIS IS ABSOLUTED, AND WILL BE REMOVED IN NEXT RELEASE. [Refer](../README.md) for latest**
+**THIS IS DEPRECATED, AND WILL BE REMOVED IN NEXT RELEASE. [Refer](../README.md) for latest**
 
 # EdgeGallery Quick Start
 ## Introduction
