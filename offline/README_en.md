@@ -113,7 +113,6 @@ EG_NODE_EDGE_MM5=eth2
 
 ./eg.sh -i
 
-*NOTE* : Edge gallery does not support MEP in this mode. Please deploy in aio mode for using MEP.
 
 
 
@@ -156,7 +155,6 @@ EG_NODE_EDGE_MM5=eth2
 
 ./eg.sh -i
 
-*NOTE* : Edge gallery does not support MEP in this mode. Please deploy in aio mode for using MEP.
 
 
 To Uninstall

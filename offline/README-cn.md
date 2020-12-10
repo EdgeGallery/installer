@@ -190,7 +190,6 @@ source env.sh                                       //运行使编辑保存完�
 
 bash eg.sh -i                                      //开始安装程序
 
-> 注意：Edgegallery在此模式下不支持MEP，请以aio模式部署以使用MEP。
 
  **2.edgegallery中心部署** 
 
@@ -243,7 +242,6 @@ source env.sh                                             //运行使编辑保�
 
 bash eg.sh -i                                             //开始安装程序
 
-> 注意：Edgegallery在此模式下不支持MEP，请以aio模式部署以使用MEP。
 
 ###  **三.Kubernetes部署** 
 
