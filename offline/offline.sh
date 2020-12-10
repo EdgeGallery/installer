@@ -645,7 +645,12 @@ function eg_offline_installer()
    TARBALL_PATH=$2/eg-offline
   fi
 
-  rm -rf $TARBALL_PATH
+  if [[ -z "$TARBALL_PATH_NO_CLEANUP" ]]; then
+   echo "$TARBALL_PATH is not cleaned"
+  else
+   rm -rf $TARBALL_PATH
+  fi
+  
   mkdir -p $TARBALL_PATH
 
   if [[ "$ONLY_UPDATE_CACHE" == "false" ]]; then
