@@ -237,20 +237,6 @@ function kubernetes_undeploy() {
 #================================================================================
 
 #===========================EG-eco-system=========================================
-#tarball structure
-#./eg_swr_images/
-#./helm/
-#./helm/helm-charts
-#./helm/helm-charts/edgegallery
-#./helm/helm-charts/stable
-#./registry/
-#./platform-mgmt
-#./platform-mgmt/mep-deploy
-#./nodelist.ini
-#./README.md
-#./LICENCE
-#./eg-ecosystem.sh
-#./eg-deploy.sh
 
 function _install_sshpass ()
 {
