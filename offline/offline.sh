@@ -646,9 +646,9 @@ function eg_offline_installer()
   fi
 
   if [[ -z "$TARBALL_PATH_NO_CLEANUP" ]]; then
-   echo "$TARBALL_PATH is not cleaned"
-  else
    rm -rf $TARBALL_PATH
+  else
+   echo "$TARBALL_PATH is not cleaned"
   fi
   
   mkdir -p $TARBALL_PATH
