@@ -156,7 +156,7 @@ if [[ -z $EG_HELM_LIST_EDGE_X86_DEFAULT && $PATCH != "true" ]]; then
   EG_HELM_LIST_EDGE_X86_DEFAULT="mecm-mepm mep"
 fi
 
-if [[ -z $EG_IMAGE_LIST_CONTROLLER_ARM64_DEFAULT && $PATCH != "true" ]]; then
+if [[ -z $EG_HELM_LIST_EDGE_ARM64_DEFAULT && $PATCH != "true" ]]; then
   EG_HELM_LIST_EDGE_ARM64_DEFAULT=$EG_HELM_LIST_EDGE_X86_DEFAULT
 fi
 
