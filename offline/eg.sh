@@ -778,6 +778,7 @@ function _prepare_mep_ssl()
     --from-file=server.crt=${MEP_CERTS_DIR}/${CERT_NAME}_tls.crt
 
   kubectl -n mep create secret generic mep-ssl \
+    --from-literal=root_key="$(openssl rand -base64 256 | tr -d '\n' | tr -dc '[[:alnum:]]' | cut -c -256)" \
     --from-literal=cert_pwd=$CERT_PWD \
     --from-file=server.cer=${MEP_CERTS_DIR}/${CERT_NAME}_tls.crt \
     --from-file=server_key.pem=${MEP_CERTS_DIR}/${CERT_NAME}_encryptedtls.key \
