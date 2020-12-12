@@ -83,6 +83,7 @@ export mepm_images_apprulemgr_tag="$EG_IMAGE_TAG"
 export mepm_images_postgres_tag=12.3
 export mepm_images_lcmcontroller_pullPolicy=IfNotPresent
 export mepm_images_k8splugin_pullPolicy=IfNotPresent
+export mepm_images_apprulemgr_pullPolicy=IfNotPresent
 export mepm_images_postgres_pullPolicy=IfNotPresent
 
 #ServiceCenter Values
