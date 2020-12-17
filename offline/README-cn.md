@@ -365,7 +365,7 @@ bash eg.sh -u controller          //卸载中心节点
 bash eg.sh -u edge                //卸载边缘节点
 
 安装中问题汇总：
-\1. pod装置pending处理方法
+1. pod装置pending处理方法
 安装完成后pod状态正常为running状态，kubectl get pos --all-namespaces
 
 ​ 如果status为pending状态：
@@ -383,7 +383,7 @@ kubectl describe node | grep taint
 
 kubectl taint node hostname key:NoSchedule- //hostname为本机名称
 
-\2. MEP安装DNS问题
+2. MEP安装DNS问题
 边缘环境测试，多网卡mp1和mm5网卡隔离，从mp1接口获取mep给的token失败
 
 该原因为DNS有问题导致。
@@ -392,3 +392,35 @@ kubectl taint node hostname key:NoSchedule- //hostname为本机名称
 
 DNS的53端口，由于环境安全策略屏蔽了该端口，在华为云上打开此端口问题解决
 
+
+  3.安装过程中K8S的8080端口问题导致安装K8S安装失败
+
+具体情况如下：
+
+![输入图片说明](https://images.gitee.com/uploads/images/2020/1020/091732_286e364b_8040887.png "8080-1.png")
+
+该问题为K8S为安装成功：
+
+kubeadm reset -f   
+
+kubeadm init --kubernetes-version=1.18.7
+
+根据上条指令提示执行下面的命令：
+
+mkdir -p $HOME/.kube
+
+sudo cp -i /etc/kubernetes/admin.conf $HOME/.kube/config
+
+sudo chown $(id -u):$(id -g) $HOME/.kube/config
+
+kubectl apply -f https://docs.projectcalico.org/manifests/calico.yaml
+
+完成后重新执行bash eg.sh -i安装即可
+
+这样安装过程中可能会使个别pod存在污点导致pod状态一直为pending状态，可以直接使用
+
+kubectl taint nodes --all node-role.kubernetes.io/master-  删除污点。
+
+在继续安装bash eg.sh -i即可，或者安装过程中重新打开一个窗口您使用kebuctl get pod --all-spaces中有pod状态为pending状态，
+
+且安装进程一直在等待该pod running 也可以直接使用上述删除污点的指令，安装流程也会直接向下执行。
