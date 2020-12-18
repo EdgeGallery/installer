@@ -2287,7 +2287,7 @@ function main()
       print_eg_logo
       info "EdgeGallery Got Deployed SuccessFully ....." $GREEN
       mkdir -p ~/.eg
-      cat version.txt > ~/.eg/version
+      cat $PLATFORM_DIR/version.txt > ~/.eg/version
       exit 0
     else
       info "EdgeGallery Deployment Failed ....." $RED
