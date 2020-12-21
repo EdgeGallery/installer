@@ -35,6 +35,8 @@ EdgeGallery离线安装程序是基于ubuntu x86_64或arm64体系结构的给Kub
 2.在准备好的服务器上安装Ubuntu 18.04操作系统(ububntu 18.04是经过安装测试的版本)。
 
 3.下载离线安装程程序，[下载地址](http://release.edgegallery.org/，根据具建议使用EdgeGallery_V0.9.tar.gz这个安装包
+ 
+  （如果网速慢，可以使用多线程下载方式，具体操作可参考文档最后安装遇到的问题中多线程下载说明）
 
 4.下载完安装包后解压即可（多节点安装，安装包需要上传到deploy node(也就是场景表中EG_NODE_DEPLOY_IP对应的机器）edgegallery安装的过程是在安装节点deploy node的机器上进行，deploy节点作为安装容器和helm仓库使用)。
 
@@ -424,3 +426,16 @@ kubectl taint nodes --all node-role.kubernetes.io/master-  删除污点。
 在继续安装bash eg.sh -i即可，或者安装过程中重新打开一个窗口您使用kebuctl get pod --all-spaces中有pod状态为pending状态，
 
 且安装进程一直在等待该pod running 也可以直接使用上述删除污点的指令，安装流程也会直接向下执行。
+
+  4.多线程下载说明
+    
+安装axel包：
+
+  sudo apt install axel
+
+多线程下载：
+
+axel -n 10 -o /tmp/ http://release.edgegallery.org/x86/all/EdgeGallery-v0.9.tar.gz
+
+其中-n  10  表示10线程
+-o  /tmp/   下载保存文件目录为/tmp/
