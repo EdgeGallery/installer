@@ -37,8 +37,8 @@ function load_docker_images_n_helm_charts()
     cat $f | docker load
     if [ "$OFFLINE_MODE" == "muno" ]; then
       IMAGE_NAME=`echo $f|rev|cut -c8-|rev|sed -e "s/\#/:/g" | sed -e "s/\@/\//g"`;
-      docker image tag $IMAGE_NAME ${REGISTRY_URL}/$IMAGE_NAME
-      docker push ${REGISTRY_URL}/$IMAGE_NAME
+      docker image tag $IMAGE_NAME ${REGISTRY_URL}$IMAGE_NAME
+      docker push ${REGISTRY_URL}$IMAGE_NAME
     fi
   done
 }
