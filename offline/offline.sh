@@ -363,24 +363,36 @@ function _download_helm_charts()
       if [[ $ENABLE_METRICS == "YES" ]]; then
         wget -N https://kubernetes-charts.storage.googleapis.com/grafana-5.5.5.tgz
         if [[ $? -ne 0 ]]; then
-          info "grafana-5.5.5.tgz download got Failed" $RED
-          exit 1
+          cp $HELM_CHART_CACHE_PATH/stable/grafana-5.5.5.tgz .;
+          if [[ $? -ne 0 ]]; then
+            info "grafana-5.5.5.tgz download got Failed" $RED
+            exit 1
+          fi
         fi
         wget -N https://kubernetes-charts.storage.googleapis.com/prometheus-9.3.1.tgz
         if [[ $? -ne 0 ]]; then
-          info "prometheus-9.3.1.tgz download got Failed" $RED
-          exit 1
+          cp $HELM_CHART_CACHE_PATH/stable/prometheus-9.3.1.tgz .;
+          if [[ $? -ne 0 ]]; then
+            info "prometheus-9.3.1.tgz download got Failed" $RED
+            exit 1
+          fi
         fi
       fi
       wget -N https://kubernetes-charts.storage.googleapis.com/nginx-ingress-1.41.2.tgz
       if [[ $? -ne 0 ]]; then
-        info "nginx-ingress-1.41.2.tgz download got Failed" $RED
-        exit 1
+        cp $HELM_CHART_CACHE_PATH/stable/nginx-ingress-1.41.2.tgz .;
+        if [[ $? -ne 0 ]]; then
+          info "nginx-ingress-1.41.2.tgz download got Failed" $RED
+          exit 1
+        fi
       fi
       wget -N https://kubernetes-charts.storage.googleapis.com/nfs-client-provisioner-1.2.8.tgz
       if [[ $? -ne 0 ]]; then
-        info "nfs-client-provisioner-1.2.8.tgz download got Failed" $RED
-        exit 1
+        cp $HELM_CHART_CACHE_PATH/stable/nfs-client-provisioner-1.2.8.tgz .;
+        if [[ $? -ne 0 ]]; then
+          info "nfs-client-provisioner-1.2.8.tgz download got Failed" $RED
+          exit 1
+        fi
       fi
     fi
   else
