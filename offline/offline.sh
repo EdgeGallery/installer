@@ -328,6 +328,23 @@ function _help_install_helm_binary()
   fi
 }
 
+function _help_download_stable_charts() {
+  download_url=$1
+  file_name=$2
+  success=0
+  if [[ $SYNC_UP_HELM_CHARTS == "true" ]]; then
+    wget -N $download_url
+    success=$?
+  fi
+  if [[ $success -ne 0 || $SYNC_UP_HELM_CHARTS == "false" ]]; then
+    cp $HELM_CHART_CACHE_PATH/stable/"$file_name" .;
+    if [[ $? -ne 0 ]]; then
+      info "$file_name download got Failed" $RED
+      exit 1
+    fi
+  fi
+}
+
 function _download_helm_charts()
 {
   mkdir -p $TARBALL_PATH/helm/helm-charts
@@ -340,73 +357,35 @@ function _download_helm_charts()
   mkdir -p stable
   if [[ $SYNC_UP_HELM_CHARTS == "true" ]]; then
     _help_install_helm_binary
-
     helm repo remove eg
     helm repo add eg $EG_HELM_REPO
-    cd edgegallery || exit
+  fi
 
-    CHART_LIST=$1
-    ENABLE_METRICS=$2
+  cd edgegallery || exit
+  CHART_LIST=$1
+  ENABLE_METRICS=$2
 
-    for chart in $CHART_LIST;
-      do
+  for chart in $CHART_LIST;
+    do
+      if [[ $SYNC_UP_HELM_CHARTS == "true" ]]; then
         helm pull eg/$chart $APPEND_HELM_PULL_COMMAND
-        if [[ $? -ne 0 ]]; then
-          info "helm pull $EG_HELM_REPO/$chart Failed" $RED
-          exit 1
-        fi
-      done
-
-    if [[ $PATCH == "false" ]]; then
-      cd ../stable
-
-      if [[ $ENABLE_METRICS == "YES" ]]; then
-        wget -N https://kubernetes-charts.storage.googleapis.com/grafana-5.5.5.tgz
-        if [[ $? -ne 0 ]]; then
-          cp $HELM_CHART_CACHE_PATH/stable/grafana-5.5.5.tgz .;
-          if [[ $? -ne 0 ]]; then
-            info "grafana-5.5.5.tgz download got Failed" $RED
-            exit 1
-          fi
-        fi
-        wget -N https://kubernetes-charts.storage.googleapis.com/prometheus-9.3.1.tgz
-        if [[ $? -ne 0 ]]; then
-          cp $HELM_CHART_CACHE_PATH/stable/prometheus-9.3.1.tgz .;
-          if [[ $? -ne 0 ]]; then
-            info "prometheus-9.3.1.tgz download got Failed" $RED
-            exit 1
-          fi
-        fi
+      else
+        cp $HELM_CHART_CACHE_PATH/edgegallery/$chart-1.0.1.tgz .
       fi
-      wget -N https://kubernetes-charts.storage.googleapis.com/nginx-ingress-1.41.2.tgz
       if [[ $? -ne 0 ]]; then
-        cp $HELM_CHART_CACHE_PATH/stable/nginx-ingress-1.41.2.tgz .;
-        if [[ $? -ne 0 ]]; then
-          info "nginx-ingress-1.41.2.tgz download got Failed" $RED
-          exit 1
-        fi
+        info "helm pull $EG_HELM_REPO/$chart Failed" $RED
+        exit 1
       fi
-      wget -N https://kubernetes-charts.storage.googleapis.com/nfs-client-provisioner-1.2.8.tgz
-      if [[ $? -ne 0 ]]; then
-        cp $HELM_CHART_CACHE_PATH/stable/nfs-client-provisioner-1.2.8.tgz .;
-        if [[ $? -ne 0 ]]; then
-          info "nfs-client-provisioner-1.2.8.tgz download got Failed" $RED
-          exit 1
-        fi
-      fi
+    done
+
+  if [[ $PATCH == "false" ]]; then
+    cd ../stable
+    if [[ $ENABLE_METRICS == "YES" ]]; then
+      _help_download_stable_charts "https://kubernetes-charts.storage.googleapis.com/grafana-5.5.5.tgz" "grafana-5.5.5.tgz"
+      _help_download_stable_charts "https://kubernetes-charts.storage.googleapis.com/prometheus-9.3.1.tgz" "prometheus-9.3.1.tgz"
     fi
-  else
-    info "Using helm charts from Installer Cache"  $RED
-    if ! cp $HELM_CHART_CACHE_PATH/edgegallery . -r; then
-      info "eg charts doesn't exist in Installer Cache"  $RED
-      suggest_cache_update
-      exit 1
-    fi
-    if ! cp $HELM_CHART_CACHE_PATH/stable . -r; then
-      info "stable charts doesn't exist in Installer Cache" $RED
-      suggest_cache_update
-      exit 1
-    fi
+      _help_download_stable_charts "https://kubernetes-charts.storage.googleapis.com/nginx-ingress-1.41.2.tgz" "nginx-ingress-1.41.2.tgz"
+      _help_download_stable_charts "https://kubernetes-charts.storage.googleapis.com/nfs-client-provisioner-1.2.8.tgz" "nfs-client-provisioner-1.2.8.tgz"
   fi
 }
 
