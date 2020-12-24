@@ -151,8 +151,8 @@ EOF
     systemctl enable kubelet.service
     systemctl status kubelet.service --no-pager
 
-    systemctl stop firewalld
-    systemctl disable firewalld
+    systemctl stop ufw
+    systemctl disable ufw
 
     swapoff -a
     sed -i '/ swap / s/^/#/' /etc/fstab
@@ -432,6 +432,7 @@ function print_portal_urls()
   echo -e "$GREEN MECM PORTAL       : $BLUE https://$PORTAL_IP:$MECM_PORT"
   echo -e "$GREEN APPSTORE PORTAL   : $BLUE https://$PORTAL_IP:$APPSTORE_PORT"
   echo -e "$GREEN DEVELOPER PORTAL  : $BLUE https://$PORTAL_IP:$DEVELOPER_PORT"
+  echo -e "$GREEN ATP  PORT         : $BLUE https://$PORTAL_IP:$ATP_PORT"
   echo ""
 }
 
