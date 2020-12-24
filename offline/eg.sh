@@ -432,7 +432,7 @@ function print_portal_urls()
   echo -e "$GREEN MECM PORTAL       : $BLUE https://$PORTAL_IP:$MECM_PORT"
   echo -e "$GREEN APPSTORE PORTAL   : $BLUE https://$PORTAL_IP:$APPSTORE_PORT"
   echo -e "$GREEN DEVELOPER PORTAL  : $BLUE https://$PORTAL_IP:$DEVELOPER_PORT"
-  echo -e "$GREEN ATP  PORT         : $BLUE https://$PORTAL_IP:$ATP_PORT"
+  echo -e "$GREEN ATP PORTAL        : $BLUE https://$PORTAL_IP:$ATP_PORT"
   echo ""
 }
 
