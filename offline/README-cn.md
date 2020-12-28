@@ -1,4 +1,4 @@
-##                                     edgegallery离线安装说明
+##                                     EdgeGallery离线安装说明
 
 
 EdgeGallery离线安装程序是基于ubuntu x86_64或arm64体系结构的给Kubernetes的EdgeGallery部署提供了部署程序，方便各种只有局域网无公网环境，单机环境提供了新的安装方式
@@ -34,13 +34,13 @@ EdgeGallery离线安装程序是基于ubuntu x86_64或arm64体系结构的给Kub
 
 2.在准备好的服务器上安装Ubuntu 18.04操作系统(ububntu 18.04是经过安装测试的版本)。
 
-3.下载离线安装程程序，[下载地址](http://release.edgegallery.org/，根据具建议使用EdgeGallery_V0.9.tar.gz这个安装包
+3.下载离线安装程程序，[下载地址](http://release.edgegallery.org/，根据具建议使用EdgeGallery_V1.0.tar.gz这个安装包
  
   （如果网速慢，可以使用多线程下载方式，具体操作可参考文档最后安装遇到的问题中多线程下载说明）
 
 4.下载完安装包后解压即可（多节点安装，安装包需要上传到deploy node(也就是场景表中EG_NODE_DEPLOY_IP对应的机器）edgegallery安装的过程是在安装节点deploy node的机器上进行，deploy节点作为安装容器和helm仓库使用)。
 
-5.该安装包里已经包含kubernetes安装程序，按照下面流程安装edgegallery时会自动先安装kubernetes。
+5.该安装包里已经包含kubernetes安装程序，按照下面流程安装EdgeGallery时会自动先安装kubernetes。
 
 #### **部署流程演示图：**
 
@@ -292,11 +292,22 @@ APPLCM注册：
 
 在MECM上完成APPLCM注册。
 
-![输入图片说明](https://images.gitee.com/uploads/images/2020/1027/174517_a702a2bb_8040887.png "屏幕截图.png")
+![输入图片说明](https://images.gitee.com/uploads/images/2020/1228/182718_139e7f7d_8040887.png "屏幕截图.png")
 
 (IP地址为边缘节点IP,端口30204)
 
 ![输入图片说明](https://images.gitee.com/uploads/images/2020/1027/174556_6517a16a_8040887.png "屏幕截图.png")
+
+APPRULE注册：
+
+在MECM上完成APPRULE注册。
+
+![输入图片说明](https://images.gitee.com/uploads/images/2020/1228/184309_32d9c426_8040887.png "屏幕截图.png")
+
+(IP地址为边缘节点IP,端口30206
+
+![输入图片说明](https://images.gitee.com/uploads/images/2020/1228/183252_071b093e_8040887.png "屏幕截图.png")
+
 
 边缘节点注册：
 
@@ -315,8 +326,8 @@ APPLCM注册：
  
 下面为1条指令，IP地址为边缘节点IP
   
-insert into tbl_service_host(host_id, name, address, architecture, status, protocol, ip, os, port_range_min, port_range_max, 
-port, delete) values ('3c55ac26-60e9-42c0-958b-1bf7ea4da60a', 'Node1', 'XIAN', 'X86', 'NORMAL', 'https', '192.168.101.245', 
+insert into tbl_service_host(host_id, user_id, name, address, architecture, status, protocol, ip, os, port_range_min, port_range_max, 
+port, delete) values ('3c55ac26-60e9-42c0-958b-1bf7ea4da60a', 'admin', 'Node1', 'XIAN', 'X86', 'NORMAL', 'https', '192.168.101.245', 
 'Ubuntu', 30000, 32767, 30204, null);
   
 配置完成后退出。
@@ -325,7 +336,7 @@ port, delete) values ('3c55ac26-60e9-42c0-958b-1bf7ea4da60a', 'Node1', 'XIAN', '
 
 添加新项目：
 
-![输入图片说明](https://images.gitee.com/uploads/images/2020/1027/174841_a53b87e1_8040887.png "屏幕截图.png")
+![输入图片说明](https://images.gitee.com/uploads/images/2020/1228/184502_e4f4f987_8040887.png "屏幕截图.png")
 
 基本信息填写：
 
@@ -333,26 +344,31 @@ port, delete) values ('3c55ac26-60e9-42c0-958b-1bf7ea4da60a', 'Node1', 'XIAN', '
 
 按照上述选择完成项目创建。
 
-构建&测试：
+部署调测：
 
-![输入图片说明](https://images.gitee.com/uploads/images/2020/1027/175822_5ea52a73_8040887.png "屏幕截图.png")
+![输入图片说明](https://images.gitee.com/uploads/images/2020/1228/184622_2ca52014_8040887.png "屏幕截图.png")
 
-参数配置：
+上传YAML文件：
 
-![输入图片说明](https://images.gitee.com/uploads/images/2020/1027/175924_e2df337c_8040887.png "屏幕截图.png")
+![输入图片说明](https://images.gitee.com/uploads/images/2020/1228/184742_f7207614_8040887.png "屏幕截图.png")
 
-选择之前插入的边缘节点服务器信息:
+开始部署:
 
-![输入图片说明](https://images.gitee.com/uploads/images/2020/1027/180035_d5ebfa02_8040887.png "屏幕截图.png")
+![输入图片说明](https://images.gitee.com/uploads/images/2020/1228/184922_9c13e35d_8040887.png "屏幕截图.png")
 
-完成构建测试：
+部署完成后点击应用发布：
 
-![输入图片说明](https://images.gitee.com/uploads/images/2020/1027/180115_f721ee5e_8040887.png "屏幕截图.png")
+![输入图片说明](https://images.gitee.com/uploads/images/2020/1228/185315_c3735204_8040887.png "屏幕截图.png")
 
-发布到应用商店：
+无规则使用时可直接下一步:
 
-![输入图片说明](https://images.gitee.com/uploads/images/2020/1027/180153_9ed9eb8f_8040887.png "屏幕截图.png")
+![输入图片说明](https://images.gitee.com/uploads/images/2020/1228/185450_d31efa03_8040887.png "屏幕截图.png")
 
+点击应用认证进行安全，遵从性以及沙箱测试：
+
+![输入图片说明](https://images.gitee.com/uploads/images/2020/1228/185712_10ac57f1_8040887.png "屏幕截图.png")
+
+等待前面测试完成后，可发布到APP应用商店
 
 #### **卸载**
 
