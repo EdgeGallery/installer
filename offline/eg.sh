@@ -1095,7 +1095,9 @@ function install_appstore ()
     --set images.initservicecenter.pullPolicy=$appstore_images_initservicecenter_pullPolicy \
     --set global.ssl.enabled=$appstore_global_ssl_enabled \
     --set global.ssl.secretName=$appstore_global_ssl_secretName \
-    --set global.persistence.enabled=$ENABLE_PERSISTENCE
+    --set global.persistence.enabled=$ENABLE_PERSISTENCE \
+    --set poke.platformUrl=$appstore_poke_platformUrl \
+    --set poke.atpReportUrl=$appstore_poke_atpReportUrl
     if [ $? -eq 0 ]; then
       info "[Deployed AppStore  .........]" $GREEN
       resilient_utility "write" "APPSTORE:DEPLOYED"
