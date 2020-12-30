@@ -1450,7 +1450,7 @@ function create_ssl_certs()
     else
       env="-e CERT_VALIDITY_IN_DAYS=$CERT_VALIDITY_IN_DAYS"
     fi
-    docker run $env -v $PLATFORM_DIR/conf/keys/:/certs edgegallery/deploy-tool:latest
+    docker run $env -v $PLATFORM_DIR/conf/keys/:/certs edgegallery/deploy-tool:$EG_IMAGE_TAG
   fi
 }
 
@@ -1945,7 +1945,7 @@ function _deploy_network_isolation_multus() {
 
   kubectl apply -f $PLATFORM_DIR/conf/edge/network-isolation/multus.yaml
   kubectl apply -f $PLATFORM_DIR/conf/edge/network-isolation/eg-sp-rbac.yaml
-  sed -i 's?image: edgegallery/edgegallery-secondary-ep-controller:latest?image: '$REGISTRY_URL'edgegallery/edgegallery-secondary-ep-controller:latest?g' $PLATFORM_DIR/conf/edge/network-isolation/eg-sp-controller.yaml
+  sed -i 's?image: edgegallery/edgegallery-secondary-ep-controller:latest?image: '$REGISTRY_URL'edgegallery/edgegallery-secondary-ep-controller:'$EG_IMAGE_TAG'?g' $PLATFORM_DIR/conf/edge/network-isolation/eg-sp-controller.yaml
   kubectl apply -f $PLATFORM_DIR/conf/edge/network-isolation/eg-sp-controller.yaml
 
   if [[ $OFFLINE_MODE == 'muno' ]] ; then
