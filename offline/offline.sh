@@ -70,7 +70,7 @@ if [[ -z "$EG_IMAGE_LIST_CONTROLLER_X86_DEFAULT" && $PATCH != "true" ]]; then
    swr.ap-southeast-1.myhuaweicloud.com/edgegallery/curl:latest \
    swr.ap-southeast-1.myhuaweicloud.com/edgegallery/redis:6.0.3 \
    swr.ap-southeast-1.myhuaweicloud.com/edgegallery/postgres:12.2 \
-   swr.ap-southeast-1.myhuaweicloud.com/edgegallery/deploy-tool:latest \
+   swr.ap-southeast-1.myhuaweicloud.com/edgegallery/deploy-tool:$EG_IMAGE_TAG \
    swr.ap-southeast-1.myhuaweicloud.com/edgegallery/tool-chain:$EG_IMAGE_TAG \
    swr.ap-southeast-1.myhuaweicloud.com/edgegallery/porting-advisor:latest \
    swr.ap-southeast-1.myhuaweicloud.com/edgegallery/atp-fe:$EG_IMAGE_TAG \
@@ -93,11 +93,11 @@ if [[ -z "$EG_IMAGE_LIST_EDGE_X86_DEFAULT" && $PATCH != "true" ]]; then
    EG_IMAGE_LIST_EDGE_X86_DEFAULT="swr.ap-southeast-1.myhuaweicloud.com/edgegallery/mepauth:$EG_IMAGE_TAG \
    swr.ap-southeast-1.myhuaweicloud.com/edgegallery/mep:$EG_IMAGE_TAG \
    swr.ap-southeast-1.myhuaweicloud.com/edgegallery/mep-dns-server:$EG_IMAGE_TAG \
-   swr.ap-southeast-1.myhuaweicloud.com/edgegallery/edgegallery-secondary-ep-controller:latest \
+   swr.ap-southeast-1.myhuaweicloud.com/edgegallery/edgegallery-secondary-ep-controller:$EG_IMAGE_TAG \
    swr.ap-southeast-1.myhuaweicloud.com/edgegallery/mecm-applcm:$EG_IMAGE_TAG \
    swr.ap-southeast-1.myhuaweicloud.com/edgegallery/mecm-applcm-k8splugin:$EG_IMAGE_TAG \
    swr.ap-southeast-1.myhuaweicloud.com/edgegallery/mecm-apprulemgr:$EG_IMAGE_TAG \
-   swr.ap-southeast-1.myhuaweicloud.com/edgegallery/deploy-tool:latest \
+   swr.ap-southeast-1.myhuaweicloud.com/edgegallery/deploy-tool:$EG_IMAGE_TAG \
    prom/alertmanager:v0.18.0 \
    prom/node-exporter:v0.18.0 \
    prom/prometheus:v2.13.1 \
@@ -122,11 +122,11 @@ if [[ -z "$EG_IMAGE_LIST_EDGE_ARM64_DEFAULT" && $PATCH != "true" ]]; then
    EG_IMAGE_LIST_EDGE_ARM64_DEFAULT="swr.ap-southeast-1.myhuaweicloud.com/edgegallery/mepauth:$EG_IMAGE_TAG \
    swr.ap-southeast-1.myhuaweicloud.com/edgegallery/mep:$EG_IMAGE_TAG \
    swr.ap-southeast-1.myhuaweicloud.com/edgegallery/mep-dns-server:$EG_IMAGE_TAG \
-   swr.ap-southeast-1.myhuaweicloud.com/edgegallery/edgegallery-secondary-ep-controller:latest \
+   swr.ap-southeast-1.myhuaweicloud.com/edgegallery/edgegallery-secondary-ep-controller:$EG_IMAGE_TAG \
    swr.ap-southeast-1.myhuaweicloud.com/edgegallery/mecm-applcm:$EG_IMAGE_TAG \
    swr.ap-southeast-1.myhuaweicloud.com/edgegallery/mecm-applcm-k8splugin:$EG_IMAGE_TAG \
    swr.ap-southeast-1.myhuaweicloud.com/edgegallery/mecm-apprulemgr:$EG_IMAGE_TAG \
-   swr.ap-southeast-1.myhuaweicloud.com/edgegallery/deploy-tool:latest \
+   swr.ap-southeast-1.myhuaweicloud.com/edgegallery/deploy-tool:$EG_IMAGE_TAG \
    prom/alertmanager:v0.18.0 \
    prom/node-exporter:v0.18.1 \
    prom/prometheus:v2.15.2 \
