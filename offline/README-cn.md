@@ -1,7 +1,7 @@
 ##                                     EdgeGallery离线安装说明
 
 
-EdgeGallery离线安装程序是基于ubuntu x86_64或arm64体系结构的给Kubernetes的EdgeGallery部署提供了部署程序，方便各种只有局域网无公网环境，单机环境提供了新的安装方式
+EdgeGallery离线安装是基于程序ubuntu x86_64或arm64体系结构的给Kubernetes的EdgeGallery部署提供了部署程序，方便各种只有局域网无公网环境，单机环境提供了新的安装方式
 
  
 
@@ -13,7 +13,7 @@ EdgeGallery离线安装程序是基于ubuntu x86_64或arm64体系结构的给Kub
 
 场景
 
-![输入图片说明](https://images.gitee.com/uploads/images/2020/1231/165156_f3fea675_8040887.png "屏幕截图.png")
+![输入图片说明](https://images.gitee.com/uploads/images/2020/1231/165312_f56ce4ee_8040887.png "屏幕截图.png")
 
 支持的系统版本
 
