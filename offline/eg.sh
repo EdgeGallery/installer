@@ -308,9 +308,22 @@ function _load_swr_images_and_push_to_private_registry()
   do
     cat $f | docker load
     if [ "$OFFLINE_MODE" == "muno" ]; then
-      IMAGE_NAME=`echo $f|rev|cut -c8-|rev|sed -e "s/\#/:/g" | sed -e "s/\@/\//g"`;
-      docker image tag $IMAGE_NAME $IP:$PORT/$IMAGE_NAME
-      docker push $IP:$PORT/$IMAGE_NAME
+      if [ "$f" = "eg_images.tar.gz" ]; then
+        if [ ! -f "eg_images_list.txt" ]; then
+          info "[Can not find file eg_images_list.txt]" $RED
+          exit 1
+        fi
+        images=`cat eg_images_list.txt`
+        for IMAGE_NAME in $images
+        do
+          docker image tag $IMAGE_NAME $IP:$PORT/$IMAGE_NAME
+          docker push $IP:$PORT/$IMAGE_NAME
+        done
+      else
+        IMAGE_NAME=`echo $f|rev|cut -c8-|rev|sed -e "s/\#/:/g" | sed -e "s/\@/\//g"`;
+        docker image tag $IMAGE_NAME $IP:$PORT/$IMAGE_NAME
+        docker push $IP:$PORT/$IMAGE_NAME
+      fi
     fi
   done
   fi
