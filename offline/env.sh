@@ -145,7 +145,7 @@ export appstore_images_initservicecenter_pullPolicy=IfNotPresent
 export appstore_global_ssl_enabled=true
 export appstore_global_ssl_secretName=edgegallery-ssl-secret
 export appstore_poke_platformUrl=https://"$PORTAL_IP":30099
-export appstore_poke_atpReportUrl=https://"$PORTAL_IP":30094/atpreport?taskid=%s
+export appstore_poke_atpReportUrl=https://"$PORTAL_IP":30094/#/atpreport?taskid=%s
 
 #Developer Values
 export developer_images_developerFe_repository="$REGISTRY_URL"edgegallery/developer-fe
