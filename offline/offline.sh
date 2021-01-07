@@ -252,10 +252,10 @@ function _download_sshpass()
 }
 
 function _docker_images_download_eg() {
-  #docker login -u $DOCKER_LOGIN_USERNAME  -p $DOCKER_LOGIN_PASSWORD swr.ap-southeast-1.myhuaweicloud.com
   mkdir -p $TARBALL_PATH/eg_swr_images
   EG_SWR_PATH=$TARBALL_PATH/eg_swr_images/  
   info "download the edgegallery images list is : $1" $RED
+  new_image_list=""
   for image in $1;
   do
     new_image=$image
@@ -281,8 +281,7 @@ function _docker_images_download_eg() {
       if [ $repo == "swr.ap-southeast-1.myhuaweicloud.com" ]; then
         docker image tag $image "$organization"/"$image_n_tag"
       fi
-      IMAGE_NAME=`echo $new_image| sed -e "s/\:/#/g" | sed -e "s/\//@/g"`;
-      docker save $new_image | gzip > $EG_SWR_PATH/$IMAGE_NAME.tar.gz
+      new_image_list="$new_image_list $new_image"
     else
       info "Using $image from Installer Cache"  $RED
       if  ! cp $DOCKER_IMAGE_CACHE_PATH/$IMAGE_NAME.tar.gz $EG_SWR_PATH ; then
@@ -292,6 +291,8 @@ function _docker_images_download_eg() {
       fi
     fi
   done
+  docker save $new_image_list | gzip > $EG_SWR_PATH/eg_images.tar.gz
+  echo $new_image_list >> $EG_SWR_PATH/eg_images_list.txt
 }
 
 function _download_helm_binary()
