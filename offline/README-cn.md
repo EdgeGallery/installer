@@ -1,9 +1,8 @@
-##                                     EdgeGallery离线安装说明
+##                                     EdgeGallery安装指导书
 
+## 简介
 
-EdgeGallery离线安装程序是基于ubuntu x86_64或arm64体系结构的给Kubernetes的EdgeGallery部署提供了部署程序，方便各种只有局域网无公网环境，单机环境提供了新的安装方式
-
- 
+​        为了满足客户不同需求EdgeGallery安装提供了单节点和多节点离线安装模式，以下是部署架构图、安装模式、软件系统版本、部署前环境检查、部署流程演示图、EdgeGallery部署步骤、EdgeGallery卸载步骤、部署完成后环境检查和手动实例化测试的详细介绍，请认真阅读。
 
 部署架构
 
@@ -11,36 +10,39 @@ EdgeGallery离线安装程序是基于ubuntu x86_64或arm64体系结构的给Kub
 
  
 
-场景
+安装模式介绍
+EdgeGallery是由Controller和Edge两部分组成，一个EdgeGallery环境只能有一个Controller但可以有一个或多个Edge，以下提供的场景有EdgeGallery整体的安装、Controller单独安装和Edge单独安装的安装的方式，这些安装方式又分为单节点安装和多节点安装模式，多节点安装至少需要三台机器,分别作为deploy node、master node、worker node，可以根据自己的需要选择合适的模块和安装方式根据EdgeGallery 安装步骤去安装。
+
+deploy node: deploy node作用是给master和worker安装EdgeGallery,同时作为docker 仓库、helm仓库。
+
+master node: master node是 k8s的控制节点和worker node组成集群，根据部署架构图可以看出EdgeGallery是以k8s为基础承载的，EdgeGallery的模块也是和k8一样分布在集群了不同机器上。
+
+worker node:  worker node 和master node组成集群，对master起到负载均衡的作用。
 
 ![输入图片说明](https://images.gitee.com/uploads/images/2020/1231/165312_f56ce4ee_8040887.png "屏幕截图.png")
 
 支持的系统版本
 
-![输入图片说明](https://images.gitee.com/uploads/images/2020/0908/175524_dc986df0_7639331.png "屏幕截图.png")
+| Module     | Version | Arch           |
+| ---------- | ------- | -------------- |
+| Ubuntu     | 18.04   | ARM_64&X86__64 |
+| Docker     | 18.09   | ARM_64&X86__64 |
+| Helm       | 3.2.4   | ARM_64&X86__64 |
+| Kubernetes | 1.18.7  | ARM_64&X86__64 |
 
  
 
-部署先决条件：
-
-1.在部署前先通过上面的场景表，选择自己要部署的场景，准备好需要的服务器。
-
-   部署服务器最低配置建议使用：4CPU,16G内存，100G硬盘，单网卡或者多网卡。
-   根据需求准备服务器：
-   做普通测试简单操作可按照最低配置部署成单节点，最少需要一台服务器。
-   现实环境是中心和边缘时分开的，中心（deploy节点，master节点，worker节点）三台服务器，
-   边缘最少一个，如果按照现实环境搭建测试环境，则最少需要4台服务器。
-
-
-2.在准备好的服务器上安装Ubuntu 18.04操作系统(ububntu 18.04是经过安装测试的版本)。
-
-3.下载离线安装程程序，[下载地址](http://release.edgegallery.org/，根据具建议使用EdgeGallery-v1.0.tar.gz这个安装包
  
-  （如果网速慢，可以使用多线程下载方式，具体操作可参考文档最后安装遇到的问题中多线程下载说明）
 
-4.下载完安装包后解压即可（多节点安装，安装包需要上传到deploy node(也就是场景表中EG_NODE_DEPLOY_IP对应的机器）edgegallery安装的过程是在安装节点deploy node的机器上进行，deploy节点作为安装容器和helm仓库使用)。
+部署前环境检查
 
-5.该安装包里已经包含kubernetes安装程序，按照下面流程安装EdgeGallery时会自动先安装kubernetes。
+a. 在部署前先根据上面的安装模式表，选择自己要部署安装的模块和安装模式，准备好需要的服务器
+
+**注****：****服务器最低配置要求：4CPU,内存16G,硬盘100G。** 
+
+b. 在服务器上安装Ubuntu 18.04操作系统。
+
+c. 根据要安装的模块下载相应的EdgeGallery-v1.0.tar.gz安装包，注意如果多节点安装则需要把安装包下载或上传到deploy node上。
 
 #### **部署流程演示图：**
 
@@ -57,230 +59,229 @@ EdgeGallery离线安装程序是基于ubuntu x86_64或arm64体系结构的给Kub
 
  
 
-#### **edgegallery部署**
+#### **EdgeGallery部署步骤**
+### EdgeGallery整体安装
 
-安装程序如安装场景表中所列，支持单节点和多节点安装edgegallery,以下是各个场景下安装步骤:
+#### 单节点安装EdgeGallery步骤
 
-  edgegallery版本更新后PORTAL_IP在env.sh脚本中也可以添加，edgegallery场景部署中PORTAL_IP作为门户网址访问使用，通常我们使用的是 
-  CONTROLLER_MASTER_IPS地址；在使用双网卡或网卡的安装时候，DEPLOY_IP,MASTER_IPS，WORKER_IPS一般使用的是局域网IP地址，PORTAL_IP
-  可以使用公网IP作为外部地址。
+
+tar -zxvf  EdgeGallery-v1.0.tar.gz -C  /root/eg/    	//解压安装包到合适的路径下 
+
+vim env.sh   						// 编辑env.sh，请注意以下需要编辑的行需要删掉开头的‘#’符号
+
+export OFFLINE_MODE=aio   			//设置安装模式，单节点模式设置为aio
+
+PORTAL_IP=192.168.1.1   				//设置EdgeGallery web页面访问IP，可以为本机公网IP或自己本地能访问到本机的私网IP
+
+export EG_NODE_EDGE_MP1=*    		// ‘*’代表本机的网卡名 可以用‘ip addr’ 命令查询
+
+export EG_NODE_EDGE_MM5=*   			// ‘*’代表本机的网卡名  可以和MP1设置一样的网卡名
+
+export EG_NODE_MASTER_IPS=192.168.1.1   	//设置本机的私网IP
+
+保存配置的env.sh退出
+
+source  env.sh   		//运行脚本使以上配置生效
+
+bash  eg.sh  -i   			//开始安装Edgegalley，大约10min后可以安装完成
+
  
 
-### **一．单节点安装edgegallery场景：** 
+#### 多节点安装EdgeGallery步骤
 
+ssh-key-gen   		//在deploy node生成密钥，生成密钥过程中需要输入的步骤敲回车键直到命令执行完毕
 
- **1.edgegallery部署：** 
+scp /root/.ssh/id_rsa.pub [master IP]:/root/.ssh/authorized_keys	//把deploy node的公钥拷贝到master node实现deploy node点可以免密登录master node
 
-在之前解压缩的文件夹下修改env.sh配置文件
+scp /root/.ssh/id_rsa.pub [worker IP]:/root/.ssh/authorized_keys	//把deploy node的公钥拷贝到worker node实现deploy node点可以免密登录worker node
 
-vim env.sh                                      //编辑env文件
+mv  /root/.ssh/id_rsa.pub  /root/.ssh/authorized_keys		//把deploy node的公钥改名为authorized_keys 实现deploy node可以免密登录机
 
-export OFFLINE_MODE=aio                              //设置离线安装模式
+在deploy node依次登录master node、worker node和deploy node点检查是否可以免密登录（本步骤不可忽略）
 
-export EG_NODE_EDGE_MP1=***                            //***为网卡名
+在deploy node配置变量：
 
-export EG_NODE_EDGE_MM5=***                            //***为网卡名
+tar -zxvf EdgeGallery-v1.0.tar.gz -C  /root/eg/		//解压安装到合适的路径下 
 
-export EG_NODE_MASTER_IPS=192.168.99.100             //设置IP地址
+vim env.sh           		//编辑env.sh，请注意以下需要编辑的行需要删掉开头的”#”符号
 
-PORTAL_IP=159.138.x.y                        //如果需要为edgegallery门户网站配置IP，默认情况下，PORTAL_IP设置为 
-                                              EG_NODE_CONTROLLER_MASTER_IPS
+export OFFLINE_MODE=muno   	//设置安装模式，多节点模式设置为muno
 
-//修改完env文件保存退出
+PORTAL_IP=192.168.1.1       		//设置EdgeGallery web页面访问IP，必须为master node公网IP或自己本地网络能访问到的私网IP
 
-source env.sh                                   //运行使编辑保存完的文件生效                                                            
+export EG_NODE_DEPLOY_IP=192.168.99.100		//设置deploy node私网IP地址
 
-bash eg.sh -i                                   //开始安装程序
+export EG_NODE_MASTER_IPS=192.168.99.101		//设置master node私网IP地址
 
- **2.edgegallery中心部署** 
+export EG_NODE_WORKER_IPS=192.168.99.102,192.168.99.103   //设置worker node私网IP地址
 
-在之前解压缩的文件夹下修改env.sh配置文件
+export EG_NODE_EDGE_MP1=*  	// ‘*’代表master node的网卡名 可以用‘ip addr’命令查询
 
-vim  env.sh                                      //编辑env文件
+export EG_NODE_EDGE_MM5=*   		// ‘*’代表master node的网卡名  可以和MP1设置一样的网卡名
 
-export OFFLINE_MODE=aio                               //设置离线安装模式
+保存配置的env.sh退出
 
-export EG_NODE_EDGE_MP1=***                            //***为网卡名
+source  env.sh         	//运行脚本使以上配置生效
 
-export EG_NODE_EDGE_MM5=***                            //***为网卡名
+bash  eg.sh  -i        		//开始安装Controller，大约6min后可以安装完成
 
-export EG_NODE_CONTROLLER_MASTER_IPS=192.168.99.101   //设置IP地址
+ 
 
-PORTAL_IP=159.138.x.y                        //如果需要为edgegallery门户网站配置IP，默认情况下，PORTAL_IP设置为 
-                                              EG_NODE_CONTROLLER_MASTER_IPS
+### Controller节点安装
 
-//修改完env文件保存退出 
+#### 单节点安装Controller步骤
 
-source env.sh                                  //运行使编辑保存完的文件生效
+tar -zxvf  EdgeGallery-v1.0.tar.gz  -C  /root/eg/  //解压安装到合适的路径下 
 
-bash eg.sh -i                                  //开始安装程序
+vim env.sh   					// 编辑env.sh，请注意以下需要编辑的行需要删掉开头的’#’符号
 
- **3.edgegallery边缘部署** 
+export OFFLINE_MODE=aio   		//设置安装模式,单节点模式设置为aio
 
-在之前解压缩的文件夹下修改env.sh配置文件
+PORTAL_IP=192.168.1.1   	 //设置EdgeGallery web页面访问IP，可以为本机公网IP或自己本地能访问到本机的私网IP
 
-vim env.sh                                       //编辑env文件
+export EG_NODE_CONTROLLER_MASTER_IPS=192.168.99.101   	//设置本机的私网IP
 
-export OFFLINE_MODE=aio                               //设置离线安装模式 
+保存配置的env.sh退出
 
-export EG_NODE_EDGE_MP1=***                            //***为网卡名
+source  env.sh   	//运行脚本使以上配置生效
 
-export EG_NODE_EDGE_MM5=***                            //***为网卡名        
+bash  eg.sh  -i   		//开始安装Controller，大约6 min后可以安装完成
 
-export EG_NODE_EDGE_MASTER_IPS=192.168.99.104         //设置IP地址
+ 
 
-//修改完env文件保存退出
+#### 多节点安装Controller步骤
 
-source env.sh                                    //运行使编辑保存完的文件生效
+ssh-keygen  	//在deploy node生成密钥，生成密钥过程中需要输入的步骤敲回车键直到命令执行完毕
 
-bash eg.sh -i                                    //开始安装程序
+scp /root/.ssh/id_rsa.pub [master IP]:/root/.ssh/authorized_keys  	//把deploy node的公钥拷贝到master node实现deploy node点可以免密登录master node 
+scp /root/.ssh/id_rsa.pub [worker IP]:/root/.ssh/authorized_keys 	//把deploy node的公钥拷贝到worker node实现deploy node点可以免密登录worker node
 
-###  **二．多节点部署edgegallery场景** 
+mv  /root/.ssh/id_rsa.pub  /root/.ssh/authorized_keys  		//把deploy node的公钥改名为authorized_keys 实现deploy node可以免密登录
 
+在deploy node依次登录master node、worker node和deploy node点检查是否可以免密登录（本步骤不可忽略）
 
+在deploy node配置变量：
 
- **-  多节点安装需要配置ssh无密登录：** 
+tar -zxvf  EdgeGallery-v1.0.tar.gz  -C  /root/eg/   		//解压安装到合适的路径下 
 
- 1）在deploy节点生生产密钥：
+vim env.sh   						//编辑env.sh，请注意以下需要编辑的行需要删掉开头的”#”符号
 
-    ssh-keygen     //生成密钥，指令执行过程中凡是需要输入的地方直接按回车建就行
+export OFFLINE_MODE=muno   			//设置安装模式,多节点模式设置为muno
 
- 2）在deploy节点将生成的id_rsa.pub文件copy到master和worker节点：
+PORTAL_IP=192.168.1.1  				//设置EdgeGallery web页面访问IP，必须为master node公网IP或私网IP
 
-    scp /root/.ssh/id_rsa.pub  (master IP):/root/.ssh
-      
-    scp /root/.ssh/id_rsa.pub  (worker IP):/root/.ssh
-      
- 3）分别在deploy，master，worker节点执行免密：
+export EG_NODE_DEPLOY_IP=192.168.99.100  	//设置deploy node私网IP地址
 
-    cat /root/.ssh/id_rsa.pub >> /root/.ssh/authorized_keys
+export EG_NODE_CONTROLLER_MASTER_IPS=192.168.99.101	//设置master node私网IP地址
 
-    设置/etc/ssh/ssh_config文件中
+export EG_NODE_CONTROLLER_WORKER_IPS=192.168.99.102,192.168.99.103		//设置worker node私网IP地址
 
-    StrictHostKeyChecking no   //vim编辑ssh_config文件将StrictHostKeyChecking参数设置为no
+保存配置的env.sh退出
 
-    systemctl restart sshd      //重启sshd服务
+source  env.sh   		//运行脚本使以上配置生效
 
-    systemctl status sshd         //查看sshd状态
+bash  eg.sh  -i   		//开始安装Controller，大约6min后可以安装完成
 
+ 
 
+### Edge节点安装
 
- **1.edgegallery部署**     
+#### 单节点安装Edge步骤
 
-在之前解压缩的文件夹下修改env.sh配置文件 
+tar -zxvf  EdgeGallery-v1.0.tar.gz  -C  /root/eg/   			//解压安装包到合适的路径下 
 
-vim env.sh                                                   //编辑env文件
+vim env.sh   							//编辑env.sh，请注意以下需要编辑的行需要删掉开头的’#’符号
 
-export OFFLINE_MODE=muno                                   //设置离线安装模式
+export OFFLINE_MODE=aio   				//设置安装模式,单节点模式设置为aio
 
-export EG_NODE_EDGE_MP1=***                            //***为master网卡名
+export EG_NODE_EDGE_MP1=*    			// ‘*’代表本机的网卡名 可以用’ip addr’命令查询
 
-export EG_NODE_EDGE_MM5=***                            //***为master为网卡名
+export EG_NODE_EDGE_MM5=*   				// ’*’代表本机的网卡名  可以和MP1设置一样的网卡名
 
-export EG_NODE_DEPLOY_IP=192.168.99.100                    //设置deploy节点IP地址
-  
-export EG_NODE_MASTER_IPS=192.168.99.101                   //设置master节点IP地址
+export EG_NODE_EDGE_MASTER_IPS=192.168.1.1  //设置本机的私网IP
 
-export EG_NODE_WORKER_IPS=192.168.99.102,192.168.99.103   //设置work节点IP地址
+保存配置的env.sh退出
 
-PORTAL_IP=159.138.x.y                                    //如果需要为edgegallery门户网站配置IP，默认情况下，
-                                                          PORTAL_IP设置为EG_NODE_CONTROLLER_MASTER_IPS
+source  env.sh   		//运行脚本使以上配置生效
 
-//修改完env文件保存退出
+bash  eg.sh  -i   			//开始安装edge，大约5min后可以安装完成
 
-source env.sh                                       //运行使编辑保存完的文件生效
+ 
 
-bash eg.sh -i                                      //开始安装程序
+#### 多节点安装Edge步骤
 
+ssh-keygen  		//在deploy node生成密钥，生成密钥过程中需要输入的步骤敲回车键直到命令执行完毕
 
- **2.edgegallery中心部署** 
+scp /root/.ssh/id_rsa.pub [master IP]:/root/.ssh/authorized_keys	//把deploy node的公钥拷贝到master node实现deploy node点可以免密登录master node
 
-在之前解压缩的文件夹下修改env.sh配置文件
 
-vim env.sh                                           //编辑env文件
+scp /root/.ssh/id_rsa.pub [worker IP]:/root/.ssh/authorized_keys 	//把deploy node的公钥拷贝到worker node实现deploy node点可以免密登录worker node
 
-export OFFLINE_MODE=muno                                  //设置离线安装模式
+mv  /root/.ssh/id_rsa.pub  /root/.ssh/authorized_keys  		//把deploy node的公钥改名为authorized_keys 实现deploy node可以免密登录
 
-export EG_NODE_EDGE_MP1=***                                      //***为master网卡名
+在deploy node依次登录master node、worker node和deploy node点检查是否可以免密登录（本步骤不可忽略）
 
-export EG_NODE_EDGE_MM5=***                                      //***为master网卡名
+在deploy node配置变量：
 
-export EG_NODE_DEPLOY_IP=192.168.99.100                     //设置deploy节点IP地址
+tar -zxvf  EdgeGallery-v1.0.tar.gz  -C  /root/eg/   		//解压安装到合适的路径下 
 
-export EG_NODE_CONTROLLER_MASTER_IPS=192.168.99.101       //设置master节点IP地址
+vim env.sh  	 					//编辑env.sh，请注意以下需要编辑的行需要删掉开头的”#”符号
 
-export EG_NODE_CONTROLLER_WORKER_IPS=192.168.99.102,192.168.99.103 //设置work节点IP地址
+export OFFLINE_MODE=muno   			//设置安装模式,多节点模式设置为muno
 
-PORTAL_IP=159.138.x.y                                    //如果需要为edgegallery门户网站配置IP，默认情况下，
-                                                          PORTAL_IP设置为EG_NODE_CONTROLLER_MASTER_IPS
+export EG_NODE_DEPLOY_IP=192.168.99.100  	//设置deploy node私网IP地址
 
-//修改完env文件保存退出
+export EG_NODE_EDGE_MASTER_IPS=192.168.99.101 				//设置master node私网IP地址
 
-source env.sh                                        //运行使编辑保存完的文件生效
+export EG_NODE_EDGE_WORKER_IPS=192.168.99.102,192.168.99.103 	//设置worker node 私网IP
 
-bash eg.sh -i                                        //开始安装程序
+export EG_NODE_EDGE_MP1=*    		// ‘*’代表master node的网卡名，可以用ip addr 命令查询
 
- **3.edgegallery边缘部署** 
+export EG_NODE_EDGE_MM5=*   			// ‘*’代表master node的网卡名,可以和MP1设置一样的网卡名
 
-在之前解压缩的文件夹下修改env.sh配置文件
+保存配置的env.sh退出
 
-vim env.sh                                                      //编辑env文件
+source  env.sh   					//运行脚本使以上配置生效
 
-export OFFLINE_MODE=muno                                       //设置离线安装模式
+bash   eg.sh  -i   					//开始安装edge，大约5min后可以安装完成
 
-export EG_NODE_EDGE_MP1=***                                      //***为master网卡名
+ 
 
-export EG_NODE_EDGE_MM5=***                                      //***为master网卡名
+部署完成后环境检查
 
-export EG_NODE_DEPLOY_IP=192.168.99.100                          //设置deploy节点IP地址
+Edgegallery部署成功会在最后的部署输出中会显示Edgegalleryd的图标和部署成功的提示，如果没有部署则表示部署过程中某个模块部署失败因而部署脚本退出
 
-export EG_NODE_EDGE_MASTER_IPS=192.168.99.104                  //设置master节点IP地址
+![img](file:///C:\Users\ADMINI~1\AppData\Local\Temp\2\ksohtml7216\wps27.jpg) 
 
-export EG_NODE_EDGE_WORKER_IPS=192.168.99.105,192.168.99.106   //设置work节点IP地址
+kubectl get pod --all-namespaces  		// 检查pod的运行状态，正常情况下pod的状态时running，如果pod 的状态不是running 则需要进一步定位，例如：重启pod  kubectl delete pod podname –n namespaces    查看pod: kubectl describe pod podname –n namespaces
 
-//修改完env文件保存退出
+最后一步则需要手动实例化测试
 
-source env.sh                                             //运行使编辑保存完的文件生效
+ 
 
-bash eg.sh -i                                             //开始安装程序
+## EdgeGallery卸载步骤
 
+bash eg.sh -u      	//卸载EdgeGallery, k8s保留
 
-###  **三.Kubernetes部署** 
+bash eg.sh -u all    	//卸载EdgeGallery和k8s 
 
+ 
 
-​      该安装程序还提供了通过在env.sh中设置env变量，仅部署kubernetes的选项：
+ 
 
- **1.单节点部署kubernetes** 
+## 插入边缘节点信息
 
- vim  env.sh                                   //编辑env文件
+选择多节点安装EdgeGallery或Controller 在master node 执行以下操作：
 
-export OFFLINE_MODE=aio                             //设置离线安装模式
+kubectl exec -it developer-be-postgres-0  /bin/bash   	//进入developer-be-postgres pod
 
-export K8S_NODE_MASTER_IPS=192.168.100.120          //设置IP地址
+psql -U developer developerdb       			//登陆数据库
 
-//修改完env文件保存退出
+insert into tbl_service_host(host_id, user_id, name, address, architecture, status, protocol, ip, os, port_range_min, port_range_max, port, delete) values ('3c55ac26-60e9-42c0-958b-1bf7ea4da60a', 'admin', 'Node1', 'XIAN', 'X86', 'NORMAL', 'https', '192.168.101.245', 'Ubuntu', 30000, 32767, 30204, null);
 
-source env.sh                                 //运行使编辑保存完的文件生效
+// 这条sql命令中 IP:是Edge的IP ,选择多节点安装Edgegaller时 IP:是master node IP,
 
-bash eg.sh -i                                 //开始安装程序
-
- **2.多节点部署kubernetes** 
-
-vim  env.sh                                  //编辑env文件
-
-export OFFLINE_MODE=muno                            //修改离线安装模式
-
-export K8S_NODE_MASTER_IPS=192.168.100.120          //设置master节点IP地址  
-
-export K8S_NODE_WORKER_IPS=192.168.100.120          //设置work节点IP地址
-
-export K8S_NODE_DEPLOY_IP=192.168.100.120           //设置deploy节点IP地址 
-
-//修改完env文件保存退出
-
-source env.sh                                //运行使编辑保存完的文件生效
-
-bash eg.sh -i                                //开始安装程序
+选择多节点安装Edge时 IP:是master node IP ，arm环境需要将X86改为ARM
 
 
 #### **手动实例化图示：**(只支持用谷歌浏览器访问web页面)
