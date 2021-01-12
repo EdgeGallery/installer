@@ -6,7 +6,7 @@
 
 ## 部署架构图
 
-<img src="file:///C:\Users\ADMINI~1\AppData\Local\Temp\2\ksohtml7216\wps25.jpg" alt="img" style="zoom:;" /> 
+![输入图片说明](https://images.gitee.com/uploads/images/2020/0921/161645_3dc80db9_8040887.png "图片1.png") 
 
  
 
