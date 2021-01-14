@@ -382,7 +382,8 @@ bash eg.sh -u controller          //卸载中心节点
 
 bash eg.sh -u edge                //卸载边缘节点
 
-安装中问题汇总：
+#### **安装中问题汇总**
+
 1. pod装置pending处理方法
 安装完成后pod状态正常为running状态，kubectl get pos --all-namespaces
 
