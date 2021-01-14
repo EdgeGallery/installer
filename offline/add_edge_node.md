@@ -6,12 +6,11 @@
 
 2.在服务器上安装Ubuntu 18.04操作系统。
 
-3.根据服务器架构下载v1.0.0.tar.gz安装包
+3.根据服务器架构下载EdgeGallery-v1.0.tar.gz安装包
 
-X86_64架构安装包网址：http://release.edgegallery.org/x86/edge/v1.0.0.tar.gz
+X86_64架构安装包网址：http://release.edgegallery.org/release/x86/edge/EdgeGallery-v1.0.tar.gz
 
-ARM_64架构安装包网址：http://release.edgegallery.org/arm64/edge/v1.0.0.tar.gz
-
+ARM_64架构安装包网址：http://release.edgegallery.org/release/arm64/edge/EdgeGallery-v1.0.tar.gz
 
 ### 边缘节点安装步骤
 
