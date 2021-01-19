@@ -517,9 +517,9 @@ function _kubernetes_tool_download() {
 
     for cmd in kubectl kubeadm kubelet;
     do
-      curl -LO "https://storage.googleapis.com/kubernetes-release/release/v1.18.7/bin/linux/$arch/$cmd";
+       scp 192.168.100.65:/home/kube/$arch/$cmd .;
       if [[ $? -ne 0 ]]; then
-        info "curl -LO "https://storage.googleapis.com/kubernetes-release/release/v1.18.7/bin/linux/$arch/$cmd" Failed" $RED
+        info "scp $cmd Failed" $RED
         exit 1
       fi
       mv $cmd $K8S_OFFLINE_DIR/k8s/;
