@@ -2,7 +2,8 @@
 
 ## 简介
 
-​为了满足客户不同需求EdgeGallery安装提供了单节点和多节点离线安装模式，以下是部署架构图、安装模式、软件系统版本、部署前环境检查、部署流程演示图、EdgeGallery部署步骤、EdgeGallery卸载步骤、部署完成后环境检查和手动实例化测试的详细介绍，请认真阅读。
+​为了满足客户不同需求EdgeGallery安装提供了单节点和多节点离线安装模式，以下是部署架构图、安装模式、软件系统版本、部署前环境检查
+、部署流程演示图、EdgeGallery部署步骤、EdgeGallery卸载步骤、部署完成后环境检查和手动实例化测试的详细介绍，请认真阅读。
 
 ## 部署架构图
 
@@ -12,11 +13,15 @@
 
 ## 安装模式介绍
 
-​EdgeGallery是由Controller和Edge两部分组成，一个EdgeGallery环境只能有一个Controller但可以有一个或多个Edge，以下提供的场景有EdgeGallery整体的安装、Controller单独安装和Edge单独安装的安装的方式，这些安装方式又分为单节点安装和多节点安装模式，多节点安装至少需要三台机器,分别作为deploy node、master node、worker node，可以根据自己的需要选择合适的模块和安装方式根据EdgeGallery安装步骤去安装。
+​EdgeGallery是由Controller和Edge两部分组成，一个EdgeGallery环境只能有一个Controller但可以有一个或多个Edge，以下提供的场景有
+EdgeGallery整体的安装、Controller单独安装和Edge单独安装的安装的方式，这些安装方式又分为单节点安装和多节点安装模式，多节点安装
+至少需要三台机器,分别作为deploy node、master node、worker node，可以根据自己的需要选择合适的模块和安装方式根据EdgeGallery安
+装步骤去安装。
 
 deploy node: deploy node作用是给master和worker安装EdgeGallery,同时作为docker 仓库、helm仓库。
 
-master node: master node是 k8s的控制节点和worker node组成集群，根据部署架构图可以看出EdgeGallery是以k8s为基础承载的，EdgeGallery的模块也是和k8一样分布在集群了不同机器上。
+master node: master node是 k8s的控制节点和worker node组成集群，根据部署架构图可以看出EdgeGallery是以k8s为基础承载的，
+EdgeGallery的模块也是和k8一样分布在集群了不同机器上。
 
 worker node:  worker node 和master node组成集群，对master起到负载均衡的作用。
 
@@ -54,7 +59,7 @@ vim env.sh   						// 编辑env.sh，请注意以下需要编辑的行需要删�
 
 export OFFLINE_MODE=aio   			//设置安装模式，单节点模式设置为aio
 
-PORTAL_IP=192.168.1.1   				//设置EdgeGallery web页面访问IP，可以为本机公网IP或自己本地能访问到本机的私网IP
+PORTAL_IP=192.168.1.1   			//设置EdgeGallery web页面访问IP，可以为本机公网IP或自己本地能访问到本机的私网IP
 
 export EG_NODE_EDGE_MP1=*    		// ‘*’代表本机的网卡名 可以用‘ip addr’ 命令查询
 
@@ -232,11 +237,15 @@ bash   eg.sh  -i   					//开始安装edge，大约5min后可以安装完成
 
 ## 部署完成后环境检查
 
-Edgegallery部署成功会在最后的部署输出中会显示Edgegallery的图标和部署成功的提示，如果没有部署则表示部署过程中某个模块部署失败因而部署脚本退出
+Edgegallery部署成功会在最后的部署输出中会显示Edgegallery的图标和部署成功的提示，如果没有部署则表示部署过程中某个模块部署
+失败因而部署脚本退出
 
 ![输入图片说明](https://images.gitee.com/uploads/images/2021/0112/164339_a5a586a9_7624663.png "屏幕截图.png")
 
-kubectl get pod --all-namespaces  		// 检查pod的运行状态，正常情况下pod的状态时running，如果pod 的状态不是running 则需要进一步定位，例如：重启pod  kubectl delete pod podname –n namespaces    查看pod: kubectl describe pod podname –n namespaces
+kubectl get pod --all-namespaces  		// 检查pod的运行状态，正常情况下pod的状态时running，如果pod 的状态不
+是running 则需要进一步定位，例如：
+重启pod:  kubectl delete pod podname –n namespaces    
+查看pod:  kubectl describe pod podname –n namespaces
 
 最后一步则需要手动实例化测试
 
