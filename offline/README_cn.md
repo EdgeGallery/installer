@@ -79,9 +79,9 @@ bash  eg.sh  -i   			//开始安装Edgegalley，大约10min后可以安装完成
 
 ssh-key-gen   		//在deploy node生成密钥，生成密钥过程中需要输入的步骤敲回车键直到命令执行完毕
 
-scp /root/.ssh/id_rsa.pub [master IP]:/root/.ssh/authorized_keys	//把deploy node的公钥拷贝到master node实现deploy node点可以免密登录master node
+scp /root/.ssh/id_rsa.pub [master私网IP]:/root/.ssh/authorized_keys	//把deploy node的公钥拷贝到master node实现deploy node点可以免密登录master node
 
-scp /root/.ssh/id_rsa.pub [worker IP]:/root/.ssh/authorized_keys	//把deploy node的公钥拷贝到worker node实现deploy node点可以免密登录worker node
+scp /root/.ssh/id_rsa.pub [worker私网 IP]:/root/.ssh/authorized_keys	//把deploy node的公钥拷贝到worker node实现deploy node点可以免密登录worker node
 
 mv  /root/.ssh/id_rsa.pub  /root/.ssh/authorized_keys		//把deploy node的公钥改名为authorized_keys 实现deploy node可以免密登录机
 
@@ -141,8 +141,8 @@ bash  eg.sh  -i   		//开始安装Controller，大约6 min后可以安装完成
 
 ssh-keygen  	//在deploy node生成密钥，生成密钥过程中需要输入的步骤敲回车键直到命令执行完毕
 
-scp /root/.ssh/id_rsa.pub [master IP]:/root/.ssh/authorized_keys  	//把deploy node的公钥拷贝到master node实现deploy node点可以免密登录master node 
-scp /root/.ssh/id_rsa.pub [worker IP]:/root/.ssh/authorized_keys 	//把deploy node的公钥拷贝到worker node实现deploy node点可以免密登录worker node
+scp /root/.ssh/id_rsa.pub [master私网IP]:/root/.ssh/authorized_keys  	//把deploy node的公钥拷贝到master node实现deploy node点可以免密登录master node 
+scp /root/.ssh/id_rsa.pub [worker私网IP]:/root/.ssh/authorized_keys 	//把deploy node的公钥拷贝到worker node实现deploy node点可以免密登录worker node
 
 mv  /root/.ssh/id_rsa.pub  /root/.ssh/authorized_keys  		//把deploy node的公钥改名为authorized_keys 实现deploy node可以免密登录
 
@@ -200,10 +200,10 @@ bash  eg.sh  -i   			//开始安装edge，大约5min后可以安装完成
 
 ssh-keygen  		//在deploy node生成密钥，生成密钥过程中需要输入的步骤敲回车键直到命令执行完毕
 
-scp /root/.ssh/id_rsa.pub [master IP]:/root/.ssh/authorized_keys	//把deploy node的公钥拷贝到master node实现deploy node点可以免密登录master node
+scp /root/.ssh/id_rsa.pub [master私网IP]:/root/.ssh/authorized_keys	//把deploy node的公钥拷贝到master node实现deploy node点可以免密登录master node
 
 
-scp /root/.ssh/id_rsa.pub [worker IP]:/root/.ssh/authorized_keys 	//把deploy node的公钥拷贝到worker node实现deploy node点可以免密登录worker node
+scp /root/.ssh/id_rsa.pub [worker私网IP]:/root/.ssh/authorized_keys 	//把deploy node的公钥拷贝到worker node实现deploy node点可以免密登录worker node
 
 mv  /root/.ssh/id_rsa.pub  /root/.ssh/authorized_keys  		//把deploy node的公钥改名为authorized_keys 实现deploy node可以免密登录
 
