@@ -1,0 +1,14 @@
+---
+
+- hosts: master
+  become: yes
+  vars:
+    - mode: all
+  vars_files:
+    - ./var.yml
+  roles:
+    - init
+    - k8s
+    - helm
+    - edgegallery
+    - package

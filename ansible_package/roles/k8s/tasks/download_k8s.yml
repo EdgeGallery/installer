@@ -1,0 +1,46 @@
+- name: Copy Config Files to K8S Offline Package
+  copy:
+    src: "{{ item }}"
+    dest: "{{ K8S_OFFLINE_DIR }}/k8s"
+  loop:
+    - 10-kubeadm.conf
+    - k8s.conf
+    - kubelet.service
+    - calico.yaml
+    - metric-server.yaml
+
+- name: Download nginx-app.yaml File
+  get_url:
+    url: https://k8s.io/examples/application/nginx-app.yaml
+    dest: "{{ K8S_OFFLINE_DIR }}/k8s"
+
+- name: Change nginx Version in nginx-app.yaml File to be Stable
+  replace:
+    path: "{{ K8S_OFFLINE_DIR }}/k8s/nginx-app.yaml"
+    regexp: "nginx:.*"
+    replace: "nginx:stable"
+
+- name: Download K8S Related Packages
+  shell: "scp 159.138.137.155:/home/kube/{{ ARCH }}/{{ item }} {{ K8S_OFFLINE_DIR }}/k8s"
+  loop:
+    - kubectl
+    - kubeadm
+    - kubelet
+
+- name: Download Socat and Conntrack ARM64 Deb
+  get_url:
+    url: "{{ item }}"
+    dest: "{{ K8S_OFFLINE_DIR }}/tools"
+  loop:
+    - https://mirrors.aliyun.com/ubuntu-ports/pool/main/s/socat/socat_1.7.3.2-2ubuntu2_arm64.deb
+    - http://ports.ubuntu.com/pool/main/c/conntrack-tools/conntrack_1.4.4+snapshot20161117-6ubuntu2_arm64.deb
+  when: ARCH == "arm64"
+
+- name: Download Socat and Conntrack X86 Deb
+  get_url:
+    url: "{{ item }}"
+    dest: "{{ K8S_OFFLINE_DIR }}/tools"
+  loop:
+    - http://archive.ubuntu.com/ubuntu/pool/main/s/socat/socat_1.7.3.2-2ubuntu2_amd64.deb
+    - http://archive.ubuntu.com/ubuntu/pool/main/c/conntrack-tools/conntrack_1.4.4+snapshot20161117-6ubuntu2_amd64.deb
+  when: ARCH == "amd64"
