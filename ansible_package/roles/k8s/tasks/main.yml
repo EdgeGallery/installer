@@ -1,0 +1,60 @@
+---
+- name: Clean K8S Offline Directory
+  file:
+    path: "{{ K8S_OFFLINE_DIR }}"
+    state: absent
+
+- name: Create Related K8S Offline Directories
+  file:
+    path: "{{ K8S_OFFLINE_DIR }}/{{ item }}"
+    state: directory
+  loop:
+    - ./
+    - docker
+    - docker/images
+    - k8s
+    - tools
+    - cni
+
+- name: Download Docker Offline Packages
+  import_tasks: download_docker.yml
+
+- name: Download K8S Offline Packages
+  import_tasks: download_k8s.yml
+
+- name: Download CNI Tar File
+  get_url:
+    url: "https://github.com/containernetworking/plugins/releases/download/v0.8.7/cni-plugins-linux-{{ ARCH }}-v0.8.7.tgz"
+    dest: "{{ K8S_OFFLINE_DIR }}"
+
+- name: Unarchive CNI Tar File
+  unarchive:
+    src: "{{ K8S_OFFLINE_DIR }}/cni-plugins-linux-{{ ARCH }}-v0.8.7.tgz"
+    dest: "{{ K8S_OFFLINE_DIR }}/cni"
+    copy: yes
+
+- name: Remove CNI Tar File
+  file:
+    path: "{{ K8S_OFFLINE_DIR }}/cni-plugins-linux-{{ ARCH }}-v0.8.7.tgz"
+    state: absent
+
+- name: Pull and Save All K8S Related Docker Images
+  shell: |
+    docker pull {{ item }}
+    TAR_FILE_NAME=`echo {{ item }} | sed -e "s/\//@/g"`
+    docker save -o {{ K8S_OFFLINE_DIR }}/docker/images/$TAR_FILE_NAME.tar {{ item }}
+    gzip -f {{ K8S_OFFLINE_DIR }}/docker/images/$TAR_FILE_NAME.tar
+  loop: "{{ K8S_DOCKER_IMAGES }}"
+
+- name: Archive K8S Offline Package
+  community.general.archive:
+    path: "{{ K8S_OFFLINE_DIR }}/*"
+    dest: "{{ TARBALL_PATH }}/kubernetes_offline_installer.tar.gz"
+    format: gz
+    remove: yes
+    force_archive: yes
+
+- name: Remove Original Files
+  file:
+    path: "{{ K8S_OFFLINE_DIR }}"
+    state: absent

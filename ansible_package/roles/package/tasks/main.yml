@@ -1,0 +1,7 @@
+---
+- name: Archive EdgeGallery Offline Package
+  community.general.archive:
+    path: "{{ TARBALL_PATH }}/*"
+    dest: "{{ TARBALL_PATH }}/eg-{{ EG_MODE }}-{{ ARCH }}-{{ EG_IMAGE_TAG }}-{{ timestamp }}.tar.gz"
+    format: gz
+    force_archive: yes

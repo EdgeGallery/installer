@@ -1,0 +1,90 @@
+- name: Download Docker X86 Offline Package
+  get_url:
+    url: https://download.docker.com/linux/static/stable/x86_64/docker-18.09.0.tgz
+    dest: "{{ K8S_OFFLINE_DIR }}/docker/docker.tgz"
+  when: ARCH == "amd64"
+
+- name: Download Docker ARM64 Offline Package
+  get_url:
+    url: https://download.docker.com/linux/static/stable/aarch64/docker-18.09.0.tgz
+    dest: "{{ K8S_OFFLINE_DIR }}/docker/docker.tgz"
+  when: ARCH == "arm64"
+
+- name: Copy Docker Service File to Offline Package
+  copy:
+    src: docker.service
+    dest: "{{ K8S_OFFLINE_DIR }}/docker"
+
+- name: Check Whether Docker Installed
+  shell: docker version
+  register: dockerInstalled
+  ignore_errors: yes
+  
+- debug:
+    msg: "Docker is not installed yet, will be installed"
+  when: dockerInstalled is failed
+
+- name: Create Docker Directory to Unarchive Docker Tarball File
+  file:
+    path: /tmp/remote-platform/k8s
+    state: directory
+  when: dockerInstalled is failed
+
+- name: Unarchive Docker Tarball File
+  unarchive:
+    src: "{{ K8S_OFFLINE_DIR }}/docker/docker.tgz"
+    dest: /tmp/remote-platform/k8s
+    copy: yes
+  when: dockerInstalled is failed
+
+- name: Copy Docker Related Files to /usr/bin
+  copy:
+    src: "/tmp/remote-platform/k8s/docker/{{ item }}"
+    dest: /usr/bin
+    mode: '0755'
+  loop:
+    - containerd
+    - containerd-shim
+    - ctr
+    - docker
+    - dockerd
+    - docker-init
+    - docker-proxy
+    - runc
+  when: dockerInstalled is failed
+
+- name: Copy Docker Service File to /etc/systemd/system/
+  copy:
+    src: "{{ K8S_OFFLINE_DIR }}/docker/docker.service"
+    dest: /etc/systemd/system/
+  when: dockerInstalled is failed
+
+- name: Remove /tmp/remote-platform/k8s
+  file:
+    path: /tmp/remote-platform/k8s
+    state: absent
+
+- name: Reload Docker System Deamon
+  shell: systemctl daemon-reload
+  when: dockerInstalled is failed
+
+- name: Start Docker System Service
+  service:
+    name: docker.service
+    state: restarted
+  when: dockerInstalled is failed
+
+- name: Check Whether Docker Installed Successfully
+  shell: docker version
+  when: dockerInstalled is failed
+
+- name: Create Docker Registry Directory
+  file:
+    path: "{{ DOCKER_REGISTRY }}"
+    state: directory
+
+- name: Pull Docker Registry Image
+  shell: docker pull registry:2
+
+- name: Save Docker Registry Image
+  shell: docker save registry:2 | gzip > {{ DOCKER_REGISTRY }}/registry-2.tar.gz

@@ -1,0 +1,42 @@
+---
+- name: Clean Target Directory for EdgeGallery Offline Tarball File
+  file:
+    path: "{{ TARBALL_PATH }}"
+    state: absent
+  when: TARBALL_PATH_CLEANUP
+
+- name: Create Target Directory for EdgeGallery Offline Tarball File
+  file:
+    path: "{{ TARBALL_PATH }}"
+    state: directory
+
+- name: Set Timestamp Fact
+  set_fact:
+    timestamp: "{{ lookup('pipe', 'date +%Y-%m-%d-%H-%M-%S') }}"
+
+- name: Create version.txt File
+  copy:
+    content: "Edge Gallery {{ EG_IMAGE_TAG }} [Build: {{ timestamp }}]"
+    dest: "{{ TARBALL_PATH }}/version.txt"
+
+- name: Download X86 sshpass Deb
+  get_url:
+    url: http://archive.ubuntu.com/ubuntu/pool/universe/s/sshpass/sshpass_1.06-1_amd64.deb
+    dest: "{{ TARBALL_PATH }}"
+  when: ARCH == "amd64"
+
+- name: Download ARM64 sshpass Deb
+  get_url:
+    url: http://ports.ubuntu.com/pool/universe/s/sshpass/sshpass_1.06-1_arm64.deb
+    dest: "{{ TARBALL_PATH }}"
+  when: ARCH == "arm64"
+
+- name: Copy Related Files to EdgeGallery Offline Tarball File
+  copy:
+    src: "{{ item }}"
+    dest: "{{ TARBALL_PATH }}"
+  loop:
+    - LICENSE
+    - README_cn.md
+    - README_en.md
+    - conf

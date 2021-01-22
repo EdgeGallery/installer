@@ -1,0 +1,77 @@
+---
+- name: Clean Helm Offline Directory
+  file:
+    path: "{{ HELM_OFFLINE_DIR }}"
+    state: absent
+
+- name: Create Helm Offline Directories
+  file:
+    path: "{{ item }}"
+    state: directory
+  loop:
+    - "{{ HELM_OFFLINE_DIR }}"
+    - "{{ HELM_CHARTS_OFFLINE_DIR }}"
+    - "{{ HELM_CHARTS_EG }}"
+    - "{{ HELM_CHARTS_STABLE }}"
+
+- name: Download Helm Offline Install Package
+  get_url:
+    url: "https://get.helm.sh/helm-v3.2.4-linux-{{ ARCH }}.tar.gz"
+    dest: "{{ HELM_OFFLINE_DIR }}"
+
+- name: Check Whether Helm is Installed
+  shell: helm version
+  register: helmInstalled
+  ignore_errors: yes
+
+- name: Create Directory to Unarchive Helm
+  file:
+    path: /tmp/helm-download
+    absent: directory
+  when: helmInstalled is failed
+
+- name: Unarchive Helm Offline Install Package
+  unarchive:
+    src: "{{ HELM_OFFLINE_DIR }}/helm-v3.2.4-linux-{{ ARCH }}.tar.gz"
+    dest: "/tmp/helm-download"
+  when: helmInstalled is failed
+
+- name: Copy Helm Exec File to /usr/local/bin
+  copy:
+    src: "/tmp/helm-download/linux-{{ ARCH }}/helm"
+    dest: /usr/local/bin
+    mode: 755
+  when: helmInstalled is failed
+
+- name: Remove Helm Unarchive Directory
+  file:
+    path: "/tmp/helm-download"
+    state: absent
+  when: helmInstalled is failed
+
+- name: Check Whether Helm is Installed Successfully
+  shell: helm version
+
+- name: Add New Helm Repo eg
+  shell: "helm repo remove eg | helm repo add eg {{ EG_HELM_REPO }}"
+
+- name: Pull EG Helm Packages
+  shell: "helm pull eg/{{ item }} --version {{ HELM_TAG }}"
+  loop: "{{ EG_HELM_LIST_CONTROLLER + EG_HELM_LIST_EDGE }}"
+  args:
+    chdir: "{{ HELM_CHARTS_EG }}"
+
+- name: Pull Other Helm Packages
+  get_url:
+    url: "{{ item }}"
+    dest: "{{ HELM_CHARTS_STABLE }}"
+  loop: "{{ STABLE_HELM_URL_LIST + STABLE_HELM_URL_LIST_EDGE_SPECIAL }}"
+  register: pullOtherHelmCharts
+  ignore_errors: yes
+
+- name: Copy From Local Directory
+  copy:
+    src: /tmp/helm_chart_cache/stable/{{ item }}
+    dest: "{{ HELM_CHARTS_STABLE }}"
+  loop: "{{ STABLE_HELM_NAME_LIST + STABLE_HELM_NAME_LIST_EDGE_SPECIAL }}"
+  when: pullOtherHelmCharts is failed

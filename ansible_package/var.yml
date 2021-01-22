@@ -1,0 +1,14 @@
+# Architecture amd64 or arm64
+ARCH: amd64
+
+# Mode could be all, edge or controller
+EG_MODE: all
+
+EG_IMAGE_TAG: latest
+HELM_TAG: 1.0.0
+
+# Targer Path where to store the output tar.gz file
+TARBALL_PATH: /home/eg-offline
+
+# Whether clean the TARBALL_PATH before package
+TARBALL_PATH_CLEANUP: true

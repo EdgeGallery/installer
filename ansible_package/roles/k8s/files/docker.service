@@ -1,0 +1,8 @@
+[Unit]
+Description=Docker Daemon
+
+[Service]
+ExecStart=/usr/bin/dockerd --bip "192.168.251.1/24"
+
+[Install]
+WantedBy=multi-user.target

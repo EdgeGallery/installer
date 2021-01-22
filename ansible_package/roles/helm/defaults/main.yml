@@ -1,0 +1,36 @@
+HELM_OFFLINE_DIR: "{{ TARBALL_PATH }}/helm"
+HELM_CHARTS_OFFLINE_DIR: "{{ HELM_OFFLINE_DIR }}/helm-charts"
+HELM_CHARTS_EG: "{{ HELM_CHARTS_OFFLINE_DIR }}/edgegallery"
+HELM_CHARTS_STABLE: "{{ HELM_CHARTS_OFFLINE_DIR }}/stable"
+
+
+EG_HELM_REPO: "http://helm.edgegallery.org:30002/chartrepo/edgegallery_helm_chart"
+
+EG_HELM_LIST_CONTROLLER:
+  - servicecenter
+  - usermgmt
+  - developer
+  - appstore
+  - mecm-fe
+  - mecm-meo
+  - atp
+
+EG_HELM_LIST_EDGE:
+  - mecm-mepm
+  - mep
+
+STABLE_HELM_URL_LIST:
+  - https://kubernetes-charts.storage.googleapis.com/nginx-ingress-1.41.2.tgz
+  - https://kubernetes-charts.storage.googleapis.com/nfs-client-provisioner-1.2.8.tgz
+
+STABLE_HELM_NAME_LIST:
+  - nginx-ingress-1.41.2.tgz
+  - nfs-client-provisioner-1.2.8.tgz
+
+STABLE_HELM_URL_LIST_EDGE_SPECIAL:
+  - https://kubernetes-charts.storage.googleapis.com/grafana-5.5.5.tgz
+  - https://kubernetes-charts.storage.googleapis.com/prometheus-9.3.1.tgz
+
+STABLE_HELM_NAME_LIST_EDGE_SPECIAL:
+  - grafana-5.5.5.tgz
+  - prometheus-9.3.1.tgz

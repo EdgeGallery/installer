@@ -1,0 +1,37 @@
+---
+- name: Clean EG Docker Images Offline Directory
+  file:
+    path: "{{ EG_IMAGES_DIR }}"
+    state: absent
+
+- name: Create EG Docker Images Offline Directories
+  file:
+    path: "{{ EG_IMAGES_DIR}}"
+    state: directory
+
+- name: Set EG Image List Var for X86
+  set_fact:
+    eg_image_list: "{{ CLIENT_PROVISIONER_X86 + EG_IMAGE_LIST_CONTROLLER_X86 + EG_IMAGE_LIST_EDGE_X86}}"
+  when: ARCH == "amd64"
+
+- name: Set EG Image List Var for ARM64
+  set_fact:
+    eg_image_list: "{{ CLIENT_PROVISIONER_ARM64 + EG_IMAGE_LIST_CONTROLLER_ARM64 + EG_IMAGE_LIST_EDGE_ARM64}}"
+  when: ARCH == "arm64"
+
+- name: Set EG Image List Str
+  set_fact:
+    eg_image_str: "{{ eg_image_list|join(' ') }}"
+
+- name: Pull and Retag All EG Docker Images
+  shell: |
+    docker pull {{ item }}
+    new_image_name=`echo {{ item }} | sed -e "s/swr.ap-southeast-1.myhuaweicloud.com\///g"`
+    docker image tag {{ item }} $new_image_name
+  loop: "{{ eg_image_list }}"
+
+- name: Save All EG Docker Images Together
+  shell: |
+    new_image_list=`echo {{ eg_image_str }} | sed -e "s/swr.ap-southeast-1.myhuaweicloud.com\///g"`
+    docker save $new_image_list | gzip > {{ EG_IMAGES_DIR }}/eg_images.tar.gz
+    echo $new_image_list >> {{ EG_IMAGES_DIR }}/eg_images_list.txt
