@@ -1,9 +1,5 @@
 EG_IMAGES_DIR: "{{ TARBALL_PATH }}/eg_swr_images"
 
-curl_image_tag: latest
-redis_image_tag: 6.0.3
-postgres_image_tag: 12.2
-
 EG_IMAGE_LIST_CONTROLLER_X86:
   - swr.ap-southeast-1.myhuaweicloud.com/edgegallery/appstore-fe:{{ EG_IMAGE_TAG }}
   - swr.ap-southeast-1.myhuaweicloud.com/edgegallery/appstore-be:{{ EG_IMAGE_TAG }}
@@ -18,9 +14,9 @@ EG_IMAGE_LIST_CONTROLLER_X86:
   - swr.ap-southeast-1.myhuaweicloud.com/edgegallery/atp-be:{{ EG_IMAGE_TAG }}
   - swr.ap-southeast-1.myhuaweicloud.com/edgegallery/deploy-tool:{{ EG_IMAGE_TAG }}
   - swr.ap-southeast-1.myhuaweicloud.com/edgegallery/tool-chain:{{ EG_IMAGE_TAG }}
-  - swr.ap-southeast-1.myhuaweicloud.com/edgegallery/curl:{{ curl_image_tag }}
-  - swr.ap-southeast-1.myhuaweicloud.com/edgegallery/redis:{{ redis_image_tag }}
-  - swr.ap-southeast-1.myhuaweicloud.com/edgegallery/postgres:{{ postgres_image_tag }}
+  - swr.ap-southeast-1.myhuaweicloud.com/edgegallery/curl:latest
+  - swr.ap-southeast-1.myhuaweicloud.com/edgegallery/redis:6.0.3
+  - swr.ap-southeast-1.myhuaweicloud.com/edgegallery/postgres:12.2
   - swr.ap-southeast-1.myhuaweicloud.com/edgegallery/porting-advisor:latest
   - swr.ap-southeast-1.myhuaweicloud.com/edgegallery/service-center:latest
   - postgres:12.3

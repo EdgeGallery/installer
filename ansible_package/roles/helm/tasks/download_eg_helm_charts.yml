@@ -1,0 +1,20 @@
+- name: Set EG Helm List For All Mode
+  set_fact:
+    EG_HELM_LIST: "{{ EG_HELM_LIST_CONTROLLER + EG_HELM_LIST_EDGE }}"
+  when: EG_MODE == "all"
+
+- name: Set EG Helm List For Controller Mode
+  set_fact:
+    EG_HELM_LIST: "{{ EG_HELM_LIST_CONTROLLER }}"
+  when: EG_MODE == "controller"
+
+- name: Set EG Helm List For Edge Mode
+  set_fact:
+    EG_HELM_LIST: "{{ EG_HELM_LIST_EDGE }}"
+  when: EG_MODE == "edge"
+
+- name: Pull Helm Charts
+  shell: "helm pull eg/{{ item }} --version {{ HELM_TAG }}"
+  loop: "{{ EG_HELM_LIST }}"
+  args:
+    chdir: "{{ HELM_CHARTS_EG }}"

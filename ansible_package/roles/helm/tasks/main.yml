@@ -56,22 +56,7 @@
   shell: "helm repo remove eg | helm repo add eg {{ EG_HELM_REPO }}"
 
 - name: Pull EG Helm Packages
-  shell: "helm pull eg/{{ item }} --version {{ HELM_TAG }}"
-  loop: "{{ EG_HELM_LIST_CONTROLLER + EG_HELM_LIST_EDGE }}"
-  args:
-    chdir: "{{ HELM_CHARTS_EG }}"
+  import_tasks: download_eg_helm_charts.yml
 
 - name: Pull Other Helm Packages
-  get_url:
-    url: "{{ item }}"
-    dest: "{{ HELM_CHARTS_STABLE }}"
-  loop: "{{ STABLE_HELM_URL_LIST + STABLE_HELM_URL_LIST_EDGE_SPECIAL }}"
-  register: pullOtherHelmCharts
-  ignore_errors: yes
-
-- name: Copy From Local Directory
-  copy:
-    src: /tmp/helm_chart_cache/stable/{{ item }}
-    dest: "{{ HELM_CHARTS_STABLE }}"
-  loop: "{{ STABLE_HELM_NAME_LIST + STABLE_HELM_NAME_LIST_EDGE_SPECIAL }}"
-  when: pullOtherHelmCharts is failed
+  import_tasks: download_other_helm_charts.yml

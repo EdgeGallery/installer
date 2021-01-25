@@ -4,10 +4,13 @@ ARCH: amd64
 # Mode could be all, edge or controller
 EG_MODE: all
 
+# Docker image tag for EdgeGallery images to pull
 EG_IMAGE_TAG: latest
+
+# Helm tag for EdgeGallery helm charts to pull
 HELM_TAG: 1.0.0
 
-# Targer Path where to store the output tar.gz file
+# Target path where to store all download files and output tar.gz file
 TARBALL_PATH: /home/eg-offline
 
 # Whether clean the TARBALL_PATH before package

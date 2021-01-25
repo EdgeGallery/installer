@@ -5,3 +5,6 @@
     dest: "{{ TARBALL_PATH }}/eg-{{ EG_MODE }}-{{ ARCH }}-{{ EG_IMAGE_TAG }}-{{ timestamp }}.tar.gz"
     format: gz
     force_archive: yes
+
+- debug:
+    msg: "Offline package file: {{ TARBALL_PATH }}/eg-{{ EG_MODE }}-{{ ARCH }}-{{ EG_IMAGE_TAG }}-{{ timestamp }}.tar.gz"

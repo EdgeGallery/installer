@@ -1,0 +1,26 @@
+- name: Set Other Helm List For All and Edge Mode
+  set_fact:
+    OTHER_HELM_URL_LIST: "{{ STABLE_HELM_URL_LIST + STABLE_HELM_URL_LIST_EDGE_SPECIAL }}"
+    OTHER_HELM_NAME_LIST: "{{ STABLE_HELM_NAME_LIST + STABLE_HELM_NAME_LIST_EDGE_SPECIAL }}"
+  when: EG_MODE == "all" or EG_MODE == "edge"
+
+- name: Set Other Helm List For Controller Mode
+  set_fact:
+    OTHER_HELM_URL_LIST: "{{ STABLE_HELM_URL_LIST }}"
+    OTHER_HELM_NAME_LIST: "{{ STABLE_HELM_NAME_LIST }}"
+  when: EG_MODE == "controller"
+
+- name: Pull Other Helm Charts
+  get_url:
+    url: "{{ item }}"
+    dest: "{{ HELM_CHARTS_STABLE }}"
+  loop: "{{ OTHER_HELM_URL_LIST }}"
+  register: pullOtherHelmCharts
+  ignore_errors: yes
+
+- name: Copy From Local Directory
+  copy:
+    src: /tmp/helm_chart_cache/stable/{{ item }}
+    dest: "{{ HELM_CHARTS_STABLE }}"
+  loop: "{{ OTHER_HELM_NAME_LIST }}"
+  when: pullOtherHelmCharts is failed
