@@ -1,0 +1,7 @@
+---
+- name: Deploy MECM_FE Online...
+  command: echo "Not support online deploy now"
+  register: mecmFeOnlineDeploy
+
+- name: Online MECM_FE Deploy output
+  debug: var=mecmFeOnlineDeploy.stdout

@@ -1,4 +1,18 @@
 ---
+
+- name: Get EG_NODE_EDGE_MP1
+  shell: ip a | grep -B2 {{ ansible_eth0.ipv4.address }} | head -n1 | cut -d ":" -f2 |cut -d " " -f2
+  register: mp1
+
+- name: Get EG_NODE_EDGE_MM5
+  shell: ip a | grep -B2 {{ ansible_eth0.ipv4.address }} | head -n1 | cut -d ":" -f2 |cut -d " " -f2
+  register: mm5
+
+- name: Set EG_NODE_EDGE_MP1 and EG_NODE_EDGE_MM5
+  set_fact:
+    EG_NODE_EDGE_MP1: mp1.stdout
+    EG_NODE_EDGE_MM5: mm5.stdout
+
 - name: Prepare MEP SSL
   include: "prepare_mep_ssl.yml"
 
@@ -12,8 +26,8 @@
   shell: |
     helm install --wait mep-edgegallery {{ HELM_CHARTS_PATH }}/edgegallery/mep-{{ HELM_TAG }}.tgz \
     --set networkIsolation.ipamType={{ ipam_type }} \
-    --set networkIsolation.phyInterface.mp1="" \
-    --set networkIsolation.phyInterface.mm5="" \
+    --set networkIsolation.phyInterface.mp1={{ EG_NODE_EDGE_MP1 }} \
+    --set networkIsolation.phyInterface.mm5={{ EG_NODE_EDGE_MM5 }} \
     --set images.mep.repository={{ mep_images_mep_repository }} \
     --set images.mepauth.repository={{ mep_images_mepauth_repository }} \
     --set images.dns.repository={{ mep_images_dns_repository }} \

@@ -1,0 +1,33 @@
+---
+- name: Check whether DEVELOPER is Deployed
+  shell: helm list | grep developer-edgegallery
+  register: developerDeployed 
+  ignore_errors: yes
+
+- debug:
+    msg: DEVELOPER is already deployed, no need to be deployed again
+  when: developerDeployed is succeeded and OPERATION == "install"
+
+- debug:
+    msg: DEVELOPER is not deployed, will be deployed
+  when: developerDeployed is failed and OPERATION == "install"
+
+- debug:
+    msg: DEVELOPER is already deployed, will be undeployed
+  when: developerDeployed is succeeded and OPERATION == "uninstall"
+
+- debug:
+    msg: DEVELOPER is not deployed, no need to be undeployed anymore
+  when: developerDeployed is failed and OPERATION == "uninstall"
+
+- name: Deploy DEVELOPER Online
+  include: "deploy_online.yml"
+  when: developerDeployed is failed and OPERATION == "install" and NETWORK_MODE == "online"
+
+- name: Deploy DEVELOPER Offline
+  include: "deploy_offline.yml"
+  when: developerDeployed is failed and OPERATION == "install" and NETWORK_MODE == "offline"
+
+- name: Undeploy DEVELOPER
+  include: "undeploy.yml"
+  when: developerDeployed is succeeded and OPERATION == "uninstall"

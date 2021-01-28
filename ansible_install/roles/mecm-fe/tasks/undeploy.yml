@@ -1,0 +1,3 @@
+- name: Undeploy MECM-FE
+  shell: helm uninstall mecm-fe-edgegallery
+  ignore_errors: yes

@@ -34,8 +34,6 @@
   ignore_errors: yes
 
 - name: Copy From Local Directory
-  copy:
-    src: /tmp/helm_chart_cache/stable/{{ item }}
-    dest: "{{ HELM_CHARTS_STABLE }}"
+  shell: "scp {{ FTP_SERVER }}:/home/helm-charts-stable/{{ item }} {{ HELM_CHARTS_STABLE }}"
   loop: "{{ OTHER_HELM_NAME_LIST }}"
   when: pullOtherHelmCharts is failed

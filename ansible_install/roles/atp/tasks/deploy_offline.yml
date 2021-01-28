@@ -1,0 +1,26 @@
+---
+
+- name: Deploy ATP
+  shell: |
+    helm install --wait atp-edgegallery {{ HELM_CHARTS_PATH }}/edgegallery/atp-{{ HELM_TAG }}.tgz \
+    --set global.oauth2.authServerAddress=https://{{ ansible_default_ipv4['address'] }}:{{ USER_MGMT_PORT }} \
+    --set images.atpFe.repository={{ atp_images_atpFe_repository }} \
+    --set images.atp.repository={{ atp_images_atp_repository }} \
+    --set images.postgres.repository={{ atp_images_postgres_repository }} \
+    --set images.initservicecenter.repository={{ atp_images_initservicecenter_repository }} \
+    --set images.atpFe.tag={{ atp_images_atpFe_tag }} \
+    --set images.atp.tag={{ atp_images_atp_tag }} \
+    --set images.postgres.tag={{ atp_images_postgres_tag }} \
+    --set images.atpFe.pullPolicy={{ atp_images_atpFe_pullPolicy }} \
+    --set images.atp.pullPolicy={{ atp_images_atp_pullPolicy }} \
+    --set images.postgres.pullPolicy={{ atp_images_postgres_pullPolicy }} \
+    --set images.initservicecenter.pullPolicy={{ atp_images_initservicecenter_pullPolicy }} \
+    --set global.ssl.enabled={{ atp_global_ssl_enabled }} \
+    --set global.ssl.secretName={{ atp_global_ssl_secretName }}
+
+- name: Check ATP Status
+  uri:
+    url: "https://{{ ansible_default_ipv4['address'] }}:{{ item }}/health"
+    validate_certs: no
+  loop:
+    - 30094

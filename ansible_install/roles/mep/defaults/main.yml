@@ -8,9 +8,6 @@ CERT_NAME: mepserver
 
 DOMAIN_NAME: edgegallery
 
-EG_NODE_EDGE_MP1: eth0
-EG_NODE_EDGE_MM5: eth0
-
 ipam_type: host-local
 
 mep_images_mep_repository: edgegallery/mep

@@ -9,6 +9,10 @@
   tags:
     - aiouninstall
   roles:
+    - atp
+    - developer
+    - appstore
+    - mecm-fe
     - mecm-meo
     - user-mgmt
     - mecm-mepm

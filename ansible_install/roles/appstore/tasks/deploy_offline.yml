@@ -1,0 +1,29 @@
+---
+
+- name: Deploy APPSTORE
+  shell: |
+    helm install --wait appstore-edgegallery {{ HELM_CHARTS_PATH }}/edgegallery/appstore-{{ HELM_TAG }}.tgz \
+    --set global.oauth2.authServerAddress=https://{{ ansible_default_ipv4['address'] }}:{{ USER_MGMT_PORT }} \
+    --set images.appstoreFe.repository={{ appstore_images_appstoreFe_repository }} \
+    --set images.appstoreBe.repository={{ appstore_images_appstoreBe_repository }} \
+    --set images.postgres.repository={{ appstore_images_postgres_repository }} \
+    --set images.initservicecenter.repository={{ appstore_images_initservicecenter_repository }} \
+    --set images.appstoreFe.tag={{ appstore_images_appstoreFe_tag }} \
+    --set images.appstoreBe.tag={{ appstore_images_appstoreBe_tag }} \
+    --set images.appstoreFe.pullPolicy={{ appstore_images_appstoreFe_pullPolicy }} \
+    --set images.appstoreBe.pullPolicy={{ appstore_images_appstoreBe_pullPolicy }} \
+    --set images.postgres.pullPolicy={{ appstore_images_postgres_pullPolicy }} \
+    --set images.initservicecenter.pullPolicy={{ appstore_images_initservicecenter_pullPolicy }} \
+    --set global.ssl.enabled={{ appstore_global_ssl_enabled }} \
+    --set global.ssl.secretName={{ appstore_global_ssl_secretName }} \
+    --set global.persistence.enabled={{ ENABLE_PERSISTENCE }} \
+    --set poke.platformUrl={{ appstore_poke_platformUrl }} \
+    --set poke.atpReportUrl={{ appstore_poke_atpReportUrl }}
+
+- name: Check APPSTORE Status
+  uri:
+    url: "https://{{ ansible_default_ipv4['address'] }}:{{ item }}/health"
+    validate_certs: no
+  loop:
+    - 30091
+    - 30099

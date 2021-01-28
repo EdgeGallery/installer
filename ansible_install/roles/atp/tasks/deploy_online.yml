@@ -1,0 +1,7 @@
+---
+- name: Deploy ATP Online...
+  command: echo "Not support online deploy now"
+  register: atpOnlineDeploy
+
+- name: Online ATP Deploy output
+  debug: var=atpOnlineDeploy.stdout

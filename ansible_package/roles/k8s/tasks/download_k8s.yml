@@ -36,7 +36,7 @@
     replace: "nginx:stable"
 
 - name: Download K8S Related Packages
-  shell: "scp 159.138.137.155:/home/kube/{{ ARCH }}/{{ item }} {{ K8S_OFFLINE_DIR }}/k8s"
+  shell: "scp {{ FTP_SERVER }}:/home/kube/{{ ARCH }}/{{ item }} {{ K8S_OFFLINE_DIR }}/k8s"
   loop:
     - kubectl
     - kubeadm

@@ -1,0 +1,3 @@
+- name: Undeploy DEVELOPER
+  shell: helm uninstall developer-edgegallery
+  ignore_errors: yes

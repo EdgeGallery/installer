@@ -44,7 +44,7 @@
 
 - name: Check MECM-MEPM Status
   uri:
-    url: "https://{{ ansible_eth0.ipv4.address }}:{{ item }}/v1/health"
+    url: "https://{{ ansible_default_ipv4['address'] }}:{{ item }}/v1/health"
     validate_certs: no
   loop:
     - 30204/lcmcontroller

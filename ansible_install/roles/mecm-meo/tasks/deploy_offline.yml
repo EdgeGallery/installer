@@ -46,7 +46,11 @@
     --set mecm.docker.fsgroup={{ dockerGroup.gid }} \
     --set global.persistence.enabled={{ ENABLE_PERSISTENCE }}
 
-# name: Check MECM-MEO Status
-# uri:
-#   url: "https://{{ ansible_default_ipv4['address'] }}:{{ USER_MGMT_PORT }}/health"
-#   validate_certs: no
+- name: Check MECM-MEO Status
+  uri:
+    url: "https://{{ ansible_default_ipv4['address'] }}:{{ item }}/v1/health"
+    validate_certs: no
+  loop:
+    - 30201/appo
+    - 30202/apm
+    - 30203/inventory

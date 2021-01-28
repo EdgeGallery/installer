@@ -1,0 +1,3 @@
+- name: Undeploy APPSTORE
+  shell: helm uninstall appstore-edgegallery
+  ignore_errors: yes

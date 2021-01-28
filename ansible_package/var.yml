@@ -15,3 +15,5 @@ TARBALL_PATH: /home/eg-offline
 
 # Whether clean the TARBALL_PATH before package
 TARBALL_PATH_CLEANUP: true
+
+FTP_SERVER: 159.138.137.155

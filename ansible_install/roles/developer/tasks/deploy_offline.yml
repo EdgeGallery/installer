@@ -1,0 +1,29 @@
+---
+
+- name: Deploy DEVELOPER
+  shell: |
+    helm install --wait developer-edgegallery {{ HELM_CHARTS_PATH }}/edgegallery/developer-{{ HELM_TAG }}.tgz \
+    --set global.oauth2.authServerAddress=https://{{ ansible_default_ipv4['address'] }}:{{ USER_MGMT_PORT }} \
+    --set images.developerFe.repository={{ developer_images_developerFe_repository }} \
+    --set images.developerBe.repository={{ developer_images_developerBe_repository }} \
+    --set images.postgres.repository={{ developer_images_postgres_repository }} \
+    --set images.initservicecenter.repository={{ developer_images_initservicecenter_repository }} \
+    --set images.toolChain.repository={{ developer_images_toolChain_repository }} \
+    --set images.portingAdvisor.repository={{ developer_images_portingAdvisor_repository }} \
+    --set images.developerFe.tag={{ developer_images_developerFe_tag }} \
+    --set images.developerBe.tag={{ developer_images_developerBe_tag }} \
+    --set images.toolChain.tag={{ developer_images_toolChain_tag }} \
+    --set images.developerFe.pullPolicy={{ developer_images_developerFe_pullPolicy }} \
+    --set images.developerBe.pullPolicy={{ developer_images_developerBe_pullPolicy }} \
+    --set images.postgres.pullPolicy={{ developer_images_postgres_pullPolicy }} \
+    --set images.initservicecenter.pullPolicy={{ developer_images_initservicecenter_pullPolicy }} \
+    --set images.toolChain.pullPolicy={{ developer_images_toolChain_pullPolicy }} \
+    --set images.portingAdvisor.pullPolicy={{ developer_images_portingAdvisor_pullPolicy }} \
+    --set global.ssl.enabled={{ developer_global_ssl_enabled }} \
+    --set global.ssl.secretName={{ developer_global_ssl_secretName }} \
+    --set global.persistence.enabled={{ ENABLE_PERSISTENCE }}
+
+- name: Check DEVELOPER Status
+  uri:
+    url: "https://{{ ansible_default_ipv4['address'] }}:30092/health"
+    validate_certs: no

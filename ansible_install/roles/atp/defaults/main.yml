@@ -1,0 +1,13 @@
+atp_images_atpFe_repository: edgegallery/atp-fe
+atp_images_atp_repository: edgegallery/atp-be
+atp_images_postgres_repository: edgegallery/postgres
+atp_images_initservicecenter_repository: edgegallery/curl
+atp_images_atpFe_tag: "{{ EG_IMAGE_TAG }}"
+atp_images_atp_tag: "{{ EG_IMAGE_TAG }}"
+atp_images_postgres_tag: 12.2
+atp_images_atpFe_pullPolicy: IfNotPresent
+atp_images_atp_pullPolicy: IfNotPresent
+atp_images_postgres_pullPolicy: IfNotPresent
+atp_images_initservicecenter_pullPolicy: IfNotPresent
+atp_global_ssl_enabled: true
+atp_global_ssl_secretName: edgegallery-ssl-secret

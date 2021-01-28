@@ -1,0 +1,7 @@
+---
+- name: Deploy DEVELOPER Online...
+  command: echo "Not support online deploy now"
+  register: developerOnlineDeploy
+
+- name: Online DEVELOPER Deploy output
+  debug: var=developerOnlineDeploy.stdout

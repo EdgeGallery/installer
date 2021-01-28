@@ -1,0 +1,7 @@
+---
+- name: Deploy APPSTORE Online...
+  command: echo "Not support online deploy now"
+  register: appstoreOnlineDeploy
+
+- name: Online APPSTORE Deploy output
+  debug: var=appstoreOnlineDeploy.stdout

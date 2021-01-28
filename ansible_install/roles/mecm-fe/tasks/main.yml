@@ -1,0 +1,33 @@
+---
+- name: Check whether MECM_FE is Deployed
+  shell: helm list | grep mecm-fe-edgegallery
+  register: mecmFeDeployed
+  ignore_errors: yes
+
+- debug:
+    msg: MECM_FE is already deployed, no need to be deployed again
+  when: mecmFeDeployed is succeeded and OPERATION == "install"
+
+- debug:
+    msg: MECM_FE is not deployed, will be deployed
+  when: mecmFeDeployed is failed and OPERATION == "install"
+
+- debug:
+    msg: MECM_FE is already deployed, will be undeployed
+  when: mecmFeDeployed is succeeded and OPERATION == "uninstall"
+
+- debug:
+    msg: MECM_FE is not deployed, no need to be undeployed anymore
+  when: mecmFeDeployed is failed and OPERATION == "uninstall"
+
+- name: Deploy MECM_FE Online
+  include: "deploy_online.yml"
+  when: mecmFeDeployed is failed and OPERATION == "install" and NETWORK_MODE == "online"
+
+- name: Deploy MECM_FE Offline
+  include: "deploy_offline.yml"
+  when: mecmFeDeployed is failed and OPERATION == "install" and NETWORK_MODE == "offline"
+
+- name: Undeploy MECM_FE
+  include: "undeploy.yml"
+  when: mecmFeDeployed is succeeded and OPERATION == "uninstall"
