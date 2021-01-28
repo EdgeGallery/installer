@@ -1,0 +1,26 @@
+- name: Get All Non-Running Pods
+  shell: kubectl get pods --all-namespaces --field-selector=status.phase!=Running
+  register: nonRunningPod
+
+- debug:
+    msg: "Failed Pods are {{ nonRunningPod.stdout }}"
+  when: nonRunningPod.stderr != "No resources found"
+
+- fail:
+    msg: "EdgeGallery Deployment Failed ....."
+  when: nonRunningPod.stderr != "No resources found"
+
+- name: EdgeGallery Got Deployed SuccessFully
+  shell: |
+    echo -e "{{ PURPLE }}                             *" > /dev/tty
+    echo -e "{{ PURPLE }}                           *   *" > /dev/tty
+    echo -e "{{ PURPLE }}                         *       *" > /dev/tty
+    echo -e "{{ PURPLE }}                       *{{ GREEN }}          *" > /dev/tty
+    echo -e "{{ PURPLE }}                       * *{{ GREEN }}      *" > /dev/tty
+    echo -e "{{ PURPLE }}                       *    *{{ GREEN }} *     *{{ PURPLE }}     EDGE" > /dev/tty
+    echo -e "{{ PURPLE }}                       *{{ GREEN }}    *    *  *     GALLERY" > /dev/tty
+    echo -e "{{ PURPLE }}                       *{{ GREEN }}    *     *" > /dev/tty
+    echo -e "{{ PURPLE }}                         *{{ GREEN }}  *   *" > /dev/tty
+    echo -e "{{ PURPLE }}                           *{{ GREEN }} * *" > /dev/tty
+    echo -e "{{ GREEN }}                             *{{ NC }}" > /dev/tty
+  when: nonRunningPod.stderr == "No resources found"

@@ -1,0 +1,26 @@
+MEP_CERTS_DIR: "{{ TARBALL_PATH }}/.mep_tmp_cer"
+
+PG_ADMIN_PWD: admin-Pass123
+KONG_PG_PWD: kong-Pass123
+CERT_PWD: te9Fmv%qaq
+
+CERT_NAME: mepserver
+
+DOMAIN_NAME: edgegallery
+
+EG_NODE_EDGE_MP1: eth0
+EG_NODE_EDGE_MM5: eth0
+
+ipam_type: host-local
+
+mep_images_mep_repository: edgegallery/mep
+mep_images_mepauth_repository: edgegallery/mepauth
+mep_images_dns_repository: edgegallery/mep-dns-server
+mep_images_kong_repository: kong
+mep_images_postgres_repository: postgres
+mep_images_mep_pullPolicy: IfNotPresent
+mep_images_mepauth_pullPolicy: IfNotPresent
+mep_images_dns_pullPolicy: IfNotPresent
+mep_images_kong_pullPolicy: IfNotPresent
+mep_images_postgres_pullPolicy: IfNotPresent
+mep_ssl_secretName: mep-ssl

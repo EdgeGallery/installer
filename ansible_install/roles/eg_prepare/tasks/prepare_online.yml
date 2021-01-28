@@ -1,0 +1,3 @@
+---
+- name: Prepare EG Online...
+  command: echo "Not support prepare EG online now"

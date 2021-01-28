@@ -1,0 +1,15 @@
+- name: Undeploy MECM-MEPM
+  shell: helm uninstall mecm-mepm-edgegallery
+  ignore_errors: yes
+
+- name: Delete MECM-MEPM Service Account
+  shell: "kubectl delete -f {{ TARBALL_PATH }}/conf/manifest/mepm/mepm-service-account.yaml"
+  ignore_errors: yes
+
+- name: Delete MECM-MEPM Secret
+  shell: "kubectl delete secret {{ item }}"
+  loop:
+    - edgegallery-mepm-secret
+    - mecm-mepm-ssl-secret
+    - mecm-mepm-jwt-public-secret
+  ignore_errors: yes

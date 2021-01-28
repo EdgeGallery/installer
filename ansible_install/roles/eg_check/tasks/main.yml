@@ -1,0 +1,4 @@
+---
+- name: Check EG Deployment
+  include: "check.yml"
+  when: OPERATION == "install"

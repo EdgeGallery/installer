@@ -1,0 +1,15 @@
+encryptPassword: te9Fmv%qaq
+
+usermgmt_jwt_secretName: user-mgmt-jwt-secret
+usermgmt_images_usermgmt_repository: edgegallery/user-mgmt
+usermgmt_images_postgres_repository: edgegallery/postgres
+usermgmt_images_redis_repository: edgegallery/redis
+usermgmt_images_initservicecenter_repository: edgegallery/curl
+usermgmt_images_usermgmt_tag: "{{ EG_IMAGE_TAG }}"
+usermgmt_images_usermgmt_pullPolicy: IfNotPresent
+usermgmt_images_postgres_pullPolicy: IfNotPresent
+usermgmt_images_redis_pullPolicy: IfNotPresent
+usermgmt_images_initservicecenter_pullPolicy: IfNotPresent
+usermgmt_global_ssl_enabled: true
+usermgmt_global_ssl_secretName: edgegallery-ssl-secret
+

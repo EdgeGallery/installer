@@ -1,0 +1,101 @@
+---
+- name: Clean MEP Certs Directory
+  file:
+    path: "{{ MEP_CERTS_DIR }}"
+    state: absent
+
+- name: Create MEP Certs Directory
+  file:
+    path: "{{ MEP_CERTS_DIR }}"
+    state: directory
+
+- name: Generate CA Key
+  shell: "openssl genrsa -out ca.key 2048"
+  args:
+    chdir: "{{ MEP_CERTS_DIR }}"
+
+- name: Generate CA Csr
+  shell: "openssl req -new -key ca.key -subj /C=CN/ST=Peking/L=Beijing/O=edgegallery/CN={{ DOMAIN_NAME }} -out ca.csr"
+  args:
+    chdir: "{{ MEP_CERTS_DIR }}"
+
+- name: Generate CA Crt
+  shell: "openssl x509 -req -days 365 -in ca.csr -extensions v3_ca -signkey ca.key -out ca.crt"
+  args:
+    chdir: "{{ MEP_CERTS_DIR }}"
+
+- name: Generate TLS Key
+  shell: "openssl genrsa -out {{ CERT_NAME }}_tls.key 2048"
+  args:
+    chdir: "{{ MEP_CERTS_DIR }}"
+
+- name: Generate Encryped TLS Key
+  shell: "openssl rsa -in {{ CERT_NAME }}_tls.key -aes256 -passout pass:{{ CERT_PWD }} -out {{ CERT_NAME }}_encryptedtls.key"
+  args:
+    chdir: "{{ MEP_CERTS_DIR }}"
+
+- name: Generate TLS Csr
+  shell: "openssl req -new -key {{ CERT_NAME }}_tls.key -subj /C=CN/ST=Beijing/L=Beijing/O=edgegallery/CN={{ DOMAIN_NAME }} -out {{ CERT_NAME }}_tls.csr"
+  args:
+    chdir: "{{ MEP_CERTS_DIR }}"
+
+- name: Generate TLS Crt
+  shell: "openssl x509 -req -days 365 -in {{ CERT_NAME }}_tls.csr -extensions v3_req -CA ca.crt -CAkey ca.key -CAcreateserial -out {{ CERT_NAME }}_tls.crt"
+  args:
+    chdir: "{{ MEP_CERTS_DIR }}"
+
+- name: Generate JWT Private Key
+  shell: "openssl genrsa -out jwt_privatekey 2048"
+  args:
+    chdir: "{{ MEP_CERTS_DIR }}"
+
+- name: Generate JWT Public Key
+  shell: "openssl rsa -in jwt_privatekey -pubout -out jwt_publickey"
+  args:
+    chdir: "{{ MEP_CERTS_DIR }}"
+
+- name: Generate JWT Encrypted Private Key
+  shell: "openssl rsa -in jwt_privatekey -aes256 -passout pass:{{ CERT_PWD }} -out jwt_encrypted_privatekey"
+  args:
+    chdir: "{{ MEP_CERTS_DIR }}"
+
+- name: Set Mode of all Files
+  file:
+    path: "{{ MEP_CERTS_DIR }}"
+    mode: 0600
+    state: directory
+    recurse: yes
+
+- name: Create MEP Namespace
+  shell: kubectl create ns mep
+
+- name: Create Secret pg-secret
+  shell: |
+    kubectl -n mep create secret generic pg-secret \
+      --from-literal=pg_admin_pwd={{ PG_ADMIN_PWD }} \
+      --from-literal=kong_pg_pwd={{ KONG_PG_PWD }} \
+      --from-file=server.key={{ MEP_CERTS_DIR }}/{{ CERT_NAME }}_tls.key \
+      --from-file=server.crt={{ MEP_CERTS_DIR }}/{{ CERT_NAME }}_tls.crt
+
+- name: Create Secret pg-secret
+  shell: |
+    kubectl -n mep create secret generic mep-ssl \
+      --from-literal=root_key="$(openssl rand -base64 256 | tr -d '\n' | tr -dc '[[:alnum:]]' | cut -c -256)" \
+      --from-literal=cert_pwd={{ CERT_PWD }} \
+      --from-file=server.cer={{ MEP_CERTS_DIR }}/{{ CERT_NAME }}_tls.crt \
+      --from-file=server_key.pem={{ MEP_CERTS_DIR }}/{{ CERT_NAME }}_encryptedtls.key \
+      --from-file=trust.cer={{ MEP_CERTS_DIR }}/ca.crt
+
+- name: Create Secret mepauth-secret
+  shell: |
+    kubectl -n mep create secret generic mepauth-secret \
+      --from-file=server.crt={{ MEP_CERTS_DIR }}/{{ CERT_NAME }}_tls.crt \
+      --from-file=server.key={{ MEP_CERTS_DIR }}/{{ CERT_NAME }}_tls.key \
+      --from-file=ca.crt={{ MEP_CERTS_DIR }}/ca.crt \
+      --from-file=jwt_publickey={{ MEP_CERTS_DIR }}/jwt_publickey \
+      --from-file=jwt_encrypted_privatekey={{ MEP_CERTS_DIR }}/jwt_encrypted_privatekey
+
+- name: Remove MEP Certs Directory
+  file:
+    path: "{{ MEP_CERTS_DIR }}"
+    state: absent

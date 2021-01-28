@@ -1,0 +1,43 @@
+---
+
+- name: Create the Directory for Docker Offline Tarball File
+  file:
+    path: "{{ DOCKER_OFFLINE_DIR }}"
+    state: directory
+
+- name: Unarchive Docker Offline Tarball File
+  unarchive:
+    src: "{{ DOCKER_TARBALL_FILE }}"
+    dest: "{{ DOCKER_OFFLINE_DIR }}"
+    copy: yes
+
+- name: Copy Docker Exec File to /usr/bin
+  copy:
+    dest: /usr/bin
+    src: "{{ DOCKER_OFFLINE_DIR }}/docker/{{ item }}"
+    mode: '0755'
+  loop:
+    - containerd
+    - containerd-shim
+    - ctr
+    - docker
+    - dockerd
+    - docker-init
+    - docker-proxy
+    - runc
+
+- name: Copy Docker Service File to /etc/systemd/system/
+  copy:
+    dest: /etc/systemd/system/
+    src: "{{ DOCKER_OFFLINE_DIR }}/docker.service"
+
+- name: System Daemon Reload
+  command: systemctl daemon-reload
+
+- name: Restart Docker Service
+  service:
+    name: docker.service
+    state: restarted
+
+- name: Check whether Docker is installed
+  command: docker version

@@ -1,0 +1,36 @@
+---
+- name: Prepare MEP SSL
+  include: "prepare_mep_ssl.yml"
+
+- name: Deploy DNS Metallb
+  include: "deploy_dns_metallb.yml"
+
+- name: Setting up Network Isolation
+  include: "deploy_network_isolation_multus.yml"
+
+- name: Deploy MEP
+  shell: |
+    helm install --wait mep-edgegallery {{ HELM_CHARTS_PATH }}/edgegallery/mep-{{ HELM_TAG }}.tgz \
+    --set networkIsolation.ipamType={{ ipam_type }} \
+    --set networkIsolation.phyInterface.mp1="" \
+    --set networkIsolation.phyInterface.mm5="" \
+    --set images.mep.repository={{ mep_images_mep_repository }} \
+    --set images.mepauth.repository={{ mep_images_mepauth_repository }} \
+    --set images.dns.repository={{ mep_images_dns_repository }} \
+    --set images.kong.repository={{ mep_images_kong_repository }} \
+    --set images.postgres.repository={{ mep_images_postgres_repository }} \
+    --set images.mep.tag={{ EG_IMAGE_TAG }} \
+    --set images.mepauth.tag={{ EG_IMAGE_TAG }} \
+    --set images.dns.tag={{ EG_IMAGE_TAG }} \
+    --set images.mep.pullPolicy={{ mep_images_mep_pullPolicy }} \
+    --set images.mepauth.pullPolicy={{ mep_images_mepauth_pullPolicy }} \
+    --set images.dns.pullPolicy={{ mep_images_dns_pullPolicy }} \
+    --set images.kong.pullPolicy={{ mep_images_kong_pullPolicy }} \
+    --set images.postgres.pullPolicy={{ mep_images_postgres_pullPolicy }} \
+    --set ssl.secretName={{ mep_ssl_secretName }} \
+    --set global.persistence.enabled={{ ENABLE_PERSISTENCE }}
+
+- name: Check MEP Status
+  uri:
+    url: "https://{{ ansible_eth0.ipv4.address }}:30443/mepauth/health"
+    validate_certs: no

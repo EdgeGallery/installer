@@ -1,0 +1,37 @@
+K8S_TARBALL_FILE: "{{ TARBALL_PATH }}/kubernetes_offline_installer.tar.gz"
+K8S_OFFLINE_DIR: "{{ TARBALL_PATH }}/kubernetes_offline_installer"
+
+DOCKER_TARBALL_FILE: "{{ K8S_OFFLINE_DIR }}/docker/docker.tgz"
+DOCKER_OFFLINE_DIR: "{{ K8S_OFFLINE_DIR }}/docker"
+
+K8S_DOCKER_IMAGES:
+  - k8s.gcr.io/kube-proxy:v1.18.7
+  - k8s.gcr.io/kube-controller-manager:v1.18.7
+  - k8s.gcr.io/kube-apiserver:v1.18.7
+  - k8s.gcr.io/kube-scheduler:v1.18.7
+  - k8s.gcr.io/pause:3.2
+  - k8s.gcr.io/coredns:1.6.7
+  - k8s.gcr.io/etcd:3.4.3-0
+  - k8s.gcr.io/metrics-server/metrics-server:v0.3.7
+  - calico/node:v3.15.1
+  - calico/cni:v3.15.1
+  - calico/kube-controllers:v3.15.1
+  - calico/pod2daemon-flexvol:v3.15.1
+  - nginx:stable
+
+K8S_TAR_IMAGES:
+  - k8s.gcr.io@kube-proxy:v1.18.7
+  - k8s.gcr.io@kube-controller-manager:v1.18.7
+  - k8s.gcr.io@kube-apiserver:v1.18.7
+  - k8s.gcr.io@kube-scheduler:v1.18.7
+  - k8s.gcr.io@pause:3.2
+  - k8s.gcr.io@coredns:1.6.7
+  - k8s.gcr.io@etcd:3.4.3-0
+  - k8s.gcr.io@metrics-server@metrics-server:v0.3.7
+  - calico@node:v3.15.1
+  - calico@cni:v3.15.1
+  - calico@kube-controllers:v3.15.1
+  - calico@pod2daemon-flexvol:v3.15.1
+  - nginx:stable
+
+CNI_BIN_PATH: /opt/cni/bin

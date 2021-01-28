@@ -1,0 +1,12 @@
+postgresPassword: te9Fmv%qaq
+postgresLcmCntlrPassword: te9Fmv%qaq
+postgresk8sPluginPassword: te9Fmv%qaq
+mepm_images_lcmcontroller_repository: edgegallery/mecm-applcm
+mepm_images_k8splugin_repository: edgegallery/mecm-applcm-k8splugin
+mepm_images_apprulemgr_repository: edgegallery/mecm-apprulemgr
+mepm_images_postgres_repository: postgres
+mepm_images_postgres_tag: 12.3
+mepm_images_lcmcontroller_pullPolicy: IfNotPresent
+mepm_images_k8splugin_pullPolicy: IfNotPresent
+mepm_images_apprulemgr_pullPolicy: IfNotPresent
+mepm_images_postgres_pullPolicy: IfNotPresent

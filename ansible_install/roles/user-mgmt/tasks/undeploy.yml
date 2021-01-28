@@ -1,0 +1,7 @@
+- name: Undeploy USER-MGMT
+  shell: helm uninstall user-mgmt-edgegallery
+  ignore_errors: yes
+
+- name: Delete USER-MGMT Secret
+  shell: "kubectl delete secret {{ usermgmt_jwt_secretName }}"
+  ignore_errors: yes

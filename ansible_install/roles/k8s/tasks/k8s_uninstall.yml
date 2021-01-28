@@ -1,0 +1,64 @@
+---
+- name: Reset Kubeadm
+  command: kubeadm reset -f
+  ignore_errors: yes
+
+- name: Remove k8s Exec Files
+  file:
+    path: "/usr/bin/{{ item }}"
+    state: absent
+  loop:
+    - kubectl
+    - kubeadm
+    - kubelet
+  ignore_errors: yes
+
+- name: Stop Kubelet Services
+  service:
+    name: kubelet.service
+    state: stopped
+  ignore_errors: yes
+
+- name: Disable Kubelet Service
+  service:
+    name: kubelet.service
+    enabled: no
+  ignore_errors: yes
+
+- name: Remove Kubelet System Files
+  file:
+    path: "/etc/systemd/system/{{ item }}"
+    state: absent
+  loop:
+    - kubelet.service
+    - kubelet.service.d
+  ignore_errors: yes
+
+- name: System Daemon Reload
+  command: systemctl daemon-reload
+
+- name: Remove Other Files
+  file:
+    path: "{{ item }}"
+    state: absent
+  loop:
+    - ~/.kube
+    - /var/lib/etcd
+    - /etc/kubernetes/
+    - /etc/cni/net.d
+    - /opt/cni
+    - /var/lib/kubelet
+  ignore_errors: yes
+
+- name: Set Iptables
+  shell: iptables -F && iptables -t nat -F && iptables -t mangle -F && iptables -X
+  ignore_errors: yes
+
+- name: uninstall socat and conntrack
+  shell: dpkg -r socat conntrack
+  ignore_errors: yes
+
+- name: remove k8s docker images
+  shell: docker rmi "{{ item }}"
+  loop: "{{ K8S_DOCKER_IMAGES }}"
+  ignore_errors: yes

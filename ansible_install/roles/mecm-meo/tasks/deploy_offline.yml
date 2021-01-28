@@ -1,0 +1,52 @@
+---
+- name: Create Secret mecm-ssl-secret
+  shell: |
+    kubectl create secret generic {{ meo_ssl_secretName }} \
+    --from-file=keystore.p12={{ TARBALL_PATH }}/conf/keys/keystore.p12 \
+    --from-file=keystore.jks={{ TARBALL_PATH }}/conf/keys/keystore.jks \
+    --from-literal=keystorePassword={{ keystorePassword }} \
+    --from-literal=keystoreType={{ keystoreType }} \
+    --from-literal=keyAlias={{ keyAlias }} \
+    --from-literal=truststorePassword={{ truststorePassword }}
+
+- name : Create Secret edgegallery-mecm-secret
+  shell: |
+    kubectl create secret generic {{ meo_mecm_secretName }} \
+      --from-file=postgres_init.sql={{ TARBALL_PATH }}/conf/keys/postgres_init.sql \
+      --from-literal=postgresPassword={{ postgresPassword }} \
+      --from-literal=postgresApmPassword={{ postgresApmPassword }} \
+      --from-literal=postgresAppoPassword={{ postgresAppoPassword }} \
+      --from-literal=postgresInventoryPassword={{ postgresInventoryPassword }} \
+      --from-literal=edgeRepoUserName={{ edgeRepoUserName }}  \
+      --from-literal=edgeRepoPassword={{ edgeRepoPassword }}
+
+- name: Ensure User Group "docker" Exists
+  group:
+    name: docker
+    state: present
+  register: dockerGroup
+
+- name: Deploy MECM-MEO
+  shell: |
+    helm install --wait mecm-meo-edgegallery {{ HELM_CHARTS_PATH }}/edgegallery/mecm-meo-{{ HELM_TAG }}.tgz \
+    --set ssl.secretName={{ meo_ssl_secretName }} \
+    --set mecm.secretName={{ meo_mecm_secretName }} \
+    --set images.inventory.repository={{ meo_images_inventory_repository }} \
+    --set images.appo.repository={{ meo_images_appo_repository }} \
+    --set images.apm.repository={{ meo_images_apm_repository }} \
+    --set images.postgres.repository={{ meo_images_postgres_repository }} \
+    --set images.inventory.tag={{ meo_images_inventory_tag }} \
+    --set images.appo.tag={{ meo_images_appo_tag }} \
+    --set images.apm.tag={{ meo_images_apm_tag }} \
+    --set images.postgres.tag={{ meo_images_postgres_tag }} \
+    --set images.inventory.pullPolicy={{ meo_images_inventory_pullPolicy }} \
+    --set images.appo.pullPolicy={{ meo_images_appo_pullPolicy }} \
+    --set images.apm.pullPolicy={{ meo_images_apm_pullPolicy }} \
+    --set images.postgres.pullPolicy={{ meo_images_postgres_pullPolicy }} \
+    --set mecm.docker.fsgroup={{ dockerGroup.gid }} \
+    --set global.persistence.enabled={{ ENABLE_PERSISTENCE }}
+
+# name: Check MECM-MEO Status
+# uri:
+#   url: "https://{{ ansible_default_ipv4['address'] }}:{{ USER_MGMT_PORT }}/health"
+#   validate_certs: no

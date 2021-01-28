@@ -1,0 +1,33 @@
+---
+- name: Check whether USER_MGMT is Deployed
+  shell: helm list | grep user-mgmt-edgegallery 
+  register: userMgmtDeployed
+  ignore_errors: yes
+
+- debug:
+    msg: USER_MGMT is already deployed, no need to be deployed again
+  when: userMgmtDeployed is succeeded and OPERATION == "install"
+
+- debug:
+    msg: USER_MGMT is not deployed, will be deployed
+  when: userMgmtDeployed is failed and OPERATION == "install"
+
+- debug:
+    msg: USER_MGMT is already deployed, will be undeployed
+  when: userMgmtDeployed is succeeded and OPERATION == "uninstall"
+
+- debug:
+    msg: USER_MGMT is not deployed, no need to be undeployed anymore
+  when: userMgmtDeployed is failed and OPERATION == "uninstall"
+
+- name: Deploy USER_MGMT Online
+  include: "deploy_online.yml"
+  when: userMgmtDeployed is failed and OPERATION == "install" and NETWORK_MODE == "online"
+
+- name: Deploy USER_MGMT Offline
+  include: "deploy_offline.yml"
+  when: userMgmtDeployed is failed and OPERATION == "install" and NETWORK_MODE == "offline"
+
+- name: Undeploy USER_MGMT
+  include: "undeploy.yml"
+  when: userMgmtDeployed is succeeded and OPERATION == "uninstall"

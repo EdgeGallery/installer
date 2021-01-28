@@ -1,0 +1,36 @@
+---
+
+- name: Uninstall Service Center
+  shell: helm uninstall service-center-edgegallery
+  ignore_errors: yes
+
+- name: Delete Secret edgegallery-ssl-secret
+  shell: kubectl delete secret edgegallery-ssl-secret
+  ignore_errors: yes
+
+- name: Uninstall Grafana
+  shell: helm uninstall mep-grafana
+  ignore_errors: yes
+
+- name: Delete Grafana PVC
+  shell: "kubectl delete -f {{ TARBALL_PATH }}/conf/manifest/pv_pvc/{{ item }}"
+  loop:
+    - pv-claim.yaml
+    - pv-volume.yaml
+  ignore_errors: yes
+
+- name: Remove Grafana Home Directory
+  file:
+    path: "{{ GRAFANA_HOME }}"
+    state: absent
+  ignore_errors: yes
+
+- name: Uninstall Prometheus
+  shell: helm uninstall mep-prometheus
+  ignore_errors: yes
+
+- name: Uninstall Helm
+  file:
+    path: /usr/local/bin/helm
+    state: absent
+  ignore_errors: yes

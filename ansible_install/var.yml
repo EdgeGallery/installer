@@ -1,0 +1,32 @@
+# Mode for online or offline install
+NETWORK_MODE: offline
+
+# Architecture amd64 or arm64
+ARCH: amd64
+
+# Absolute file path of source offline tarball file
+TARBALL_FILE: /home/eg-all-amd64-latest-2021-01-25-12-16-55.tar.gz
+
+# Dest path where offline tarball be decompossed into
+TARBALL_PATH: /home/edgegallery-offline
+
+# Whether clean the TARBALL_PATH before package
+TARBALL_PATH_CLEANUP: true
+
+# Could be true or false
+# Currently only support false
+ENABLE_PERSISTENCE: false
+
+# Should set the following 2 params if ENABLE_PERSISTENCE is true
+# NFS_SERVER_IP:
+# NFS_PATH:
+
+HELM_CHARTS_PATH: "{{ TARBALL_PATH }}/helm/helm-charts"
+EG_IMAGE_TAG: latest
+HELM_TAG: 1.0.0
+
+APPSTORE_PORT: 30091
+DEVELOPER_PORT: 30092
+MECM_PORT: 30093
+ATP_PORT: 30094
+USER_MGMT_PORT: 30067

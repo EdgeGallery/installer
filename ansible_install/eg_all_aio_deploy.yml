@@ -1,0 +1,19 @@
+---
+
+- hosts: master
+  become: yes
+  vars:
+    - OPERATION: install
+  vars_files:
+    - ./var.yml
+  tags:
+    - aiodeploy
+  roles:
+    - init
+    - k8s
+    - eg_prepare
+    - mep
+    - mecm-mepm
+    - user-mgmt
+    - mecm-meo
+    - eg_check

@@ -1,0 +1,21 @@
+---
+
+- name: Clean the Directory for EdgeGallery Offline Tarball File
+  file:
+    path: "{{ TARBALL_PATH }}"
+    state: absent
+  when: TARBALL_PATH_CLEANUP
+
+- name: Create the Directory for EdgeGallery Offline Tarball File
+  file:
+    path: "{{ TARBALL_PATH }}"
+    state: directory
+  register: pathCreated
+
+- name: Unarchive EdgeGallery Offline Tarball File
+  unarchive:
+    src: "{{ TARBALL_FILE }}"
+    dest: "{{ TARBALL_PATH }}"
+    copy: yes
+  register: unarchivePackage
+  when: pathCreated is succeeded

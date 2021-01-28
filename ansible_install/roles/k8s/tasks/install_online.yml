@@ -1,0 +1,3 @@
+---
+- name: Install k8s online...
+  command: echo "Not support install k8s online now"

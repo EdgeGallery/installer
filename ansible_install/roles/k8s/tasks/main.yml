@@ -1,0 +1,33 @@
+---
+- name: Check whether k8s is installed
+  command: kubectl cluster-info
+  register: k8sInstalled
+  ignore_errors: yes
+
+- debug:
+    msg: k8s is already installed, no need to be installed again
+  when: k8sInstalled is succeeded and OPERATION == "install"
+
+- debug:
+    msg: k8s is not installed, will be installed
+  when: k8sInstalled is failed and OPERATION == "install"
+
+- debug:
+    msg: k8s is already installed, will be uninstalled
+  when: k8sInstalled is succeeded and OPERATION == "uninstall"
+
+- debug:
+    msg: k8s is not installed successfully, will be uninstalled
+  when: k8sInstalled is failed and OPERATION == "uninstall"
+
+- name: Install k8s Online
+  import_tasks: "install_online.yml"
+  when: k8sInstalled is failed and OPERATION == "install" and NETWORK_MODE == "online"
+
+- name: Install k8s Offline
+  import_tasks: "install_offline.yml"
+  when: k8sInstalled is failed and OPERATION == "install" and NETWORK_MODE == "offline"
+
+- name: Uninstall k8s
+  import_tasks: "uninstall.yml"
+  when: OPERATION == "uninstall"

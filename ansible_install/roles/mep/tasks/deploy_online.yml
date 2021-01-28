@@ -1,0 +1,7 @@
+---
+- name: Deploy MEP Online...
+  command: echo "Not support online deploy now"
+  register: mepOnlineDeploy
+
+- name: Online MEP Deploy output
+  debug: var=mepOnlineDeploy.stdout

@@ -1,0 +1,10 @@
+- name: Undeploy MECM-MEO
+  shell: helm uninstall mecm-meo-edgegallery
+  ignore_errors: yes
+
+- name: Delete MECM-MEO Secret
+  shell: "kubectl delete secret {{ item }}"
+  loop:
+    - "{{ meo_mecm_secretName }}"
+    - "{{ meo_ssl_secretName }}"
+  ignore_errors: yes

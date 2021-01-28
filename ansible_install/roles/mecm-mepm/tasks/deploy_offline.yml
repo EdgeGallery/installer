@@ -1,0 +1,51 @@
+---
+- name: Create Secret mecm-mepm-jwt-public-secret
+  shell: |
+    kubectl create secret generic mecm-mepm-jwt-public-secret \
+      --from-file=publicKey={{ TARBALL_PATH }}/conf/keys/rsa_public_key.pem
+
+- name: Create Secret mecm-mepm-ssl-secret
+  shell: |
+    kubectl create secret generic mecm-mepm-ssl-secret \
+      --from-file=server_tls.key={{ TARBALL_PATH }}/conf/keys/tls.key \
+      --from-file=server_tls.crt={{ TARBALL_PATH }}/conf/keys/tls.crt \
+      --from-file=ca.crt={{ TARBALL_PATH }}/conf/keys/ca.crt
+
+- name: Create Secret edgegallery-mepm-secret
+  shell: |
+    kubectl create secret generic edgegallery-mepm-secret \
+      --from-file=postgres_init.sql={{ TARBALL_PATH }}/conf/keys/postgres_init.sql \
+      --from-literal=postgresPassword={{ postgresPassword }} \
+      --from-literal=postgresLcmCntlrPassword={{ postgresLcmCntlrPassword }} \
+      --from-literal=postgresk8sPluginPassword={{ postgresk8sPluginPassword }} \
+
+- name: Create MECM-MEPM Service Account
+  shell: "kubectl apply -f {{ TARBALL_PATH }}/conf/manifest/mepm/mepm-service-account.yaml"
+
+- name: Deploy MECM-MEPM
+  shell: |
+    helm install --wait mecm-mepm-edgegallery {{ HELM_CHARTS_PATH }}/edgegallery/mecm-mepm-{{ HELM_TAG }}.tgz \
+    --set jwt.publicKeySecretName=mecm-mepm-jwt-public-secret \
+    --set mepm.secretName=edgegallery-mepm-secret \
+    --set ssl.secretName=mecm-mepm-ssl-secret \
+    --set images.lcmcontroller.repository={{ mepm_images_lcmcontroller_repository }} \
+    --set images.k8splugin.repository={{ mepm_images_k8splugin_repository }} \
+    --set images.apprulemgr.repository={{ mepm_images_apprulemgr_repository }} \
+    --set images.postgres.repository={{ mepm_images_postgres_repository }} \
+    --set images.lcmcontroller.tag={{ EG_IMAGE_TAG }} \
+    --set images.k8splugin.tag={{ EG_IMAGE_TAG }} \
+    --set images.apprulemgr.tag={{ EG_IMAGE_TAG }} \
+    --set images.postgres.tag={{ mepm_images_postgres_tag }} \
+    --set images.lcmcontroller.pullPolicy={{ mepm_images_lcmcontroller_pullPolicy }} \
+    --set images.k8splugin.pullPolicy={{ mepm_images_k8splugin_pullPolicy }} \
+    --set images.apprulemgr.pullPolicy={{ mepm_images_apprulemgr_pullPolicy }} \
+    --set images.postgres.pullPolicy={{ mepm_images_postgres_pullPolicy }} \
+    --set global.persistence.enabled={{ ENABLE_PERSISTENCE }}
+
+- name: Check MECM-MEPM Status
+  uri:
+    url: "https://{{ ansible_eth0.ipv4.address }}:{{ item }}/v1/health"
+    validate_certs: no
+  loop:
+    - 30204/lcmcontroller
+    - 30206/apprulemgr

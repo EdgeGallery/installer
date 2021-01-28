@@ -1,0 +1,17 @@
+- name: Create Namespace metallb-system
+  shell: "kubectl apply -f {{ TARBALL_PATH }}/conf/edge/metallb/namespace.yaml"
+
+- name: Create Secret Memberlist
+  shell: kubectl create secret generic -n metallb-system memberlist --from-literal=secretkey="$(openssl rand -base64 128)"
+
+- name: Create Metallb Resources
+  shell: "kubectl apply -f {{ TARBALL_PATH }}/conf/edge/metallb/metallb.yaml"
+
+- name: Change Default IP to be the eth0 IP
+  replace:
+    path: "{{ TARBALL_PATH }}/conf/edge/metallb/config-map.yaml"
+    regexp: 192.168.100.120
+    replace: "{{ ansible_default_ipv4['address'] }}"
+
+- name: Create ConfigMap
+  shell: "kubectl apply -f {{ TARBALL_PATH }}/conf/edge/metallb/config-map.yaml"

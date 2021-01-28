@@ -1,0 +1,17 @@
+---
+
+- name: Remove CNI Bin Dir
+  file:
+    path: "{{ CNI_BIN_PATH }}"
+    state: absent
+  ignore_errors: yes
+
+- name: Delete K8S Metric Server
+  shell: "kubectl delete -f {{ K8S_OFFLINE_DIR }}/k8s/metric-server.yaml"
+  ignore_errors: yes
+
+- name: Uninstall K8S
+  import_tasks: "k8s_uninstall.yml"
+
+- name: Uninstall Docker
+  import_tasks: "docker_uninstall.yml"

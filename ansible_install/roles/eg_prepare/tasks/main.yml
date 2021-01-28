@@ -1,0 +1,12 @@
+---
+- name: Prepare EG Online
+  include: "prepare_online.yml"
+  when: OPERATION == "install" and NETWORK_MODE == "online"
+
+- name: Prepare EG Offline
+  include: "prepare_offline.yml"
+  when: OPERATION == "install" and NETWORK_MODE == "offline"
+
+- name: Reset EG Preparation
+  include: "reset.yml"
+  when: OPERATION == "uninstall"

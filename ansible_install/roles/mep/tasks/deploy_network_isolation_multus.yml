@@ -1,0 +1,15 @@
+- name: Create Network Isolation Multus Resources
+  shell: "kubectl apply -f {{ TARBALL_PATH }}/conf/edge/network-isolation/{{ item }}"
+  loop:
+    - multus.yaml
+    - eg-sp-rbac.yaml
+    - eg-sp-controller.yaml
+
+- name: Network Setting
+  shell: |
+    ip link add eg-mp1 link {{ EG_NODE_EDGE_MP1}} type macvlan mode bridge
+    ip addr add 200.1.1.2/24 dev eg-mp1
+    ip link set dev eg-mp1 up
+    ip link add eg-mm5 link {{EG_NODE_EDGE_MM5}} type macvlan mode bridge
+    ip addr add 100.1.1.2/24 dev eg-mm5
+    ip link set dev eg-mm5 up

@@ -1,0 +1,49 @@
+- name: Undeploy MEP
+  shell: helm uninstall mep-edgegallery
+  ignore_errors: yes
+
+- name: Cleanup Network Seeting
+  shell: |
+    ip link set dev eg-mp1 down
+    ip link delete eg-mp1
+    ip link set dev eg-mm5 down
+    ip link delete eg-mm5
+  ignore_errors: yes
+
+- name: Remove CNI Bin files
+  file:
+    path: "/opt/cni/bin/multus"
+    state: absent
+  ignore_errors: yes
+
+- name: Undeploy DNS Metallb
+  shell: "kubectl delete -f {{ TARBALL_PATH }}/conf/edge/network-isolation/{{ item }}"
+  loop:
+    - eg-sp-controller.yaml
+    - eg-sp-rbac.yaml
+    - multus.yaml
+  ignore_errors: yes
+
+- name: Delete Secret memberlist
+  shell: kubectl delete secret memberlist -n metallb-system
+  ignore_errors: yes
+
+- name: Delete DNS Metallb resources
+  shell: "kubectl delete -f {{ TARBALL_PATH }}/conf/edge/metallb/{{ item }}"
+  loop:
+    - config-map.yaml
+    - metallb.yaml
+    - namespace.yaml
+  ignore_errors: yes
+
+- name: Remove MEP SSL
+  shell: "kubectl delete secret {{ item }} -n mep"
+  loop:
+    - pg-secret
+    - mep-ssl
+    - mepauth-secret
+  ignore_errors: yes
+
+- name: Remove MEP Namespace
+  shell: kubectl delete ns mep
+  ignore_errors: yes

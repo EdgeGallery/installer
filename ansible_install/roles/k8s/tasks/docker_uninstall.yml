@@ -1,0 +1,45 @@
+---
+- name: Stop Docker Services
+  service:
+    name: docker.service
+    state: stopped
+  ignore_errors: yes
+
+- name: Remove Docker Service File
+  file:
+    path: /etc/systemd/system/docker.service
+    state: absent
+  ignore_errors: yes
+
+- name: System Daemon Reload
+  command: systemctl daemon-reload
+
+- name: Remove Docker Exec Files
+  file:
+    path: "/usr/bin/{{ item }}"
+    state: absent
+  loop:
+    - containerd
+    - containerd-shim
+    - ctr
+    - docker
+    - dockerd
+    - docker-init
+    - docker-proxy
+    - runc
+  ignore_errors: yes
+
+- name: Remove Docker Containers Files
+  file:
+    path: /var/lib/docker/
+    state: absent
+  ignore_errors: yes
+
+- name: Check whether Docker is installed
+  command: docker version
+  register: checkDocker
+  ignore_errors: yes
+
+- debug:
+    msg: Docker has been uninstalled
+  when: checkDocker is failed 

@@ -1,0 +1,153 @@
+---
+- name: Load All EdgeGallery Docker Images
+  shell: for f in "{{ TARBALL_PATH }}"/eg_swr_images/*.tar.gz; do docker load -i $f; done
+
+- name: Try to Get Helm Version
+  shell: helm version | cut -d \" -f2
+  register: helmVersion
+  ignore_errors: yes
+
+- name: Helm is Installed
+  debug:
+    msg: "helm {{ HELM_VERSION }} is already installed"
+  when: helmVersion.stdout == (HELM_VERSION)
+
+- name: Helm doesn't be Installed
+  debug:
+    msg: "helm {{ HELM_VERSION }} is not installed yet"
+  when: helmVersion.stdout != (HELM_VERSION)
+
+- name: Unarchive Helm Offline Tarball File
+  unarchive:
+    src: "{{ HELM_TARBALL_FILE }}"
+    dest: "{{ HELM_OFFLINE_DIR }}"
+    copy: yes
+  register: unarchiveHelm
+  when: helmVersion.stdout != (HELM_VERSION)
+
+- name : Move Helm Exec File to /usr/local/bin/
+  copy:
+    src: "{{ HELM_OFFLINE_DIR }}/linux-{{ ARCH }}/helm"
+    dest: /usr/local/bin/
+    mode: '0755'
+  when: helmVersion.stdout != (HELM_VERSION) and unarchiveHelm is succeeded
+
+- name: Check Helm Installed
+  shell: helm version
+  when: helmVersion.stdout != (HELM_VERSION) and unarchiveHelm is succeeded
+
+- name: Create SSL Certs
+  shell: "docker run --rm -e CERT_VALIDITY_IN_DAYS={{ CERT_VALIDITY_IN_DAYS }} -v {{ TARBALL_PATH }}/conf/keys/:/certs edgegallery/deploy-tool:{{ EG_IMAGE_TAG }}"
+
+- name: Remove Old Grafana Home Directory
+  file:
+    path: "{{ GRAFANA_HOME }}"
+    state: absent
+  ignore_errors: yes
+
+- name: Create Grafana Home Directory
+  file:
+    path: "{{ GRAFANA_HOME }}"
+    state: directory
+
+- name: Copy SSL Keys to Grafana Home Directory
+  copy:
+    src: "{{ TARBALL_PATH }}/conf/keys/{{ item }}"
+    dest: "{{ GRAFANA_HOME }}"
+  loop:
+    - tls.key
+    - tls.crt
+
+- name: Install Prometheus
+  shell: |
+    helm install --wait mep-prometheus {{ HELM_CHARTS_PATH }}/stable/prometheus-{{ PROM_CHART_TAG }}.tgz \
+      -f {{ TARBALL_PATH }}/conf/override/prometheus_arm_values.yaml --version v{{ PROM_CHART_TAG }} \
+      --set alertmanager.image.repository=prom/alertmanager \
+      --set configmapReload.image.repository=jimmidyson/configmap-reload \
+      --set nodeExporter.image.repository=prom/node-exporter \
+      --set server.image.repository=prom/prometheus \
+      --set pushgateway.image.repository=prom/pushgateway \
+      --set kubeStateMetrics.image.repository=carlosedp/kube-state-metrics \
+      --set alertmanager.image.pullPolicy=IfNotPresent \
+      --set configmapReload.image.pullPolicy=IfNotPresent \
+      --set nodeExporter.image.pullPolicy=IfNotPresent \
+      --set server.image.pullPolicy=IfNotPresent \
+      --set pushgateway.image.pullPolicy=IfNotPresent \
+      --set kubeStateMetrics.image.pullPolicy=IfNotPresent
+  when: ARCH == "arm64"
+
+- name: Install Prometheus
+  shell: |
+    helm install --wait mep-prometheus {{ HELM_CHARTS_PATH }}/stable/prometheus-{{ PROM_CHART_TAG }}.tgz \
+      -f {{ TARBALL_PATH }}/conf/override/prometheus_x86_values.yaml --version v{{ PROM_CHART_TAG }} \
+      --set alertmanager.image.repository=prom/alertmanager \
+      --set configmapReload.image.repository=jimmidyson/configmap-reload \
+      --set nodeExporter.image.repository=prom/node-exporter \
+      --set server.image.repository=prom/prometheus \
+      --set pushgateway.image.repository=prom/pushgateway \
+      --set kubeStateMetrics.image.repository=quay.io/coreos/kube-state-metrics \
+      --set alertmanager.image.pullPolicy=IfNotPresent \
+      --set configmapReload.image.pullPolicy=IfNotPresent \
+      --set nodeExporter.image.pullPolicy=IfNotPresent \
+      --set server.image.pullPolicy=IfNotPresent \
+      --set pushgateway.image.pullPolicy=IfNotPresent \
+      --set kubeStateMetrics.image.pullPolicy=IfNotPresent
+  when: ARCH == "amd64"
+
+- name: Create Grafana PVC
+  shell: "kubectl apply -f {{ TARBALL_PATH }}/conf/manifest/pv_pvc/{{ item }}"
+  loop:
+    - pv-volume.yaml
+    - pv-claim.yaml
+
+- name: Install Grafana
+  shell: |
+    helm install --wait mep-grafana {{ HELM_CHARTS_PATH }}/stable/grafana-{{ GRAFANA_CHART_TAG }}.tgz \
+      -f {{ TARBALL_PATH }}/conf/override/grafana_arm_values.yaml \
+      --set image.repository=grafana/grafana-arm64v8-linux \
+      --set testFramework.image=bats/bats \
+      --set downloadDashboardsImage.repository=lucashalbert/curl \
+      --set initChownData.image.repository=busybox \
+      --set sidecar.image.repository=kiwigrid/k8s-sidecar \
+      --set image.pullPolicy=IfNotPresent \
+      --set testFramework.pullPolicy=IfNotPresent \
+      --set downloadDashboardsImage.pullPolicy=IfNotPresent \
+      --set initChownData.image.pullPolicy=IfNotPresent \
+      --set sidecar.image.pullPolicy=IfNotPresent
+  when: ARCH == "arm64"
+
+- name: Install Grafana
+  shell: |
+    helm install --wait mep-grafana {{ HELM_CHARTS_PATH }}/stable/grafana-{{ GRAFANA_CHART_TAG }}.tgz \
+      -f {{ TARBALL_PATH }}/conf/override/grafana_x86_values.yaml \
+      --set image.repository=grafana/grafana \
+      --set testFramework.image=bats/bats \
+      --set downloadDashboardsImage.repository=curlimages/curl \
+      --set initChownData.image.repository=busybox \
+      --set sidecar.image.repository=kiwigrid/k8s-sidecar \
+      --set image.pullPolicy=IfNotPresent \
+      --set testFramework.imagePullPolicy=IfNotPresent \
+      --set downloadDashboardsImage.pullPolicy=IfNotPresent \
+      --set initChownData.image.pullPolicy=IfNotPresent \
+      --set sidecar.image.pullPolicy=IfNotPresent
+  when: ARCH == "amd64"
+
+- name: Create Secret edgegallery-ssl-secret
+  shell: |
+    kubectl create secret generic edgegallery-ssl-secret \
+      --from-file=keystore.p12={{ TARBALL_PATH }}/conf/keys/keystore.p12 \
+      --from-literal=keystorePassword={{ keystorePassword }} \
+      --from-literal=keystoreType={{ keystoreType }} \
+      --from-literal=keyAlias={{ keyAlias }} \
+      --from-file=trust.cer={{ TARBALL_PATH }}/conf/keys/ca.crt \
+      --from-file=server.cer={{ TARBALL_PATH }}/conf/keys/tls.crt \
+      --from-file=server_key.pem={{ TARBALL_PATH }}/conf/keys/encryptedtls.key \
+      --from-literal=cert_pwd={{ cert_pwd }}
+
+- name: Install Service Center
+  shell: |
+    helm install --wait service-center-edgegallery {{ HELM_CHARTS_PATH }}/edgegallery/servicecenter-{{ HELM_TAG }}.tgz \
+    --set images.repository={{ servicecenter_images_repository }} \
+    --set images.pullPolicy={{ servicecenter_images_pullPolicy }} \
+    --set global.ssl.enabled={{ servicecenter_global_ssl_enabled }} \
+    --set global.ssl.secretName={{ servicecenter_global_ssl_secretName }}

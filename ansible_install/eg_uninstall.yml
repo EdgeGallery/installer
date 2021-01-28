@@ -1,0 +1,18 @@
+---
+
+- hosts: master
+  become: yes
+  vars:
+    - OPERATION: uninstall
+  vars_files:
+    - ./var.yml
+  tags:
+    - aiouninstall
+  roles:
+    - mecm-meo
+    - user-mgmt
+    - mecm-mepm
+    - mep
+    - eg_prepare
+    - k8s
+    - init

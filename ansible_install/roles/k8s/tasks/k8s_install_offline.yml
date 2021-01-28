@@ -1,0 +1,98 @@
+---
+
+- name: Load k8s Images
+  command: docker load --input "{{ DOCKER_OFFLINE_DIR }}/images/{{ item }}.tar.gz"
+  loop: "{{ K8S_TAR_IMAGES }}"
+
+- name: Install k8s Tools
+  copy:
+    dest: /usr/bin
+    src: "{{ K8S_OFFLINE_DIR }}/k8s/{{ item }}"
+    mode: '0755'
+  loop:
+    - kubectl
+    - kubeadm
+    - kubelet
+
+- name: Copy Kubelet Service File to /etc/systemd/system/
+  copy:
+    dest: /etc/systemd/system/
+    src: "{{ K8S_OFFLINE_DIR }}/k8s/kubelet.service"
+
+- name: Create the Directory for Kubelet
+  file:
+    path: /etc/systemd/system/kubelet.service.d
+    state: directory
+
+- name: Copy Kubeadm Config File to /etc/systemd/system/kubelet.service.d
+  copy:
+    dest: /etc/systemd/system/kubelet.service.d
+    src: "{{ K8S_OFFLINE_DIR }}/k8s/10-kubeadm.conf"
+
+- name: System Daemon Reload
+  command: systemctl daemon-reload
+
+- name: Enable kubelet Service
+  service:
+    name: kubelet.service
+    enabled: yes
+
+- name: Stop Firewalld Service
+  service:
+    name: firewalld
+    state: stopped
+  ignore_errors: yes
+
+- name: Disable Firewalld Service
+  service:
+    name: firewalld
+    enabled: no
+  ignore_errors: yes
+
+- name: Off Swap Area
+  command: swapoff -a
+
+- name: Sed File /etc/fstab
+  command: sed -i '/ swap / s/^/#/' /etc/fstab
+
+- name: Modprobe br_netfilter
+  command: modprobe br_netfilter
+
+- name: Copy K8s Config File to /etc/sysctl.d/
+  copy:
+    dest: /etc/sysctl.d/
+    src: "{{ K8S_OFFLINE_DIR }}/k8s/k8s.conf"
+
+- name: Load Config Files
+  command: sysctl --system
+
+- name: Install Package conntrack
+  command: dpkg -i "{{ K8S_OFFLINE_DIR }}/tools/conntrack_1.4.4+snapshot20161117-6ubuntu2_{{ ARCH }}.deb"
+
+- name: Install Package socat
+  command: dpkg -i "{{ K8S_OFFLINE_DIR }}/tools/socat_1.7.3.2-2ubuntu2_{{ ARCH }}.deb"
+
+- name: Install k8s with kubeadm
+  shell: "kubeadm init --kubernetes-version=v1.18.7 --apiserver-advertise-address={{ansible_default_ipv4['address']}} --pod-network-cidr=10.244.0.0/16 -v=5"
+
+- name: Create the Directory for Kube Config
+  file:
+    path: ~/.kube
+    state: directory
+
+- name: Copy K8s admin.conf to ~/.kube/config
+  copy:
+    src: /etc/kubernetes/admin.conf
+    dest: ~/.kube/config
+
+- name: Apply calico
+  shell: "kubectl apply -f {{K8S_OFFLINE_DIR}}/k8s/calico.yaml"
+
+- name: Set K8s Taint Nodes
+  shell: "kubectl taint nodes --all node-role.kubernetes.io/master-"
+
+- name: Create Kubeadm Token
+  shell: "kubeadm token create --print-join-command > {{K8S_OFFLINE_DIR}}/k8s-worker.sh"
+
+- name: Check whether k8s is installed
+  command: kubectl cluster-info

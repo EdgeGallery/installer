@@ -1,0 +1,30 @@
+---
+- name: Create Secret user-mgmt-jwt-secret
+  shell: |
+    kubectl create secret generic {{ usermgmt_jwt_secretName }} \
+      --from-file=publicKey={{ TARBALL_PATH }}/conf/keys/rsa_public_key.pem \
+      --from-file=encryptedPrivateKey={{ TARBALL_PATH }}/conf/keys/encrypted_rsa_private_key.pem \
+      --from-literal=encryptPassword={{ encryptPassword }}
+
+- name: Deploy USER_MGMT
+  shell: |
+    helm install --wait user-mgmt-edgegallery {{ HELM_CHARTS_PATH }}/edgegallery/usermgmt-{{ HELM_TAG }}.tgz \
+    --set global.oauth2.clients.appstore.clientUrl=https://{{ ansible_default_ipv4['address'] }}:{{ APPSTORE_PORT }},global.oauth2.clients.developer.clientUrl=https://{{ ansible_default_ipv4['address'] }}:{{ DEVELOPER_PORT }},global.oauth2.clients.mecm.clientUrl=https://{{ ansible_default_ipv4['address'] }}:{{ MECM_PORT }},global.oauth2.clients.atp.clientUrl=https://{{ ansible_default_ipv4['address'] }}:{{ ATP_PORT }}, \
+    --set jwt.secretName={{ usermgmt_jwt_secretName }} \
+    --set images.usermgmt.repository={{ usermgmt_images_usermgmt_repository }} \
+    --set images.postgres.repository={{ usermgmt_images_postgres_repository }} \
+    --set images.redis.repository={{ usermgmt_images_redis_repository }} \
+    --set images.initservicecenter.repository={{ usermgmt_images_initservicecenter_repository }} \
+    --set images.usermgmt.tag={{ usermgmt_images_usermgmt_tag }} \
+    --set images.usermgmt.pullPolicy={{ usermgmt_images_usermgmt_pullPolicy }} \
+    --set images.postgres.pullPolicy={{ usermgmt_images_postgres_pullPolicy }} \
+    --set images.redis.pullPolicy={{ usermgmt_images_redis_pullPolicy }} \
+    --set images.initservicecenter.pullPolicy={{ usermgmt_images_initservicecenter_pullPolicy }} \
+    --set global.ssl.enabled={{ usermgmt_global_ssl_enabled }} \
+    --set global.ssl.secretName={{ usermgmt_global_ssl_secretName }} \
+    --set global.persistence.enabled={{ ENABLE_PERSISTENCE }}
+
+- name: Check USER_MGMT Status
+  uri:
+    url: "https://{{ ansible_default_ipv4['address'] }}:{{ USER_MGMT_PORT }}/health"
+    validate_certs: no

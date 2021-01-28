@@ -1,0 +1,12 @@
+---
+- name: Init Env Online
+  import_tasks: "init_online.yml"
+  when: OPERATION == "install" and NETWORK_MODE == "online"
+
+- name: Init Env Offline
+  import_tasks: "init_offline.yml"
+  when: OPERATION == "install" and NETWORK_MODE == "offline"
+
+- name: Cleanup Init Env
+  import_tasks: "init_cleanup.yml"
+  when: OPERATION == "uninstall"

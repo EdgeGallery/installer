@@ -1,0 +1,7 @@
+---
+- name: Deploy USER_MGMT Online...
+  command: echo "Not support online deploy now"
+  register: userMgmtOnlineDeploy
+
+- name: Online USER_MGMT Deploy output
+  debug: var=userMgmtOnlineDeploy.stdout

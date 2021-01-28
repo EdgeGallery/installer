@@ -1,0 +1,50 @@
+---
+
+- name: Create the Directory for k8s Offline Tarball File
+  file:
+    path: "{{ K8S_OFFLINE_DIR }}"
+    state: directory
+
+- name: Unarchive k8s Offline Tarball File
+  unarchive:
+    src: "{{ K8S_TARBALL_FILE }}"
+    dest: "{{ K8S_OFFLINE_DIR }}"
+    copy: yes
+
+- name: Check whether Docker is installed
+  command: docker version
+  register: dockerInstalled
+  ignore_errors: yes
+
+- debug:
+    msg: Docker is already installed, no need to be installed again
+  when: dockerInstalled is succeeded
+
+- debug:
+    msg: Docker is not installed, will be installed
+  when: dockerInstalled is failed
+
+- name: Install Docker Offline
+  import_tasks: docker_install_offline.yml
+  when: dockerInstalled is failed
+
+- name: Install K8S
+  import_tasks: k8s_install_offline.yml
+
+- name: K8s Apply Metric Server
+  shell: "kubectl apply -f {{ K8S_OFFLINE_DIR }}/k8s/metric-server.yaml"
+
+- name: Create CNI Bin Directory
+  file:
+    path: "{{ CNI_BIN_PATH }}"
+    state: directory
+
+- name: Copy CNI to CNI Bin Directory
+  copy:
+    src: "{{ K8S_OFFLINE_DIR }}/cni/{{ item }}"
+    dest: "{{ CNI_BIN_PATH }}"
+    mode: '0755'
+  loop:
+    - macvlan
+    - host-local
+
