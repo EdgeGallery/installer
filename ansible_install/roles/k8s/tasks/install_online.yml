@@ -1,3 +1,7 @@
 ---
 - name: Install k8s online...
   command: echo "Not support install k8s online now"
+  register: k8sOnlineDeploy
+
+- name: Online K8S Deploy output
+  debug: var=k8sOnlineDeploy.stdout

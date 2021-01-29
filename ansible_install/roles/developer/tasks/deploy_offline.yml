@@ -3,7 +3,7 @@
 - name: Deploy DEVELOPER
   shell: |
     helm install --wait developer-edgegallery {{ HELM_CHARTS_PATH }}/edgegallery/developer-{{ HELM_TAG }}.tgz \
-    --set global.oauth2.authServerAddress=https://{{ ansible_default_ipv4['address'] }}:{{ USER_MGMT_PORT }} \
+    --set global.oauth2.authServerAddress=https://{{ PORTAL_IP }}:{{ USER_MGMT_PORT }} \
     --set images.developerFe.repository={{ developer_images_developerFe_repository }} \
     --set images.developerBe.repository={{ developer_images_developerBe_repository }} \
     --set images.postgres.repository={{ developer_images_postgres_repository }} \

@@ -8,10 +8,15 @@
   shell: ip a | grep -B2 {{ ansible_eth0.ipv4.address }} | head -n1 | cut -d ":" -f2 |cut -d " " -f2
   register: mm5
 
-- name: Set EG_NODE_EDGE_MP1 and EG_NODE_EDGE_MM5
+- name: Set EG_NODE_EDGE_MP1
   set_fact:
-    EG_NODE_EDGE_MP1: mp1.stdout
-    EG_NODE_EDGE_MM5: mm5.stdout
+    EG_NODE_EDGE_MP1: "{{ mp1.stdout }}"
+  when: EG_NODE_EDGE_MP1 is undefined
+
+- name: Set EG_NODE_EDGE_MM5
+  set_fact:
+    EG_NODE_EDGE_MM5: "{{ mm5.stdout }}"
+  when: EG_NODE_EDGE_MM5 is undefined
 
 - name: Prepare MEP SSL
   include: "prepare_mep_ssl.yml"

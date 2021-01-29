@@ -1,3 +1,7 @@
 ---
 - name: Init Env Online...
   command: echo "Not support initing env online now"
+  register: initOnlineDeploy
+
+- name: Online Init output
+  debug: var=initOnlineDeploy.stdout

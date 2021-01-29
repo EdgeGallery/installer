@@ -1,4 +1,15 @@
 ---
+
+- name: Get Public IP
+  ipify_facts:
+  register: publicIP
+  when: PORTAL_IP is undefined
+
+- name: Set Portal IP
+  set_fact:
+    PORTAL_IP: "{{ publicIP.ansible_facts.ipify_public_ip }}"
+  when: PORTAL_IP is undefined
+
 - name: Check whether MECM_FE is Deployed
   shell: helm list | grep mecm-fe-edgegallery
   register: mecmFeDeployed

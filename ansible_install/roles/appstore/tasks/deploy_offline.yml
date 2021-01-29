@@ -3,7 +3,7 @@
 - name: Deploy APPSTORE
   shell: |
     helm install --wait appstore-edgegallery {{ HELM_CHARTS_PATH }}/edgegallery/appstore-{{ HELM_TAG }}.tgz \
-    --set global.oauth2.authServerAddress=https://{{ ansible_default_ipv4['address'] }}:{{ USER_MGMT_PORT }} \
+    --set global.oauth2.authServerAddress=https://{{ PORTAL_IP }}:{{ USER_MGMT_PORT }} \
     --set images.appstoreFe.repository={{ appstore_images_appstoreFe_repository }} \
     --set images.appstoreBe.repository={{ appstore_images_appstoreBe_repository }} \
     --set images.postgres.repository={{ appstore_images_postgres_repository }} \

@@ -1,4 +1,5 @@
 ---
+
 - name: Init Env Online
   import_tasks: "init_online.yml"
   when: OPERATION == "install" and NETWORK_MODE == "online"

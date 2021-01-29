@@ -1,4 +1,5 @@
 ---
+
 - name: Prepare EG Online
   include: "prepare_online.yml"
   when: OPERATION == "install" and NETWORK_MODE == "online"

@@ -30,3 +30,6 @@ DEVELOPER_PORT: 30092
 MECM_PORT: 30093
 ATP_PORT: 30094
 USER_MGMT_PORT: 30067
+
+# ip for portals, will be set to public IP of master node default or reset it here
+#PORTAL_IP: 111.222.333.444

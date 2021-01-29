@@ -3,7 +3,7 @@
 - name: Deploy ATP
   shell: |
     helm install --wait atp-edgegallery {{ HELM_CHARTS_PATH }}/edgegallery/atp-{{ HELM_TAG }}.tgz \
-    --set global.oauth2.authServerAddress=https://{{ ansible_default_ipv4['address'] }}:{{ USER_MGMT_PORT }} \
+    --set global.oauth2.authServerAddress=https://{{ PORTAL_IP }}:{{ USER_MGMT_PORT }} \
     --set images.atpFe.repository={{ atp_images_atpFe_repository }} \
     --set images.atp.repository={{ atp_images_atp_repository }} \
     --set images.postgres.repository={{ atp_images_postgres_repository }} \
