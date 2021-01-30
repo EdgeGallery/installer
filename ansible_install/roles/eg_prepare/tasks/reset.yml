@@ -2,14 +2,17 @@
 
 - name: Uninstall Service Center
   shell: helm uninstall service-center-edgegallery
+  when: EG_MODE == "all" or EG_MODE == "controller"
   ignore_errors: yes
 
 - name: Delete Secret edgegallery-ssl-secret
   shell: kubectl delete secret edgegallery-ssl-secret
+  when: EG_MODE == "all" or EG_MODE == "controller"
   ignore_errors: yes
 
 - name: Uninstall Grafana
   shell: helm uninstall mep-grafana
+  when: EG_MODE == "all" or EG_MODE == "edge"
   ignore_errors: yes
 
 - name: Delete Grafana PVC
@@ -17,16 +20,19 @@
   loop:
     - pv-claim.yaml
     - pv-volume.yaml
+  when: EG_MODE == "all" or EG_MODE == "edge"
   ignore_errors: yes
 
 - name: Remove Grafana Home Directory
   file:
     path: "{{ GRAFANA_HOME }}"
     state: absent
+  when: EG_MODE == "all" or EG_MODE == "edge"
   ignore_errors: yes
 
 - name: Uninstall Prometheus
   shell: helm uninstall mep-prometheus
+  when: EG_MODE == "all" or EG_MODE == "edge"
   ignore_errors: yes
 
 - name: Uninstall Helm

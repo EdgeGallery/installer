@@ -1,0 +1,15 @@
+---
+
+- hosts: master
+  become: yes
+  vars:
+    - OPERATION: uninstall
+    - EG_MODE: edge
+  vars_files:
+    - ./var.yml
+  roles:
+    - mecm-mepm
+    - mep
+    - eg_prepare
+    - k8s
+    - init

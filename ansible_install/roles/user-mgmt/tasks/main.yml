@@ -1,5 +1,10 @@
 ---
 
+- name: Check EG_MODE for USER_MGMT
+  fail:
+    msg: "Could not {{ OPERATION }} USER_MGMT with EG_MODE: {{ EG_MODE }}"
+  when: EG_MODE != "all" and EG_MODE != "controller"
+
 - name: Get Public IP
   ipify_facts:
   register: publicIP

@@ -1,4 +1,10 @@
 ---
+
+- name: Check EG_MODE for MECM-MEPM
+  fail:
+    msg: "Could not {{ OPERATION }} MECM-MEPM with EG_MODE: {{ EG_MODE }}"
+  when: EG_MODE != "all" and EG_MODE != "edge"
+
 - name: Check whether MECM-MEPM is Deployed
   shell: helm list | grep mecm-mepm-edgegallery 
   register: mecmMepmDeployed

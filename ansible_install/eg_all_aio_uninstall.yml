@@ -1,0 +1,21 @@
+---
+
+- hosts: master
+  become: yes
+  vars:
+    - OPERATION: uninstall
+    - EG_MODE: all
+  vars_files:
+    - ./var.yml
+  roles:
+    - atp
+    - developer
+    - appstore
+    - mecm-fe
+    - mecm-meo
+    - user-mgmt
+    - mecm-mepm
+    - mep
+    - eg_prepare
+    - k8s
+    - init

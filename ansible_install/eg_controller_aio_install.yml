@@ -4,16 +4,13 @@
   become: yes
   vars:
     - OPERATION: install
+    - EG_MODE: controller
   vars_files:
     - ./var.yml
-  tags:
-    - aiodeploy
   roles:
     - init
     - k8s
     - eg_prepare
-    - mep
-    - mecm-mepm
     - user-mgmt
     - mecm-meo
     - mecm-fe

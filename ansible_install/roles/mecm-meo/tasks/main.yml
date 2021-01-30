@@ -1,4 +1,10 @@
 ---
+
+- name: Check EG_MODE for MECM_MEO
+  fail:
+    msg: "Could not {{ OPERATION }} MECM_MEO with EG_MODE: {{ EG_MODE }}"
+  when: EG_MODE != "all" and EG_MODE != "controller"
+
 - name: Check whether MECM_MEO is Deployed
   shell: helm list | grep mecm-meo-edgegallery
   register: mecmMeoDeployed

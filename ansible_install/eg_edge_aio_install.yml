@@ -1,0 +1,16 @@
+---
+
+- hosts: master
+  become: yes
+  vars:
+    - OPERATION: install
+    - EG_MODE: edge
+  vars_files:
+    - ./var.yml
+  roles:
+    - init
+    - k8s
+    - eg_prepare
+    - mep
+    - mecm-mepm
+    - eg_check

@@ -44,11 +44,13 @@
     path: "{{ GRAFANA_HOME }}"
     state: absent
   ignore_errors: yes
+  when: EG_MODE == "all" or EG_MODE == "edge"
 
 - name: Create Grafana Home Directory
   file:
     path: "{{ GRAFANA_HOME }}"
     state: directory
+  when: EG_MODE == "all" or EG_MODE == "edge"
 
 - name: Copy SSL Keys to Grafana Home Directory
   copy:
@@ -57,6 +59,7 @@
   loop:
     - tls.key
     - tls.crt
+  when: EG_MODE == "all" or EG_MODE == "edge"
 
 - name: Install Prometheus
   shell: |
@@ -74,7 +77,7 @@
       --set server.image.pullPolicy=IfNotPresent \
       --set pushgateway.image.pullPolicy=IfNotPresent \
       --set kubeStateMetrics.image.pullPolicy=IfNotPresent
-  when: ARCH == "arm64"
+  when: ARCH == "arm64" and ( EG_MODE == "all" or EG_MODE == "edge" )
 
 - name: Install Prometheus
   shell: |
@@ -92,7 +95,7 @@
       --set server.image.pullPolicy=IfNotPresent \
       --set pushgateway.image.pullPolicy=IfNotPresent \
       --set kubeStateMetrics.image.pullPolicy=IfNotPresent
-  when: ARCH == "amd64"
+  when: ARCH == "amd64" and ( EG_MODE == "all" or EG_MODE == "edge" )
 
 - name: Create Grafana PVC
   shell: "kubectl apply -f {{ TARBALL_PATH }}/conf/manifest/pv_pvc/{{ item }}"
@@ -114,7 +117,7 @@
       --set downloadDashboardsImage.pullPolicy=IfNotPresent \
       --set initChownData.image.pullPolicy=IfNotPresent \
       --set sidecar.image.pullPolicy=IfNotPresent
-  when: ARCH == "arm64"
+  when: ARCH == "arm64" and ( EG_MODE == "all" or EG_MODE == "edge" )
 
 - name: Install Grafana
   shell: |
@@ -130,7 +133,7 @@
       --set downloadDashboardsImage.pullPolicy=IfNotPresent \
       --set initChownData.image.pullPolicy=IfNotPresent \
       --set sidecar.image.pullPolicy=IfNotPresent
-  when: ARCH == "amd64"
+  when: ARCH == "amd64" and ( EG_MODE == "all" or EG_MODE == "edge" )
 
 - name: Create Secret edgegallery-ssl-secret
   shell: |
@@ -143,6 +146,7 @@
       --from-file=server.cer={{ TARBALL_PATH }}/conf/keys/tls.crt \
       --from-file=server_key.pem={{ TARBALL_PATH }}/conf/keys/encryptedtls.key \
       --from-literal=cert_pwd={{ cert_pwd }}
+  when: EG_MODE == "all" or EG_MODE == "controller"
 
 - name: Install Service Center
   shell: |
@@ -151,3 +155,4 @@
     --set images.pullPolicy={{ servicecenter_images_pullPolicy }} \
     --set global.ssl.enabled={{ servicecenter_global_ssl_enabled }} \
     --set global.ssl.secretName={{ servicecenter_global_ssl_secretName }}
+  when: EG_MODE == "all" or EG_MODE == "controller"

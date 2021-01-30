@@ -1,4 +1,10 @@
 ---
+
+- name: Check EG_MODE for MEP
+  fail:
+    msg: "Could not {{ OPERATION }} MEP with EG_MODE: {{ EG_MODE }}"
+  when: EG_MODE != "all" and EG_MODE != "edge"
+
 - name: Check whether MEP is Deployed
   shell: helm list | grep mep-edgegallery
   register: mepDeployed
