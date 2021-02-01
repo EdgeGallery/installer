@@ -15,3 +15,21 @@
 
 - name: Create ConfigMap
   shell: "kubectl apply -f {{ TARBALL_PATH }}/conf/edge/metallb/config-map.yaml"
+
+- name: Wait for metallb-system controller Pod is Ready
+  shell: kubectl get pods -A | grep "metallb-system" | grep "controller-" | grep "Running" | wc -l
+  register: controllerPodNum
+  until: controllerPodNum.stdout == "1"
+  retries: 30
+  delay: 5
+
+- name: Wait for metallb-system speaker Pod is Ready
+  shell: |
+    nodes_num=`kubectl get nodes | wc -l`
+    ((nodes_num=nodes_num-1))
+    speaker_num=`kubectl get pods -A | grep "metallb-system" | grep "speaker-" | grep "Running" | wc -l`
+    if [ $nodes_num == $speaker_num ]; then echo "true"; else echo "false"; fi
+  register: speakerPodNum
+  until: speakerPodNum.stdout == "true"
+  retries: 30
+  delay: 5

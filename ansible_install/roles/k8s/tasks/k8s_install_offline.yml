@@ -94,5 +94,34 @@
 - name: Create Kubeadm Token
   shell: "kubeadm token create --print-join-command > {{K8S_OFFLINE_DIR}}/k8s-worker.sh"
 
+- name: Wait for calico-node Pod is Ready
+  shell: |
+    nodes_num=`kubectl get nodes | wc -l`
+    ((nodes_num=nodes_num-1))
+    calico_num=`kubectl get pods -A | grep "calico-node" | grep "Running" | wc -l`
+    if [ $nodes_num == $calico_num ]; then echo "true"; else echo "false"; fi
+  register: calicoPodNum
+  until: calicoPodNum.stdout == "true"
+  retries: 30
+  delay: 5
+
+- name: Wait for kube-proxy Pod is Ready
+  shell: |
+    nodes_num=`kubectl get nodes | wc -l`
+    ((nodes_num=nodes_num-1))
+    kube_proxy_num=`kubectl get pods -A | grep "kube-proxy" | grep "Running" | wc -l`
+    if [ $nodes_num == $kube_proxy_num ]; then echo "true"; else echo "false"; fi
+  register: kubePodNum
+  until: kubePodNum.stdout == "true"
+  retries: 30
+  delay: 5
+
+- name: Wait for All K8s Pods are Ready
+  shell: kubectl -n kube-system get pods -o custom-columns=POD:metadata.name,READY-true:status.containerStatuses[*].ready
+  register: status
+  until: status.stdout.find("false") == -1
+  retries: 30
+  delay: 5
+
 - name: Check whether k8s is installed
   command: kubectl cluster-info

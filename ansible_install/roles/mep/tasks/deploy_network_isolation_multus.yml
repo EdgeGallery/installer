@@ -13,3 +13,14 @@
     ip link add eg-mm5 link {{EG_NODE_EDGE_MM5}} type macvlan mode bridge
     ip addr add 100.1.1.2/24 dev eg-mm5
     ip link set dev eg-mm5 up
+
+- name: Wait for kube-multus Pod is Ready
+  shell: |
+    nodes_num=`kubectl get nodes | wc -l`
+    ((nodes_num=nodes_num-1))
+    multus_num=`kubectl get pods -A | grep "kube-multus" | grep "Running" | wc -l`
+    if [ $nodes_num == $multus_num ]; then echo "true"; else echo "false"; fi
+  register: multusPodNum
+  until: multusPodNum.stdout == "true"
+  retries: 30
+  delay: 5
