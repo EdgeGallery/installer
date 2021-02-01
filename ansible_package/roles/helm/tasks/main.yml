@@ -55,7 +55,6 @@
     src: "/tmp/helm-download/linux-{{ ARCH }}/helm"
     dest: /usr/local/bin
     mode: 755
-    remote_src: yes
   when: helmInstalled is failed
 
 - name: Remove Helm Unarchive Directory

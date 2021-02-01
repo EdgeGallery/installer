@@ -29,7 +29,6 @@
   copy:
     src: docker.service
     dest: "{{ K8S_OFFLINE_DIR }}/docker"
-    remote_src: yes
 
 - name: Check Whether Docker Installed
   shell: docker version
@@ -58,7 +57,6 @@
     src: "/tmp/remote-platform/k8s/docker/{{ item }}"
     dest: /usr/bin
     mode: '0755'
-    remote_src: yes
   loop:
     - containerd
     - containerd-shim
@@ -74,7 +72,6 @@
   copy:
     src: "{{ K8S_OFFLINE_DIR }}/docker/docker.service"
     dest: /etc/systemd/system/
-    remote_src: yes
   when: dockerInstalled is failed
 
 - name: Remove /tmp/remote-platform/k8s

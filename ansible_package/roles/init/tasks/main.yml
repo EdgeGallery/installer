@@ -32,7 +32,6 @@
   copy:
     content: "Edge Gallery {{ EG_IMAGE_TAG }} [Build: {{ timestamp }}]"
     dest: "{{ TARBALL_PATH }}/version.txt"
-    remote_src: yes
 
 - name: Download X86 sshpass Deb
   get_url:
@@ -50,7 +49,6 @@
   copy:
     src: "{{ item }}"
     dest: "{{ TARBALL_PATH }}"
-    remote_src: yes
   loop:
     - LICENSE
     - README_cn.md
