@@ -16,7 +16,7 @@
   when: PORTAL_IP is undefined
 
 - name: Check whether DEVELOPER is Deployed
-  shell: helm list | grep developer-edgegallery
+  shell: "helm list | grep {{ DEVELOPER_HELM_RELEASE_NAME }}"
   register: developerDeployed 
   ignore_errors: yes
 

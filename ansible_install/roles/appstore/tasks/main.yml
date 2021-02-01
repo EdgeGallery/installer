@@ -16,7 +16,7 @@
   when: PORTAL_IP is undefined
 
 - name: Check whether APPSTORE is Deployed
-  shell: helm list | grep appstore-edgegallery
+  shell: "helm list -A | grep {{ APPSTORE_HELM_RELEASE_NAME }}"
   register: appstoreDeployed 
   ignore_errors: yes
 

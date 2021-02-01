@@ -11,6 +11,7 @@ TARBALL_FILE: /home/eg-all-amd64-latest-2021-01-25-12-16-55.tar.gz
 TARBALL_PATH: /home/edgegallery-offline
 
 # Whether clean the TARBALL_PATH before package
+# true means clean and false means not clean
 TARBALL_PATH_CLEANUP: true
 
 # Could be true or false
@@ -24,6 +25,11 @@ ENABLE_PERSISTENCE: false
 HELM_CHARTS_PATH: "{{ TARBALL_PATH }}/helm/helm-charts"
 EG_IMAGE_TAG: latest
 HELM_TAG: 1.0.0
+
+APPSTORE_HELM_RELEASE_NAME: appstore-edgegallery
+DEVELOPER_HELM_RELEASE_NAME: developer-edgegallery
+MECM_FE_HELM_RELEASE_NAME: mecm-fe-edgegallery
+ATP_HELM_RELEASE_NAME: atp-edgegallery
 
 APPSTORE_PORT: 30091
 DEVELOPER_PORT: 30092

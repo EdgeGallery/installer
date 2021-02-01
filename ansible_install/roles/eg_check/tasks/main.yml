@@ -1,4 +1,15 @@
 ---
+
+- name: Get Public IP
+  ipify_facts:
+  register: publicIP
+  when: PORTAL_IP is undefined
+
+- name: Set Portal IP
+  set_fact:
+    PORTAL_IP: "{{ publicIP.ansible_facts.ipify_public_ip }}"
+  when: PORTAL_IP is undefined
+
 - name: Check EG Deployment
   include: "check.yml"
   when: OPERATION == "install"

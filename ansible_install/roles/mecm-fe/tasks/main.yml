@@ -16,7 +16,7 @@
   when: PORTAL_IP is undefined
 
 - name: Check whether MECM_FE is Deployed
-  shell: helm list | grep mecm-fe-edgegallery
+  shell: "helm list | grep {{ MECM_FE_HELM_RELEASE_NAME }}"
   register: mecmFeDeployed
   ignore_errors: yes
 

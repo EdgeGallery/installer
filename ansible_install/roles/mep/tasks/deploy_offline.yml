@@ -1,11 +1,11 @@
 ---
 
 - name: Get EG_NODE_EDGE_MP1
-  shell: ip a | grep -B2 {{ ansible_eth0.ipv4.address }} | head -n1 | cut -d ":" -f2 |cut -d " " -f2
+  shell: ip a | grep -B2 {{ ansible_default_ipv4['address'] }} | head -n1 | cut -d ":" -f2 |cut -d " " -f2
   register: mp1
 
 - name: Get EG_NODE_EDGE_MM5
-  shell: ip a | grep -B2 {{ ansible_eth0.ipv4.address }} | head -n1 | cut -d ":" -f2 |cut -d " " -f2
+  shell: ip a | grep -B2 {{ ansible_default_ipv4['address'] }} | head -n1 | cut -d ":" -f2 |cut -d " " -f2
   register: mm5
 
 - name: Set EG_NODE_EDGE_MP1
@@ -51,5 +51,5 @@
 
 - name: Check MEP Status
   uri:
-    url: "https://{{ ansible_eth0.ipv4.address }}:30443/mepauth/health"
+    url: "https://{{ ansible_default_ipv4['address'] }}:30443/mepauth/health"
     validate_certs: no

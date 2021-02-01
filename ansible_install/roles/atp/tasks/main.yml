@@ -16,7 +16,7 @@
   when: PORTAL_IP is undefined
 
 - name: Check whether ATP is Deployed
-  shell: helm list | grep atp-edgegallery
+  shell: "helm list | grep {{ ATP_HELM_RELEASE_NAME }}"
   register: atpDeployed 
   ignore_errors: yes
 

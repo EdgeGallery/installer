@@ -2,7 +2,7 @@
 
 - name: Deploy MECM-FE
   shell: |
-    helm install --wait mecm-fe-edgegallery {{ HELM_CHARTS_PATH }}/edgegallery/mecm-fe-{{ HELM_TAG }}.tgz \
+    helm install --wait {{ MECM_FE_HELM_RELEASE_NAME }} {{ HELM_CHARTS_PATH }}/edgegallery/mecm-fe-{{ HELM_TAG }}.tgz \
     --set global.oauth2.authServerAddress=https://{{ PORTAL_IP }}:{{ USER_MGMT_PORT }} \
     --set images.mecmFe.repository={{ mecm_fe_images_mecmFe_repository }} \
     --set images.initservicecenter.repository={{ mecm_fe_images_initservicecenter_repository }} \

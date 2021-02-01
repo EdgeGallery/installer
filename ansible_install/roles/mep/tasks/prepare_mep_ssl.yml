@@ -77,7 +77,7 @@
       --from-file=server.key={{ MEP_CERTS_DIR }}/{{ CERT_NAME }}_tls.key \
       --from-file=server.crt={{ MEP_CERTS_DIR }}/{{ CERT_NAME }}_tls.crt
 
-- name: Create Secret pg-secret
+- name: Create Secret mep-ssl
   shell: |
     kubectl -n mep create secret generic mep-ssl \
       --from-literal=root_key="$(openssl rand -base64 256 | tr -d '\n' | tr -dc '[[:alnum:]]' | cut -c -256)" \

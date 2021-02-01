@@ -1,5 +1,25 @@
 ---
 
+- name: Check EG_MODE
+  fail:
+    msg: "EG_MODE='{{ EG_MODE }}' is invalid, could only be all, edge or controller"
+  when: EG_MODE != "all" and EG_MODE != "edge" and EG_MODE != "controller"
+
+- name: Check OPERATION
+  fail:
+    msg: "OPERATION='{{ OPERATION }}' is invalid, could only be install or uninstall"
+  when: OPERATION != "install" and OPERATION != "uninstall"
+
+- name: Check NETWORK_MODE
+  fail:
+    msg: "NETWORK_MODE='{{ NETWORK_MODE }}' is invalid, could only be online or offline"
+  when: NETWORK_MODE != "online" and NETWORK_MODE != "offline"
+
+- name: Check ARCH
+  fail:
+    msg: "ARCH='{{ ARCH }}' is invalid, could only be amd64 or arm64"
+  when: ARCH != "amd64" and ARCH != "arm64"
+
 - name: Init Env Online
   import_tasks: "init_online.yml"
   when: OPERATION == "install" and NETWORK_MODE == "online"

@@ -102,6 +102,7 @@
   loop:
     - pv-volume.yaml
     - pv-claim.yaml
+  when: EG_MODE == "all" or EG_MODE == "edge"
 
 - name: Install Grafana
   shell: |
