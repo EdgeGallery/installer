@@ -9,6 +9,7 @@
     dest: /usr/bin
     src: "{{ K8S_OFFLINE_DIR }}/k8s/{{ item }}"
     mode: '0755'
+    remote_src: yes
   loop:
     - kubectl
     - kubeadm
@@ -18,6 +19,7 @@
   copy:
     dest: /etc/systemd/system/
     src: "{{ K8S_OFFLINE_DIR }}/k8s/kubelet.service"
+    remote_src: yes
 
 - name: Create the Directory for Kubelet
   file:
@@ -28,6 +30,7 @@
   copy:
     dest: /etc/systemd/system/kubelet.service.d
     src: "{{ K8S_OFFLINE_DIR }}/k8s/10-kubeadm.conf"
+    remote_src: yes
 
 - name: System Daemon Reload
   command: systemctl daemon-reload
@@ -62,6 +65,7 @@
   copy:
     dest: /etc/sysctl.d/
     src: "{{ K8S_OFFLINE_DIR }}/k8s/k8s.conf"
+    remote_src: yes
 
 - name: Load Config Files
   command: sysctl --system
@@ -84,6 +88,7 @@
   copy:
     src: /etc/kubernetes/admin.conf
     dest: ~/.kube/config
+    remote_src: yes
 
 - name: Apply calico
   shell: "kubectl apply -f {{K8S_OFFLINE_DIR}}/k8s/calico.yaml"

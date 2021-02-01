@@ -4,8 +4,11 @@ NETWORK_MODE: offline
 # Architecture amd64 or arm64
 ARCH: amd64
 
+EG_IMAGE_TAG: latest
+
 # Absolute file path of source offline tarball file
-TARBALL_FILE: /home/eg-all-amd64-latest-2021-01-25-12-16-55.tar.gz
+TARBALL_FILE: "/home/ansible-{{ EG_IMAGE_TAG }}.tar.gz"
+COPY_TAR_TO_TARGET: yes
 
 # Dest path where offline tarball be decompossed into
 TARBALL_PATH: /home/edgegallery-offline
@@ -23,7 +26,6 @@ ENABLE_PERSISTENCE: false
 # NFS_PATH:
 
 HELM_CHARTS_PATH: "{{ TARBALL_PATH }}/helm/helm-charts"
-EG_IMAGE_TAG: latest
 HELM_TAG: 1.0.0
 
 APPSTORE_HELM_RELEASE_NAME: appstore-edgegallery

@@ -21,7 +21,7 @@
   unarchive:
     src: "{{ HELM_TARBALL_FILE }}"
     dest: "{{ HELM_OFFLINE_DIR }}"
-    copy: yes
+    copy: no
   register: unarchiveHelm
   when: helmVersion.stdout != (HELM_VERSION)
 
@@ -30,6 +30,7 @@
     src: "{{ HELM_OFFLINE_DIR }}/linux-{{ ARCH }}/helm"
     dest: /usr/local/bin/
     mode: '0755'
+    remote_src: yes
   when: helmVersion.stdout != (HELM_VERSION) and unarchiveHelm is succeeded
 
 - name: Check Helm Installed
@@ -56,6 +57,7 @@
   copy:
     src: "{{ TARBALL_PATH }}/conf/keys/{{ item }}"
     dest: "{{ GRAFANA_HOME }}"
+    remote_src: yes
   loop:
     - tls.key
     - tls.crt

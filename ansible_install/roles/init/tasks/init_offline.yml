@@ -16,6 +16,6 @@
   unarchive:
     src: "{{ TARBALL_FILE }}"
     dest: "{{ TARBALL_PATH }}"
-    copy: yes
+    copy: "{{ COPY_TAR_TO_TARGET }}"
   register: unarchivePackage
   when: pathCreated is succeeded

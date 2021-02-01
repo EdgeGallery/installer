@@ -9,7 +9,7 @@
   unarchive:
     src: "{{ K8S_TARBALL_FILE }}"
     dest: "{{ K8S_OFFLINE_DIR }}"
-    copy: yes
+    copy: no
 
 - name: Check whether Docker is installed
   command: docker version
@@ -44,6 +44,7 @@
     src: "{{ K8S_OFFLINE_DIR }}/cni/{{ item }}"
     dest: "{{ CNI_BIN_PATH }}"
     mode: '0755'
+    remote_src: yes
   loop:
     - macvlan
     - host-local

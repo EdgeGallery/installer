@@ -9,13 +9,14 @@
   unarchive:
     src: "{{ DOCKER_TARBALL_FILE }}"
     dest: "{{ DOCKER_OFFLINE_DIR }}"
-    copy: yes
+    copy: no
 
 - name: Copy Docker Exec File to /usr/bin
   copy:
     dest: /usr/bin
     src: "{{ DOCKER_OFFLINE_DIR }}/docker/{{ item }}"
     mode: '0755'
+    remote_src: yes
   loop:
     - containerd
     - containerd-shim
@@ -30,6 +31,7 @@
   copy:
     dest: /etc/systemd/system/
     src: "{{ DOCKER_OFFLINE_DIR }}/docker.service"
+    remote_src: yes
 
 - name: System Daemon Reload
   command: systemctl daemon-reload

@@ -17,6 +17,7 @@
   copy:
     src: "{{ item }}"
     dest: "{{ K8S_OFFLINE_DIR }}/k8s"
+    remote_src: yes
   loop:
     - 10-kubeadm.conf
     - k8s.conf
