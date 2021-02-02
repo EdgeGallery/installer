@@ -1274,7 +1274,7 @@ function install_user-mgmt ()
     --set global.oauth2.clients.appstore.clientUrl=https://$NODEIP:$APPSTORE_PORT,\
 global.oauth2.clients.developer.clientUrl=https://$NODEIP:$DEVELOPER_PORT,\
 global.oauth2.clients.mecm.clientUrl=https://$NODEIP:$MECM_PORT,\
-global.oauth2.clients.atp.clientUrl=https://$NODEIP:$ATP_PORT, \
+global.oauth2.clients.atp.clientUrl=https://$NODEIP:$ATP_PORT,\
 global.oauth2.clients.lab.clientUrl=https://$NODEIP:$LAB_PORT, \
     --set jwt.secretName=$usermgmt_jwt_secretName \
     --set images.usermgmt.repository=$usermgmt_images_usermgmt_repository \
