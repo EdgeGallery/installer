@@ -43,6 +43,7 @@ APPSTORE_PORT=30091
 MECM_PORT=30093
 ATP_PORT=30094
 USER_MGMT=30067
+LAB_PORT=30096
 
 #===========================k8s-offline=========================================
 export K8S_DOCKER_IMAGES="k8s.gcr.io/kube-proxy:v1.18.7 \
@@ -1274,6 +1275,7 @@ function install_user-mgmt ()
 global.oauth2.clients.developer.clientUrl=https://$NODEIP:$DEVELOPER_PORT,\
 global.oauth2.clients.mecm.clientUrl=https://$NODEIP:$MECM_PORT,\
 global.oauth2.clients.atp.clientUrl=https://$NODEIP:$ATP_PORT, \
+global.oauth2.clients.lab.clientUrl=https://$NODEIP:$LAB_PORT, \
     --set jwt.secretName=$usermgmt_jwt_secretName \
     --set images.usermgmt.repository=$usermgmt_images_usermgmt_repository \
     --set images.postgres.repository=$usermgmt_images_postgres_repository \
