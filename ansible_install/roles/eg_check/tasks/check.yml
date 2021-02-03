@@ -45,3 +45,4 @@
     echo -e "{{ PURPLE }}                           *{{ GREEN }} * *" > /dev/tty
     echo -e "{{ GREEN }}                             *{{ NC }}" > /dev/tty
   when: nonRunningPod.stderr == "No resources found"
+  ignore_errors: yes
