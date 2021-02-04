@@ -5,6 +5,15 @@ NETWORK_MODE: offline
 ARCH: amd64
 
 EG_IMAGE_TAG: latest
+HELM_TAG: 1.0.0
+
+# Could be true or false
+# Currently only support false
+ENABLE_PERSISTENCE: false
+
+# Should set the following 2 params if ENABLE_PERSISTENCE is true
+# NFS_SERVER_IP:
+# NFS_PATH:
 
 # Absolute file path of source offline tarball file
 TARBALL_FILE: "/home/ansible-{{ EG_IMAGE_TAG }}.tar.gz"
@@ -17,16 +26,7 @@ TARBALL_PATH: /home/edgegallery-offline
 # true means clean and false means not clean
 TARBALL_PATH_CLEANUP: true
 
-# Could be true or false
-# Currently only support false
-ENABLE_PERSISTENCE: false
-
-# Should set the following 2 params if ENABLE_PERSISTENCE is true
-# NFS_SERVER_IP:
-# NFS_PATH:
-
 HELM_CHARTS_PATH: "{{ TARBALL_PATH }}/helm/helm-charts"
-HELM_TAG: 1.0.0
 
 APPSTORE_HELM_RELEASE_NAME: appstore-edgegallery
 DEVELOPER_HELM_RELEASE_NAME: developer-edgegallery
