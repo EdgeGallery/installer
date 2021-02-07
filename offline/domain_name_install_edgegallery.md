@@ -1,4 +1,5 @@
-域名访问edgegallery部署指导
+## 域名访问Edgegallery部署指导
+
 ===========================
 
 域名配置可以分为三步：
@@ -9,24 +10,25 @@
 
 3.配置ingress，建立域名与k8s service间的关系
 
-1.添加域名
+### 一、添加域名
+
 ----------
 
-在华为云添加域名过程：在业务栏查找
+在华为云添加域名过程:在业务栏查找
 域名注册→域名解析→公网域名解析→点击对应的公网域名→添加记录集→填写域名→填写iP
 
-![](media/image1.png){width="7.889583333333333in"
-height="4.691666666666666in"}
+![输入图片说明](https://images.gitee.com/uploads/images/2021/0207/170612_448060b8_7624663.png "屏幕截图.png")
+### 二、在机器上安装k8s
 
-2.在机器上安装k8s
 -----------------
 
 (具体步骤参https://zhuanlan.zhihu.com/p/138554103)
 
-安装helm
+### 三、安装helm
+
 --------
 
-wget *https://get.helm.sh/helm-v3.2.4-linux-*amd64.tar.gz
+wget https://get.helm.sh/helm-v3.2.4-linux-amd64.tar.gz
 
 tar -zxvf helm-v3.2.4-linux-amd64.tar.gz
 
@@ -34,7 +36,8 @@ cp ./linux-amd64/helm /usr/local/bin/
 
 helm version
 
-4.**安装ingress**
+### 四、安装ingress
+
 
 kubectl label node &lt;node\_name&gt; node=edge
 \#&lt;node\_name&gt;指本机的hostname
@@ -46,7 +49,7 @@ helm install nginx-ingress-controller nginx-ingress-1.41.2.tgz --set
 controller.kind=DaemonSet --set controller.nodeSelector.node=edge --set
 controller.hostNetwork=true
 
-### *编辑value.yaml文件*
+#### 编辑value.yaml文件
 
 cd /root/
 
@@ -56,7 +59,7 @@ git clone *https://gitee.com/edgegallery/helm-charts.git*
 开启ingress、ssl，更新hosts
 和oauth填写上面添加的域名，根据需求决定是否开启sms
 
-### 配置ingress.yaml
+#### 配置ingress.yaml
 
 通过kind类型为ingress的yaml文件配置ingress，也可以通过helm
 chart包进行ingress配置，此处采用第二种方式
@@ -65,16 +68,19 @@ helm install edgegallery-ingress /root/helm-charts/edgegallery-center -f
 /root/helm-charts/edgegallery-center/values.yaml
 \#部署ingress配置实现访问域名与k8s service间的映射
 
-5.登录swr镜像仓库
+### 五、登录swr镜像仓库
+
 -----------------
 
-docker登录swr
+#### docker登录swr
+
 
 docker login -u ap-southeast-1@0K1RQ5EAF2QRKQWQNFY0 -p
 5468d8a0ebc64936a8196742d601bb95b99f1d94ad19c686488831e3dae79bb3
 swr.ap-southeast-1.myhuaweicloud.com
 
-k8s配置镜像拉取密钥
+#### k8s配置镜像拉取密钥
+
 
 kubectl create secret docker-registry swrregcred \\
 
@@ -87,7 +93,8 @@ kubectl create secret docker-registry swrregcred \\
 kubectl patch serviceaccount default -p '{"imagePullSecrets": \[{"name":
 "swrregcred"}\]}'
 
-6.生成ca和ssl证书文件
+### 六、生成ca和ssl证书文件
+
 ---------------------
 
 docker pull
@@ -112,7 +119,8 @@ tar -zxvf v1.0.1.tar.gz
 
 cp ./conf/keys/postgres\_init.sql /root/helm-charts/keys
 
-7.生成secret
+### 七、生成secret
+
 ------------
 
 kubectl create secret generic edgegallery-ingress-secret \\
@@ -179,12 +187,13 @@ kubectl create secret generic edgegallery-mecm-secret \\
 
 --from-literal=edgeRepoPassword=admin123
 
-8.安装controller的模块
+### 八、安装controller的模块
+
 ----------------------
 
 > helm install service-center-edgegallery      /root/helm-charts/service-center        -f         /root/helm-charts/edgegallery-center/values.yaml 
 > 
-> helm install user-mgmt-edgegallery           /root/helm-charts/user-mgmt              -f         /root/helm-charts/edgegallery-center/values.yaml
+> helm install user-mgmt-edgegallery           /root/helm-charts/user-mgmt             -f         /root/helm-charts/edgegallery-center/values.yaml
 >
 > helm install developer-edgegallery             /root/helm-charts/developer                -f         /root/helm-charts/edgegallery-center/values.yaml
 > 
