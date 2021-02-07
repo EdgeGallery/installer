@@ -10,31 +10,6 @@
   when: EG_MODE == "all" or EG_MODE == "controller"
   ignore_errors: yes
 
-- name: Uninstall Grafana
-  shell: helm uninstall mep-grafana
-  when: EG_MODE == "all" or EG_MODE == "edge"
-  ignore_errors: yes
-
-- name: Delete Grafana PVC
-  shell: "kubectl delete -f {{ TARBALL_PATH }}/conf/manifest/pv_pvc/{{ item }}"
-  loop:
-    - pv-claim.yaml
-    - pv-volume.yaml
-  when: EG_MODE == "all" or EG_MODE == "edge"
-  ignore_errors: yes
-
-- name: Remove Grafana Home Directory
-  file:
-    path: "{{ GRAFANA_HOME }}"
-    state: absent
-  when: EG_MODE == "all" or EG_MODE == "edge"
-  ignore_errors: yes
-
-- name: Uninstall Prometheus
-  shell: helm uninstall mep-prometheus
-  when: EG_MODE == "all" or EG_MODE == "edge"
-  ignore_errors: yes
-
 - name: Uninstall Helm
   file:
     path: /usr/local/bin/helm

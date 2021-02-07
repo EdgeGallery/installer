@@ -7,6 +7,7 @@
     --set images.mecmFe.repository={{ mecm_fe_images_mecmFe_repository }} \
     --set images.initservicecenter.repository={{ mecm_fe_images_initservicecenter_repository }} \
     --set images.mecmFe.tag={{ mecm_fe_images_mecmFe_tag }} \
+    --set images.initservicecenter.tag={{ mecm_fe_images_initservicecenter_tag }} \
     --set images.mecmFe.pullPolicy={{ mecm_fe_images_mecmFe_pullPolicy }} \
     --set images.initservicecenter.pullPolicy={{ mecm_fe_images_initservicecenter_pullPolicy }} \
     --set global.ssl.enabled={{ mecm_fe_global_ssl_enabled }} \

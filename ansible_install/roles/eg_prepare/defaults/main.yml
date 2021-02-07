@@ -4,17 +4,12 @@ HELM_OFFLINE_DIR: "{{ TARBALL_PATH }}/helm"
 
 CERT_VALIDITY_IN_DAYS: 365
 
-GRAFANA_HOME: /mnt/grafana
-GRAFANA_CHART_TAG: 5.5.5
-
-PROM_CHART_TAG: 9.3.1
-
 keystorePassword: te9Fmv%qaq
 keystoreType: PKCS12
 keyAlias: edgegallery
 cert_pwd: te9Fmv%qaq
 
-servicecenter_images_repository: edgegallery/service-center
+servicecenter_images_repository: eg-common/service-center
 servicecenter_images_pullPolicy: IfNotPresent
 servicecenter_global_ssl_enabled: true
 servicecenter_global_ssl_secretName: edgegallery-ssl-secret

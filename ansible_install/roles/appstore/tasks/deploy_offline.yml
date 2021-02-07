@@ -10,6 +10,8 @@
     --set images.initservicecenter.repository={{ appstore_images_initservicecenter_repository }} \
     --set images.appstoreFe.tag={{ appstore_images_appstoreFe_tag }} \
     --set images.appstoreBe.tag={{ appstore_images_appstoreBe_tag }} \
+    --set images.postgres.tag={{ appstore_images_postgres_tag }} \
+    --set images.initservicecenter.tag={{ appstore_images_initservicecenter_tag }} \
     --set images.appstoreFe.pullPolicy={{ appstore_images_appstoreFe_pullPolicy }} \
     --set images.appstoreBe.pullPolicy={{ appstore_images_appstoreBe_pullPolicy }} \
     --set images.postgres.pullPolicy={{ appstore_images_postgres_pullPolicy }} \

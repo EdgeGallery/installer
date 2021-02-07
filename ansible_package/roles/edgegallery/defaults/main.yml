@@ -27,12 +27,11 @@ EG_IMAGE_LIST_CONTROLLER_X86:
   - swr.ap-southeast-1.myhuaweicloud.com/edgegallery/atp-be:{{ EG_IMAGE_TAG }}
   - swr.ap-southeast-1.myhuaweicloud.com/edgegallery/deploy-tool:{{ EG_IMAGE_TAG }}
   - swr.ap-southeast-1.myhuaweicloud.com/edgegallery/tool-chain:{{ EG_IMAGE_TAG }}
-  - swr.ap-southeast-1.myhuaweicloud.com/edgegallery/curl:latest
-  - swr.ap-southeast-1.myhuaweicloud.com/edgegallery/redis:6.0.3
-  - swr.ap-southeast-1.myhuaweicloud.com/edgegallery/postgres:12.2
-  - swr.ap-southeast-1.myhuaweicloud.com/edgegallery/porting-advisor:latest
-  - swr.ap-southeast-1.myhuaweicloud.com/edgegallery/service-center:latest
-  - postgres:12.3
+  - swr.ap-southeast-1.myhuaweicloud.com/eg-common/curl:7.75.0
+  - swr.ap-southeast-1.myhuaweicloud.com/eg-common/redis:6.0.3
+  - swr.ap-southeast-1.myhuaweicloud.com/eg-common/postgres:12.3
+  - swr.ap-southeast-1.myhuaweicloud.com/eg-common/porting-advisor:latest
+  - swr.ap-southeast-1.myhuaweicloud.com/eg-common/service-center:latest
 
 EG_IMAGE_LIST_EDGE_X86:
   - swr.ap-southeast-1.myhuaweicloud.com/edgegallery/mepauth:{{ EG_IMAGE_TAG }}
@@ -43,22 +42,10 @@ EG_IMAGE_LIST_EDGE_X86:
   - swr.ap-southeast-1.myhuaweicloud.com/edgegallery/mecm-applcm-k8splugin:{{ EG_IMAGE_TAG }}
   - swr.ap-southeast-1.myhuaweicloud.com/edgegallery/mecm-apprulemgr:{{ EG_IMAGE_TAG }}
   - swr.ap-southeast-1.myhuaweicloud.com/edgegallery/deploy-tool:{{ EG_IMAGE_TAG }}
-  - prom/alertmanager:v0.18.0
-  - prom/node-exporter:v0.18.0
-  - prom/prometheus:v2.13.1
-  - prom/pushgateway:v0.8.0
-  - quay.io/coreos/kube-state-metrics:v1.6.0
-  - jimmidyson/configmap-reload:v0.2.2
-  - curlimages/curl:latest
-  - grafana/grafana:7.1.1
-  - bats/bats:v1.1.0
-  - busybox:1.31.1
-  - nginx:stable
-  - postgres:12.3
-  - kong:2.0.4-ubuntu
-  - docker.io/nfvpe/multus:stable
-  - docker.io/dougbtv/whereabouts:latest
-  - curlimages/curl:7.70.0
+  - swr.ap-southeast-1.myhuaweicloud.com/eg-common/postgres:12.3
+  - swr.ap-southeast-1.myhuaweicloud.com/eg-common/kong:2.0.4-ubuntu
+  - swr.ap-southeast-1.myhuaweicloud.com/eg-common/nfvpe/multus:stable
+  - swr.ap-southeast-1.myhuaweicloud.com/eg-common/dougbtv/whereabouts:latest
   - metallb/speaker:v0.9.3
   - metallb/controller:v0.9.3
 
@@ -71,24 +58,12 @@ EG_IMAGE_LIST_EDGE_ARM64:
   - swr.ap-southeast-1.myhuaweicloud.com/edgegallery/mecm-applcm-k8splugin:{{ EG_IMAGE_TAG }}
   - swr.ap-southeast-1.myhuaweicloud.com/edgegallery/mecm-apprulemgr:{{ EG_IMAGE_TAG }}
   - swr.ap-southeast-1.myhuaweicloud.com/edgegallery/deploy-tool:{{ EG_IMAGE_TAG }}
-  - prom/alertmanager:v0.18.0
-  - prom/node-exporter:v0.18.1
-  - prom/prometheus:v2.15.2
-  - prom/pushgateway:v1.0.1
-  - carlosedp/kube-state-metrics:v1.7.2
-  - jimmidyson/configmap-reload:latest-arm64
-  - kiwigrid/k8s-sidecar:0.1.151
-  - grafana/grafana-arm64v8-linux:6.5.2-ubuntu
-  - lucashalbert/curl:arm64v8-7.66.0-r0
-  - bats/bats:v1.1.0
-  - busybox:1.31.1
-  - nginx:stable
-  - postgres:12.3
-  - kong:2.0.4-ubuntu
+  - swr.ap-southeast-1.myhuaweicloud.com/eg-common/postgres:12.3
+  - swr.ap-southeast-1.myhuaweicloud.com/eg-common/kong:2.0.4-ubuntu
+  - swr.ap-southeast-1.myhuaweicloud.com/eg-common/nfvpe/multus:stable
+  - swr.ap-southeast-1.myhuaweicloud.com/eg-common/dougbtv/whereabouts:latest
   - metallb/speaker:v0.9.3
   - metallb/controller:v0.9.3
-  - docker.io/nfvpe/multus:stable-arm64v8
-  - swr.ap-southeast-1.myhuaweicloud.com/edgegallery/whereabouts-arm64:latest
 
 EG_IMAGE_LIST_CONTROLLER_ARM64: "{{ EG_IMAGE_LIST_CONTROLLER_X86 }}"
 

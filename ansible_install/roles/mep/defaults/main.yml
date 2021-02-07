@@ -10,11 +10,19 @@ DOMAIN_NAME: edgegallery
 
 ipam_type: host-local
 
+mep_images_multus_repository: eg-common/nfvpe/multus
+mep_images_multus_tag: stable
+
 mep_images_mep_repository: edgegallery/mep
 mep_images_mepauth_repository: edgegallery/mepauth
 mep_images_dns_repository: edgegallery/mep-dns-server
-mep_images_kong_repository: kong
-mep_images_postgres_repository: postgres
+mep_images_kong_repository: eg-common/kong
+mep_images_postgres_repository: eg-common/postgres
+mep_images_mep_tag: "{{ EG_IMAGE_TAG }}"
+mep_images_mepauth_tag: "{{ EG_IMAGE_TAG }}"
+mep_images_dns_tag: "{{ EG_IMAGE_TAG }}"
+mep_images_postgres_tag: 12.3
+mep_images_kong_tag: 2.0.4-ubuntu
 mep_images_mep_pullPolicy: IfNotPresent
 mep_images_mepauth_pullPolicy: IfNotPresent
 mep_images_dns_pullPolicy: IfNotPresent

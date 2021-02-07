@@ -2,10 +2,13 @@ encryptPassword: te9Fmv%qaq
 
 usermgmt_jwt_secretName: user-mgmt-jwt-secret
 usermgmt_images_usermgmt_repository: edgegallery/user-mgmt
-usermgmt_images_postgres_repository: edgegallery/postgres
-usermgmt_images_redis_repository: edgegallery/redis
-usermgmt_images_initservicecenter_repository: edgegallery/curl
+usermgmt_images_postgres_repository: eg-common/postgres
+usermgmt_images_redis_repository: eg-common/redis
+usermgmt_images_initservicecenter_repository: eg-common/curl
 usermgmt_images_usermgmt_tag: "{{ EG_IMAGE_TAG }}"
+usermgmt_images_postgres_tag: 12.3
+usermgmt_images_redis_tag: 6.0.3
+usermgmt_images_initservicecenter_tag: 7.75.0
 usermgmt_images_usermgmt_pullPolicy: IfNotPresent
 usermgmt_images_postgres_pullPolicy: IfNotPresent
 usermgmt_images_redis_pullPolicy: IfNotPresent

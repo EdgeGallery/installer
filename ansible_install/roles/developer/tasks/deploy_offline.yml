@@ -13,6 +13,9 @@
     --set images.developerFe.tag={{ developer_images_developerFe_tag }} \
     --set images.developerBe.tag={{ developer_images_developerBe_tag }} \
     --set images.toolChain.tag={{ developer_images_toolChain_tag }} \
+    --set images.postgres.tag={{ developer_images_postgres_tag }} \
+    --set images.initservicecenter.tag={{ developer_images_initservicecenter_tag }} \
+    --set images.portingAdvisor.tag={{ developer_images_portingAdvisor_tag }} \
     --set images.developerFe.pullPolicy={{ developer_images_developerFe_pullPolicy }} \
     --set images.developerBe.pullPolicy={{ developer_images_developerBe_pullPolicy }} \
     --set images.postgres.pullPolicy={{ developer_images_postgres_pullPolicy }} \

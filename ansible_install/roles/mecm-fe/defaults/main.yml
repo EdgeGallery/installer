@@ -1,6 +1,7 @@
 mecm_fe_images_mecmFe_repository: edgegallery/mecm-fe
 mecm_fe_images_initservicecenter_repository: edgegallery/curl
 mecm_fe_images_mecmFe_tag: "{{ EG_IMAGE_TAG }}"
+mecm_fe_images_initservicecenter_tag: 7.75.0
 mecm_fe_images_mecmFe_pullPolicy: IfNotPresent
 mecm_fe_images_initservicecenter_pullPolicy: IfNotPresent
 mecm_fe_global_ssl_enabled: true

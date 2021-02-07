@@ -16,6 +16,9 @@
     --set images.redis.repository={{ usermgmt_images_redis_repository }} \
     --set images.initservicecenter.repository={{ usermgmt_images_initservicecenter_repository }} \
     --set images.usermgmt.tag={{ usermgmt_images_usermgmt_tag }} \
+    --set images.postgres.tag={{ usermgmt_images_postgres_tag }} \
+    --set images.redis.tag={{ usermgmt_images_redis_tag }} \
+    --set images.initservicecenter.tag={{ usermgmt_images_initservicecenter_tag }} \
     --set images.usermgmt.pullPolicy={{ usermgmt_images_usermgmt_pullPolicy }} \
     --set images.postgres.pullPolicy={{ usermgmt_images_postgres_pullPolicy }} \
     --set images.redis.pullPolicy={{ usermgmt_images_redis_pullPolicy }} \

@@ -41,6 +41,8 @@
     --set images.mep.tag={{ EG_IMAGE_TAG }} \
     --set images.mepauth.tag={{ EG_IMAGE_TAG }} \
     --set images.dns.tag={{ EG_IMAGE_TAG }} \
+    --set images.kong.tag={{mep_images_kong_tag}} \
+    --set images.postgres.tag={{mep_images_postgres_tag}} \
     --set images.mep.pullPolicy={{ mep_images_mep_pullPolicy }} \
     --set images.mepauth.pullPolicy={{ mep_images_mepauth_pullPolicy }} \
     --set images.dns.pullPolicy={{ mep_images_dns_pullPolicy }} \
