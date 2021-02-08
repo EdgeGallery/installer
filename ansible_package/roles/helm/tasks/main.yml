@@ -41,7 +41,7 @@
 - name: Create Directory to Unarchive Helm
   file:
     path: /tmp/helm-download
-    absent: directory
+    state: directory
   when: helmInstalled is failed
 
 - name: Unarchive Helm Offline Install Package
