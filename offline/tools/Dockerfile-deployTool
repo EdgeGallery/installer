@@ -1,26 +1,9 @@
-FROM ubuntu:16.04
-RUN apt-get update
-RUN apt-get install -y build-essential cmake zlib1g-dev libcppunit-dev git subversion wget && rm -rf /var/lib/apt/lists/*
-RUN wget https://www.openssl.org/source/openssl-1.0.2g.tar.gz -O - | tar -xz
-WORKDIR /openssl-1.0.2g
-RUN ./config --prefix=/usr/local/openssl --openssldir=/usr/local/openssl && make && make install
+FROM swr.ap-southeast-1.myhuaweicloud.com/eg-common/openjdk:8u201-jre-alpine
+
+RUN apk update && apk add openssl
+
 RUN mkdir /certs
 
-# Install OpenJDK-8
-RUN apt-get update && \
-    apt-get install -y openjdk-8-jdk && \
-    apt-get install -y ant && \
-    apt-get clean;
-
-# Fix certificate issues
-RUN apt-get update && \
-    apt-get install ca-certificates-java && \
-    apt-get clean && \
-    update-ca-certificates -f;
-
-# Setup JAVA_HOME -- useful for docker commandline
-ENV JAVA_HOME /usr/lib/jvm/java-8-openjdk-amd64/
-RUN export JAVA_HOME
 ENV CERT_VALIDITY_IN_DAYS 365
 
 #Certifcates will be copied at /certs; docker run -v host-path:/certs image-name
