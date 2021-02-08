@@ -1,7 +1,7 @@
 - name: Set multus AMD64 Images
   replace:
     path: "{{ TARBALL_PATH }}/conf/edge/network-isolation/multus.yaml"
-    regexp: "image: docker.io/nfvpe/multus:stable"
+    regexp: "image: docker.io/nfvpe/multus:stable$"
     replace: "image: {{mep_images_multus_repository}}:{{mep_images_multus_tag}}"
 
 - name: Set multus ARM64 Images
