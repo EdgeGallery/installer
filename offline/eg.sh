@@ -1534,8 +1534,8 @@ function install_EdgeGallery ()
     install_mep
     INSTALLER_INDEX="E.2:"
     install_mecm-mepm
-    INSTALLER_INDEX="E.3:"
-    install_common-svc
+#    INSTALLER_INDEX="E.3:"
+#    install_common-svc
     INSTALLER_INDEX=""
   fi
   if [[ ($FEATURE == 'controller' || $FEATURE == 'all') && ($DEPLOY_TYPE == 'nodePort') ]]; then
@@ -1581,8 +1581,8 @@ function uninstall_EdgeGallery ()
      uninstall_mep
      INSTALLER_INDEX="E.2:"
      uninstall_mecm-mepm
-     INSTALLER_INDEX="E.3:"
-     uninstall_common-svc
+#     INSTALLER_INDEX="E.3:"
+#     uninstall_common-svc
    fi
    if [[ ($FEATURE == 'controller' || $FEATURE == 'all') && ($DEPLOY_TYPE == 'nodePort') ]]; then
      INSTALLER_INDEX="C.1:"
