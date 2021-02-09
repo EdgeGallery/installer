@@ -1,8 +1,7 @@
 ---
 
 - name: Load k8s Images
-  command: docker load --input "{{ DOCKER_OFFLINE_DIR }}/images/{{ item }}.tar.gz"
-  loop: "{{ K8S_TAR_IMAGES }}"
+  command: docker load --input "{{ DOCKER_OFFLINE_DIR }}/images/{{ K8S_TAR_IMAGE }}"
 
 - name: Install k8s Tools
   copy:

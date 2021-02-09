@@ -98,8 +98,9 @@
     path: "{{ DOCKER_REGISTRY }}"
     state: directory
 
-- name: Pull Docker Registry Image
-  shell: docker pull registry:2
-
-- name: Save Docker Registry Image
-  shell: docker save registry:2 | gzip > {{ DOCKER_REGISTRY }}/registry-2.tar.gz
+- name: Pull Retag and Save Docker Registry Image
+  shell: |
+    docker pull {{ DOCKER_REGISTRY_IMAGE }}
+    new_image_name=`echo {{ DOCKER_REGISTRY_IMAGE }} | sed -e "s/swr.ap-southeast-1.myhuaweicloud.com\///g"`
+    docker image tag {{ DOCKER_REGISTRY_IMAGE }} $new_image_name
+    docker save $new_image_name | gzip > {{ DOCKER_REGISTRY }}/registry-2.tar.gz

@@ -52,13 +52,32 @@
     path: "{{ K8S_OFFLINE_DIR }}/cni-plugins-linux-{{ ARCH }}-v0.8.7.tgz"
     state: absent
 
-- name: Pull and Save All K8S Related Docker Images
+- name: Set K8S Image List for AMD64
+  set_fact:
+    k8s_image_list: "{{ K8S_DOCKER_IMAGES_AMD64 }}"
+  when: ARCH == "amd64"
+
+- name: Set K8S Image List for ARM64
+  set_fact:
+    k8s_image_list: "{{ K8S_DOCKER_IMAGES_ARM64 }}"
+  when: ARCH == "arm64"
+
+- name: Pull and Retag All K8S Related Docker Images
   shell: |
     docker pull {{ item }}
-    TAR_FILE_NAME=`echo {{ item }} | sed -e "s/\//@/g"`
-    docker save -o {{ K8S_OFFLINE_DIR }}/docker/images/$TAR_FILE_NAME.tar {{ item }}
-    gzip -f {{ K8S_OFFLINE_DIR }}/docker/images/$TAR_FILE_NAME.tar
-  loop: "{{ K8S_DOCKER_IMAGES }}"
+    new_image_name=`echo {{ item }} | sed -e "s#swr.ap-southeast-1.myhuaweicloud.com/eg-common/##g"`
+    docker image tag {{ item }} $new_image_name
+  loop: "{{ k8s_image_list }}"
+
+- name: Set K8S Image List Str
+  set_fact:
+    k8s_image_str: "{{ k8s_image_list|join(' ') }}"
+
+- name: Save All K8S Docker Images Together
+  shell: |
+    new_image_list=`echo {{ k8s_image_str }} | sed -e "s#swr.ap-southeast-1.myhuaweicloud.com/eg-common/##g"`
+    docker save $new_image_list | gzip > {{ K8S_OFFLINE_DIR }}/docker/images/k8s_images.tar.gz
+    echo $new_image_list >> {{ K8S_OFFLINE_DIR }}/docker/images/k8s_images_list.txt
 
 - name: Archive K8S Offline Package
   community.general.archive:

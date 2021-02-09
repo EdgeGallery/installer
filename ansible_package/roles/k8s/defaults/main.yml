@@ -14,17 +14,34 @@
 K8S_OFFLINE_DIR: "{{ TARBALL_PATH }}/k8s-offline"
 DOCKER_REGISTRY: "{{ TARBALL_PATH }}/registry"
 
-K8S_DOCKER_IMAGES:
-  - k8s.gcr.io/kube-proxy:v1.18.7
-  - k8s.gcr.io/kube-controller-manager:v1.18.7
-  - k8s.gcr.io/kube-apiserver:v1.18.7
-  - k8s.gcr.io/kube-scheduler:v1.18.7
-  - k8s.gcr.io/pause:3.2
-  - k8s.gcr.io/coredns:1.6.7
-  - k8s.gcr.io/etcd:3.4.3-0
-  - k8s.gcr.io/metrics-server/metrics-server:v0.3.7
-  - calico/node:v3.15.1
-  - calico/cni:v3.15.1
-  - calico/kube-controllers:v3.15.1
-  - calico/pod2daemon-flexvol:v3.15.1
-  - nginx:stable
+K8S_DOCKER_IMAGES_AMD64:
+  - swr.ap-southeast-1.myhuaweicloud.com/eg-common/k8s.gcr.io/kube-proxy:v1.18.7
+  - swr.ap-southeast-1.myhuaweicloud.com/eg-common/k8s.gcr.io/kube-controller-manager:v1.18.7
+  - swr.ap-southeast-1.myhuaweicloud.com/eg-common/k8s.gcr.io/kube-apiserver:v1.18.7
+  - swr.ap-southeast-1.myhuaweicloud.com/eg-common/k8s.gcr.io/kube-scheduler:v1.18.7
+  - swr.ap-southeast-1.myhuaweicloud.com/eg-common/k8s.gcr.io/pause:3.2
+  - swr.ap-southeast-1.myhuaweicloud.com/eg-common/k8s.gcr.io/coredns:1.6.7
+  - swr.ap-southeast-1.myhuaweicloud.com/eg-common/k8s.gcr.io/etcd:3.4.3-0
+  - swr.ap-southeast-1.myhuaweicloud.com/eg-common/k8s.gcr.io/metrics-server/metrics-server:v0.3.7
+  - swr.ap-southeast-1.myhuaweicloud.com/eg-common/calico/node:v3.15.1
+  - swr.ap-southeast-1.myhuaweicloud.com/eg-common/calico/cni:v3.15.1
+  - swr.ap-southeast-1.myhuaweicloud.com/eg-common/calico/kube-controllers:v3.15.1
+  - swr.ap-southeast-1.myhuaweicloud.com/eg-common/calico/pod2daemon-flexvol:v3.15.1
+  - swr.ap-southeast-1.myhuaweicloud.com/eg-common/nginx:stable
+
+K8S_DOCKER_IMAGES_ARM64:
+  - swr.ap-southeast-1.myhuaweicloud.com/eg-common/k8s.gcr.io/kube-proxy:v1.18.7-arm64
+  - swr.ap-southeast-1.myhuaweicloud.com/eg-common/k8s.gcr.io/kube-controller-manager:v1.18.7-arm64
+  - swr.ap-southeast-1.myhuaweicloud.com/eg-common/k8s.gcr.io/kube-apiserver:v1.18.7-arm64
+  - swr.ap-southeast-1.myhuaweicloud.com/eg-common/k8s.gcr.io/kube-scheduler:v1.18.7-arm64
+  - swr.ap-southeast-1.myhuaweicloud.com/eg-common/k8s.gcr.io/pause:3.2-arm64
+  - swr.ap-southeast-1.myhuaweicloud.com/eg-common/k8s.gcr.io/coredns:1.6.7-arm64
+  - swr.ap-southeast-1.myhuaweicloud.com/eg-common/k8s.gcr.io/etcd:3.4.3-0-arm64
+  - swr.ap-southeast-1.myhuaweicloud.com/eg-common/k8s.gcr.io/metrics-server/metrics-server:v0.3.7-arm64
+  - swr.ap-southeast-1.myhuaweicloud.com/eg-common/calico/node:v3.15.1
+  - swr.ap-southeast-1.myhuaweicloud.com/eg-common/calico/cni:v3.15.1
+  - swr.ap-southeast-1.myhuaweicloud.com/eg-common/calico/kube-controllers:v3.15.1-arm64
+  - swr.ap-southeast-1.myhuaweicloud.com/eg-common/calico/pod2daemon-flexvol:v3.15.1
+  - swr.ap-southeast-1.myhuaweicloud.com/eg-common/nginx:stable
+
+DOCKER_REGISTRY_IMAGE: swr.ap-southeast-1.myhuaweicloud.com/eg-common/registry:2
