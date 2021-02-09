@@ -25,32 +25,32 @@
 
 - name: Set EG Image List Var for X86 All Mode
   set_fact:
-    eg_image_list: "{{ CLIENT_PROVISIONER_X86 + EG_IMAGE_LIST_CONTROLLER_X86 + EG_IMAGE_LIST_EDGE_X86}}"
+    eg_image_list: "{{ CLIENT_PROVISIONER_X86 + EG_IMAGE_LIST_CONTROLLER + EG_IMAGE_LIST_EDGE_COMMON + EG_IMAGE_LIST_EDGE_X86}}"
   when: ARCH == "amd64" and EG_MODE == "all"
 
 - name: Set EG Image List Var for X86 Controller Mode
   set_fact:
-    eg_image_list: "{{ CLIENT_PROVISIONER_X86 + EG_IMAGE_LIST_CONTROLLER_X86 }}"
+    eg_image_list: "{{ CLIENT_PROVISIONER_X86 + EG_IMAGE_LIST_CONTROLLER }}"
   when: ARCH == "amd64" and EG_MODE == "controller"
 
 - name: Set EG Image List Var for X86 Edge Mode
   set_fact:
-    eg_image_list: "{{ CLIENT_PROVISIONER_X86 + EG_IMAGE_LIST_EDGE_X86 }}"
+    eg_image_list: "{{ CLIENT_PROVISIONER_X86 + EG_IMAGE_LIST_EDGE_COMMON + EG_IMAGE_LIST_EDGE_X86 }}"
   when: ARCH == "amd64" and EG_MODE == "edge"
 
 - name: Set EG Image List Var for ARM64 All Mode
   set_fact:
-    eg_image_list: "{{ CLIENT_PROVISIONER_ARM64 + EG_IMAGE_LIST_CONTROLLER_ARM64 + EG_IMAGE_LIST_EDGE_ARM64}}"
+    eg_image_list: "{{ CLIENT_PROVISIONER_ARM64 + EG_IMAGE_LIST_CONTROLLER + EG_IMAGE_LIST_EDGE_COMMON + EG_IMAGE_LIST_EDGE_ARM64}}"
   when: ARCH == "arm64" and EG_MODE == "all"
 
 - name: Set EG Image List Var for ARM64 Controller Mode
   set_fact:
-    eg_image_list: "{{ CLIENT_PROVISIONER_ARM64 + EG_IMAGE_LIST_CONTROLLER_ARM64 }}"
+    eg_image_list: "{{ CLIENT_PROVISIONER_ARM64 + EG_IMAGE_LIST_CONTROLLER }}"
   when: ARCH == "arm64" and EG_MODE == "controller"
 
 - name: Set EG Image List Var for ARM64 Edge Mode
   set_fact:
-    eg_image_list: "{{ CLIENT_PROVISIONER_ARM64 + EG_IMAGE_LIST_EDGE_ARM64}}"
+    eg_image_list: "{{ CLIENT_PROVISIONER_ARM64 + EG_IMAGE_LIST_EDGE_COMMON + EG_IMAGE_LIST_EDGE_ARM64}}"
   when: ARCH == "arm64" and EG_MODE == "edge"
 
 - name: Set EG Image List Str

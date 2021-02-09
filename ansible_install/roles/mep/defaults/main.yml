@@ -11,7 +11,13 @@ DOMAIN_NAME: edgegallery
 ipam_type: host-local
 
 mep_images_multus_repository: eg-common/nfvpe/multus
+mep_images_speaker_repository: eg-common/metallb/speaker
+mep_images_controller_repository: eg-common/metallb/controller
 mep_images_multus_tag: stable
+mep_images_speaker_tag: v0.9.3
+mep_images_controller_tag: v0.9.3
+mep_images_speaker_arm64_tag: v0.9.3-arm64
+mep_images_controller_arm64_tag: v0.9.3-arm64
 
 mep_images_mep_repository: edgegallery/mep
 mep_images_mepauth_repository: edgegallery/mepauth

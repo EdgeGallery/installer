@@ -13,7 +13,7 @@
 
 EG_IMAGES_DIR: "{{ TARBALL_PATH }}/eg_swr_images"
 
-EG_IMAGE_LIST_CONTROLLER_X86:
+EG_IMAGE_LIST_CONTROLLER:
   - swr.ap-southeast-1.myhuaweicloud.com/edgegallery/appstore-fe:{{ EG_IMAGE_TAG }}
   - swr.ap-southeast-1.myhuaweicloud.com/edgegallery/appstore-be:{{ EG_IMAGE_TAG }}
   - swr.ap-southeast-1.myhuaweicloud.com/edgegallery/developer-fe:{{ EG_IMAGE_TAG }}
@@ -33,7 +33,7 @@ EG_IMAGE_LIST_CONTROLLER_X86:
   - swr.ap-southeast-1.myhuaweicloud.com/eg-common/porting-advisor:latest
   - swr.ap-southeast-1.myhuaweicloud.com/eg-common/service-center:latest
 
-EG_IMAGE_LIST_EDGE_X86:
+EG_IMAGE_LIST_EDGE_COMMON:
   - swr.ap-southeast-1.myhuaweicloud.com/edgegallery/mepauth:{{ EG_IMAGE_TAG }}
   - swr.ap-southeast-1.myhuaweicloud.com/edgegallery/mep:{{ EG_IMAGE_TAG }}
   - swr.ap-southeast-1.myhuaweicloud.com/edgegallery/mep-dns-server:{{ EG_IMAGE_TAG }}
@@ -46,26 +46,14 @@ EG_IMAGE_LIST_EDGE_X86:
   - swr.ap-southeast-1.myhuaweicloud.com/eg-common/kong:2.0.4-ubuntu
   - swr.ap-southeast-1.myhuaweicloud.com/eg-common/nfvpe/multus:stable
   - swr.ap-southeast-1.myhuaweicloud.com/eg-common/dougbtv/whereabouts:latest
-  - metallb/speaker:v0.9.3
-  - metallb/controller:v0.9.3
+
+EG_IMAGE_LIST_EDGE_X86:
+  - swr.ap-southeast-1.myhuaweicloud.com/eg-common/metallb/speaker:v0.9.3
+  - swr.ap-southeast-1.myhuaweicloud.com/eg-common/metallb/controller:v0.9.3
 
 EG_IMAGE_LIST_EDGE_ARM64:
-  - swr.ap-southeast-1.myhuaweicloud.com/edgegallery/mepauth:{{ EG_IMAGE_TAG }}
-  - swr.ap-southeast-1.myhuaweicloud.com/edgegallery/mep:{{ EG_IMAGE_TAG }}
-  - swr.ap-southeast-1.myhuaweicloud.com/edgegallery/mep-dns-server:{{ EG_IMAGE_TAG }}
-  - swr.ap-southeast-1.myhuaweicloud.com/edgegallery/edgegallery-secondary-ep-controller:{{ EG_IMAGE_TAG }}
-  - swr.ap-southeast-1.myhuaweicloud.com/edgegallery/mecm-applcm:{{ EG_IMAGE_TAG }}
-  - swr.ap-southeast-1.myhuaweicloud.com/edgegallery/mecm-applcm-k8splugin:{{ EG_IMAGE_TAG }}
-  - swr.ap-southeast-1.myhuaweicloud.com/edgegallery/mecm-apprulemgr:{{ EG_IMAGE_TAG }}
-  - swr.ap-southeast-1.myhuaweicloud.com/edgegallery/deploy-tool:{{ EG_IMAGE_TAG }}
-  - swr.ap-southeast-1.myhuaweicloud.com/eg-common/postgres:12.3
-  - swr.ap-southeast-1.myhuaweicloud.com/eg-common/kong:2.0.4-ubuntu
-  - swr.ap-southeast-1.myhuaweicloud.com/eg-common/nfvpe/multus:stable
-  - swr.ap-southeast-1.myhuaweicloud.com/eg-common/dougbtv/whereabouts:latest
-  - metallb/speaker:v0.9.3
-  - metallb/controller:v0.9.3
-
-EG_IMAGE_LIST_CONTROLLER_ARM64: "{{ EG_IMAGE_LIST_CONTROLLER_X86 }}"
+  - swr.ap-southeast-1.myhuaweicloud.com/eg-common/metallb/speaker:v0.9.3-arm64
+  - swr.ap-southeast-1.myhuaweicloud.com/eg-common/metallb/controller:v0.9.3-arm64
 
 CLIENT_PROVISIONER_X86:
   - quay.io/external_storage/nfs-client-provisioner:v3.1.0-k8s1.11

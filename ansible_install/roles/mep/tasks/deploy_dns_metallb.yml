@@ -4,6 +4,34 @@
 - name: Create Secret Memberlist
   shell: kubectl create secret generic -n metallb-system memberlist --from-literal=secretkey="$(openssl rand -base64 128)"
 
+- name: Set metallb speaker AMD64 Images
+  replace:
+    path: "{{ TARBALL_PATH }}/conf/edge/metallb/metallb.yaml"
+    regexp: "image: metallb/speaker:v0.9.3$"
+    replace: "image: {{mep_images_speaker_repository}}:{{mep_images_speaker_tag}}"
+  when: ARCH == "amd64"
+
+- name: Set metallb speaker ARM64 Images
+  replace:
+    path: "{{ TARBALL_PATH }}/conf/edge/metallb/metallb.yaml"
+    regexp: "image: metallb/speaker:v0.9.3$"
+    replace: "image: {{mep_images_speaker_repository}}:{{mep_images_speaker_arm64_tag}}"
+  when: ARCH == "arm64"
+
+- name: Set metallb controller AMD64 Images
+  replace:
+    path: "{{ TARBALL_PATH }}/conf/edge/metallb/metallb.yaml"
+    regexp: "image: metallb/controller:v0.9.3$"
+    replace: "image: {{mep_images_controller_repository}}:{{mep_images_controller_tag}}"
+  when: ARCH == "amd64"
+
+- name: Set metallb controller ARM64 Images
+  replace:
+    path: "{{ TARBALL_PATH }}/conf/edge/metallb/metallb.yaml"
+    regexp: "image: metallb/controller:v0.9.3$"
+    replace: "image: {{mep_images_controller_repository}}:{{mep_images_controller_arm64_tag}}"
+  when: ARCH == "arm64"
+
 - name: Create Metallb Resources
   shell: "kubectl apply -f {{ TARBALL_PATH }}/conf/edge/metallb/metallb.yaml"
 

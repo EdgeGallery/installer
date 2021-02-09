@@ -13,17 +13,10 @@
 
 ---
 
-- name: Set Other Helm List For All and Edge Mode
-  set_fact:
-    OTHER_HELM_URL_LIST: "{{ STABLE_HELM_URL_LIST + STABLE_HELM_URL_LIST_EDGE_SPECIAL }}"
-    OTHER_HELM_NAME_LIST: "{{ STABLE_HELM_NAME_LIST + STABLE_HELM_NAME_LIST_EDGE_SPECIAL }}"
-  when: EG_MODE == "all" or EG_MODE == "edge"
-
-- name: Set Other Helm List For Controller Mode
+- name: Set Other Helm List
   set_fact:
     OTHER_HELM_URL_LIST: "{{ STABLE_HELM_URL_LIST }}"
     OTHER_HELM_NAME_LIST: "{{ STABLE_HELM_NAME_LIST }}"
-  when: EG_MODE == "controller"
 
 - name: Pull Other Helm Charts
   get_url:
