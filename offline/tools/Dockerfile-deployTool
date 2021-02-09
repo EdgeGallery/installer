@@ -1,4 +1,4 @@
-FROM swr.ap-southeast-1.myhuaweicloud.com/eg-common/openjdk:8u201-jre-alpine
+FROM swr.ap-southeast-1.myhuaweicloud.com/eg-common/openjdk:8u201-jdk-alpine
 
 RUN apk update && apk add openssl
 
