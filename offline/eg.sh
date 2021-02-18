@@ -853,6 +853,8 @@ function install_mep()
     --set images.mep.tag=$mep_images_mep_tag \
     --set images.mepauth.tag=$mep_images_mepauth_tag \
     --set images.dns.tag=$mep_images_dns_tag \
+    --set images.kong.tag=$mep_images_kong_tag \
+    --set images.postgres.tag=$mep_images_postgres_tag \
     --set images.mep.pullPolicy=$mep_images_mep_pullPolicy \
     --set images.mepauth.pullPolicy=$mep_images_mepauth_pullPolicy \
     --set images.dns.pullPolicy=$mep_images_dns_pullPolicy \
@@ -1062,6 +1064,7 @@ function install_mecm-fe ()
     --set images.mecmFe.repository=$mecm_fe_images_mecmFe_repository \
     --set images.initservicecenter.repository=$mecm_fe_images_initservicecenter_repository \
     --set images.mecmFe.tag=$mecm_fe_images_mecmFe_tag \
+    --set images.initservicecenter.tag=$mecm_fe_images_initservicecenter_tag \
     --set images.mecmFe.pullPolicy=$mecm_fe_images_mecmFe_pullPolicy \
     --set images.initservicecenter.pullPolicy=$mecm_fe_images_initservicecenter_pullPolicy \
     --set global.ssl.enabled=$mecm_fe_global_ssl_enabled \
@@ -1103,6 +1106,8 @@ function install_appstore ()
     --set images.initservicecenter.repository=$appstore_images_initservicecenter_repository \
     --set images.appstoreFe.tag=$appstore_images_appstoreFe_tag \
     --set images.appstoreBe.tag=$appstore_images_appstoreBe_tag \
+    --set images.postgres.tag=$appstore_images_postgres_tag \
+    --set images.initservicecenter.tag=$appstore_images_initservicecenter_tag \
     --set images.appstoreFe.pullPolicy=$appstore_images_appstoreFe_pullPolicy \
     --set images.appstoreBe.pullPolicy=$appstore_images_appstoreBe_pullPolicy \
     --set images.postgres.pullPolicy=$appstore_images_postgres_pullPolicy \
@@ -1151,6 +1156,9 @@ function install_developer ()
     --set images.developerFe.tag=$developer_images_developerFe_tag \
     --set images.developerBe.tag=$developer_images_developerBe_tag \
     --set images.toolChain.tag=$developer_images_toolChain_tag \
+    --set images.postgres.tag=$developer_images_postgres_tag \
+    --set images.initservicecenter.tag=$developer_images_initservicecenter_tag \
+    --set images.portingAdvisor.tag=$developer_images_portingAdvisor_tag \
     --set images.developerFe.pullPolicy=$developer_images_developerFe_pullPolicy \
     --set images.developerBe.pullPolicy=$developer_images_developerBe_pullPolicy \
     --set images.postgres.pullPolicy=$developer_images_postgres_pullPolicy \
@@ -1197,6 +1205,7 @@ function install_atp()
     --set images.atpFe.tag=$atp_images_atpFe_tag \
     --set images.atp.tag=$atp_images_atp_tag \
     --set images.postgres.tag=$atp_images_postgres_tag \
+    --set images.initservicecenter.tag=$atp_images_initservicecenter_tag \
     --set images.atpFe.pullPolicy=$atp_images_atpFe_pullPolicy \
     --set images.atp.pullPolicy=$atp_images_atp_pullPolicy \
     --set images.postgres.pullPolicy=$atp_images_postgres_pullPolicy \
@@ -1233,6 +1242,7 @@ function install_service-center ()
     info "[it would take maximum of 5mins .......]" $BLUE
     helm install --wait service-center-edgegallery "$CHART_PREFIX"edgegallery/servicecenter"$CHART_SUFFIX" \
     --set images.repository=$servicecenter_images_repository \
+    --set images.tag=latest \
     --set images.pullPolicy=$servicecenter_images_pullPolicy \
     --set global.ssl.enabled=$servicecenter_global_ssl_enabled \
     --set global.ssl.secretName=$servicecenter_global_ssl_secretName
@@ -1282,6 +1292,9 @@ global.oauth2.clients.lab.clientUrl=https://$NODEIP:$LAB_PORT, \
     --set images.redis.repository=$usermgmt_images_redis_repository \
     --set images.initservicecenter.repository=$usermgmt_images_initservicecenter_repository \
     --set images.usermgmt.tag=$usermgmt_images_usermgmt_tag \
+    --set images.postgres.tag=$usermgmt_images_postgres_tag \
+    --set images.redis.tag=$usermgmt_images_redis_tag \
+    --set images.initservicecenter.tag=$usermgmt_images_initservicecenter_tag \
     --set images.usermgmt.pullPolicy=$usermgmt_images_usermgmt_pullPolicy \
     --set images.postgres.pullPolicy=$usermgmt_images_postgres_pullPolicy \
     --set images.redis.pullPolicy=$usermgmt_images_redis_pullPolicy \
