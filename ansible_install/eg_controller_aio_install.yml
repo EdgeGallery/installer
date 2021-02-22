@@ -7,6 +7,7 @@
     - EG_MODE: controller
   vars_files:
     - ./var.yml
+    - ./default-var.yml
   roles:
     - init
     - k8s

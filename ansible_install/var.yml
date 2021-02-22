@@ -5,7 +5,7 @@ NETWORK_MODE: offline
 ARCH: amd64
 
 EG_IMAGE_TAG: latest
-HELM_TAG: 1.0.0
+HELM_TAG: 1.1.0
 
 # Could be true or false
 # Currently only support false
@@ -19,19 +19,15 @@ ENABLE_PERSISTENCE: false
 TARBALL_FILE: "/home/ansible-{{ EG_IMAGE_TAG }}.tar.gz"
 COPY_TAR_TO_TARGET: yes
 
-# Dest path where offline tarball be decompossed into
+# ip for portals, will be set to public IP of master node default or reset it here
+#PORTAL_IP: 111.222.333.444
+# Target path where offline tarball be decompossed into
+
 TARBALL_PATH: /home/edgegallery-offline
 
-# Whether clean the TARBALL_PATH before package
+# Whether clean the TARBALL_PATH before install and after uninstall
 # true means clean and false means not clean
 TARBALL_PATH_CLEANUP: true
-
-HELM_CHARTS_PATH: "{{ TARBALL_PATH }}/helm/helm-charts"
-
-APPSTORE_HELM_RELEASE_NAME: appstore-edgegallery
-DEVELOPER_HELM_RELEASE_NAME: developer-edgegallery
-MECM_FE_HELM_RELEASE_NAME: mecm-fe-edgegallery
-ATP_HELM_RELEASE_NAME: atp-edgegallery
 
 APPSTORE_PORT: 30091
 DEVELOPER_PORT: 30092
@@ -39,6 +35,3 @@ MECM_PORT: 30093
 ATP_PORT: 30094
 USER_MGMT_PORT: 30067
 LAB_PORT: 30096
-
-# ip for portals, will be set to public IP of master node default or reset it here
-#PORTAL_IP: 111.222.333.444

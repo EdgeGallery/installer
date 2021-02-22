@@ -52,6 +52,4 @@
     --set global.persistence.enabled={{ ENABLE_PERSISTENCE }}
 
 - name: Check MEP Status
-  uri:
-    url: "https://{{ ansible_default_ipv4['address'] }}:30443/mepauth/health"
-    validate_certs: no
+  include: "check_pod_status.yml"

@@ -8,7 +8,7 @@ EG_MODE: all
 EG_IMAGE_TAG: latest
 
 # Helm tag for EdgeGallery helm charts to pull
-HELM_TAG: 1.0.0
+HELM_TAG: 1.1.0
 
 # Target path where to store all download files and output tar.gz file
 TARBALL_PATH: /home/eg-offline

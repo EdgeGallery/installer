@@ -1,0 +1,15 @@
+- name: List All NonRunning Pods with Namespace "mep"
+  shell: kubectl get pods -n mep --field-selector=status.phase!=Running
+  register: MEPNonRunningPod
+
+- debug:
+    msg: "Failed Pods are {{ MEPNonRunningPod.stdout }}"
+  when: MEPNonRunningPod.stderr != "No resources found in mep namespace."
+
+- fail:
+    msg: "MEP Deployment Failed ....."
+  when: MEPNonRunningPod.stderr != "No resources found in mep namespace."
+
+- debug:
+    msg: "MEP Deployment Successfully"
+  when: MEPNonRunningPod.stderr == "No resources found in mep namespace."
