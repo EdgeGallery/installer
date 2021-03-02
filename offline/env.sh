@@ -111,6 +111,11 @@ export usermgmt_images_redis_pullPolicy=IfNotPresent
 export usermgmt_images_initservicecenter_pullPolicy=IfNotPresent
 export usermgmt_global_ssl_enabled=true
 export usermgmt_global_ssl_secretName=edgegallery-ssl-secret
+#export usermgmt_mail_enabled=
+#export usermgmt_mail_host=
+#export usermgmt_mail_port=
+#export usermgmt_mail_sender=
+#export usermgmt_mail_authcode=
 
 #MEO values
 export meo_ssl_secretName=mecm-ssl-secret

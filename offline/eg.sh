@@ -1301,7 +1301,12 @@ global.oauth2.clients.lab.clientUrl=https://$NODEIP:$LAB_PORT, \
     --set images.initservicecenter.pullPolicy=$usermgmt_images_initservicecenter_pullPolicy \
     --set global.ssl.enabled=$usermgmt_global_ssl_enabled \
     --set global.ssl.secretName=$usermgmt_global_ssl_secretName \
-    --set global.persistence.enabled=$ENABLE_PERSISTENCE
+    --set global.persistence.enabled=$ENABLE_PERSISTENCE \
+    --set mail.enabled=$usermgmt_mail_enabled \
+    --set mail.host=$usermgmt_mail_host \
+    --set mail.port=$usermgmt_mail_port \
+    --set mail.sender=$usermgmt_mail_sender \
+    --set mail.authCode=$usermgmt_mail_authcode
 
     if [ $? -eq 0 ]; then
       info "[Deployed UserMgmt  .........]" $GREEN
