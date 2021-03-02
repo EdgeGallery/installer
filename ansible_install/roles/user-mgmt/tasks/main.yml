@@ -5,14 +5,9 @@
     msg: "Could not {{ OPERATION }} USER_MGMT with EG_MODE: {{ EG_MODE }}"
   when: EG_MODE != "all" and EG_MODE != "controller"
 
-- name: Get Public IP
-  ipify_facts:
-  register: publicIP
-  when: PORTAL_IP is undefined
-
 - name: Set Portal IP
   set_fact:
-    PORTAL_IP: "{{ publicIP.ansible_facts.ipify_public_ip }}"
+    PORTAL_IP: "{{ ansible_default_ipv4['address'] }}"
   when: PORTAL_IP is undefined
 
 - name: Check whether USER_MGMT is Deployed
