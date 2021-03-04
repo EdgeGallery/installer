@@ -46,5 +46,7 @@ cd  /root/harbor/   \
 ./install.sh    #脚本安装harbor 
 ##### docker login harbor
 docker login -uadmin -pHarbor12345 192.168.1.11:443
-
+#### 4.登录harbor web界面
+登录url https://192.168.1.11:443
+##### 创建项目
 
