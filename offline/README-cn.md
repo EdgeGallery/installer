@@ -34,7 +34,7 @@ EdgeGallery离线安装是基于程序ubuntu x86_64或arm64体系结构的给Kub
 
 2.在准备好的服务器上安装Ubuntu 18.04操作系统(ububntu 18.04是经过安装测试的版本)。
 
-3.下载离线安装程程序，[下载地址](http://release.edgegallery.org/，根据具建议使用EdgeGallery-v1.0.tar.gz这个安装包
+3.下载离线安装程程序，[下载地址](http://release.edgegallery.org/，根据具建议使用EdgeGallery-v1.0.1-all-x86(arm).tar.gz这个安装包
  
   （如果网速慢，可以使用多线程下载方式，具体操作可参考文档最后安装遇到的问题中多线程下载说明）
 
