@@ -49,4 +49,4 @@ docker login -uadmin -pHarbor12345 192.168.1.11:443
 #### 4.登录harbor web界面
 登录url https://192.168.1.11:443
 ##### 创建项目
-
+![输入图片说明](https://images.gitee.com/uploads/images/2021/0304/122909_c4583be7_7624663.png "屏幕截图.png")
