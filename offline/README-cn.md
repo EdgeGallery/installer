@@ -7,13 +7,14 @@ EdgeGallery离线安装是基于程序ubuntu x86_64或arm64体系结构的给Kub
 
 部署架构
 
-![输入图片说明](https://images.gitee.com/uploads/images/2021/0304/112923_24b3a288_8040887.png "屏幕截图.png")
+![输入图片说明](https://images.gitee.com/uploads/images/2021/0304/113426_f807923f_8040887.png "屏幕截图.png")
 
  
 
 场景
 
-![输入图片说明](https://images.gitee.com/uploads/images/2020/1231/165312_f56ce4ee_8040887.png "屏幕截图.png")
+![输入图片说明](https://images.gitee.com/uploads/images/2021/0304/112923_24b3a288_8040887.png "屏幕截图.png")
+
 
 支持的系统版本
 
