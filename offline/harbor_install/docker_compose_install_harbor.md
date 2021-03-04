@@ -50,3 +50,6 @@ docker login -uadmin -pHarbor12345 192.168.1.11:443
 登录url https://192.168.1.11:443
 ##### 创建项目
 ![输入图片说明](https://images.gitee.com/uploads/images/2021/0304/122909_c4583be7_7624663.png "屏幕截图.png")
+##### 创建用户设置为
+![输入图片说明](https://images.gitee.com/uploads/images/2021/0304/123212_e2f88c40_7624663.png "屏幕截图.png")
+![输入图片说明](https://images.gitee.com/uploads/images/2021/0304/123416_437f0141_7624663.png "屏幕截图.png")
