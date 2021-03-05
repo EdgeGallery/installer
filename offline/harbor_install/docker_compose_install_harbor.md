@@ -15,7 +15,7 @@ tar -zxvf harbor-offline-installer-v2.0.6.tgz \
 cd harbor \
 mkdir data_volume  #创建数据挂载目录 \
 mkdir cert         #创建证书存放目录  \
-mv  harbor.yml.temp harbor.yml  修改配置文件名称 
+mv  harbor.yml.tmpl harbor.yml  修改配置文件名称 
 ##### 设置hostname 
 hostname: 192.168.1.11  #在harbor.yml的第五行设置hostname，设置hostname的ip是用于harbor web访问的ip \
 在第8行和第10行的 http  port:80 前加#      #去掉http 用https 访问harbor web 
@@ -51,5 +51,5 @@ docker login -uadmin -pHarbor12345 192.168.1.11:443
 ##### 创建项目
 ![输入图片说明](https://images.gitee.com/uploads/images/2021/0304/122909_c4583be7_7624663.png "屏幕截图.png")
 ##### 创建用户设置为
-![输入图片说明](https://images.gitee.com/uploads/images/2021/0304/123212_e2f88c40_7624663.png "屏幕截图.png")
+![输入图片说明](https://images.gitee.com/uploads/images/2021/0304/123212_e2f88c40_7624663.png "屏幕截图.png") \
 ![输入图片说明](https://images.gitee.com/uploads/images/2021/0304/123416_437f0141_7624663.png "屏幕截图.png")
