@@ -25,7 +25,7 @@ private_key: /root/harbor/cert/ca.key   #文件的18行
 ##### 设置数据挂载目录
 data_volume: /root/harbor/data_volume/
 ##### 生成证书
-cd /root/ 
+cd /root/  \
 openssl rand -writerand .rnd   
 cd harbor/cert/  \
 openssl genrsa -out ca.key 4096  \
