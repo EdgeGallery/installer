@@ -33,7 +33,7 @@ openssl req -x509 -new -nodes -sha512 -days 3650 \
     -subj "/C=CN/ST=Guangzhou/L=Guangzhou/O=example/CN=192.168.1.11" \
     -key ca.key \
     -out ca.crt \
-mdkir -p /etc/docker/certs.d/192.168.1.11:443/   \
+mkdir -p /etc/docker/certs.d/192.168.1.11:443/   \
 cp /root/harbor/cert/ca.crt   /root/harbor/cert/ca.key    /etc/docker/certs.d/92.168.1.11:443/  \
 cd /etc/docker/certs.d/192.168.1.11:443/  \
 openssl x509 -inform PEM -in ca.crt -out ca.cert   \
