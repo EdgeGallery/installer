@@ -1,0 +1,43 @@
+---
+
+- name: Check Whether /etc/docker/daemon.json Exists
+  stat:
+    path: /etc/docker/daemon.json
+  register: file_status
+
+- name: Create File /etc/docker/daemon.json
+  copy:
+    src: daemon.json
+    dest: /etc/docker
+  when: file_status.stat.exists == False
+
+- name: Set insecure-registries IP in /etc/docker/daemon.json
+  replace:
+    path: /etc/docker/daemon.json
+    regexp: PRIVATE_REGISTRY_IP
+    replace: "{{ ansible_default_ipv4['address'] }}"
+  when: file_status.stat.exists == False
+
+- name: Copy Docker daemon.json From Master Node to Deploy Node
+  fetch:
+    src: /etc/docker/daemon.json
+    dest: "/home"
+
+- name: Restart Docker Service
+  service:
+    name: docker.service
+    state: restarted
+  when: file_status.stat.exists == False
+
+- name: Check Whether registry Container Exists
+  shell: "docker ps | grep {{ REGISTRY_CONTAINER_NAME }}"
+  register: registry_exists
+  ignore_errors: yes
+
+- name: Load registry Image
+  shell: "docker load --input {{ DOCKER_REGISTRY_IMAGE }}"
+  when: registry_exists is failed
+
+- name: Run registry Container
+  shell: "docker run -d -p 5000:5000 --restart=always --name {{ REGISTRY_CONTAINER_NAME }} {{ REGISTRY_IMAGE_NAME }}"
+  when: registry_exists is failed

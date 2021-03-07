@@ -8,10 +8,14 @@
 
 - name: Delete K8S Metric Server
   shell: "kubectl delete -f {{ K8S_OFFLINE_DIR }}/k8s/metric-server.yaml"
+  when: NODE_MODE == "muno" and K8S_NODE_TYPE == "master"
   ignore_errors: yes
 
 - name: Uninstall K8S
   import_tasks: "k8s_uninstall.yml"
+
+- name: Uninstall Docker Registry
+  import_tasks: "docker_registry_uninstall.yml"
 
 - name: Uninstall Docker
   import_tasks: "docker_uninstall.yml"

@@ -39,7 +39,7 @@
   replace:
     path: "{{ TARBALL_PATH }}/conf/edge/metallb/config-map.yaml"
     regexp: 192.168.100.120
-    replace: "{{ ansible_default_ipv4['address'] }}"
+    replace: "{{ groups.master[0] }}"
 
 - name: Create ConfigMap
   shell: "kubectl apply -f {{ TARBALL_PATH }}/conf/edge/metallb/config-map.yaml"

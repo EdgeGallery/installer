@@ -75,28 +75,13 @@
 - name: Install Package socat
   command: dpkg -i "{{ K8S_OFFLINE_DIR }}/tools/socat_1.7.3.2-2ubuntu2_{{ ARCH }}.deb"
 
-- name: Install k8s with kubeadm
-  shell: "kubeadm init --kubernetes-version=v1.18.7 --apiserver-advertise-address={{ansible_default_ipv4['address']}} --pod-network-cidr=10.244.0.0/16 -v=5"
+- name: Install K8S Master Special Configurations
+  import_tasks: k8s_master_install_offline.yml
+  when: K8S_NODE_TYPE == "master"
 
-- name: Create the Directory for Kube Config
-  file:
-    path: ~/.kube
-    state: directory
-
-- name: Copy K8s admin.conf to ~/.kube/config
-  copy:
-    src: /etc/kubernetes/admin.conf
-    dest: ~/.kube/config
-    remote_src: yes
-
-- name: Apply calico
-  shell: "kubectl apply -f {{K8S_OFFLINE_DIR}}/k8s/calico.yaml"
-
-- name: Set K8s Taint Nodes
-  shell: "kubectl taint nodes --all node-role.kubernetes.io/master-"
-
-- name: Create Kubeadm Token
-  shell: "kubeadm token create --print-join-command > {{K8S_OFFLINE_DIR}}/k8s-worker.sh"
+- name: Install K8S Worker Special Configurations
+  import_tasks: k8s_worker_install_offline.yml
+  when: K8S_NODE_TYPE == "worker"
 
 - name: Wait for calico-node Pod is Ready
   shell: |

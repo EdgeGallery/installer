@@ -1,0 +1,62 @@
+---
+
+- name: Set Base IP Prefix
+  set_fact:
+    ipPrefix: 2
+
+- name: Print EG_NODE_EDGE_MP1
+  debug:
+    msg: "{{ EG_NODE_EDGE_MP1 }}"
+
+- name: Print EG_NODE_EDGE_MM5
+  debug:
+    msg: "{{ EG_NODE_EDGE_MM5 }}"
+
+- name: Print IP Prefix
+  debug:
+    msg: "{{ ipPrefix }}"
+
+- name: Network Setting For AIO Mode
+  shell: |
+    ip link add eg-mp1 link {{ EG_NODE_EDGE_MP1}} type macvlan mode bridge
+    ip addr add 200.1.1.{{ ipPrefix }}/24 dev eg-mp1
+    ip link set dev eg-mp1 up
+    ip link add eg-mm5 link {{EG_NODE_EDGE_MM5}} type macvlan mode bridge
+    ip addr add 100.1.1.{{ ipPrefix }}/24 dev eg-mm5
+    ip link set dev eg-mm5 up
+  when: NODE_MODE == "aio"
+
+- name: Network Setting For Multi Node Mode
+  shell: |
+    ip link add vxlan-mp1 type vxlan id 100 group 239.1.1.1 dstport 4789 dev {{EG_NODE_EDGE_MP1}}
+    ip link set vxlan-mp1 up
+
+    ip link add vxlan-mm5 type vxlan id 200 group 239.1.1.1 dstport 4789 dev {{EG_NODE_EDGE_MM5}}
+    ip link set vxlan-mm5 up
+
+    ip link add eg-mp1 link vxlan-mp1 type macvlan mode bridge
+    ip addr add 200.1.1.{{ ipPrefix }}/24 dev eg-mp1
+    ip link set dev eg-mp1 up
+
+    ip link add eg-mm5 link vxlan-mm5 type macvlan mode bridge
+    ip addr add 100.1.1.{{ ipPrefix }}/24 dev eg-mm5
+    ip link set dev eg-mm5 up
+  when: NODE_MODE == "muno"
+
+- name: Set IP Prefixes for All Workers
+  shell: |
+    base={{ ipPrefix }}
+    index={{ item.0 }}
+    ((var=$base+1+$index))
+    echo $var
+  with_indexed_items: "{{ groups.worker }}"
+  register: ipPrefixIndex
+  when: NODE_MODE == "muno"
+
+- name: Add IP Prefix to All Workers
+  add_host:
+    name: "{{ item.1 }}"
+    ipPrefix: "{{ ipPrefixIndex.results[ item.0 ].stdout }} "
+  with_indexed_items: "{{ groups.worker }}"
+  when: NODE_MODE == "muno"
+

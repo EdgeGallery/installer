@@ -1,0 +1,29 @@
+---
+
+- name: Create Helm Repo Index for edgagallery and stable
+  shell: "helm repo index {{ HELM_CHARTS_DIR }}/{{ item }}"
+  loop:
+    - edgegallery
+    - stable
+
+- name: Check Whether helm-repo Container Exists
+  shell: "docker ps | grep {{ HELM_REPO_CONTAINER_NAME }}"
+  register: helmContainerExists
+  ignore_errors: yes
+
+- name: Run helm-repo Container
+  shell: "docker run --name {{ HELM_REPO_CONTAINER_NAME }} -v {{ HELM_CHARTS_DIR }}:/usr/share/nginx/html:ro  -d -p 8080:80  {{ HELM_REPO_IMAGE }}"
+  when: helmContainerExists is failed
+    
+- name: Remove Old edgagallery and stable Helm Repos
+  shell: "helm repo remove {{ item }}"
+  loop:
+    - edgegallery
+    - stable
+  ignore_errors: yes
+
+- name: Add New edgagallery and stable Helm Repos
+  shell: "helm repo add {{ item }} http://{{ ansible_default_ipv4['address'] }}:8080/{{ item }}"
+  loop:
+    - edgegallery
+    - stable

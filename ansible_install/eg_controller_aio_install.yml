@@ -5,6 +5,8 @@
   vars:
     - OPERATION: install
     - EG_MODE: controller
+    - NODE_MODE: aio
+    - K8S_NODE_TYPE: master
   vars_files:
     - ./var.yml
     - ./default-var.yml

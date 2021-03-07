@@ -10,21 +10,18 @@
     regexp: "image: docker.io/nfvpe/multus:stable-arm64v8"
     replace: "image: {{mep_images_multus_repository}}:{{mep_images_multus_tag}}"
 
+- name: Set eg-sp-controller Images
+  replace:
+    path: "{{ TARBALL_PATH }}/conf/edge/network-isolation/eg-sp-controller.yaml"
+    regexp: "image: edgegallery/edgegallery-secondary-ep-controller:latest"
+    replace: "image: {{mep_images_secondary_ep_controller_repository}}:{{mep_images_secondary_ep_controller_tag}}"
+
 - name: Create Network Isolation Multus Resources
   shell: "kubectl apply -f {{ TARBALL_PATH }}/conf/edge/network-isolation/{{ item }}"
   loop:
     - multus.yaml
     - eg-sp-rbac.yaml
     - eg-sp-controller.yaml
-
-- name: Network Setting
-  shell: |
-    ip link add eg-mp1 link {{ EG_NODE_EDGE_MP1}} type macvlan mode bridge
-    ip addr add 200.1.1.2/24 dev eg-mp1
-    ip link set dev eg-mp1 up
-    ip link add eg-mm5 link {{EG_NODE_EDGE_MM5}} type macvlan mode bridge
-    ip addr add 100.1.1.2/24 dev eg-mm5
-    ip link set dev eg-mm5 up
 
 - name: Wait for kube-multus Pod is Ready
   shell: |
@@ -36,3 +33,7 @@
   until: multusPodNum.stdout == "true"
   retries: 30
   delay: 5
+
+- name: Special Network Isolation for Multi Node
+  import_tasks: "special_muno_network_isolation.yml"
+  when: NODE_MODE == "muno"

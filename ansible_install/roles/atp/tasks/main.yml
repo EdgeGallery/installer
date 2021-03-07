@@ -1,5 +1,15 @@
 ---
 
+- name: Set Registry URL for Multi Node
+  set_fact:
+    REGISTRY_URL: "{{ groups.master[0] }}:5000/"
+  when: NODE_MODE == "muno"
+
+- name: Set Registry URL for AIO
+  set_fact:
+    REGISTRY_URL: ""
+  when: NODE_MODE == "aio"
+
 - name: Check EG_MODE for ATP
   fail:
     msg: "Could not {{ OPERATION }} ATP with EG_MODE: {{ EG_MODE }}"

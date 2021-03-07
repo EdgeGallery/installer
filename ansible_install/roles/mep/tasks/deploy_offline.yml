@@ -27,6 +27,26 @@
 - name: Setting up Network Isolation
   include: "deploy_network_isolation_multus.yml"
 
+- name: Set ipam_type For AIO Mode
+  set_fact:
+    ipam_type: "host-local"
+  when: ipam_type is undefined and NODE_MODE == "aio"
+
+- name: Set ipam_type For Multi Node Mode
+  set_fact:
+    ipam_type: "whereabouts"
+  when: ipam_type is undefined and NODE_MODE == "muno"
+
+- name: Set EG_NODE_EDGE_MP1 For Multi Node Mode
+  set_fact:
+    EG_NODE_EDGE_MP1: "vxlan-mp1"
+  when: NODE_MODE == "muno"
+
+- name: Set EG_NODE_EDGE_MM5 For Multi Node Mode
+  set_fact:
+    EG_NODE_EDGE_MM5: "vxlan-mm5"
+  when: NODE_MODE == "muno"
+
 - name: Deploy MEP
   shell: |
     helm install --wait mep-edgegallery {{ HELM_CHARTS_PATH }}/edgegallery/mep-{{ HELM_TAG }}.tgz \

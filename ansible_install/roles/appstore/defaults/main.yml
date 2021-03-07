@@ -1,7 +1,7 @@
-appstore_images_appstoreFe_repository: edgegallery/appstore-fe
-appstore_images_appstoreBe_repository: edgegallery/appstore-be
-appstore_images_postgres_repository: eg-common/postgres
-appstore_images_initservicecenter_repository: eg-common/curl
+appstore_images_appstoreFe_repository: "{{ REGISTRY_URL }}edgegallery/appstore-fe"
+appstore_images_appstoreBe_repository: "{{ REGISTRY_URL }}edgegallery/appstore-be"
+appstore_images_postgres_repository: "{{ REGISTRY_URL }}eg-common/postgres"
+appstore_images_initservicecenter_repository: "{{ REGISTRY_URL }}eg-common/curl"
 appstore_images_appstoreFe_tag: "{{ EG_IMAGE_TAG }}"
 appstore_images_appstoreBe_tag: "{{ EG_IMAGE_TAG }}"
 appstore_images_postgres_tag: 12.3

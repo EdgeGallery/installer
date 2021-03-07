@@ -1,7 +1,7 @@
-atp_images_atpFe_repository: edgegallery/atp-fe
-atp_images_atp_repository: edgegallery/atp-be
-atp_images_postgres_repository: eg-common/postgres
-atp_images_initservicecenter_repository: eg-common/curl
+atp_images_atpFe_repository: "{{ REGISTRY_URL }}edgegallery/atp-fe"
+atp_images_atp_repository: "{{ REGISTRY_URL }}edgegallery/atp-be"
+atp_images_postgres_repository: "{{ REGISTRY_URL }}eg-common/postgres"
+atp_images_initservicecenter_repository: "{{ REGISTRY_URL }}eg-common/curl"
 atp_images_atpFe_tag: "{{ EG_IMAGE_TAG }}"
 atp_images_atp_tag: "{{ EG_IMAGE_TAG }}"
 atp_images_postgres_tag: 12.3

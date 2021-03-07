@@ -1,0 +1,19 @@
+---
+
+- name: Get All EG Images List
+  shell: "cat {{ TARBALL_PATH }}/eg_swr_images/eg_images_list.txt"
+  register: image_list_str
+
+- name: Set Image List Str to List
+  set_fact:
+    image_list: "{{ image_list_str.stdout.split(' ') }}"
+
+- name: Set Fact of Registry Path
+  set_fact:
+    registry_path: "{{ ansible_default_ipv4['address'] }}:5000"
+
+- name: Push All Images to Registry
+  shell: |
+    docker image tag {{ item }} {{registry_path}}/{{ item }}
+    docker push {{registry_path}}/{{ item }}
+  loop: "{{ image_list }}"

@@ -1,6 +1,9 @@
 HELM_VERSION: v3.2.4
 HELM_TARBALL_FILE: "{{ TARBALL_PATH }}/helm/helm-{{ HELM_VERSION }}-linux-{{ ARCH }}.tar.gz"
 HELM_OFFLINE_DIR: "{{ TARBALL_PATH }}/helm"
+HELM_CHARTS_DIR: "{{ HELM_OFFLINE_DIR }}/helm-charts"
+HELM_REPO_CONTAINER_NAME: helm-repo
+HELM_REPO_IMAGE: nginx:stable
 
 CERT_VALIDITY_IN_DAYS: 365
 

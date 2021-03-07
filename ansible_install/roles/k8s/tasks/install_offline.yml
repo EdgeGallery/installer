@@ -28,11 +28,28 @@
   import_tasks: docker_install_offline.yml
   when: dockerInstalled is failed
 
+- name: Create Directory /etc/docker For Docker Registry
+  file:
+    path: /etc/docker
+    state: directory
+
+- name: Install and Setup Docker Registry
+  import_tasks: docker_registry_install_offline.yml
+  when: NODE_MODE == "muno" and K8S_NODE_TYPE == "master"
+
+- name: Set Docker daemon.json on Worker Node
+  copy:
+    src: "/home/{{ groups.master[0] }}/etc/docker/daemon.json"
+    dest: /etc/docker/
+  when: NODE_MODE == "muno" and K8S_NODE_TYPE == "worker"
+
+- name: Restart Docker Service
+  service:
+    name: docker.service
+    state: restarted
+
 - name: Install K8S
   import_tasks: k8s_install_offline.yml
-
-- name: K8s Apply Metric Server
-  shell: "kubectl apply -f {{ K8S_OFFLINE_DIR }}/k8s/metric-server.yaml"
 
 - name: Create CNI Bin Directory
   file:

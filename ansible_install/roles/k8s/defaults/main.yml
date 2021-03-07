@@ -3,6 +3,9 @@ K8S_OFFLINE_DIR: "{{ TARBALL_PATH }}/kubernetes_offline_installer"
 
 DOCKER_TARBALL_FILE: "{{ K8S_OFFLINE_DIR }}/docker/docker.tgz"
 DOCKER_OFFLINE_DIR: "{{ K8S_OFFLINE_DIR }}/docker"
+DOCKER_REGISTRY_IMAGE: "{{ TARBALL_PATH }}/registry/registry-2.tar.gz"
+REGISTRY_CONTAINER_NAME: registry
+REGISTRY_IMAGE_NAME: eg-common/registry:2
 
 K8S_DOCKER_IMAGES:
   - k8s.gcr.io/kube-proxy:v1.18.7

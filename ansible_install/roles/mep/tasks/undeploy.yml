@@ -2,14 +2,6 @@
   shell: helm uninstall mep-edgegallery
   ignore_errors: yes
 
-- name: Cleanup Network Seeting
-  shell: |
-    ip link set dev eg-mp1 down
-    ip link delete eg-mp1
-    ip link set dev eg-mm5 down
-    ip link delete eg-mm5
-  ignore_errors: yes
-
 - name: Remove CNI Bin files
   file:
     path: "/opt/cni/bin/multus"

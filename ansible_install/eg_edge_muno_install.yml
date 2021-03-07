@@ -1,0 +1,48 @@
+---
+
+# IaaS Deployment on Master and Worker Node
+- hosts: master
+  become: yes
+  vars:
+    - OPERATION: install
+    - EG_MODE: edge
+    - NODE_MODE: muno
+    - K8S_NODE_TYPE: master
+  vars_files:
+    - ./var.yml
+    - ./default-var.yml
+  roles:
+    - init
+    - k8s
+    - eg_prepare
+
+- hosts: worker
+  become: yes
+  vars:
+    - OPERATION: install
+    - EG_MODE: edge
+    - NODE_MODE: muno
+    - K8S_NODE_TYPE: worker
+  vars_files:
+    - ./var.yml
+    - ./default-var.yml
+  roles:
+    - init
+    - k8s
+    - eg_prepare
+
+# PaaS Deployment on Master
+- hosts: master
+  become: yes
+  vars:
+    - OPERATION: install
+    - EG_MODE: edge
+    - NODE_MODE: muno
+    - K8S_NODE_TYPE: master
+  vars_files:
+    - ./var.yml
+    - ./default-var.yml
+  roles:
+    - mep
+    - mecm-mepm
+    - eg_check

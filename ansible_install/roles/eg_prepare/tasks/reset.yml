@@ -1,5 +1,20 @@
 ---
 
+- name: Cleanup Network Setting
+  shell: |
+    ip link set dev eg-mp1 down
+    ip link delete eg-mp1
+    ip link set dev eg-mm5 down
+    ip link delete eg-mm5
+  ignore_errors: yes
+
+- name: Cleanup Other Network Settings for Multi Node Mode
+  shell: |
+    ip link delete vxlan-mp1
+    ip link delete vxlan-mm5
+  when: NODE_MODE == "muno"
+  ignore_errors: yes
+
 - name: Uninstall Service Center
   shell: helm uninstall service-center-edgegallery
   when: EG_MODE == "all" or EG_MODE == "controller"
@@ -8,6 +23,19 @@
 - name: Delete Secret edgegallery-ssl-secret
   shell: kubectl delete secret edgegallery-ssl-secret
   when: EG_MODE == "all" or EG_MODE == "controller"
+  ignore_errors: yes
+
+- name: Remove edgagallery and stable Helm Repos
+  shell: "helm repo remove {{ item }}"
+  loop:
+    - edgegallery
+    - stable
+  when: NODE_MODE == "muno" and K8S_NODE_TYPE == "master"
+  ignore_errors: yes
+
+- name: Remove Helm Repo Container
+  shell: "docker rm -f {{ HELM_REPO_CONTAINER_NAME }}"
+  when: NODE_MODE == "muno" and K8S_NODE_TYPE == "master"
   ignore_errors: yes
 
 - name: Uninstall Helm

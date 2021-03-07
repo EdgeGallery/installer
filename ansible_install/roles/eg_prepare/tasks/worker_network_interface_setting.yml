@@ -1,0 +1,49 @@
+---
+
+- name: Print IP Prefix
+  debug:
+    msg: "{{ ipPrefix }}"
+  register: ipPrefixExists
+  ignore_errors: yes
+
+- name: Set IP Prefix According to K8S Nodes Number
+  shell: |
+    nodes_num=`kubectl get nodes | wc -l`
+    ((ipPrefix=nodes_num+1))
+    echo $ipPrefix
+  register: getIPPrefix
+  when: ipPrefixExists is failed
+
+- name: Set Ip Prefix
+  set_fact:
+    ipPrefix: "{{ getIPPrefix.stdout }}"
+  when: ipPrefixExists is failed and getIPPrefix is succeeded
+
+- name: Print IP Prefix
+  debug:
+    msg: "{{ ipPrefix }}"
+
+- name: Print EG_NODE_EDGE_MP1
+  debug:
+    msg: "{{ EG_NODE_EDGE_MP1 }}"
+
+- name: Print EG_NODE_EDGE_MM5
+  debug:
+    msg: "{{ EG_NODE_EDGE_MM5 }}"
+
+- name: Network Setting For Multi Node Mode
+  shell: |
+    ip link add vxlan-mp1 type vxlan id 100 group 239.1.1.1 dstport 4789 dev {{EG_NODE_EDGE_MP1}}
+    ip link set vxlan-mp1 up
+
+    ip link add vxlan-mm5 type vxlan id 200 group 239.1.1.1 dstport 4789 dev {{EG_NODE_EDGE_MM5}}
+    ip link set vxlan-mm5 up
+
+    ip link add eg-mp1 link vxlan-mp1 type macvlan mode bridge
+    ip addr add 200.1.1.{{ ipPrefix }}/24 dev eg-mp1
+    ip link set dev eg-mp1 up
+
+    ip link add eg-mm5 link vxlan-mm5 type macvlan mode bridge
+    ip addr add 100.1.1.{{ ipPrefix }}/24 dev eg-mm5
+    ip link set dev eg-mm5 up
+  when: NODE_MODE == "muno"

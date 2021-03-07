@@ -5,6 +5,12 @@
     state: stopped
   ignore_errors: yes
 
+- name: Remove Docker Config File
+  file:
+    path: /etc/docker
+    state: absent
+  ignore_errors: yes
+
 - name: Remove Docker Service File
   file:
     path: /etc/systemd/system/docker.service

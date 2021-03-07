@@ -1,6 +1,11 @@
 ---
 - name: Load All EdgeGallery Docker Images
   shell: for f in "{{ TARBALL_PATH }}"/eg_swr_images/*.tar.gz; do docker load -i $f; done
+  when: K8S_NODE_TYPE == "master"
+
+- name: Push All EG Images to Registry
+  import_tasks: push_images_to_registry.yml
+  when: NODE_MODE == "muno" and K8S_NODE_TYPE == "master"
 
 - name: Try to Get Helm Version
   shell: helm version | cut -d \" -f2
@@ -37,27 +42,36 @@
   shell: helm version
   when: helmVersion.stdout != (HELM_VERSION) and unarchiveHelm is succeeded
 
-- name: Create SSL Certs
-  shell: "docker run --rm -e CERT_VALIDITY_IN_DAYS={{ CERT_VALIDITY_IN_DAYS }} -v {{ TARBALL_PATH }}/conf/keys/:/certs edgegallery/deploy-tool:{{ EG_IMAGE_TAG }}"
+- name: Setup Helm Repo
+  import_tasks: setup_helm_repo.yml
+  when: NODE_MODE == "muno" and K8S_NODE_TYPE == "master"
 
-- name: Create Secret edgegallery-ssl-secret
-  shell: |
-    kubectl create secret generic edgegallery-ssl-secret \
-      --from-file=keystore.p12={{ TARBALL_PATH }}/conf/keys/keystore.p12 \
-      --from-literal=keystorePassword={{ keystorePassword }} \
-      --from-literal=keystoreType={{ keystoreType }} \
-      --from-literal=keyAlias={{ keyAlias }} \
-      --from-file=trust.cer={{ TARBALL_PATH }}/conf/keys/ca.crt \
-      --from-file=server.cer={{ TARBALL_PATH }}/conf/keys/tls.crt \
-      --from-file=server_key.pem={{ TARBALL_PATH }}/conf/keys/encryptedtls.key \
-      --from-literal=cert_pwd={{ cert_pwd }}
-  when: EG_MODE == "all" or EG_MODE == "controller"
+- name: Master Node Setup EG Resources
+  import_tasks: setup_master_resources.yml
+  when: K8S_NODE_TYPE == "master"
 
-- name: Install Service Center
-  shell: |
-    helm install --wait service-center-edgegallery {{ HELM_CHARTS_PATH }}/edgegallery/servicecenter-{{ HELM_TAG }}.tgz \
-    --set images.repository={{ servicecenter_images_repository }} \
-    --set images.pullPolicy={{ servicecenter_images_pullPolicy }} \
-    --set global.ssl.enabled={{ servicecenter_global_ssl_enabled }} \
-    --set global.ssl.secretName={{ servicecenter_global_ssl_secretName }}
-  when: EG_MODE == "all" or EG_MODE == "controller"
+- name: Get EG_NODE_EDGE_MP1
+  shell: ip a | grep -B2 {{ ansible_default_ipv4['address'] }} | head -n1 | cut -d ":" -f2 |cut -d " " -f2
+  register: mp1
+
+- name: Get EG_NODE_EDGE_MM5
+  shell: ip a | grep -B2 {{ ansible_default_ipv4['address'] }} | head -n1 | cut -d ":" -f2 |cut -d " " -f2
+  register: mm5
+
+- name: Set EG_NODE_EDGE_MP1
+  set_fact:
+    EG_NODE_EDGE_MP1: "{{ mp1.stdout }}"
+  when: EG_NODE_EDGE_MP1 is undefined
+
+- name: Set EG_NODE_EDGE_MM5
+  set_fact:
+    EG_NODE_EDGE_MM5: "{{ mm5.stdout }}"
+  when: EG_NODE_EDGE_MM5 is undefined
+
+- name: Setup Master Node Network Interface
+  import_tasks: master_network_interface_setting.yml
+  when: K8S_NODE_TYPE == "master"
+
+- name: Setup Worker Node Network Interface
+  import_tasks: worker_network_interface_setting.yml
+  when: K8S_NODE_TYPE == "worker"

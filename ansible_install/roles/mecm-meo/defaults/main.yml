@@ -12,10 +12,10 @@ edgeRepoPassword: admin123
 
 meo_ssl_secretName: mecm-ssl-secret
 meo_mecm_secretName: edgegallery-mecm-secret
-meo_images_inventory_repository: edgegallery/mecm-inventory
-meo_images_appo_repository: edgegallery/mecm-appo
-meo_images_apm_repository: edgegallery/mecm-apm
-meo_images_postgres_repository: eg-common/postgres
+meo_images_inventory_repository: "{{ REGISTRY_URL }}edgegallery/mecm-inventory"
+meo_images_appo_repository: "{{ REGISTRY_URL }}edgegallery/mecm-appo"
+meo_images_apm_repository: "{{ REGISTRY_URL }}edgegallery/mecm-apm"
+meo_images_postgres_repository: "{{ REGISTRY_URL }}eg-common/postgres"
 meo_images_inventory_tag: "{{ EG_IMAGE_TAG }}"
 meo_images_appo_tag: "{{ EG_IMAGE_TAG }}"
 meo_images_apm_tag: "{{ EG_IMAGE_TAG }}"

@@ -1,9 +1,9 @@
-developer_images_developerFe_repository: edgegallery/developer-fe
-developer_images_developerBe_repository: edgegallery/developer-be
-developer_images_postgres_repository: eg-common/postgres
-developer_images_initservicecenter_repository: eg-common/curl
-developer_images_toolChain_repository: edgegallery/tool-chain
-developer_images_portingAdvisor_repository: eg-common/porting-advisor
+developer_images_developerFe_repository: "{{ REGISTRY_URL }}edgegallery/developer-fe"
+developer_images_developerBe_repository: "{{ REGISTRY_URL }}edgegallery/developer-be"
+developer_images_postgres_repository: "{{ REGISTRY_URL }}eg-common/postgres"
+developer_images_initservicecenter_repository: "{{ REGISTRY_URL }}eg-common/curl"
+developer_images_toolChain_repository: "{{ REGISTRY_URL }}edgegallery/tool-chain"
+developer_images_portingAdvisor_repository: "{{ REGISTRY_URL }}eg-common/porting-advisor"
 developer_images_developerFe_tag: "{{ EG_IMAGE_TAG }}"
 developer_images_developerBe_tag: "{{ EG_IMAGE_TAG }}"
 developer_images_toolChain_tag: "{{ EG_IMAGE_TAG }}"

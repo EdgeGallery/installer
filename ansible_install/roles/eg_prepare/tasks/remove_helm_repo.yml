@@ -1,0 +1,12 @@
+---
+
+- name: Remove edgagallery and stable Helm Repos
+  shell: "helm repo remove {{ item }}"
+  loop:
+    - edgegallery
+    - stable
+  ignore_errors: yes
+
+- name: Remove helm-repo Container
+  shell: "docker rm -f {{ HELM_REPO_CONTAINER_NAME }}"
+  ignore_errors: yes

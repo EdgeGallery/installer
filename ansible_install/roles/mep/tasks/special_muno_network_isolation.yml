@@ -1,0 +1,30 @@
+---
+
+- name: Set Whereabouts Images For AMD64
+  replace:
+    path: "{{ TARBALL_PATH }}/conf/edge/network-isolation/whereabouts-daemonset-install.yaml"
+    regexp: "image: docker.io/dougbtv/whereabouts:latest"
+    replace: "image: {{mep_images_whereabouts_repository}}:{{mep_images_whereabouts_tag}}"
+
+- name: Set Whereabouts Images For ARM64
+  replace:
+    path: "{{ TARBALL_PATH }}/conf/edge/network-isolation/whereabouts-daemonset-install.yaml"
+    regexp: "image: edgegallery/whereabouts-arm64:latest"
+    replace: "image: {{mep_images_whereabouts_repository}}:{{mep_images_whereabouts_tag}}"
+
+- name: Create Whereabouts Daemonset
+  shell: "kubectl apply -f {{ TARBALL_PATH }}/conf/edge/network-isolation/{{ item }}"
+  loop:
+    - whereabouts-daemonset-install.yaml
+    - whereabouts.cni.cncf.io_ippools.yaml
+
+- name: Wait for Whereabouts Pod is Ready
+  shell: |
+    nodes_num=`kubectl get nodes | wc -l`
+    ((nodes_num=nodes_num-1))
+    whereabouts_num=`kubectl get pods -A | grep "whereabouts" | grep "Running" | wc -l`
+    if [ $nodes_num == $whereabouts_num ]; then echo "true"; else echo "false"; fi
+  register: whereaboutsPodNum
+  until: whereaboutsPodNum.stdout == "true"
+  retries: 30
+  delay: 5
