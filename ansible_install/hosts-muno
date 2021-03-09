@@ -1,5 +1,5 @@
 [master]
-192.168.0.113
+master-ip
 
 [worker]
-192.168.0.168
+worker-ip
