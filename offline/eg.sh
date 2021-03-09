@@ -846,20 +846,26 @@ function install_mep()
     --set networkIsolation.phyInterface.mp1=$phyif_mp1 \
     --set networkIsolation.phyInterface.mm5=$phyif_mm5 \
     --set images.mep.repository=$mep_images_mep_repository \
+    --set images.mep-fe.repository=$mep_images_mep_repository \
     --set images.mepauth.repository=$mep_images_mepauth_repository \
     --set images.dns.repository=$mep_images_dns_repository \
     --set images.kong.repository=$mep_images_kong_repository \
     --set images.postgres.repository=$mep_images_postgres_repository \
+    --set images.elasticsearch.repository=$mep_images_elasticsearch_repository \
     --set images.mep.tag=$mep_images_mep_tag \
+    --set images.mep-fe.tag=$mep_images_mep-fe_tag \
     --set images.mepauth.tag=$mep_images_mepauth_tag \
     --set images.dns.tag=$mep_images_dns_tag \
     --set images.kong.tag=$mep_images_kong_tag \
     --set images.postgres.tag=$mep_images_postgres_tag \
+    --set images.elasticsearch.tag=$mep_images_elasticsearch_tag \
     --set images.mep.pullPolicy=$mep_images_mep_pullPolicy \
+    --set images.mep-fe.pullPolicy=$mep_images_mep_pullPolicy \
     --set images.mepauth.pullPolicy=$mep_images_mepauth_pullPolicy \
     --set images.dns.pullPolicy=$mep_images_dns_pullPolicy \
     --set images.kong.pullPolicy=$mep_images_kong_pullPolicy \
     --set images.postgres.pullPolicy=$mep_images_postgres_pullPolicy \
+    --set images.elasticsearch.pullPolicy=$mep_images_elasticsearch_pullPolicy \
     --set ssl.secretName=$mep_ssl_secretName \
     --set global.persistence.enabled=$ENABLE_PERSISTENCE
 
