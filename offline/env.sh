@@ -59,16 +59,19 @@ export mep_images_mepauth_repository="$REGISTRY_URL"edgegallery/mepauth
 export mep_images_dns_repository="$REGISTRY_URL"edgegallery/mep-dns-server
 export mep_images_kong_repository="$REGISTRY_URL"kong
 export mep_images_postgres_repository="$REGISTRY_URL"postgres
+export mep_images_elasticsearch_repository="$REGISTRY_URL"elasticsearch
 export mep_images_mep_tag="$EG_IMAGE_TAG"
 export mep_images_mepauth_tag="$EG_IMAGE_TAG"
 export mep_images_dns_tag="$EG_IMAGE_TAG"
 export mep_images_kong_tag=2.0.4-ubuntu
 export mep_images_postgres_tag=12.3
+export mep_images_elasticsearch_tag=7.9.0
 export mep_images_mep_pullPolicy=IfNotPresent
 export mep_images_mepauth_pullPolicy=IfNotPresent
 export mep_images_dns_pullPolicy=IfNotPresent
 export mep_images_kong_pullPolicy=IfNotPresent
 export mep_images_postgres_pullPolicy=IfNotPresent
+export mep_images_elasticsearch_pullPolicy=IfNotPresent
 export mep_ssl_secretName=mep-ssl
 
 #MECM-MEPM Values
