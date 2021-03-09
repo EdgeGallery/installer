@@ -92,6 +92,7 @@ fi
 if [[ -z "$EG_IMAGE_LIST_EDGE_X86_DEFAULT" && $PATCH != "true" ]]; then
    EG_IMAGE_LIST_EDGE_X86_DEFAULT="swr.ap-southeast-1.myhuaweicloud.com/edgegallery/mepauth:$EG_IMAGE_TAG \
    swr.ap-southeast-1.myhuaweicloud.com/edgegallery/mep:$EG_IMAGE_TAG \
+   swr.ap-southeast-1.myhuaweicloud.com/edgegallery/mep-fe:$EG_IMAGE_TAG \
    swr.ap-southeast-1.myhuaweicloud.com/edgegallery/mep-dns-server:$EG_IMAGE_TAG \
    swr.ap-southeast-1.myhuaweicloud.com/edgegallery/edgegallery-secondary-ep-controller:$EG_IMAGE_TAG \
    swr.ap-southeast-1.myhuaweicloud.com/edgegallery/mecm-applcm:$EG_IMAGE_TAG \
@@ -122,6 +123,7 @@ fi
 if [[ -z "$EG_IMAGE_LIST_EDGE_ARM64_DEFAULT" && $PATCH != "true" ]]; then
    EG_IMAGE_LIST_EDGE_ARM64_DEFAULT="swr.ap-southeast-1.myhuaweicloud.com/edgegallery/mepauth:$EG_IMAGE_TAG \
    swr.ap-southeast-1.myhuaweicloud.com/edgegallery/mep:$EG_IMAGE_TAG \
+   swr.ap-southeast-1.myhuaweicloud.com/edgegallery/mep-fe:$EG_IMAGE_TAG \
    swr.ap-southeast-1.myhuaweicloud.com/edgegallery/mep-dns-server:$EG_IMAGE_TAG \
    swr.ap-southeast-1.myhuaweicloud.com/edgegallery/edgegallery-secondary-ep-controller:$EG_IMAGE_TAG \
    swr.ap-southeast-1.myhuaweicloud.com/edgegallery/mecm-applcm:$EG_IMAGE_TAG \
