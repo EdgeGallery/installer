@@ -65,7 +65,7 @@
 - name: Pull and Retag All K8S Related Docker Images
   shell: |
     docker pull {{ item }}
-    new_image_name=`echo {{ item }} | sed -e "s#swr.ap-southeast-1.myhuaweicloud.com/eg-common/##g"`
+    new_image_name=`echo {{ item }} | sed -e "s#swr.ap-southeast-1.myhuaweicloud.com/eg-common/##g" | sed -e "s#-arm64##g"`
     docker image tag {{ item }} $new_image_name
   loop: "{{ k8s_image_list }}"
 
@@ -75,7 +75,7 @@
 
 - name: Save All K8S Docker Images Together
   shell: |
-    new_image_list=`echo {{ k8s_image_str }} | sed -e "s#swr.ap-southeast-1.myhuaweicloud.com/eg-common/##g"`
+    new_image_list=`echo {{ k8s_image_str }} | sed -e "s#swr.ap-southeast-1.myhuaweicloud.com/eg-common/##g" | sed -e "s#-arm64##g"`
     docker save $new_image_list | gzip > {{ K8S_OFFLINE_DIR }}/docker/images/k8s_images.tar.gz
     echo $new_image_list >> {{ K8S_OFFLINE_DIR }}/docker/images/k8s_images_list.txt
 
