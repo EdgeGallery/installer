@@ -8,7 +8,7 @@ curl -L https://get.daocloud.io/docker/compose/releases/download/1.26.0/docker-c
 chmod +x /usr/local/bin/docker-compose 
 ##### 修改docker.service
 在ExecStart 行后面加 '--insecure-registry Ip:port',如下例 \
-ExecStart=/usr/bin/dockerd -H fd:// --containerd=/run/containerd/containerd.sock --insecure-registry 192.168.1.11:443
+ExecStart=/usr/bin/dockerd -H fd:// --containerd=/run/containerd/containerd.sock --insecure-registry 192.168.1.11
 #### 2.Download harbor offline pankage and set harbor.yml文件
 wget https://github.com/goharbor/harbor/releases/download/v2.0.6/harbor-offline-installer-v2.0.6.tgz \
 tar -zxvf harbor-offline-installer-v2.0.6.tgz \
@@ -45,7 +45,7 @@ systemctl restart docker
 cd  /root/harbor/   \
 ./install.sh    #脚本安装harbor 
 ##### docker login harbor
-docker login -uadmin -pHarbor12345 192.168.1.11:443
+docker login -uadmin -pHarbor12345 192.168.1.11
 #### 4.登录harbor web界面
 登录url https://192.168.1.11:443
 ##### 创建项目
