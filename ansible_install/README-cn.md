@@ -21,8 +21,8 @@ EdgeGallery离线安装是为单机环境提供的安装方式，便于各种只
 
 1. 在部署前准备好所需服务器，需在root用户权限下执行部署操作，非root用户暂不支持：
 
-    - 一台master节点：用于部署k8s master node，最低配置建议使用：4CPU,16G内存，100G硬盘，单网卡或者多网卡
-    - 一台或多台worker节点：用于部署k8s worker node，最低配置建议使用：4CPU,16G内存，100G硬盘，单网卡或者多网卡，All-in-one（AIO）部署不需要worker节点
+    - 一台master节点：用于部署k8s master node，最低配置建议使用：4CPU，16G内存，100G硬盘，单网卡或者多网卡
+    - 一台或多台worker节点：用于部署k8s worker node，最低配置建议使用：4CPU，16G内存，100G硬盘，单网卡或者多网卡，All-in-one（AIO）部署不需要worker节点
     - 一台部署控制节点：若仅用于部署控制，无特殊配置要求；若同时用作master或worker，则需满足上述master或worker的配置要求
 
 2. 在准备好的服务器上安装Ubuntu 18.04操作系统(ububntu 18.04是经过安装测试的版本)
