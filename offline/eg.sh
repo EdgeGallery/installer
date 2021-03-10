@@ -846,14 +846,14 @@ function install_mep()
     --set networkIsolation.phyInterface.mp1=$phyif_mp1 \
     --set networkIsolation.phyInterface.mm5=$phyif_mm5 \
     --set images.mep.repository=$mep_images_mep_repository \
-    --set images.mep-fe.repository=$mep_images_mep_repository \
+    --set images.mepFe.repository=$mep_images_mep_fe_repository \
     --set images.mepauth.repository=$mep_images_mepauth_repository \
     --set images.dns.repository=$mep_images_dns_repository \
     --set images.kong.repository=$mep_images_kong_repository \
     --set images.postgres.repository=$mep_images_postgres_repository \
     --set images.elasticsearch.repository=$mep_images_elasticsearch_repository \
     --set images.mep.tag=$mep_images_mep_tag \
-    --set images.mep-fe.tag=$mep_images_mep-fe_tag \
+    --set images.mepFe.tag=$mep_images_mep_fe_tag \
     --set images.mepauth.tag=$mep_images_mepauth_tag \
     --set images.dns.tag=$mep_images_dns_tag \
     --set images.kong.tag=$mep_images_kong_tag \
