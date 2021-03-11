@@ -417,7 +417,7 @@ function _download_docker_registry()
 
 function _docker_download() {
   mkdir -p $K8S_OFFLINE_DIR/docker
-  curl -L https://get.daocloud.io/docker/compose/releases/download/1.26.0/docker-compose-`uname -s`-`uname -m` >  $K8S_OFFLINE_DIR/docker/
+  sudo curl -L "https://github.com/docker/compose/releases/download/1.26.2/docker-compose-$(uname -s)-$(uname -m)"  -o  >  $K8S_OFFLINE_DIR/docker/
   if [[ $? -ne 0 ]]; then
     info "download docker-compose Failed" $RED
     exit 1
