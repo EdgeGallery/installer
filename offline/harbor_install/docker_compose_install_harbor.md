@@ -4,7 +4,7 @@
 apt-get install  docker.io 
 ##### install docker-compose
 要求docker-compose version >1.18 \
-curl -L https://get.daocloud.io/docker/compose/releases/download/1.26.0/docker-compose-`uname -s`-`uname -m` > /usr/local/bin/docker-compose \
+sudo curl -L "https://github.com/docker/compose/releases/download/1.26.2/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose \
 chmod +x /usr/local/bin/docker-compose 
 ##### 修改docker.service
 在ExecStart 行后面加 '--insecure-registry Ip:port',如下例 \
