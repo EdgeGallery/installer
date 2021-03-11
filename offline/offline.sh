@@ -426,6 +426,10 @@ function _docker_download() {
   if [[ $? -ne 0 ]]; then
     info "download docker-18.09.0.tgz Failed" $RED
     exit 1
+  cp  /home/docker.service  $K8S_OFFLINE_DIR/docker/
+  if [[ $? -ne 0 ]]; then
+    info "docker.service  not exist" $RED
+    exit 1
   fi
 }
 
@@ -473,6 +477,7 @@ WantedBy=multi-user.target
 EOF
 
       mv docker.service /etc/systemd/system/
+      
 
       systemctl daemon-reload
       systemctl enable docker.service
