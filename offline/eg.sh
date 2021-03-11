@@ -69,7 +69,9 @@ function _docker_deploy() {
       for cmd in containerd  containerd-shim  ctr  docker  dockerd  docker-init  docker-proxy  runc; do cp /tmp/remote-platform/k8s/docker/$cmd /usr/bin/$cmd; done
       cp  $K8S_OFFLINE_DIR/docker/docker-compose  /usr/local/bin/
       chmod +x /usr/local/bin/docker-compose
-     
+      cp $K8S_OFFLINE_DIR/docker/docker.service  /lib/systemd/system/
+      sed -i 's/192.168.1.1/$PORTAL_IP/g'  /lib/systemd/system/docker.service
+      
       cat <<EOF >docker.service
 [Unit]
 Description=Docker Daemon
