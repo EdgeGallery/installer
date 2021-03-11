@@ -417,6 +417,11 @@ function _download_docker_registry()
 
 function _docker_download() {
   mkdir -p $K8S_OFFLINE_DIR/docker
+  curl -L https://get.daocloud.io/docker/compose/releases/download/1.26.0/docker-compose-`uname -s`-`uname -m` >  $K8S_OFFLINE_DIR/docker
+  if [[ $? -ne 0 ]]; then
+    info "download docker-compose Failed" $RED
+    exit 1
+  fi
   wget -N https://download.docker.com/linux/static/stable/`arch`/docker-18.09.0.tgz -O $K8S_OFFLINE_DIR/docker/docker.tgz
   if [[ $? -ne 0 ]]; then
     info "download docker-18.09.0.tgz Failed" $RED
@@ -454,7 +459,8 @@ function _docker_deploy() {
       mkdir -p /tmp/remote-platform/k8s
       tar -xf $K8S_OFFLINE_DIR/docker/docker.tgz -C /tmp/remote-platform/k8s
       for cmd in containerd  containerd-shim  ctr  docker  dockerd  docker-init  docker-proxy  runc; do cp /tmp/remote-platform/k8s/docker/$cmd /usr/bin/$cmd; done
-
+      cp  $K8S_OFFLINE_DIR/docker/docker-compose   /usr/local/bin/
+      chmod  +x /usr/local/bin/docker-compose
       cat <<EOF >docker.service
 [Unit]
 Description=Docker Daemon
