@@ -67,7 +67,9 @@ function _docker_deploy() {
       mkdir -p /tmp/remote-platform/k8s
       tar -xf $K8S_OFFLINE_DIR/docker/docker.tgz -C /tmp/remote-platform/k8s
       for cmd in containerd  containerd-shim  ctr  docker  dockerd  docker-init  docker-proxy  runc; do cp /tmp/remote-platform/k8s/docker/$cmd /usr/bin/$cmd; done
-
+      cp  $K8S_OFFLINE_DIR/docker/docker-compose  /usr/local/bin/
+      chmod +x /usr/local/bin/docker-compose
+     
       cat <<EOF >docker.service
 [Unit]
 Description=Docker Daemon
@@ -99,7 +101,7 @@ function _docker_undeploy() {
     systemctl daemon-reload
 
     for cmd in containerd  containerd-shim  ctr  docker  dockerd  docker-init  docker-proxy  runc; do rm /usr/bin/$cmd; done
-
+    rm -rf  /usr/local/bin/docker-compose
     systemctl status docker.service --no-pager
     rm -rf /var/lib/docker/
 }
