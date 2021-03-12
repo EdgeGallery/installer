@@ -417,7 +417,7 @@ function _download_docker_registry()
 
 function _docker_download() {
   mkdir -p $K8S_OFFLINE_DIR/docker
-  sudo curl -L "https://github.com/docker/compose/releases/download/1.26.2/docker-compose-$(uname -s)-$(uname -m)"  -o  >  $K8S_OFFLINE_DIR/docker/
+  sudo curl -L "https://github.com/docker/compose/releases/download/1.26.2/docker-compose-$(uname -s)-$(uname -m)"  -o $K8S_OFFLINE_DIR/docker/docker-compose-$(uname -s)-$(uname -m)
   if [[ $? -ne 0 ]]; then
     info "download docker-compose Failed" $RED
     exit 1
@@ -425,10 +425,6 @@ function _docker_download() {
   wget -N https://download.docker.com/linux/static/stable/`arch`/docker-18.09.0.tgz -O $K8S_OFFLINE_DIR/docker/docker.tgz
   if [[ $? -ne 0 ]]; then
     info "download docker-18.09.0.tgz Failed" $RED
-    exit 1
-  cp  /home/docker.service  $K8S_OFFLINE_DIR/docker/
-  if [[ $? -ne 0 ]]; then
-    info "docker.service  not exist" $RED
     exit 1
   fi
 }
