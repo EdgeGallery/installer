@@ -1039,6 +1039,8 @@ function install_mecm-meo ()
     --set images.apm.pullPolicy=$meo_images_apm_pullPolicy \
     --set images.postgres.pullPolicy=$meo_images_postgres_pullPolicy \
     --set mecm.docker.fsgroup=$fs_group \
+    --set mecm.repository.dockerRepoEndpoint=PORTAL_IP \
+    --set mecm.repository.sourceRepos='repo=developer  userName=admin password=Harbor12345'  \
     --set global.persistence.enabled=$ENABLE_PERSISTENCE
     if [ $? -eq 0 ]; then
       info "[Deployed MECM-MEO  .........]" $GREEN
