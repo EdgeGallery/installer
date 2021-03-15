@@ -1010,8 +1010,6 @@ function install_mecm-meo ()
       --from-literal=postgresApmPassword=te9Fmv%qaq \
       --from-literal=postgresAppoPassword=te9Fmv%qaq \
       --from-literal=postgresInventoryPassword=te9Fmv%qaq \
-      --from-literal=edgeRepoUserName=admin	 \
-      --from-literal=edgeRepoPassword=admin123 \
       --from-literal=dockerRepoUserName=admin  \  
       --from-literal=dockerRepoPassword=Harbor12345  
 
