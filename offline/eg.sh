@@ -1004,14 +1004,15 @@ function install_mecm-meo ()
     --from-literal=truststorePassword=te9Fmv%qaq
 
     ## Create a mecm-meo secret with postgres_init.sql file to create necessary db's
-    kubectl create secret generic edgegallery-mecm-secret \
+     kubectl create secret generic edgegallery-mecm-secret \
       --from-file=postgres_init.sql=$PLATFORM_DIR/conf/keys/postgres_init.sql \
       --from-literal=postgresPassword=te9Fmv%qaq \
       --from-literal=postgresApmPassword=te9Fmv%qaq \
       --from-literal=postgresAppoPassword=te9Fmv%qaq \
       --from-literal=postgresInventoryPassword=te9Fmv%qaq \
-      --from-literal=dockerRepoUserName=admin  \  
-      --from-literal=dockerRepoPassword=Harbor12345  
+      --from-literal=dockereRepoUserName=admin	 \
+      --from-literal=dockerRepoPassword=Harbor12345 
+    
 
     if [[ $OFFLINE_MODE == "muno" ]]; then
       sshpass ssh root@$MASTER_IP "rm -rf /tmp/remote-platform/remote_fsgroup;
@@ -1039,7 +1040,7 @@ function install_mecm-meo ()
     --set images.apm.pullPolicy=$meo_images_apm_pullPolicy \
     --set images.postgres.pullPolicy=$meo_images_postgres_pullPolicy \
     --set mecm.docker.fsgroup=$fs_group \
-    --set mecm.repository.dockerRepoEndpoint=PORTAL_IP \
+    --set mecm.repository.dockerRepoEndpoint=$PORTAL_IP \
     --set mecm.repository.sourceRepos='repo=developer  userName=admin password=Harbor12345'  \
     --set global.persistence.enabled=$ENABLE_PERSISTENCE
     if [ $? -eq 0 ]; then
