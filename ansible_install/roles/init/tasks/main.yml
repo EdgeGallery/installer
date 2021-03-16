@@ -15,11 +15,6 @@
     msg: "NETWORK_MODE='{{ NETWORK_MODE }}' is invalid, could only be online or offline"
   when: NETWORK_MODE != "online" and NETWORK_MODE != "offline"
 
-- name: Check ARCH
-  fail:
-    msg: "ARCH='{{ ARCH }}' is invalid, could only be amd64 or arm64"
-  when: ARCH != "amd64" and ARCH != "arm64"
-
 - name: Init Env Online
   import_tasks: "init_online.yml"
   when: OPERATION == "install" and NETWORK_MODE == "online"

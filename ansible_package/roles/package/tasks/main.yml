@@ -16,9 +16,76 @@
 - name: Archive EdgeGallery Offline Package
   community.general.archive:
     path: "{{ TARBALL_PATH }}/*"
-    dest: "{{ TARBALL_PATH }}/eg-{{ EG_MODE }}-{{ ARCH }}-{{ EG_IMAGE_TAG }}-{{ timestamp }}.tar.gz"
+    dest: "{{ PACKAGE_PATH }}/ansible-{{ EG_IMAGE_TAG }}.tar.gz"
+    format: gz
+    force_archive: yes
+
+- name: Remove TARBALL_PATH
+  file:
+    path: "{{ TARBALL_PATH }}"
+    state: absent
+
+- name: Download X86 sshpass Deb
+  get_url:
+    url: http://archive.ubuntu.com/ubuntu/pool/universe/s/sshpass/sshpass_1.06-1_amd64.deb
+    dest: "{{ PACKAGE_PATH }}"
+  when: ARCH == "amd64"
+
+- name: Download ARM64 sshpass Deb
+  get_url:
+    url: http://ports.ubuntu.com/pool/universe/s/sshpass/sshpass_1.06-1_arm64.deb
+    dest: "{{ PACKAGE_PATH }}"
+  when: ARCH == "arm64"
+
+- name: Download installer Repo
+  git:
+    repo: "https://gitee.com/edgegallery/installer.git"
+    dest: "{{ PACKAGE_PATH }}/installer"
+    version: "{{ GIT_BRANCH }}"
+
+- name: Only Keep Install Ansible Scripts
+  copy:
+    src: "{{ PACKAGE_PATH }}/installer/ansible_install"
+    dest: "{{ PACKAGE_PATH }}"
+
+- name: Remove Installer Repo
+  file:
+    path: "{{ PACKAGE_PATH }}/installer"
+    state: absent
+
+- name: Set Mode Wait For Remove except all Mode
+  set_fact:
+    unused_mode:
+      - controller
+      - edge
+  when: EG_MODE == "all"
+
+- name: Set Mode Wait For Remove except controller Mode
+  set_fact:
+    unused_mode:
+      - all
+      - edge
+  when: EG_MODE == "controller"
+
+- name: Set Mode Wait For Remove except edge Mode
+  set_fact:
+    unused_mode:
+      - all
+      - controller
+  when: EG_MODE == "edge"
+
+- name: Remove Ansible Playbook Files Which For Other Modes
+  file:
+    path: "{{ PACKAGE_PATH }}/ansible_install/eg_{{ item.0 }}_{{ item.1 }}_{{ item.2 }}.yml"
+    state: absent
+  loop: "{{ unused_mode | product(['aio', 'muno'], ['install', 'uninstall']) | list }}"
+
+- name: Archive All Includes Ansible Scripts
+  community.general.archive:
+    path: "{{ PACKAGE_PATH }}"
+    dest: "{{ PACKAGE_PATH }}/eg-{{ EG_MODE }}-{{ ARCH }}-{{ EG_IMAGE_TAG }}-{{ timestamp }}.tar.gz"
     format: gz
     force_archive: yes
 
 - debug:
-    msg: "Offline package file: {{ TARBALL_PATH }}/eg-{{ EG_MODE }}-{{ ARCH }}-{{ EG_IMAGE_TAG }}-{{ timestamp }}.tar.gz"
+    msg: "Offline package file: {{ PACKAGE_PATH }}/eg-{{ EG_MODE }}-{{ ARCH }}-{{ EG_IMAGE_TAG }}-{{ timestamp }}.tar.gz"

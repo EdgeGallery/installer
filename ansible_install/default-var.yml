@@ -1,6 +1,40 @@
+# The image tag here could only be latest, and helm tag could only be 1.1.0
+EG_IMAGE_TAG: latest
+HELM_TAG: 1.1.0
+
+# Mode for online or offline install, currently only support offline
+NETWORK_MODE: offline
+
+# Absolute file path of source offline .tar.gz file on ansible host node
+TARBALL_FILE: "{{ ansible_env.OLDPWD }}/ansible-{{ EG_IMAGE_TAG }}.tar.gz"
+
+# Target path where offline tarball be decompossed into
+TARBALL_PATH: /home/edgegallery-offline
+
+# Whether copy the offline package from the ansible host node to other node
+COPY_TAR_TO_TARGET: yes
+
+# Whether clean the TARBALL_PATH before install and after uninstall
+# true means clean and false means not clean
+TARBALL_PATH_CLEANUP: true
+
 HELM_CHARTS_PATH: "{{ TARBALL_PATH }}/helm/helm-charts"
 
 APPSTORE_HELM_RELEASE_NAME: appstore-edgegallery
 DEVELOPER_HELM_RELEASE_NAME: developer-edgegallery
 MECM_FE_HELM_RELEASE_NAME: mecm-fe-edgegallery
 ATP_HELM_RELEASE_NAME: atp-edgegallery
+
+APPSTORE_PORT: 30091
+DEVELOPER_PORT: 30092
+MECM_PORT: 30093
+ATP_PORT: 30094
+USER_MGMT_PORT: 30067
+LAB_PORT: 30096
+
+# Could be true or false, currently only support false
+ENABLE_PERSISTENCE: false
+
+# Should set the following 2 params if ENABLE_PERSISTENCE is true
+# NFS_SERVER_IP:
+# NFS_PATH:

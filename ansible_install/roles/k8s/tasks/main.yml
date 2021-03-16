@@ -1,4 +1,15 @@
 ---
+
+- name: Set ARCH Value to be amd64
+  set_fact:
+    ARCH: amd64
+  when: ansible_architecture == "x86_64"
+
+- name: Set ARCH Value to be arm64
+  set_fact:
+    ARCH: arm64
+  when: ansible_architecture == "aarch64"
+
 - name: Check whether k8s is installed
   command: kubectl cluster-info
   register: k8sInstalled

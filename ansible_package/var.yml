@@ -7,11 +7,14 @@ EG_MODE: all
 # Docker image tag for EdgeGallery images to pull
 EG_IMAGE_TAG: latest
 
+GIT_BRANCH: master
+
 # Helm tag for EdgeGallery helm charts to pull
 HELM_TAG: 1.1.0
 
 # Target path where to store all download files and output tar.gz file
-TARBALL_PATH: /home/eg-offline
+TARBALL_PATH: /home/offline-packages-build/eg-offline/
+PACKAGE_PATH: /home/offline-packages-build/
 
 # Whether clean the TARBALL_PATH before package
 TARBALL_PATH_CLEANUP: true
