@@ -46,6 +46,8 @@ export ENABLE_PERSISTENCE="false"
 export NFS_SERVER_IP=""
 export NFS_PATH=""
 
+export HARBOR_USER=admin
+export HARBOR_PASSWORD=Harbor12345
 ##SSL certs validity
 export CERT_VALIDITY_IN_DAYS=365
 

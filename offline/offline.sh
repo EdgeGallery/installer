@@ -74,7 +74,23 @@ if [[ -z "$EG_IMAGE_LIST_CONTROLLER_X86_DEFAULT" && $PATCH != "true" ]]; then
    swr.ap-southeast-1.myhuaweicloud.com/edgegallery/tool-chain:$EG_IMAGE_TAG \
    swr.ap-southeast-1.myhuaweicloud.com/edgegallery/porting-advisor:latest \
    swr.ap-southeast-1.myhuaweicloud.com/edgegallery/atp-fe:$EG_IMAGE_TAG \
-   swr.ap-southeast-1.myhuaweicloud.com/edgegallery/atp-be:$EG_IMAGE_TAG"
+   swr.ap-southeast-1.myhuaweicloud.com/edgegallery/atp-be:$EG_IMAGE_TAG \
+   swr.ap-southeast-1.myhuaweicloud.com/eg-common/goharbor/chartmuseum-photon:v2.0.6 \
+   swr.ap-southeast-1.myhuaweicloud.com/eg-common/goharbor/redis-photon:v2.0.6 \
+   swr.ap-southeast-1.myhuaweicloud.com/eg-common/goharbor/trivy-adapter-photon:v2.0.6 \
+   swr.ap-southeast-1.myhuaweicloud.com/eg-common/goharbor/clair-adapter-photon:v2.0.6 \
+   swr.ap-southeast-1.myhuaweicloud.com/eg-common/goharbor/clair-photon:v2.0.6 \
+   swr.ap-southeast-1.myhuaweicloud.com/eg-common/goharbor/notary-server-photon:v2.0.6 \
+   swr.ap-southeast-1.myhuaweicloud.com/eg-common/goharbor/notary-signer-photon:v2.0.6 \
+   swr.ap-southeast-1.myhuaweicloud.com/eg-common/goharbor/harbor-registryctl:v2.0.6 \
+   swr.ap-southeast-1.myhuaweicloud.com/eg-common/goharbor/registry-photon:v2.0.6 \
+   swr.ap-southeast-1.myhuaweicloud.com/eg-common/goharbor/nginx-photon:v2.0.6 \
+   swr.ap-southeast-1.myhuaweicloud.com/eg-common/goharbor/harbor-log:v2.0.6 \
+   swr.ap-southeast-1.myhuaweicloud.com/eg-common/goharbor/harbor-jobservice:v2.0.6 \
+   swr.ap-southeast-1.myhuaweicloud.com/eg-common/goharbor/harbor-core:v2.0.6 \
+   swr.ap-southeast-1.myhuaweicloud.com/eg-common/goharbor/harbor-portal:v2.0.6 \
+   swr.ap-southeast-1.myhuaweicloud.com/eg-common/goharbor/harbor-db:v2.0.6 \
+   swr.ap-southeast-1.myhuaweicloud.com/eg-common/goharbor/prepare:v2.0.6"
 fi
 COMMON_EDGE_CONTROLLER_LIST="postgres:12.3"
 
@@ -149,7 +165,7 @@ if [[ -z "$EG_IMAGE_LIST_EDGE_ARM64_DEFAULT" && $PATCH != "true" ]]; then
    docker.io/nfvpe/multus:stable-arm64v8 \
    swr.ap-southeast-1.myhuaweicloud.com/edgegallery/whereabouts-arm64:latest \
    swr.ap-southeast-1.myhuaweicloud.com/eg-common/elasticsearch:7.9.0"
-fi 
+fi
 
 #COMMON
 if [[ `arch` == "x86_64" && $PATCH != "true"  ]]; then
@@ -181,7 +197,7 @@ fi
 
 if [[ -z "$EG_IMAGE_LIST_CONTROLLER_X86" ]]; then
   EG_IMAGE_LIST_CONTROLLER_X86=$EG_IMAGE_LIST_CONTROLLER_X86_DEFAULT
-fi 
+fi
 
 if [[ -z "$EG_IMAGE_LIST_EDGE_X86" ]]; then
   EG_IMAGE_LIST_EDGE_X86=$EG_IMAGE_LIST_EDGE_X86_DEFAULT
@@ -257,7 +273,7 @@ function _download_sshpass()
 
 function _docker_images_download_eg() {
   mkdir -p $TARBALL_PATH/eg_swr_images
-  EG_SWR_PATH=$TARBALL_PATH/eg_swr_images/  
+  EG_SWR_PATH=$TARBALL_PATH/eg_swr_images/
   info "download the edgegallery images list is : $1" $RED
   new_image_list=""
   for image in $1;
@@ -417,11 +433,6 @@ function _download_docker_registry()
 
 function _docker_download() {
   mkdir -p $K8S_OFFLINE_DIR/docker
-  sudo curl -L "https://github.com/docker/compose/releases/download/1.26.2/docker-compose-$(uname -s)-$(uname -m)"  -o $K8S_OFFLINE_DIR/docker/docker-compose-$(uname -s)-$(uname -m)
-  if [[ $? -ne 0 ]]; then
-    info "download docker-compose Failed" $RED
-    exit 1
-  fi
   wget -N https://download.docker.com/linux/static/stable/`arch`/docker-18.09.0.tgz -O $K8S_OFFLINE_DIR/docker/docker.tgz
   if [[ $? -ne 0 ]]; then
     info "download docker-18.09.0.tgz Failed" $RED
@@ -459,8 +470,7 @@ function _docker_deploy() {
       mkdir -p /tmp/remote-platform/k8s
       tar -xf $K8S_OFFLINE_DIR/docker/docker.tgz -C /tmp/remote-platform/k8s
       for cmd in containerd  containerd-shim  ctr  docker  dockerd  docker-init  docker-proxy  runc; do cp /tmp/remote-platform/k8s/docker/$cmd /usr/bin/$cmd; done
-      cp  $K8S_OFFLINE_DIR/docker/docker-compose   /usr/local/bin/
-      chmod  +x /usr/local/bin/docker-compose
+
       cat <<EOF >docker.service
 [Unit]
 Description=Docker Daemon
@@ -473,7 +483,6 @@ WantedBy=multi-user.target
 EOF
 
       mv docker.service /etc/systemd/system/
-      
 
       systemctl daemon-reload
       systemctl enable docker.service
@@ -526,6 +535,9 @@ function _kubernetes_tool_download() {
     mv socat_1.7.3.2-2ubuntu2_$arch.deb $K8S_OFFLINE_DIR/tools/
     mv conntrack_1.4.4+snapshot20161117-6ubuntu2_$arch.deb $K8S_OFFLINE_DIR/tools/
 
+    mkdir -p $K8S_OFFLINE_DIR/harbor/
+    curl -L https://get.daocloud.io/docker/compose/releases/download/1.26.0/docker-compose-`uname -s`-`uname -m` > $K8S_OFFLINE_DIR/harbor/docker-compose
+    scp root@192.168.100.65:/home/harbor.tar.gz $K8S_OFFLINE_DIR/harbor/
     for cmd in kubectl kubeadm kubelet;
     do
        scp 192.168.100.65:/home/kube/$arch/$cmd .;

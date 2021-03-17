@@ -67,11 +67,7 @@ function _docker_deploy() {
       mkdir -p /tmp/remote-platform/k8s
       tar -xf $K8S_OFFLINE_DIR/docker/docker.tgz -C /tmp/remote-platform/k8s
       for cmd in containerd  containerd-shim  ctr  docker  dockerd  docker-init  docker-proxy  runc; do cp /tmp/remote-platform/k8s/docker/$cmd /usr/bin/$cmd; done
-      cp  $K8S_OFFLINE_DIR/docker/docker-compose  /usr/local/bin/
-      chmod +x /usr/local/bin/docker-compose
-      cp $K8S_OFFLINE_DIR/docker/docker.service  /lib/systemd/system/
-      sed -i 's/192.168.1.1/$PORTAL_IP/g'  /lib/systemd/system/docker.service
-      
+
       cat <<EOF >docker.service
 [Unit]
 Description=Docker Daemon
@@ -103,9 +99,68 @@ function _docker_undeploy() {
     systemctl daemon-reload
 
     for cmd in containerd  containerd-shim  ctr  docker  dockerd  docker-init  docker-proxy  runc; do rm /usr/bin/$cmd; done
-    rm -rf  /usr/local/bin/docker-compose
+
     systemctl status docker.service --no-pager
     rm -rf /var/lib/docker/
+}
+
+function _docker_compose_deploy() {
+    docker-compose version
+    if [[ $? != '0' ]]; then
+      cp $K8S_OFFLINE_DIR/harbor/docker-compose /usr/local/bin/docker-compose
+      chmod +x /usr/local/bin/docker-compose
+    else
+      info "docker compose already exists...." $BLUE
+    fi
+}
+
+function _docker_compose_undeploy() {
+  rm /usr/local/bin/docker-compose
+}
+
+function _setup_harbor() {
+  _docker_compose_deploy
+  cd /root
+  mkdir -p /root/harbor
+  tar -zxf $K8S_OFFLINE_DIR/harbor/harbor.tar.gz -C harbor
+  cd harbor
+  mkdir -p data_volume
+  mkdir -p cert
+
+  sed -i  "s/hostname: .*/hostname: $HARBOR_REPO_IP/" harbor.yml
+  sed -i 8's/^/#/' harbor.yml
+  sed -i 10's/^/#/' harbor.yml
+
+  sed -i  "s/certificate: .*/certificate: \/root\/harbor\/cert\/ca.crt/" harbor.yml
+  sed -i  "s/private_key: .*/private_key: \/root\/harbor\/cert\/ca.key/" harbor.yml
+  sed -i  "s/data_volume: .*/data_volume: \/root\/harbor\/data_volume/" harbor.yml
+
+  cd /root/
+  openssl rand -writerand .rnd
+  cd harbor/cert/
+  openssl genrsa -out ca.key 4096
+  openssl req -x509 -new -nodes -sha512 -days 3650 -subj "/C=CN/ST=Guangzhou/L=Guangzhou/O=example/CN="$HARBOR_REPO_IP \
+  -key ca.key -out ca.crt
+  mkdir -p /etc/docker/certs.d/$HARBOR_REPO_IP:443/
+  cp /root/harbor/cert/ca.crt /root/harbor/cert/ca.key /etc/docker/certs.d/$HARBOR_REPO_IP:443/
+  cd /etc/docker/certs.d/$HARBOR_REPO_IP:443/
+  openssl x509 -inform PEM -in ca.crt -out ca.cert
+  mv ca.key $HARBOR_REPO_IP.key
+  mv ca.cert $HARBOR_REPO_IP.cert
+
+if [ "$OFFLINE_MODE" == "aio" ]; then
+cat <<EOF | tee /etc/docker/daemon.json
+{
+    "insecure-registries" : ["$HARBOR_REPO_IP"]
+}
+EOF
+fi
+  service docker restart
+  systemctl daemon-reload
+  systemctl restart docker
+  cd /root/harbor/
+  ./install.sh
+  docker login -u$HARBOR_USER -p$HARBOR_PASSWORD $HARBOR_REPO_IP
 }
 
 function _docker_images_load() {
@@ -259,11 +314,20 @@ function _help_insecure_registry()
   grep  -i "insecure-registries" /etc/docker/daemon.json | grep "$PRIVATE_REGISTRY_IP:5000" >/dev/null 2>&1
   if [  $? != 0 ]; then
     mkdir -p /etc/docker
+
+    if [[ $1 == "deployNode" ]]; then
 cat <<EOF | tee /etc/docker/daemon.json
 {
     "insecure-registries" : ["$PRIVATE_REGISTRY_IP:5000"]
 }
 EOF
+    else
+cat <<EOF | tee /etc/docker/daemon.json
+{
+    "insecure-registries" : ["$PRIVATE_REGISTRY_IP:5000", "$HARBOR_REPO_IP"]
+}
+EOF
+    fi
     service docker restart
   fi
 }
@@ -278,14 +342,18 @@ function _setup_insecure_registry ()
     do
       scp $TARBALL_PATH/eg.sh root@$node_ip:/tmp/remote-platform
       sshpass ssh root@$node_ip \
-      "source /tmp/remote-platform/eg.sh; export PRIVATE_REGISTRY_IP=$PRIVATE_REGISTRY_IP; _help_insecure_registry;" < /dev/null
+      "source /tmp/remote-platform/eg.sh; export PRIVATE_REGISTRY_IP=$PRIVATE_REGISTRY_IP;
+       export HARBOR_REPO_IP=$HARBOR_REPO_IP;
+       _help_insecure_registry;" < /dev/null
     done
     if [[ -n $WORKER_LIST ]]; then
     for node_ip in $WORKER_LIST;
     do
       scp $TARBALL_PATH/eg.sh root@$node_ip:/tmp/remote-platform
       sshpass ssh root@$node_ip \
-      "source /tmp/remote-platform/eg.sh; export PRIVATE_REGISTRY_IP=$PRIVATE_REGISTRY_IP; _help_insecure_registry;" < /dev/null
+      "source /tmp/remote-platform/eg.sh; export PRIVATE_REGISTRY_IP=$PRIVATE_REGISTRY_IP;
+       export HARBOR_REPO_IP=$HARBOR_REPO_IP;
+       _help_insecure_registry;" < /dev/null
     done
     fi
   fi
@@ -385,6 +453,11 @@ function cleanup_eg_ecosystem()
   docker stop registry; docker rm -v registry
   docker image prune -a -f
   rm /root/.kube/config
+  rm /etc/docker/daemon.json
+  rm -rf /etc/docker/certs.d
+  _docker_compose_undeploy
+  rm -rf /root/harbor
+  service docker restart
 }
 
 function setup_eg_ecosystem()
@@ -395,13 +468,16 @@ function setup_eg_ecosystem()
   tar -xf $TARBALL_PATH/kubernetes_offline_installer.tar.gz -C $K8S_OFFLINE_DIR;
   export K8S_NODE_TYPE=WORKER; kubernetes_deploy;
   if [ "$OFFLINE_MODE" == "muno" ]; then
-    _help_insecure_registry
+    _help_insecure_registry deployNode
     _load_and_run_docker_registry
   fi
   _load_swr_images_and_push_to_private_registry
   _help_install_helm_binary
   if [ "$OFFLINE_MODE" == "muno" ]; then
     _setup_helm_repo
+  fi
+  if [ "$OFFLINE_MODE" == "aio" ]; then
+    _setup_harbor
   fi
 }
 
@@ -415,6 +491,12 @@ function configure_eg_ecosystem_on_remote()
       sshpass ssh root@$node_ip \
       "helm repo remove edgegallery stable; helm repo add edgegallery http://${PRIVATE_REGISTRY_IP}:8080/edgegallery;
        helm repo add stable http://${PRIVATE_REGISTRY_IP}:8080/stable" < /dev/null
+      sshpass ssh root@$node_ip "export HARBOR_REPO_IP=$HARBOR_REPO_IP;
+              export K8S_OFFLINE_DIR=$K8S_OFFLINE_DIR;source /tmp/remote-platform/eg.sh ; _setup_harbor"
+  done
+  for node_ip in $WORKER_LIST;
+  do
+    sshpass ssh root@$node_ip "docker login -u$HARBOR_USER -p$HARBOR_PASSWORD $HARBOR_REPO_IP;"
   done
 }
 
@@ -601,7 +683,17 @@ function _eg_undeploy()
     do
       if [[ $SKIP_ECO_SYSTEM_UN_INSTALLATION != "true" ]]; then
         sshpass ssh root@$node_ip \
-        "docker image prune -a -f"
+        "docker image prune -a -f; rm /etc/docker/daemon.json;
+         rm -rf /etc/docker/certs.d; rm -rf /root/harbor;
+         service docker restart; rm /usr/local/bin/docker-compose;"
+      fi
+    done
+    for node_ip in $WORKER_IPS;
+    do
+      if [[ $SKIP_ECO_SYSTEM_UN_INSTALLATION != "true" ]]; then
+        sshpass ssh root@$node_ip \
+        "docker image prune -a -f; rm /etc/docker/daemon.json;
+         service docker restart"
       fi
     done
   fi
@@ -1004,15 +1096,14 @@ function install_mecm-meo ()
     --from-literal=truststorePassword=te9Fmv%qaq
 
     ## Create a mecm-meo secret with postgres_init.sql file to create necessary db's
-     kubectl create secret generic edgegallery-mecm-secret \
+    kubectl create secret generic edgegallery-mecm-secret \
       --from-file=postgres_init.sql=$PLATFORM_DIR/conf/keys/postgres_init.sql \
       --from-literal=postgresPassword=te9Fmv%qaq \
       --from-literal=postgresApmPassword=te9Fmv%qaq \
       --from-literal=postgresAppoPassword=te9Fmv%qaq \
       --from-literal=postgresInventoryPassword=te9Fmv%qaq \
-      --from-literal=dockereRepoUserName=admin	 \
-      --from-literal=dockerRepoPassword=Harbor12345 
-    
+      --from-literal=dockerRepoUserName=$HARBOR_USER	 \
+      --from-literal=dockerRepoPassword=$HARBOR_PASSWORD
 
     if [[ $OFFLINE_MODE == "muno" ]]; then
       sshpass ssh root@$MASTER_IP "rm -rf /tmp/remote-platform/remote_fsgroup;
@@ -1040,9 +1131,9 @@ function install_mecm-meo ()
     --set images.apm.pullPolicy=$meo_images_apm_pullPolicy \
     --set images.postgres.pullPolicy=$meo_images_postgres_pullPolicy \
     --set mecm.docker.fsgroup=$fs_group \
-    --set mecm.repository.dockerRepoEndpoint=$PORTAL_IP \
-    --set mecm.repository.sourceRepos='repo=developer  userName=admin password=Harbor12345'  \
-    --set global.persistence.enabled=$ENABLE_PERSISTENCE
+    --set global.persistence.enabled=$ENABLE_PERSISTENCE \
+    --set mecm.repository.dockerRepoEndpoint=$HARBOR_REPO_IP \
+    --set mecm.repository.sourceRepos="repo=$HARBOR_REPO_IP userName=$HARBOR_USER password=$HARBOR_PASSWORD"
     if [ $? -eq 0 ]; then
       info "[Deployed MECM-MEO  .........]" $GREEN
       resilient_utility "write" "MECM_MEO:DEPLOYED"
@@ -1111,6 +1202,11 @@ function install_appstore ()
   if resilient_utility "read" "APPSTORE:UN_DEPLOYED";then
     info "[Deploying AppStore  ........]" $BLUE
     info "[it would take maximum of 5mins .......]" $BLUE
+    kubectl create secret generic edgegallery-appstore-docker-secret \
+      --from-literal=devRepoUserName=$HARBOR_USER	 \
+      --from-literal=devRepoPassword=$HARBOR_PASSWORD    \
+      --from-literal=appstoreRepoUserName=$HARBOR_USER	 \
+      --from-literal=appstoreRepoPassword=$HARBOR_PASSWORD
     helm install --wait appstore-edgegallery "$CHART_PREFIX"edgegallery/appstore"$CHART_SUFFIX" \
     --set global.oauth2.authServerAddress=https://$NODEIP:$USER_MGMT \
     --set images.appstoreFe.repository=$appstore_images_appstoreFe_repository \
@@ -1129,7 +1225,9 @@ function install_appstore ()
     --set global.ssl.secretName=$appstore_global_ssl_secretName \
     --set global.persistence.enabled=$ENABLE_PERSISTENCE \
     --set poke.platformUrl=$appstore_poke_platformUrl \
-    --set poke.atpReportUrl=$appstore_poke_atpReportUrl
+    --set poke.atpReportUrl=$appstore_poke_atpReportUrl \
+    --set appstoreBe.repository.dockerRepoEndpoint=$HARBOR_REPO_IP \
+    --set appstoreBe.secretName=edgegallery-appstore-docker-secret
     if [ $? -eq 0 ]; then
       info "[Deployed AppStore  .........]" $GREEN
       resilient_utility "write" "APPSTORE:DEPLOYED"
@@ -1180,7 +1278,10 @@ function install_developer ()
     --set images.portingAdvisor.pullPolicy=$developer_images_portingAdvisor_pullPolicy \
     --set global.ssl.enabled=$developer_global_ssl_enabled \
     --set global.ssl.secretName=$developer_global_ssl_secretName \
-    --set global.persistence.enabled=$ENABLE_PERSISTENCE
+    --set global.persistence.enabled=$ENABLE_PERSISTENCE \
+    --set developer.dockerRepo.endpoint=$HARBOR_REPO_IP \
+    --set developer.dockerRepo.password=$HARBOR_PASSWORD \
+    --set developer.dockerRepo.username=$HARBOR_USER
     if [ $? -eq 0 ]; then
       info "[Deployed Developer .........]" $GREEN
       resilient_utility "write" "DEVELOPER:DEPLOYED"
@@ -1786,6 +1887,7 @@ function _deploy_eg()
   password_less_ssh_check $EG_NODE_MASTER_IPS $EG_NODE_WORKER_IPS
   WORKER_IPS=`echo $EG_NODE_WORKER_IPS | sed -e "s/,/ /g"`
   MASTER_IP=$(echo $EG_NODE_MASTER_IPS|cut -d "," -f1)
+  export HARBOR_REPO_IP=$MASTER_IP
   setup_eg_ecosystem
   if [[ $OFFLINE_MODE == "muno" ]]; then
     make_remote_dir $MASTER_IP $EG_NODE_WORKER_IPS
@@ -1829,6 +1931,7 @@ function _deploy_controller()
   password_less_ssh_check $EG_NODE_CONTROLLER_MASTER_IPS $EG_NODE_CONTROLLER_WORKER_IPS
   WORKER_IPS=`echo $EG_NODE_CONTROLLER_WORKER_IPS | sed -e "s/,/ /g"`
   MASTER_IP=$(echo $EG_NODE_CONTROLLER_MASTER_IPS|cut -d "," -f1)
+  export HARBOR_REPO_IP=$MASTER_IP
   setup_eg_ecosystem
   if [[ $OFFLINE_MODE == "muno" ]]; then
     make_remote_dir $MASTER_IP $EG_NODE_CONTROLLER_WORKER_IPS
@@ -1868,6 +1971,7 @@ function _deploy_edge()
   password_less_ssh_check $EG_NODE_EDGE_MASTER_IPS $EG_NODE_EDGE_WORKER_IPS
   WORKER_IPS=`echo $EG_NODE_EDGE_WORKER_IPS | sed -e "s/,/ /g"`
   MASTER_IP=$(echo $EG_NODE_EDGE_MASTER_IPS|cut -d "," -f1)
+  export HARBOR_REPO_IP=$MASTER_IP
   setup_eg_ecosystem
   if [[ $OFFLINE_MODE == "muno" ]]; then
     make_remote_dir $MASTER_IP $EG_NODE_EDGE_WORKER_IPS
