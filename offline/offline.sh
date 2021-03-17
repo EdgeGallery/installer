@@ -74,23 +74,7 @@ if [[ -z "$EG_IMAGE_LIST_CONTROLLER_X86_DEFAULT" && $PATCH != "true" ]]; then
    swr.ap-southeast-1.myhuaweicloud.com/edgegallery/tool-chain:$EG_IMAGE_TAG \
    swr.ap-southeast-1.myhuaweicloud.com/edgegallery/porting-advisor:latest \
    swr.ap-southeast-1.myhuaweicloud.com/edgegallery/atp-fe:$EG_IMAGE_TAG \
-   swr.ap-southeast-1.myhuaweicloud.com/edgegallery/atp-be:$EG_IMAGE_TAG \
-   swr.ap-southeast-1.myhuaweicloud.com/eg-common/goharbor/chartmuseum-photon:v2.0.6 \
-   swr.ap-southeast-1.myhuaweicloud.com/eg-common/goharbor/redis-photon:v2.0.6 \
-   swr.ap-southeast-1.myhuaweicloud.com/eg-common/goharbor/trivy-adapter-photon:v2.0.6 \
-   swr.ap-southeast-1.myhuaweicloud.com/eg-common/goharbor/clair-adapter-photon:v2.0.6 \
-   swr.ap-southeast-1.myhuaweicloud.com/eg-common/goharbor/clair-photon:v2.0.6 \
-   swr.ap-southeast-1.myhuaweicloud.com/eg-common/goharbor/notary-server-photon:v2.0.6 \
-   swr.ap-southeast-1.myhuaweicloud.com/eg-common/goharbor/notary-signer-photon:v2.0.6 \
-   swr.ap-southeast-1.myhuaweicloud.com/eg-common/goharbor/harbor-registryctl:v2.0.6 \
-   swr.ap-southeast-1.myhuaweicloud.com/eg-common/goharbor/registry-photon:v2.0.6 \
-   swr.ap-southeast-1.myhuaweicloud.com/eg-common/goharbor/nginx-photon:v2.0.6 \
-   swr.ap-southeast-1.myhuaweicloud.com/eg-common/goharbor/harbor-log:v2.0.6 \
-   swr.ap-southeast-1.myhuaweicloud.com/eg-common/goharbor/harbor-jobservice:v2.0.6 \
-   swr.ap-southeast-1.myhuaweicloud.com/eg-common/goharbor/harbor-core:v2.0.6 \
-   swr.ap-southeast-1.myhuaweicloud.com/eg-common/goharbor/harbor-portal:v2.0.6 \
-   swr.ap-southeast-1.myhuaweicloud.com/eg-common/goharbor/harbor-db:v2.0.6 \
-   swr.ap-southeast-1.myhuaweicloud.com/eg-common/goharbor/prepare:v2.0.6"
+   swr.ap-southeast-1.myhuaweicloud.com/edgegallery/atp-be:$EG_IMAGE_TAG "
 fi
 COMMON_EDGE_CONTROLLER_LIST="postgres:12.3"
 

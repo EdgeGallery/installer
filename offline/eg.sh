@@ -124,9 +124,7 @@ function _setup_harbor() {
   mkdir -p /root/harbor
   tar -zxf $K8S_OFFLINE_DIR/harbor/harbor.tar.gz -C harbor
   cd harbor
-  mkdir -p data_volume
-  mkdir -p cert
-
+ 
   sed -i  "s/hostname: .*/hostname: $HARBOR_REPO_IP/" harbor.yml
   sed -i 8's/^/#/' harbor.yml
   sed -i 10's/^/#/' harbor.yml
