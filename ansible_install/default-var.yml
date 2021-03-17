@@ -6,7 +6,7 @@ HELM_TAG: 1.1.0
 NETWORK_MODE: offline
 
 # Absolute file path of source offline .tar.gz file on ansible host node
-TARBALL_FILE: "{{ ansible_env.OLDPWD }}/ansible-{{ EG_IMAGE_TAG }}.tar.gz"
+TARBALL_FILE: "{{ inventory_dir }}/../ansible-{{ EG_IMAGE_TAG }}.tar.gz"
 
 # Target path where offline tarball be decompossed into
 TARBALL_PATH: /home/edgegallery-offline
