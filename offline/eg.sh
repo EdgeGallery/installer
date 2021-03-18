@@ -475,7 +475,10 @@ function setup_eg_ecosystem()
     _setup_helm_repo
   fi
   if [ "$OFFLINE_MODE" == "aio" ]; then
-    _setup_harbor
+info "[harbor just support x86]"  $YELLOW
+    if [`arch` == "x86_64"];then
+       _setup_harbor
+    fi
   fi
 }
 
@@ -490,7 +493,10 @@ function configure_eg_ecosystem_on_remote()
       "helm repo remove edgegallery stable; helm repo add edgegallery http://${PRIVATE_REGISTRY_IP}:8080/edgegallery;
        helm repo add stable http://${PRIVATE_REGISTRY_IP}:8080/stable" < /dev/null
       sshpass ssh root@$node_ip "export HARBOR_REPO_IP=$HARBOR_REPO_IP;
-              export K8S_OFFLINE_DIR=$K8S_OFFLINE_DIR;source /tmp/remote-platform/eg.sh ; _setup_harbor"
+              export K8S_OFFLINE_DIR=$K8S_OFFLINE_DIR;source /tmp/remote-platform/eg.sh"
+      if [`arch` == "x86_64"];then
+      sshpass ssh root@$node_ip "_setup_harbor"
+      fi 
   done
   for node_ip in $WORKER_LIST;
   do
