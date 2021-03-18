@@ -48,6 +48,9 @@
     src: "{{ PACKAGE_PATH }}/installer/ansible_install"
     dest: "{{ PACKAGE_PATH }}"
 
+- name: Rename ansible_install to install
+  shell: mv {{ PACKAGE_PATH }}/ansible_install {{ PACKAGE_PATH }}/install
+
 - name: Remove Installer Repo
   file:
     path: "{{ PACKAGE_PATH }}/installer"
@@ -76,7 +79,7 @@
 
 - name: Remove Ansible Playbook Files Which For Other Modes
   file:
-    path: "{{ PACKAGE_PATH }}/ansible_install/eg_{{ item.0 }}_{{ item.1 }}_{{ item.2 }}.yml"
+    path: "{{ PACKAGE_PATH }}/install/eg_{{ item.0 }}_{{ item.1 }}_{{ item.2 }}.yml"
     state: absent
   loop: "{{ unused_mode | product(['aio', 'muno'], ['install', 'uninstall']) | list }}"
 

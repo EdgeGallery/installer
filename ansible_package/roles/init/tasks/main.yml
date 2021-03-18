@@ -15,7 +15,7 @@
 
 - name: Clean Target Directory for EdgeGallery Offline Tarball File
   file:
-    path: "{{ TARBALL_PATH }}"
+    path: "{{ PACKAGE_PATH }}"
     state: absent
   when: TARBALL_PATH_CLEANUP
 
