@@ -519,9 +519,11 @@ function _kubernetes_tool_download() {
     mv socat_1.7.3.2-2ubuntu2_$arch.deb $K8S_OFFLINE_DIR/tools/
     mv conntrack_1.4.4+snapshot20161117-6ubuntu2_$arch.deb $K8S_OFFLINE_DIR/tools/
 
+  if [ $KERNEL_ARCH == 'amd64' ]; then
     mkdir -p $K8S_OFFLINE_DIR/harbor/
     curl -L https://get.daocloud.io/docker/compose/releases/download/1.26.0/docker-compose-`uname -s`-`uname -m` > $K8S_OFFLINE_DIR/harbor/docker-compose
     scp root@192.168.100.65:/home/harbor.tar.gz $K8S_OFFLINE_DIR/harbor/
+  fi
     for cmd in kubectl kubeadm kubelet;
     do
        scp 192.168.100.65:/home/kube/$arch/$cmd .;
