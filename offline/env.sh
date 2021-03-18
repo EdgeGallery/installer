@@ -34,6 +34,9 @@ $image_tag_env
 #export EG_NODE_EDGE_WORKER_IPS=
 #export SKIP_K8S=
 #export EG_IMAGE_TAG=
+export HARBOR_REPO_IP=$MASTER_IP
+export HARBOR_USER=admin
+export HARBOR_PASSWORD=Harbor@edge
 
 REGISTRY_URL=""
 if [[ $OFFLINE_MODE == "muno" ]]; then
@@ -46,8 +49,6 @@ export ENABLE_PERSISTENCE="false"
 export NFS_SERVER_IP=""
 export NFS_PATH=""
 
-export HARBOR_USER=admin
-export HARBOR_PASSWORD=Harbor12345
 ##SSL certs validity
 export CERT_VALIDITY_IN_DAYS=365
 
