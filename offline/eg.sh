@@ -1892,7 +1892,6 @@ function _deploy_eg()
   password_less_ssh_check $EG_NODE_MASTER_IPS $EG_NODE_WORKER_IPS
   WORKER_IPS=`echo $EG_NODE_WORKER_IPS | sed -e "s/,/ /g"`
   MASTER_IP=$(echo $EG_NODE_MASTER_IPS|cut -d "," -f1)
-  export HARBOR_REPO_IP=$MASTER_IP
   setup_eg_ecosystem
   if [[ $OFFLINE_MODE == "muno" ]]; then
     make_remote_dir $MASTER_IP $EG_NODE_WORKER_IPS
@@ -1936,7 +1935,6 @@ function _deploy_controller()
   password_less_ssh_check $EG_NODE_CONTROLLER_MASTER_IPS $EG_NODE_CONTROLLER_WORKER_IPS
   WORKER_IPS=`echo $EG_NODE_CONTROLLER_WORKER_IPS | sed -e "s/,/ /g"`
   MASTER_IP=$(echo $EG_NODE_CONTROLLER_MASTER_IPS|cut -d "," -f1)
-  export HARBOR_REPO_IP=$MASTER_IP
   setup_eg_ecosystem
   if [[ $OFFLINE_MODE == "muno" ]]; then
     make_remote_dir $MASTER_IP $EG_NODE_CONTROLLER_WORKER_IPS
@@ -1976,7 +1974,6 @@ function _deploy_edge()
   password_less_ssh_check $EG_NODE_EDGE_MASTER_IPS $EG_NODE_EDGE_WORKER_IPS
   WORKER_IPS=`echo $EG_NODE_EDGE_WORKER_IPS | sed -e "s/,/ /g"`
   MASTER_IP=$(echo $EG_NODE_EDGE_MASTER_IPS|cut -d "," -f1)
-  export HARBOR_REPO_IP=$MASTER_IP
   setup_eg_ecosystem
   if [[ $OFFLINE_MODE == "muno" ]]; then
     make_remote_dir $MASTER_IP $EG_NODE_EDGE_WORKER_IPS
