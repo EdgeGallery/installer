@@ -1241,6 +1241,7 @@ function uninstall_appstore ()
 {
   info "[UnDeploying AppStore  ......]" $BLUE
   helm uninstall appstore-edgegallery
+  kubectl delete secret edgegallery-appstore-docker-secret
   resilient_utility "write" "APPSTORE:UN_DEPLOYED"
   info "[UnDeployed AppStore  .......]" $GREEN
 }
