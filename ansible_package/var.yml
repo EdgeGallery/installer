@@ -13,8 +13,8 @@ GIT_BRANCH: master
 HELM_TAG: 1.1.0
 
 # Target path where to store all download files and output tar.gz file
-TARBALL_PATH: /home/offline-packages-build/eg-offline/
-PACKAGE_PATH: /home/offline-packages-build/
+PACKAGE_PATH: /home/edgegallery-offline-package
+TARBALL_PATH: "{{ PACKAGE_PATH }}/eg-offline"
 
 # Whether clean the TARBALL_PATH before package
 TARBALL_PATH_CLEANUP: true

@@ -37,6 +37,10 @@
   import_tasks: docker_registry_install_offline.yml
   when: NODE_MODE == "muno" and K8S_NODE_TYPE == "master"
 
+- name: Setup Docker Daemon For AIO
+  import_tasks: docker_daemon_set_aio.yml
+  when: NODE_MODE == "aio" and K8S_NODE_TYPE == "master" and ARCH == "amd64"
+
 - name: Set Docker daemon.json on Worker Node
   copy:
     src: "/home/{{ groups.master[0] }}/etc/docker/daemon.json"

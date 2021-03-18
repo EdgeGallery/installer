@@ -7,14 +7,21 @@
 
 - name: Create File /etc/docker/daemon.json
   copy:
-    src: daemon.json
-    dest: /etc/docker
+    src: muno-daemon.json
+    dest: /etc/docker/daemon.json
   when: file_status.stat.exists == False
 
 - name: Set insecure-registries IP in /etc/docker/daemon.json
   replace:
     path: /etc/docker/daemon.json
     regexp: PRIVATE_REGISTRY_IP
+    replace: "{{ ansible_default_ipv4['address'] }}"
+  when: file_status.stat.exists == False
+
+- name: Set Harbor IP in /etc/docker/daemon.json
+  replace:
+    path: /etc/docker/daemon.json
+    regexp: PRIVATE_HARBOR_IP
     replace: "{{ ansible_default_ipv4['address'] }}"
   when: file_status.stat.exists == False
 

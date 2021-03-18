@@ -1,3 +1,6 @@
+# Password of Harbor admin
+HARBOR_ADMIN_PASSWORD: Harbor12345
+
 # ip for portals, will be set to private IP of master node default or reset it here
 # PORTAL_IP: 111.222.333.444
 

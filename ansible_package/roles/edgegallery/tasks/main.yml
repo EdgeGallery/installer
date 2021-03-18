@@ -25,7 +25,7 @@
 
 - name: Set EG Image List Var for X86 All Mode
   set_fact:
-    eg_image_list: "{{ CLIENT_PROVISIONER_X86 + EG_IMAGE_LIST_CONTROLLER + EG_IMAGE_LIST_EDGE_COMMON + EG_IMAGE_LIST_EDGE_X86}}"
+    eg_image_list: "{{ CLIENT_PROVISIONER_X86 + EG_IMAGE_LIST_CONTROLLER + EG_IMAGE_LIST_EDGE_COMMON + EG_IMAGE_LIST_EDGE_X86 }}"
   when: ARCH == "amd64" and EG_MODE == "all"
 
 - name: Set EG Image List Var for X86 Controller Mode
@@ -69,3 +69,19 @@
     new_image_list=`echo {{ eg_image_str }} | sed -e "s/swr.ap-southeast-1.myhuaweicloud.com\///g"`
     docker save $new_image_list | gzip > {{ EG_IMAGES_DIR }}/eg_images.tar.gz
     echo $new_image_list >> {{ EG_IMAGES_DIR }}/eg_images_list.txt
+
+- name: Create Directory to Store Harbor Related Files
+  file:
+    path: "{{ HARBOR_DIR }}"
+    state: directory
+  when: ARCH == "amd64" and EG_MODE != "edge"
+
+- name: Download Docker Compose Offline Install Package
+  get_url:
+    url: "https://get.daocloud.io/docker/compose/releases/download/1.26.0/docker-compose-{{ ansible_system }}-{{ ansible_architecture }}"
+    dest: "{{ HARBOR_DIR }}/docker-compose"
+  when: ARCH == "amd64" and EG_MODE != "edge"
+
+- name: Copy harbor.tar.gz From FTP Server
+  shell: "scp root@{{ FTP_SERVER }}:/home/harbor.tar.gz {{ HARBOR_DIR }}"
+  when: ARCH == "amd64" and EG_MODE != "edge"

@@ -12,6 +12,7 @@
 ############################################################################
 
 EG_IMAGES_DIR: "{{ TARBALL_PATH }}/eg_swr_images"
+HARBOR_DIR: "{{ TARBALL_PATH }}/harbor"
 
 EG_IMAGE_LIST_CONTROLLER:
   - swr.ap-southeast-1.myhuaweicloud.com/edgegallery/appstore-fe:{{ EG_IMAGE_TAG }}

@@ -24,7 +24,10 @@
     --set images.portingAdvisor.pullPolicy={{ developer_images_portingAdvisor_pullPolicy }} \
     --set global.ssl.enabled={{ developer_global_ssl_enabled }} \
     --set global.ssl.secretName={{ developer_global_ssl_secretName }} \
-    --set global.persistence.enabled={{ ENABLE_PERSISTENCE }}
+    --set global.persistence.enabled={{ ENABLE_PERSISTENCE }} \
+    --set developer.dockerRepo.endpoint={{ ansible_default_ipv4['address'] }} \
+    --set developer.dockerRepo.password={{ HARBOR_ADMIN_PASSWORD }} \
+    --set developer.dockerRepo.username=admin
 
 - name: Check DEVELOPER Status
   uri:

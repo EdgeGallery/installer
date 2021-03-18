@@ -1,5 +1,13 @@
 ---
 
+- name: Create Secret edgegallery-appstore-docker-secret
+  shell: |
+    kubectl create secret generic edgegallery-appstore-docker-secret \
+      --from-literal=devRepoUserName=admin \
+      --from-literal=devRepoPassword={{ HARBOR_ADMIN_PASSWORD }} \
+      --from-literal=appstoreRepoUserName=admin \
+      --from-literal=appstoreRepoPassword={{ HARBOR_ADMIN_PASSWORD }}
+
 - name: Deploy APPSTORE
   shell: |
     helm install --wait {{ APPSTORE_HELM_RELEASE_NAME }} {{ HELM_CHARTS_PATH }}/edgegallery/appstore-{{ HELM_TAG }}.tgz \
@@ -20,7 +28,9 @@
     --set global.ssl.secretName={{ appstore_global_ssl_secretName }} \
     --set global.persistence.enabled={{ ENABLE_PERSISTENCE }} \
     --set poke.platformUrl={{ appstore_poke_platformUrl }} \
-    --set poke.atpReportUrl={{ appstore_poke_atpReportUrl }}
+    --set poke.atpReportUrl={{ appstore_poke_atpReportUrl }} \
+    --set appstoreBe.repository.dockerRepoEndpoint={{ ansible_default_ipv4['address'] }} \
+    --set appstoreBe.secretName=edgegallery-appstore-docker-secret
 
 - name: Check APPSTORE Status
   uri:

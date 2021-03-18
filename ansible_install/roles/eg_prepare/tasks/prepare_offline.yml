@@ -1,4 +1,5 @@
 ---
+
 - name: Load All EdgeGallery Docker Images
   shell: for f in "{{ TARBALL_PATH }}"/eg_swr_images/*.tar.gz; do docker load -i $f; done
   when: K8S_NODE_TYPE == "master"
@@ -75,3 +76,11 @@
 - name: Setup Worker Node Network Interface
   import_tasks: worker_network_interface_setting.yml
   when: K8S_NODE_TYPE == "worker"
+
+- name: Setup Harbor on Master Node
+  import_tasks: master_harbor.yml
+  when: K8S_NODE_TYPE == "master" and EG_MODE != "edge" and ARCH == "amd64"
+
+- name: Login Harbor on Worker Node
+  shell: docker login -u admin -p {{ HARBOR_ADMIN_PASSWORD }} {{ groups.master[0] }}
+  when: K8S_NODE_TYPE == "worker" and EG_MODE != "edge" and ARCH == "amd64"

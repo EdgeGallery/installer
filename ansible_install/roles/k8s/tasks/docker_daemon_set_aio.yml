@@ -1,0 +1,25 @@
+---
+
+- name: Check Whether /etc/docker/daemon.json Exists
+  stat:
+    path: /etc/docker/daemon.json
+  register: file_status
+
+- name: Create File /etc/docker/daemon.json
+  copy:
+    src: aio-daemon.json
+    dest: /etc/docker/daemon.json
+  when: file_status.stat.exists == False
+
+- name: Set insecure-registries IP in /etc/docker/daemon.json
+  replace:
+    path: /etc/docker/daemon.json
+    regexp: PRIVATE_HARBOR_IP
+    replace: "{{ ansible_default_ipv4['address'] }}"
+  when: file_status.stat.exists == False
+
+- name: Restart Docker Service
+  service:
+    name: docker.service
+    state: restarted
+  when: file_status.stat.exists == False

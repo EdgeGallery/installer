@@ -5,6 +5,9 @@ HELM_CHARTS_DIR: "{{ HELM_OFFLINE_DIR }}/helm-charts"
 HELM_REPO_CONTAINER_NAME: helm-repo
 HELM_REPO_IMAGE: nginx:stable
 
+HARBOR_DIR: "{{ TARBALL_PATH }}/harbor"
+HARBOR_DATA_VOLUME: "/root/harbor/data_volume"
+
 CERT_VALIDITY_IN_DAYS: 365
 
 keystorePassword: te9Fmv%qaq
