@@ -159,6 +159,8 @@ fi
   cd /root/harbor/
   ./install.sh
   docker login -u$HARBOR_USER -p$HARBOR_PASSWORD $HARBOR_REPO_IP
+  kubectl create secret docker-registry  harbor  --docker-server=https://$HARBOR_REPO_IP --docker-username=$HARBOR_USER --docker-password=$HARBOR_PASSWORD  
+  kubectl patch serviceaccount default -p '{"imagePullSecrets": [{"name": "harbor"}]}'
 }
 
 function _docker_images_load() {
