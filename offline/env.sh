@@ -34,7 +34,7 @@ $image_tag_env
 #export EG_NODE_EDGE_WORKER_IPS=
 #export SKIP_K8S=
 #export EG_IMAGE_TAG=
-export HARBOR_REPO_IP=$MASTER_IP
+export HARBOR_REPO_IP=$PORTAL_IP
 export HARBOR_USER=admin
 export HARBOR_PASSWORD=Harbor@edge
 
