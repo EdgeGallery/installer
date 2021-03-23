@@ -136,14 +136,10 @@ EdgeGallery的所有离线安装包均可在官方平台[https://release.edgegal
 
 请参考部署控制节点的/home/ansible-all-x86-latest/install文件夹里的hosts-aio和hosts-muno进行节点配置。
 
-- 单节点部署配置，若此部署控制节点也作为master节点，则host-aio保持不变，在localhost即本机部署；若需要在另一节点上进行AIO部署，则将host-aio中的信息改成待部署节点IP，如下所示：
+- 单节点部署配置，将host-aio中的信息改成待部署节点IP，如下所示：
 
     ```
-    # 部署控制节点也是AIO待部署节点
-    [master]
-    localhost ansible_connection=local
-
-    # 待部署节点是另一台机器，例如IP为192.168.0.110
+    # 待部署节点IP为192.168.0.110
     [master]
     192.168.0.110
     ```
