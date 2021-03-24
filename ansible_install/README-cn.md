@@ -92,29 +92,29 @@ EdgeGallery的所有离线安装包均可在官方平台[https://release.edgegal
 
     2.1. 需要安装sshpass：
 
-        ```
-        # 查看sshpass是否安装
-        sshpass -V
+    ```
+    # 查看sshpass是否安装
+    sshpass -V
 
-        # 若未安装，则安装sshpass
-        cd /home/ansible-all-x86-latest
-        dpkg -i -G -E sshpass_1.06-1_amd64.deb
+    # 若未安装，则安装sshpass
+    cd /home/ansible-all-x86-latest
+    dpkg -i -G -E sshpass_1.06-1_amd64.deb
 
-        # 查看sshpass是否安装成功
-        sshpass -V
-        ```
+    # 查看sshpass是否安装成功
+    sshpass -V
+    ```
 
     2.2 部署控制节点/root/.ssh/目录下需要有id_rsa和id_rsa.pub文件，若没有，执行以下命令，并连按三次Enter键生成：
 
-        ```
-        ssh-keygen -t rsa
-        ```
+    ```
+    ssh-keygen -t rsa
+    ```
 
     2.3 在部署控制节点执行以下命令，配置部署控制节点免密登录所有待部署节点权限，依次替换`<master-or-worker-node-ip>`为各节点（Master和Worker）私有IP，`<master-or-worker-node-root-password>`为对应的节点的root用户登录密码。
 
-        ```
-        sshpass -p <master-or-worker-node-root-password> ssh-copy-id -o StrictHostKeyChecking=no root@<master-or-worker-node-ip>
-        ```
+    ```
+    sshpass -p <master-or-worker-node-root-password> ssh-copy-id -o StrictHostKeyChecking=no root@<master-or-worker-node-ip>
+    ```
 
 ## 3. EdgeGallery部署--部署k8s与EdgeGallery
 
@@ -156,19 +156,19 @@ EdgeGallery的所有离线安装包均可在官方平台[https://release.edgegal
 
 ### 3.2. 部署涉及的参数配置
 
-部署输入参数在文件/home/ansible-all-x86-latest/install/var.yml中。输入参数请参考以下信息进行配置：
+  部署输入参数在文件/home/ansible-all-x86-latest/install/var.yml中。输入参数请参考以下信息进行配置：
 
-    ```
-    # 部署过程中搭建的Harbor服务器的admin用户的密码
-    HARBOR_ADMIN_PASSWORD: Harbor12345
+  ```
+  # 部署过程中搭建的Harbor服务器的admin用户的密码
+  HARBOR_ADMIN_PASSWORD: Harbor12345
 
-    # Appstore，developer等页面的访问ip，默认为master节点的私有IP，可在此设置为master节点的公网IP
-    # PORTAL_IP: 111.222.333.444
+  # Appstore，developer等页面的访问ip，默认为master节点的私有IP，可在此设置为master节点的公网IP
+  # PORTAL_IP: 111.222.333.444
 
-    # 如果没有设置，会自动获取待部署节点静态IP对应的网卡名称
-    # EG_NODE_EDGE_MP1: eth0
-    # EG_NODE_EDGE_MM5: eth0
-    ```
+  # 如果没有设置，会自动获取待部署节点静态IP对应的网卡名称
+  # EG_NODE_EDGE_MP1: eth0
+  # EG_NODE_EDGE_MM5: eth0
+  ```
 
 ### 3.3. 执行部署
 
