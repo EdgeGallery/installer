@@ -215,7 +215,7 @@ EOF
     systemctl disable ufw
 
     swapoff -a
-    sed -i '/ swap / s/^/#/' /etc/fstab
+    sed -i '/ swap / s/^\(.*\)$/#\1/g' /etc/fstab
     #remove multiple hashes added by the above command
     sed -i "s?\#\#\#?\#?g" /tmp/test.sh
     modprobe br_netfilter
