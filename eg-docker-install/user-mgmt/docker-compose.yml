@@ -1,0 +1,68 @@
+version: "3"
+services:
+    postgres:
+       image: swr.ap-southeast-1.myhuaweicloud.com/edgegallery/postgres:12.3
+       environment:
+          POSTGRES_USER: "usermgmt"
+          POSTGRES_PASSWORD: "te9Fmv%qaq"
+          POSTGRES_DB : "usermgmtdb"
+       volumes:
+         - ./postgres-data:/docker-entrypoint-initdb.d/
+
+    redis:
+        image: swr.ap-southeast-1.myhuaweicloud.com/eg-common/redis:6.0.3
+        command: "redis-server /etc/redis/redis.conf"
+        volumes:
+          - ./redis-data:/etc/redis
+
+    service-center:
+       image: swr.ap-southeast-1.myhuaweicloud.com/eg-common/service-center:latest
+       ports:
+         - "30100:30100"
+
+    user-mgmt:
+       image: swr.ap-southeast-1.myhuaweicloud.com/edgegallery/user-mgmt:latest
+       depends_on:
+         - postgres
+         - redis
+         - service-center
+       ports:
+         - "30067:8067"
+       environment:
+           LOG_DIR: "/usr/app/log"
+           CORS_ALLOW_ORIGINS: "*"
+           SC_ADDRESS: http://${ENV_IP}:30100
+           LISTEN_IP: ${ENV_IP}
+           POSTGRES_IP: "postgres"
+           POSTGRES_DB_NAME: "usermgmtdb"
+           POSTGRES_USERNAME: "usermgmt"
+           POSTGRES_PASSWORD: "te9Fmv%qaq"
+           REDIS_IP: ${ENV_IP}
+           REDIS_PORT: "8069"
+           REDIS_TIMEOUT: "1800"
+           REDIS_VERIFICATION_TIMEOUT: "300"
+           REDIS_MAX_TOTAL: "1000"
+           REDIS_MAX_IDLE: "50"
+           REDIS_MAX_WAIT_MILLIS: "100000"
+           REDIS_PASSWORD: "te9Fmv%qaq"
+           SMS_ENABLED: "false"
+           MAIL_ENABLED: "false"
+           JWT_PUBLIC_KEY: ${JWT_PUBLIC_KEY}
+           JWT_ENCRYPTED_PRIVATE_KEY: ${JWT_ENCRYPTED_PRIVATE_KEY}
+           JWT_ENCRYPT_PASSWORD: "te9Fmv%qaq"
+           OAUTH_APPSTORE_CLIENT_ID: "appstore-fe"
+           OAUTH_DEVELOPER_CLIENT_ID: "developer-fe"
+           OAUTH_MECM_CLIENT_ID: "mecm-fe"
+           OAUTH_ATP_CLIENT_ID: "atp-fe"
+           OAUTH_LAB_CLIENT_ID: "lab-fe"
+           OAUTH_APPSTORE_CLIENT_SECRET: "te9Fmv%qaq"
+           OAUTH_DEVELOPER_CLIENT_SECRET: "te9Fmv%qaq"
+           OAUTH_MECM_CLIENT_SECRET: "te9Fmv%qaq"
+           OAUTH_ATP_CLIENT_SECRET: "te9Fmv%qaq"
+           OAUTH_LAB_CLIENT_SECRET: "te9Fmv%qaq"
+           OAUTH_APPSTORE_CLIENT_URL: http://${ENV_IP}:30091
+           OAUTH_DEVELOPER_CLIENT_URL: http://${ENV_IP}:30092
+           OAUTH_MECM_CLIENT_URL: http://${ENV_IP}:30093
+           OAUTH_ATP_CLIENT_URL: http://${ENV_IP}:30094
+           OAUTH_LAB_CLIENT_URL: http://${ENV_IP}:30096
+           SSL_ENABLED: "false"

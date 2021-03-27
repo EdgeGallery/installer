@@ -1,0 +1,8 @@
+version: "3"
+services:
+    generate-key:
+       image: swr.ap-southeast-1.myhuaweicloud.com/edgegallery/deploy-tool:latest
+       environment:
+           CERT_VALIDITY_IN_DAYS: 365
+       volumes:
+         - /tmp/keys/:/certs
