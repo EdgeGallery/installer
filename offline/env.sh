@@ -87,6 +87,7 @@ export mepm_ssl_secretName=mecm-mepm-ssl-secret
 export mepm_images_lcmcontroller_repository="$REGISTRY_URL"edgegallery/mecm-applcm
 export mepm_images_k8splugin_repository="$REGISTRY_URL"edgegallery/mecm-applcm-k8splugin
 export mepm_images_apprulemgr_repository="$REGISTRY_URL"edgegallery/mecm-apprulemgr
+export mepm_images_fe_repository="$REGISTRY_URL"edgegallery/mepm-fe
 export mepm_images_postgres_repository="$REGISTRY_URL"postgres
 export mepm_images_lcmcontroller_tag="$EG_IMAGE_TAG"
 export mepm_images_k8splugin_tag="$EG_IMAGE_TAG"
@@ -95,6 +96,7 @@ export mepm_images_postgres_tag=12.3
 export mepm_images_lcmcontroller_pullPolicy=IfNotPresent
 export mepm_images_k8splugin_pullPolicy=IfNotPresent
 export mepm_images_apprulemgr_pullPolicy=IfNotPresent
+export mepm_images_fe_pullPolicy=IfNotPresent
 export mepm_images_postgres_pullPolicy=IfNotPresent
 
 #ServiceCenter Values
