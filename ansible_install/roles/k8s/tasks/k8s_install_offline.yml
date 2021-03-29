@@ -70,8 +70,8 @@
   command: swapoff -a
 
 - name: Sed File /etc/fstab
-  command: sed -i '/ swap / s/^/#/' /etc/fstab
-
+  command: sed -i '/ swap / s/^\(.*\)$/#\1/g' /etc/fstab
+  
 - name: Modprobe br_netfilter
   command: modprobe br_netfilter
 
