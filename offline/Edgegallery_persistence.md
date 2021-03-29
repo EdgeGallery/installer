@@ -1,6 +1,8 @@
 ### **Edgegallery nfs持久化安装指导**
 
-
+前期准备：
+1.安装kunernetes 1.18.7
+2.安装helm 3.2.4
 #### **1.安装nfs服务端**
 
 apt update
