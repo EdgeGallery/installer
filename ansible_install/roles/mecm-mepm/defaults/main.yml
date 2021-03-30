@@ -16,14 +16,18 @@
 postgresPassword: te9Fmv%qaq
 postgresLcmCntlrPassword: te9Fmv%qaq
 postgresk8sPluginPassword: te9Fmv%qaq
+postgresosPluginPassword: te9Fmv%qaq
+
 mepm_images_lcmcontroller_repository: "{{ REGISTRY_URL }}edgegallery/mecm-applcm"
 mepm_images_k8splugin_repository: "{{ REGISTRY_URL }}edgegallery/mecm-applcm-k8splugin"
+mepm_images_osplugin_repository: "{{ REGISTRY_URL }}edgegallery/mecm-applcm-osplugin"
 mepm_images_apprulemgr_repository: "{{ REGISTRY_URL }}edgegallery/mecm-apprulemgr"
 mepm_images_mepmFe_repository: "{{ REGISTRY_URL }}edgegallery/mepm-fe"
 mepm_images_postgres_repository: "{{ REGISTRY_URL }}eg-common/postgres"
 mepm_images_postgres_tag: 12.3
 mepm_images_lcmcontroller_pullPolicy: IfNotPresent
 mepm_images_k8splugin_pullPolicy: IfNotPresent
+mepm_images_osplugin_pullPolicy: IfNotPresent
 mepm_images_apprulemgr_pullPolicy: IfNotPresent
 mepm_images_mepmFe_pullPolicy: IfNotPresent
 mepm_images_postgres_pullPolicy: IfNotPresent
