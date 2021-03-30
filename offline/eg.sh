@@ -1042,6 +1042,7 @@ function install_mecm-mepm ()
       --from-literal=postgresPassword=te9Fmv%qaq \
       --from-literal=postgresLcmCntlrPassword=te9Fmv%qaq \
       --from-literal=postgresk8sPluginPassword=te9Fmv%qaq \
+	  --from-literal=postgresosPluginPassword=te9Fmv%qaq \
 
     kubectl apply -f $PLATFORM_DIR/conf/manifest/mepm/mepm-service-account.yaml
 
