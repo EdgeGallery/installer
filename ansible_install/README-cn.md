@@ -160,7 +160,7 @@ EdgeGallery的所有离线安装包均可在官方平台[https://release.edgegal
 
   ```
   # 部署过程中搭建的Harbor服务器的admin用户的密码
-  HARBOR_ADMIN_PASSWORD: Harbor12345
+  HARBOR_ADMIN_PASSWORD: Harbor@edge
 
   # Appstore，developer等页面的访问ip，默认为master节点的私有IP，可在此设置为master节点的公网IP
   # PORTAL_IP: 111.222.333.444
@@ -253,3 +253,80 @@ ansible-playbook --inventory hosts-muno eg_all_muno_uninstall.yml
 ## 6. EdgeGallery用户自定义部署
 
 除以上给出的部署模板，用户也可以进行自定义部署，通过编写部署模板，自定义需要部署的EdgeGallery组件。
+
+用户可参照如下文件eg_all_muno_install.yml进行自定义部署。
+
+
+```
+---
+
+# IaaS Deployment on Master and Worker Node
+- hosts: master
+  become: yes
+  vars:
+    - OPERATION: install
+    - EG_MODE: all
+    - NODE_MODE: muno
+    - K8S_NODE_TYPE: master
+  vars_files:
+    - ./var.yml
+    - ./default-var.yml
+  roles:
+    - init
+    - k8s
+    - eg_prepare
+
+- hosts: worker
+  become: yes
+  vars:
+    - OPERATION: install
+    - EG_MODE: all
+    - NODE_MODE: muno
+    - K8S_NODE_TYPE: worker
+  vars_files:
+    - ./var.yml
+    - ./default-var.yml
+  roles:
+    - init
+    - k8s
+    - eg_prepare
+
+# PaaS Deployment on Master
+- hosts: master
+  become: yes
+  vars:
+    - OPERATION: install
+    - EG_MODE: all
+    - NODE_MODE: muno
+    - K8S_NODE_TYPE: master
+  vars_files:
+    - ./var.yml
+    - ./default-var.yml
+  roles:
+    - mep
+    - mecm-mepm
+    - user-mgmt
+    - mecm-meo
+    - mecm-fe
+    - appstore
+    - developer
+    - atp
+    - eg_check
+```
+
+如上所列，此处以多节点部署为例，指导用户如何进行自定义部署。若待部署环境已部署k8s，则无需重复部署k8s，参考第4节内容进行设置。
+本节仅介绍如何自定义EdgeGallery各模块。
+
+- init（ **必选** ）：对离线安装包进行解压操作，并将所需文件传输到各待部署节点进行部署准备工作。
+- eg_prepare（ **必选** ）：EG部署前的必要准备工作，会进行一些特殊的网络配置，harbor安装，其他所需资源创建等。
+- mep（可选）：与EG的其他模块无特殊依赖关系，可以选择部署或者不部署。
+- mecm-mepm（可选）：与EG的其他模块无特殊依赖关系，可以选择部署或者不部署。
+- user-mgmt（可选）：是以下所有模块的依赖，若部署以下任意模块，需提前部署user-mgmt模块，用户用户管理。
+- mecm-meo（可选）：除依赖user-mgmt外，与其他模块无特殊依赖关系。
+- mecm-fe（可选）：除依赖user-mgmt外，与其他模块无特殊依赖关系。
+- appstore（可选）：除依赖user-mgmt外，与其他模块无特殊依赖关系。
+- developer（可选）：除依赖user-mgmt外，与其他模块无特殊依赖关系。
+- atp（可选）：除依赖user-mgmt外，与其他模块无特殊依赖关系。
+- eg_check（可选）：不依赖任何模块，仅对已安装的模块进行检查，打印前台界面访问IP+Port。
+
+上述列出的所有模块，除init与eg_prepare是必须的之外，其他均为可选。另外所有EG模块中，除user-mgmt是一些模块的依赖之外，其余模块均可独立单独部署。
