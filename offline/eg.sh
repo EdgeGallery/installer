@@ -1042,7 +1042,7 @@ function install_mecm-mepm ()
       --from-literal=postgresPassword=te9Fmv%qaq \
       --from-literal=postgresLcmCntlrPassword=te9Fmv%qaq \
       --from-literal=postgresk8sPluginPassword=te9Fmv%qaq \
-	  --from-literal=postgresosPluginPassword=te9Fmv%qaq \
+      --from-literal=postgresosPluginPassword=te9Fmv%qaq
 
     kubectl apply -f $PLATFORM_DIR/conf/manifest/mepm/mepm-service-account.yaml
 
@@ -1052,16 +1052,19 @@ function install_mecm-mepm ()
     --set ssl.secretName=$mepm_ssl_secretName \
     --set images.lcmcontroller.repository=$mepm_images_lcmcontroller_repository \
     --set images.k8splugin.repository=$mepm_images_k8splugin_repository \
+    --set images.osplugin.repository=$mepm_images_osplugin_repository \
     --set images.apprulemgr.repository=$mepm_images_apprulemgr_repository \
     --set images.mepmFe.repository=$mepm_images_fe_repository \
     --set images.postgres.repository=$mepm_images_postgres_repository \
     --set images.lcmcontroller.tag=$mepm_images_lcmcontroller_tag \
     --set images.k8splugin.tag=$mepm_images_k8splugin_tag \
+    --set images.osplugin.tag=$mepm_images_osplugin_tag \
     --set images.apprulemgr.tag=$mepm_images_apprulemgr_tag \
     --set images.mepmFe.tag=$mepm_images_fe_tag \
     --set images.postgres.tag=$mepm_images_postgres_tag \
     --set images.lcmcontroller.pullPolicy=$mepm_images_lcmcontroller_pullPolicy \
     --set images.k8splugin.pullPolicy=$mepm_images_k8splugin_pullPolicy \
+    --set images.osplugin.pullPolicy=$mepm_images_osplugin_pullPolicy \
     --set images.apprulemgr.pullPolicy=$mepm_images_apprulemgr_pullPolicy \
     --set images.mepmFe.pullPolicy=$mepm_images_fe_pullPolicy \
     --set images.postgres.pullPolicy=$mepm_images_postgres_pullPolicy \
