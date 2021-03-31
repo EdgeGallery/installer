@@ -1,3 +1,15 @@
+############################################################################
+# Copyright 2020 Huawei Technologies Co., Ltd.
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#  http://www.apache.org/licenses/LICENSE-2.0
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+############################################################################
 global:
   servicecenter:
     enabled: true
@@ -24,38 +36,38 @@ global:
     annotations:
       bodySize: 20m
     hosts:
-      auth: 119.8.36.45:30067
-      developer: 119.8.36.45:30092
-      appstore: 119.8.36.45:30091
-      mecm: 119.8.36.45:30093
-      atp: 119.8.36.45:30094
-      lab: 119.8.36.45:30096
+      auth: 192.168.1.11:30067
+      developer: 192.168.1.11:30092
+      appstore: 192.168.1.11:30091
+      mecm: 192.168.1.11:30093
+      atp: 192.168.1.11:30094
+      lab: 192.168.1.11:30096
   ssl:
     enabled: true
     secretName: edgegallery-ssl-secret
   oauth2:
-    authServerAddress: https://119.8.36.45:30067
+    authServerAddress: https://192.168.1.11:30067
     clients:
       appstore:
         clientId: appstore-fe
         clientSecret: te9Fmv%qaq
-        clientUrl: https://119.8.36.45:30091
+        clientUrl: https://192.168.1.11:30091
       developer:
         clientId: developer-fe
         clientSecret: te9Fmv%qaq
-        clientUrl: https://119.8.36.45:30092
+        clientUrl: https://192.168.1.11:30092
       mecm:
         clientId: mecm-fe
         clientSecret: te9Fmv%qaq
-        clientUrl: https://119.8.36.45:30093
+        clientUrl: https://192.168.1.11:30093
       atp:
         clientId: atp-fe
         clientSecret: te9Fmv%qaq
-        clientUrl: https://119.8.36.45:30094
+        clientUrl: https://192.168.1.11:30094
       lab:
         clientId: lab-fe
         clientSecret: te9Fmv%qaq
-        clientUrl: https://119.8.36.45:30096
+        clientUrl: https://192.168.1.11:30096
 jwt:
   secretName: user-mgmt-jwt-secret
 
@@ -197,206 +209,5 @@ images:
 poke:
   enabled: true
   platformName: EdgeGallery AppStore
-  platformUrl:  https://119.8.36.45:30099
-  atpReportUrl:  https://119.8.36.45:30094/#/atpreport?taskid=%s
-global:
-  servicecenter:
-    enabled: true
-  usermgmt:
-    enabled: true
-  appstore:
-    enabled: true
-  developer:
-    enabled: true
-  mecm-fe:
-    enabled: true
-  mecm-mepm:
-    enabled: true
-  mecm-meo:
-    enabled: true
-  persistence:
-    enabled: true
-    storageClassName: nfs-client
-  ingress:
-    enabled: false
-    tls:
-      enabled: false
-      secretName: edgegallery-ingress-secret
-    annotations:
-      bodySize: 20m
-    hosts:
-      auth: 119.8.36.45:30067
-      developer: 119.8.36.45:30092
-      appstore: 119.8.36.45:30091
-      mecm: 119.8.36.45:30093
-      atp: 119.8.36.45:30094
-      lab: 119.8.36.45:30096
-  ssl:
-    enabled: true
-    secretName: edgegallery-ssl-secret
-  oauth2:
-    authServerAddress: https://119.8.36.45:30067
-    clients:
-      appstore:
-        clientId: appstore-fe
-        clientSecret: te9Fmv%qaq
-        clientUrl: https://119.8.36.45:30091
-      developer:
-        clientId: developer-fe
-        clientSecret: te9Fmv%qaq
-        clientUrl: https://119.8.36.45:30092
-      mecm:
-        clientId: mecm-fe
-        clientSecret: te9Fmv%qaq
-        clientUrl: https://119.8.36.45:30093
-      atp:
-        clientId: atp-fe
-        clientSecret: te9Fmv%qaq
-        clientUrl: https://119.8.36.45:30094
-      lab:
-        clientId: lab-fe
-        clientSecret: te9Fmv%qaq
-        clientUrl: https://119.8.36.45:30096
-jwt:
-  secretName: user-mgmt-jwt-secret
-
-images:
-  usermgmt:
-    repository: swr.ap-southeast-1.myhuaweicloud.com/edgegallery/user-mgmt
-    tag: latest
-    pullPolicy: Always
-  postgres:
-    repository: swr.ap-southeast-1.myhuaweicloud.com/edgegallery/postgres
-    tag: 12.2
-    pullPolicy: IfNotPresent
-  redis:
-    repository: swr.ap-southeast-1.myhuaweicloud.com/edgegallery/redis
-    tag: 6.0.3
-    pullPolicy: IfNotPresent
-  initservicecenter:
-    repository: swr.ap-southeast-1.myhuaweicloud.com/edgegallery/curl
-    tag: latest
-    pullPolicy: IfNotPresent
-
-  appstoreBe:
-    repository: swr.ap-southeast-1.myhuaweicloud.com/edgegallery/appstore-be
-    tag: latest
-    pullPolicy: Always
-  appstoreFe:
-    repository: swr.ap-southeast-1.myhuaweicloud.com/edgegallery/appstore-fe
-    tag: latest
-    pullPolicy: Always
-
-  developerBe:
-    repository: swr.ap-southeast-1.myhuaweicloud.com/edgegallery/developer-be
-    tag: latest
-    pullPolicy: Always
-  developerFe:
-    repository: swr.ap-southeast-1.myhuaweicloud.com/edgegallery/developer-fe
-    tag: latest
-    pullPolicy: Always
-  toolChain:
-    repository: swr.ap-southeast-1.myhuaweicloud.com/edgegallery/tool-chain
-    tag: latest
-    pullPolicy: Always
-  portingAdvisor:
-    repository: swr.ap-southeast-1.myhuaweicloud.com/edgegallery/porting-advisor
-    tag: latest
-    pullPolicy: IfNotPresent
-
-  atp:
-    repository: swr.ap-southeast-1.myhuaweicloud.com/edgegallery/atp-be
-    tag: latest
-    pullPolicy: Always
-  atpFe:
-    repository: swr.ap-southeast-1.myhuaweicloud.com/edgegallery/atp-fe
-    tag: latest
-    pullPolicy: Always
-  
-  labFe:
-    repository: swr.ap-southeast-1.myhuaweicloud.com/edgegallery/lab-fe
-    tag: latest
-    pullPolicy: Always
-  labBe:
-    repository: swr.ap-southeast-1.myhuaweicloud.com/edgegallery/lab-be
-    tag: latest
-    pullPolicy: Always
-
-  mecmFe:
-    repository: swr.ap-southeast-1.myhuaweicloud.com/edgegallery/mecm-fe
-    tag: latest
-    pullPolicy: Always
-  service-center:
-    repository: swr.ap-southeast-1.myhuaweicloud.com/edgegallery/service-center
-    tag: latest
-    pullPolicy: Always
-
-  inventory:
-    repository: swr.ap-southeast-1.myhuaweicloud.com/edgegallery/mecm-inventory
-    tag: latest
-    pullPolicy: Always
-  appo:
-    repository: swr.ap-southeast-1.myhuaweicloud.com/edgegallery/mecm-appo
-    tag: latest
-    pullPolicy: Always
-  apm:
-    repository: swr.ap-southeast-1.myhuaweicloud.com/edgegallery/mecm-apm
-    tag: latest
-    pullPolicy: Always
-  postgres:
-    repository: swr.ap-southeast-1.myhuaweicloud.com/edgegallery/postgres
-    tag: 12.3
-    pullPolicy: IfNotPresent
-  
-  lcmcontroller:
-    repository: swr.ap-southeast-1.myhuaweicloud.com/edgegallery/mecm-applcm
-    tag: latest
-    pullPolicy: Always
-  k8splugin:
-    repository: swr.ap-southeast-1.myhuaweicloud.com/edgegallery/mecm-applcm-k8splugin
-    tag: latest
-    pullPolicy: Always
-  apprulemgr:
-    repository: swr.ap-southeast-1.myhuaweicloud.com/edgegallery/mecm-apprulemgr
-    tag: latest
-    pullPolicy: Always
-  mepmFe:
-    repository: swr.ap-southeast-1.myhuaweicloud.com/edgegallery/mepm-fe
-    tag: latest
-    pullPolicy: Always
- 
-  mep:
-    repository: swr.ap-southeast-1.myhuaweicloud.com/edgegallery/mep
-    tag: latest
-    pullPolicy: Always
-  mepauth:
-    repository: swr.ap-southeast-1.myhuaweicloud.com/edgegallery/mepauth
-    tag: latest
-    pullPolicy: Always
-  kong:
-    repository: kong
-    tag: 2.0.4-ubuntu
-    pullPolicy: IfNotPresent
-  postgres:
-    repository: postgres
-    tag: 12.3
-    pullPolicy: IfNotPresent
-  dns:
-    repository: swr.ap-southeast-1.myhuaweicloud.com/edgegallery/mep-dns-server
-    tag: latest
-    pullPolicy: Always
-  elasticsearch:
-    repository: swr.ap-southeast-1.myhuaweicloud.com/eg-common/elasticsearch
-    tag: 7.9.0
-    pullPolicy: Always
-  mepFe:
-    repository: swr.ap-southeast-1.myhuaweicloud.com/edgegallery/mep-fe
-    tag: latest
-    pullPolicy: Always
-  
-# poke config
-poke:
-  enabled: true
-  platformName: EdgeGallery AppStore
-  platformUrl:  https://119.8.36.45:30099
-  atpReportUrl:  https://119.8.36.45:30094/#/atpreport?taskid=%s
+  platformUrl:  https://192.168.1.11:30099
+  atpReportUrl:  https://192.168.1.11:30094/#/atpreport?taskid=%s
