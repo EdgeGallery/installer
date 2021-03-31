@@ -30,26 +30,50 @@ export CERT_VALIDITY_IN_DAYS=365  \
 env="-e CERT_VALIDITY_IN_DAYS=$CERT_VALIDITY_IN_DAYS" \
 mkdir /root/keys/  \
 docker run $env -v /root/keys:/certs swr.ap-southeast-1.myhuaweicloud.com/edgegallery/deploy-tool:latest
-#### 2、生成
+#### 2、生成edgegallery-ssl-secret 
+kubectl create secret generic edgegallery-ssl-secret \
+      --from-file=keystore.p12=/root/keys/keystore.p12 \
+      --from-literal=keystorePassword=te9Fmv%qaq \
+      --from-literal=keystoreType=PKCS12 \
+      --from-literal=keyAlias=edgegallery \
+      --from-file=trust.cer=/root/keys/ca.crt \
+      --from-file=server.cer=/root/keys/tls.crt \
+      --from-file=server_key.pem=/root/keys/encryptedtls.key \
+      --from-literal=cert_pwd=te9Fmv%qaq
+#### 3、生成user-mgmt-jwt-secret
 kubectl create secret generic user-mgmt-jwt-secret \
       --from-file=publicKey=/root/keys/rsa_public_key.pem \
       --from-file=encryptedPrivateKey=/root/keys/encrypted_rsa_private_key.pem \
       --from-literal=encryptPassword=te9Fmv%qaq 
+#### 4、生成edgegallery-appstore-docker-secret
 kubectl create secret generic edgegallery-appstore-docker-secret \
       --from-literal=devRepoUserName=$HARBOR_USER	 \
       --from-literal=devRepoPassword=$HARBOR_PASSWORD    \
       --from-literal=appstoreRepoUserName=$HARBOR_USER	 \
       --from-literal=appstoreRepoPassword=$HARBOR_PASSWORD
+#### 5、生成edgegallery-mecm-secret
+kubectl create secret generic edgegallery-mecm-secret \
+      --from-file=postgres_init.sql=/root/keys/postgres_init.sql \
+      --from-literal=postgresPassword=te9Fmv%qaq \
+      --from-literal=postgresApmPassword=te9Fmv%qaq \
+      --from-literal=postgresAppoPassword=te9Fmv%qaq \
+      --from-literal=postgresInventoryPassword=te9Fmv%qaq \
+      --from-literal=dockerRepoUserName=$HARBOR_USER	 \
+      --from-literal=dockerRepoPassword=$HARBOR_PASSWORD
+#### 6、生成mecm-mepm-ssl-secret
+kubectl create secret generic mecm-mepm-ssl-secret \
+      --from-file=server_tls.key=/root/keys/tls.key \
+      --from-file=server_tls.crt=/root/keys/tls.crt \
+      --from-file=ca.crt=/root/keys/ca.crt
+#### 7、生成mecm-mepm-jwt-public-secret
+kubectl create secret generic mecm-mepm-jwt-public-secret \
+      --from-file=publicKey=/root/keys/rsa_public_key.pem
+#### 8、生成edgegallery-mepm-secret
 kubectl create secret generic edgegallery-mepm-secret \
       --from-file=postgres_init.sql=/root/keys/postgres_init.sql \
       --from-literal=postgresPassword=te9Fmv%qaq \
       --from-literal=postgresLcmCntlrPassword=te9Fmv%qaq \
       --from-literal=postgresk8sPluginPassword=te9Fmv%qaq \
-kubectl create secret generic mecm-mepm-ssl-secret \
-      --from-file=server_tls.key=/root/keys/tls.key \
-      --from-file=server_tls.crt=/root/keys/tls.crt \
-      --from-file=ca.crt=/root/keys/ca.crt
-kubectl create secret generic mecm-mepm-jwt-public-secret --from-file=publicKey=/root/keys/rsa_public_key.pem
 ### 六、安装edgegallery
 #### 3、install service-center
 helm install service-center-edgegallery  helm-charts/service-center  -f edgegallery-values.yaml
