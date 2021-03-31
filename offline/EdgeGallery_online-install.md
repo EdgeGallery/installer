@@ -75,7 +75,13 @@ kubectl create secret generic edgegallery-mepm-secret \
       --from-literal=postgresLcmCntlrPassword=te9Fmv%qaq \
       --from-literal=postgresk8sPluginPassword=te9Fmv%qaq \
 ### 六、安装edgegallery
-#### 3、install service-center
+#### 1、选择自己需要的helm-chart版本下载(以下是各个版本的下载地址
+git clone -b master  https://gitee.com/edgegallery/helm-charts.git
+git clone -b Release-v1.0 https://gitee.com/edgegallery/helm-charts.git
+git clone -b Release-v1.0.1   https://gitee.com/edgegallery/helm-charts.git 
+#### 2、修改edgegallery-values.yaml文件
+
+#+### 3、install service-center
 helm install service-center-edgegallery  helm-charts/service-center  -f edgegallery-values.yaml
 #### 4、install user-mgmt 
 helm install user-mgmt-edgegallery   helm-charts/user-mgmt  -f      edgegallery-values.yaml
