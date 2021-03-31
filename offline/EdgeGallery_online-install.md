@@ -24,9 +24,22 @@ exportfs -v
 cd ./helm/helm-charts/stable/   \
 helm install nfs-client-provisioner --set nfs.server=<nfs_sever_ip> --set nfs.path=/nfs/data/ nfs-client-provisioner-1.2.8.tgz # <nfs_sever_ip>为本机的ip  
 ### 五、安装edgegallery
-3、install service-center
+#### 3、install service-center
 helm install service-center-edgegallery  helm-charts/service-center  -f edgegallery-values.yaml
-4、install user-mgmt 
+#### 4、install user-mgmt 
 helm install user-mgmt-edgegallery   helm-charts/user-mgmt  -f      edgegallery-values.yaml
-5、install appstore
+#### 5、install appstore
 helm install appstore-edgegallery    helm-charts/appsrore   -f      edgegallery-values.yaml  --set appstoreBe.repository.dockerRepoEndpoint=$HARBOR_REPO_IP   --set appstoreBe.secretName=edgegallery-appstore-docker-secret  
+#### 6、install developer 
+helm install developer-edgegallery   helm-charts/developer  -f      edgegallery-values.yaml   --set developer.dockerRepo.endpoint=$HARBOR_REPO_IP    --set developer.dockerRepo.password=$HARBOR_PASSWORD  --set developer.dockerRepo.username=$HARBOR_USER
+#### 7、install mecm-fe
+helm install mecm-fe-edgegallery     helm-charts/mecm-fe    -f       edgegallery-values.yaml
+#### 8、install mecm-meo             
+helm install mecm-meo-edgegallery    helm-charts/mecm-fe    -f       edgegallery-values.yaml   --set ssl.secretName=edgegallery-mecm-ssl-secret 
+--set mecm.secretName=edgegallery-mecm-secret --set mecm.repository.dockerRepoEndpoint=$HARBOR_REPO_IP  --set mecm.repository.sourceRepos="repo=$HARBOR_REPO_IP userName=$HARBOR_USER password=$HARBOR_PASSWORD"
+#### 9、install atp
+helm install atp-edgegallery         helm-charts/atp        -f       edgegallery-values.yaml    
+#### 10、install  mecm-mepm
+helm install mecm-mepm-edgegallery   helm-charts/mecm-mepm  -f       edgegallery-values.yaml  --set jwt.publicKeySecretName=mecm-mepm-jwt-public-secret --set ssl.secretName=mecm-mepm-ssl-secret --set mepm.secretName=edgegallery-mepm-secret 
+#### 11、install mep
+helm install mep-edgegallery         helm-charts/mep        -f       edgegallery-values.yaml  --set networkIsolation.ipamType=host-local   --set networkIsolation.phyInterface.mp1=eth0   --set networkIsolation.phyInterface.mm5=eth0   # 需要把eth0替换为自己的网卡名
