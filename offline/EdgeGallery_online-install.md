@@ -23,8 +23,9 @@ vim /etc/exports  \
 systemctl restart nfs-kernel-server \
 exportfs -v   
 #### 2. 安装nfs客户端
-下载离线安装包解包   
-cd ./helm/helm-charts/stable/   \
+下载nfs客户端 
+x86：https://gitee.com/OSDT/dashboard/projects/edgegallery/installer/blob/master/offline/Edgegallery_online_install/nfs-client-amd/nfs-client-provisioner-1.2.8.tgz
+ARM: https://gitee.com/OSDT/dashboard/projects/edgegallery/installer/blob/master/offline/Edgegallery_online_install/nfs-client-arm/nfs-client-provisioner-1.2.8.tgz
 helm install nfs-client-provisioner --set nfs.server=<nfs_sever_ip> --set nfs.path=/nfs/data/       nfs-client-provisioner-1.2.8.tgz # <nfs_sever_ip>为本机的ip  
 ### 五、生成edgegallery的secret
 #### 1、生成所需的证书
@@ -83,8 +84,8 @@ git clone -b master  https://gitee.com/edgegallery/helm-charts.git
 git clone -b Release-v1.0 https://gitee.com/edgegallery/helm-charts.git
 git clone -b Release-v1.0.1   https://gitee.com/edgegallery/helm-charts.git 
 #### 2、修改edgegallery-values.yaml文件
-
-#+### 3、install service-center
+sed -i 's/192.168.1.11/192.168.1.12/g'   edgegallery-values.yaml   #需要将192.168.1.12 替换为自己的ip
+#### 3、install service-center
 helm install service-center-edgegallery  helm-charts/service-center  -f edgegallery-values.yaml
 #### 4、install user-mgmt 
 helm install user-mgmt-edgegallery   helm-charts/user-mgmt  -f      edgegallery-values.yaml
