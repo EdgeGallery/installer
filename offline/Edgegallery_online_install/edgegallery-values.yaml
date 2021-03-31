@@ -41,7 +41,6 @@ global:
       appstore: 192.168.1.11:30091
       mecm: 192.168.1.11:30093
       atp: 192.168.1.11:30094
-      lab: 192.168.1.11:30096
   ssl:
     enabled: true
     secretName: edgegallery-ssl-secret
