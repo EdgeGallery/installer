@@ -74,6 +74,10 @@
   shell: dpkg -r socat conntrack
   ignore_errors: yes
 
+- name: Delete tunl0 Interface
+  shell: modprobe -r ipip
+  ignore_errors: yes
+
 - name: remove k8s docker images
   shell: docker rmi "{{ item }}"
   loop: "{{ K8S_DOCKER_IMAGES }}"
