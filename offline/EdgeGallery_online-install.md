@@ -22,8 +22,35 @@ exportfs -v
 #### 2. 安装nfs客户端
 下载离线安装包解包   
 cd ./helm/helm-charts/stable/   \
-helm install nfs-client-provisioner --set nfs.server=<nfs_sever_ip> --set nfs.path=/nfs/data/ nfs-client-provisioner-1.2.8.tgz # <nfs_sever_ip>为本机的ip  
-### 五、安装edgegallery
+helm install nfs-client-provisioner --set nfs.server=<nfs_sever_ip> --set nfs.path=/nfs/data/       nfs-client-provisioner-1.2.8.tgz # <nfs_sever_ip>为本机的ip  
+### 五、生成edgegallery的secret
+#### 1、生成所需的证书
+docker pull swr.ap-southeast-1.myhuaweicloud.com/edgegallery/deploy-tool:latest  \
+export CERT_VALIDITY_IN_DAYS=365  \
+env="-e CERT_VALIDITY_IN_DAYS=$CERT_VALIDITY_IN_DAYS" \
+mkdir /root/keys/  \
+docker run $env -v /root/keys:/certs swr.ap-southeast-1.myhuaweicloud.com/edgegallery/deploy-tool:latest
+#### 2、生成
+kubectl create secret generic user-mgmt-jwt-secret \
+      --from-file=publicKey=/root/keys/rsa_public_key.pem \
+      --from-file=encryptedPrivateKey=/root/keys/encrypted_rsa_private_key.pem \
+      --from-literal=encryptPassword=te9Fmv%qaq 
+kubectl create secret generic edgegallery-appstore-docker-secret \
+      --from-literal=devRepoUserName=$HARBOR_USER	 \
+      --from-literal=devRepoPassword=$HARBOR_PASSWORD    \
+      --from-literal=appstoreRepoUserName=$HARBOR_USER	 \
+      --from-literal=appstoreRepoPassword=$HARBOR_PASSWORD
+kubectl create secret generic edgegallery-mepm-secret \
+      --from-file=postgres_init.sql=/root/keys/postgres_init.sql \
+      --from-literal=postgresPassword=te9Fmv%qaq \
+      --from-literal=postgresLcmCntlrPassword=te9Fmv%qaq \
+      --from-literal=postgresk8sPluginPassword=te9Fmv%qaq \
+kubectl create secret generic mecm-mepm-ssl-secret \
+      --from-file=server_tls.key=/root/keys/tls.key \
+      --from-file=server_tls.crt=/root/keys/tls.crt \
+      --from-file=ca.crt=/root/keys/ca.crt
+kubectl create secret generic mecm-mepm-jwt-public-secret --from-file=publicKey=/root/keys/rsa_public_key.pem
+### 六、安装edgegallery
 #### 3、install service-center
 helm install service-center-edgegallery  helm-charts/service-center  -f edgegallery-values.yaml
 #### 4、install user-mgmt 
