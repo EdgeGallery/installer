@@ -13,20 +13,28 @@
 
 ---
 
-- name: Set Other Helm List
-  set_fact:
-    OTHER_HELM_URL_LIST: "{{ STABLE_HELM_URL_LIST }}"
-    OTHER_HELM_NAME_LIST: "{{ STABLE_HELM_NAME_LIST }}"
-
-- name: Pull Other Helm Charts
+- name: Pull NGINX Helm Charts
   get_url:
-    url: "{{ item }}"
+    url: "{{ STABLE_NGINX_HELM_URL}}"
     dest: "{{ HELM_CHARTS_STABLE }}"
-  loop: "{{ OTHER_HELM_URL_LIST }}"
-  register: pullOtherHelmCharts
+  register: pullNginxHelmCharts
   ignore_errors: yes
 
-- name: Copy From Local Directory
-  shell: "scp {{ FTP_SERVER }}:/home/helm-charts-stable/{{ item }} {{ HELM_CHARTS_STABLE }}"
-  loop: "{{ OTHER_HELM_NAME_LIST }}"
-  when: pullOtherHelmCharts is failed
+- name: Copy NGINX From Local Directory
+  shell: "scp {{ FTP_SERVER }}:/home/helm-charts-stable/{{ STABLE_NGINX_HELM_NAME }} {{ HELM_CHARTS_STABLE }}"
+  when: pullNginxHelmCharts is failed
+
+- name: Pull NFS Helm Charts
+  get_url:
+    url: "{{ STABLE_NFS_HELM_URL}}"
+    dest: "{{ HELM_CHARTS_STABLE }}"
+  register: pullNFSHelmCharts
+  ignore_errors: yes
+
+- name: Copy NFS AMD64 From Local Directory
+  shell: "scp {{ FTP_SERVER }}:/home/helm-charts-stable/nfs-amd/{{ STABLE_NFS_HELM_NAME }} {{ HELM_CHARTS_STABLE }}"
+  when: pullNFSHelmCharts is failed and ARCH == "amd64"
+
+- name: Copy NFS ARM64 From Local Directory
+  shell: "scp {{ FTP_SERVER }}:/home/helm-charts-stable/nfs-arm/{{ STABLE_NFS_HELM_NAME }} {{ HELM_CHARTS_STABLE }}"
+  when: pullNFSHelmCharts is failed and ARCH == "arm64"

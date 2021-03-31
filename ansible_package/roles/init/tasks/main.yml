@@ -39,6 +39,5 @@
     dest: "{{ TARBALL_PATH }}"
   loop:
     - LICENSE
-    - README_cn.md
-    - README_en.md
+    - README-cn.md
     - conf

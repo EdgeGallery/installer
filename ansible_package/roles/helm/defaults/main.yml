@@ -32,10 +32,8 @@ EG_HELM_LIST_EDGE:
   - mecm-mepm
   - mep
 
-STABLE_HELM_URL_LIST:
-  - https://kubernetes-charts.storage.googleapis.com/nginx-ingress-1.41.2.tgz
-  - https://kubernetes-charts.storage.googleapis.com/nfs-client-provisioner-1.2.8.tgz
+STABLE_NGINX_HELM_URL: https://kubernetes-charts.storage.googleapis.com/nginx-ingress-1.41.2.tgz
+STABLE_NGINX_HELM_NAME: nginx-ingress-1.41.2.tgz
 
-STABLE_HELM_NAME_LIST:
-  - nginx-ingress-1.41.2.tgz
-  - nfs-client-provisioner-1.2.8.tgz
+STABLE_NFS_HELM_URL: https://kubernetes-charts.storage.googleapis.com/nfs-client-provisioner-1.2.8.tgz
+STABLE_NFS_HELM_NAME: nfs-client-provisioner-1.2.8.tgz
