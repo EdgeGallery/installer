@@ -34,7 +34,8 @@
       --from-literal=postgresPassword={{ postgresPassword }} \
       --from-literal=postgresLcmCntlrPassword={{ postgresLcmCntlrPassword }} \
       --from-literal=postgresk8sPluginPassword={{ postgresk8sPluginPassword }} \
-      --from-literal=postgresosPluginPassword={{ postgresosPluginPassword }}
+      --from-literal=postgresosPluginPassword={{ postgresosPluginPassword }} \
+      --from-literal=postgresRuleMgrPassword={{ postgresRuleMgrPassword }}
 
 - name: Create MECM-MEPM Service Account
   shell: "kubectl apply -f {{ TARBALL_PATH }}/conf/manifest/mepm/mepm-service-account.yaml"
