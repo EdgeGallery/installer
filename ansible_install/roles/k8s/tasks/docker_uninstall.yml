@@ -57,6 +57,10 @@
     state: absent
   ignore_errors: yes
 
+- name: Delete docker0 Interface
+  shell: ip link del docker0
+  ignore_errors: yes
+
 - name: Check whether Docker is installed
   command: docker version
   register: checkDocker

@@ -34,6 +34,7 @@
       --from-literal=postgresPassword={{ postgresPassword }} \
       --from-literal=postgresLcmCntlrPassword={{ postgresLcmCntlrPassword }} \
       --from-literal=postgresk8sPluginPassword={{ postgresk8sPluginPassword }} \
+      --from-literal=postgresosPluginPassword={{ postgresosPluginPassword }}
 
 - name: Create MECM-MEPM Service Account
   shell: "kubectl apply -f {{ TARBALL_PATH }}/conf/manifest/mepm/mepm-service-account.yaml"
@@ -46,16 +47,19 @@
     --set ssl.secretName=mecm-mepm-ssl-secret \
     --set images.lcmcontroller.repository={{ mepm_images_lcmcontroller_repository }} \
     --set images.k8splugin.repository={{ mepm_images_k8splugin_repository }} \
+    --set images.osplugin.repository={{ mepm_images_osplugin_repository }} \
     --set images.apprulemgr.repository={{ mepm_images_apprulemgr_repository }} \
     --set images.mepmFe.repository={{ mepm_images_mepmFe_repository }} \
     --set images.postgres.repository={{ mepm_images_postgres_repository }} \
     --set images.lcmcontroller.tag={{ EG_IMAGE_TAG }} \
     --set images.k8splugin.tag={{ EG_IMAGE_TAG }} \
+    --set images.osplugin.tag={{ EG_IMAGE_TAG }} \
     --set images.apprulemgr.tag={{ EG_IMAGE_TAG }} \
     --set images.mepmFe.tag={{ EG_IMAGE_TAG }} \
     --set images.postgres.tag={{ mepm_images_postgres_tag }} \
     --set images.lcmcontroller.pullPolicy={{ mepm_images_lcmcontroller_pullPolicy }} \
     --set images.k8splugin.pullPolicy={{ mepm_images_k8splugin_pullPolicy }} \
+    --set images.osplugin.pullPolicy={{ mepm_images_osplugin_pullPolicy }} \
     --set images.apprulemgr.pullPolicy={{ mepm_images_apprulemgr_pullPolicy }} \
     --set images.mepmFe.pullPolicy={{ mepm_images_mepmFe_pullPolicy }} \
     --set images.postgres.pullPolicy={{ mepm_images_postgres_pullPolicy }} \

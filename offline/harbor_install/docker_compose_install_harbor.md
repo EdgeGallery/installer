@@ -5,10 +5,13 @@ apt-get install  docker.io
 ##### install docker-compose
 要求docker-compose version >1.18 \
 sudo curl -L "https://github.com/docker/compose/releases/download/1.26.2/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose \
-chmod +x /usr/local/bin/docker-compose 
-##### 修改docker.service
-在ExecStart 行后面加 '--insecure-registry Ip:port',如下例 \
-ExecStart=/usr/bin/dockerd -H fd:// --containerd=/run/containerd/containerd.sock --insecure-registry 192.168.1.11
+chmod +x /usr/local/bin/docker-compose   
+#### 生成damon.json文件（下文所有的119.8.1.11需替换为自己的ip) 
+cat <<EOF | tee /etc/docker/daemon.json   
+{                                               
+    "insecure-registries" : ["192.168.1.11"]     
+}
+EOF
 #### 2.Download harbor offline pankage and set harbor.yml文件
 wget https://github.com/goharbor/harbor/releases/download/v2.0.6/harbor-offline-installer-v2.0.6.tgz \
 tar -zxvf harbor-offline-installer-v2.0.6.tgz \
@@ -34,22 +37,24 @@ openssl req -x509 -new -nodes -sha512 -days 3650 \
     -key ca.key \
     -out ca.crt \
 mkdir -p /etc/docker/certs.d/192.168.1.11:443/   \
-cp /root/harbor/cert/ca.crt   /root/harbor/cert/ca.key    /etc/docker/certs.d/92.168.1.11:443/  \
+cp /root/harbor/cert/ca.crt   /root/harbor/cert/ca.key    /etc/docker/certs.d/192.168.1.11:443/  \
 cd /etc/docker/certs.d/192.168.1.11:443/  \
 openssl x509 -inform PEM -in ca.crt -out ca.cert   \
 mv ca.key  192.168.1.11.key   \
-mv ca.cert 192.168.1.11.cert   \
-systemctl daemon-reload  \
+mv ca.cert 192.168.1.11.cert   
+#### 重启docker
+systemctl daemon-reload  
 systemctl restart docker 
 #### 3.安装harbor
 cd  /root/harbor/   \
 ./install.sh    #脚本安装harbor 
 ##### docker login harbor
 docker login -uadmin -pHarbor12345 192.168.1.11
+##### 生成harbor secret
+kubectl create secret docker-registry  harbor  --docker-server=https://192.168.1.11 --docker-username=admin  --docker-password=Harbro12345 \
+kubectl patch serviceaccount default -p '{"imagePullSecrets": [{"name": "harbor"}]}'
 #### 4.登录harbor web界面
-登录url https://192.168.1.11:443
+登录url https://192.168.1.11
 ##### 创建项目
-![输入图片说明](https://images.gitee.com/uploads/images/2021/0304/122909_c4583be7_7624663.png "屏幕截图.png")
-##### 创建用户设置为
-![输入图片说明](https://images.gitee.com/uploads/images/2021/0304/123212_e2f88c40_7624663.png "屏幕截图.png") \
-![输入图片说明](https://images.gitee.com/uploads/images/2021/0304/123416_437f0141_7624663.png "屏幕截图.png")
+创建appstore developer mecm 三个项目 \
+![输入图片说明](https://images.gitee.com/uploads/images/2021/0331/145024_f78e2fed_7624663.png "屏幕截图.png")

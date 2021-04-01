@@ -48,3 +48,13 @@ CREATE DATABASE k8splugindb
     TABLESPACE = pg_default
     CONNECTION LIMIT = -1;
 
+CREATE USER osplugin WITH PASSWORD 'te9Fmv%qaq' CREATEDB;
+CREATE DATABASE osplugindb
+    WITH
+    OWNER = osplugin
+    ENCODING = 'UTF8'
+    LC_COLLATE = 'en_US.utf8'
+    LC_CTYPE = 'en_US.utf8'
+    TABLESPACE = pg_default
+    CONNECTION LIMIT = -1;
+
