@@ -48,20 +48,3 @@
 
 - name: K8s Apply Metric Server
   shell: "kubectl apply -f {{ K8S_OFFLINE_DIR }}/k8s/metric-server.yaml"
-
-- name: Comment Out port=0 in kube-scheduler.yaml
-  replace:
-    path: /etc/kubernetes/manifests/kube-scheduler.yaml
-    regexp: "- --port=0"
-    replace: "# - --port=0"
-
-- name: Comment Out port=0 in kube-controller-manager.yaml
-  replace:
-    path: /etc/kubernetes/manifests/kube-controller-manager.yaml
-    regexp: "- --port=0"
-    replace: "# - --port=0"
-
-- name: Restart kubelet Service
-  service:
-    name: kubelet.service
-    state: restarted
