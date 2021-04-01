@@ -28,7 +28,12 @@ EdgeGallery离线安装是为单机环境提供的安装方式，便于各种只
 
 2. 一个待部署节点
 
-    该部署节点除操作系统ububntu 18.04外，无需进行其他任何安装操作。节点最低配置建议使用：4CPU，16G内存，100G硬盘，单网卡或者多网卡。
+    该部署节点除操作系统ububntu 18.04外，无需进行其他任何安装操作。节点最低配置建议使用：
+
+    - 4CPU
+    - 16G内存
+    - 100G硬盘
+    - 单网卡或者多网卡。
 
     待部署节点与部署控制节点可以为同一节点。
 
@@ -46,9 +51,11 @@ EdgeGallery离线安装是为单机环境提供的安装方式，便于各种只
 
   本文所涉及的所有操作均是在部署控制节点进行，整个部署过程， **无需** 登录待部署节点进行任何操作。
 
-   **登录部署控制节点** （已提前安装好ububntu 18.04操作系统，python3.6与pip3），做如下操作：
+### 2.1 登录部署控制节点
 
-### 2.1. 部署控制节点需要安装Ansible工具：
+  部署控制节点已提前安装好Ubuntu 18.04操作系统，python3.6与pip3。
+
+### 2.2 部署控制节点需要安装Ansible工具：
 
   - 在线安装Ansible：
 
@@ -75,7 +82,7 @@ EdgeGallery离线安装是为单机环境提供的安装方式，便于各种只
             ansible --version
             ```
 
-### 2.2. 下载EdgeGallery离线安装包
+### 2.3 下载EdgeGallery离线安装包
 
 EdgeGallery的所有离线安装包均可在官方平台[https://release.edgegallery.org/](https://release.edgegallery.org/)进行下载。请点击进入[ _官方平台_ ](https://release.edgegallery.org/)，选择对应架构（x86或arm64）下的边缘（edge）部署、中心（controller）部署或边缘+中心（all）部署对应的离线安装包。
 
@@ -139,19 +146,34 @@ EdgeGallery的所有离线安装包均可在官方平台[https://release.edgegal
 - 单节点部署配置，将host-aio中的信息改成待部署节点IP，如下所示：
 
     ```
-    # 待部署节点IP为192.168.0.110
     [master]
-    192.168.0.110
+    xxx.xxx.xxx.xxx
     ```
 
 - 多节点部署配置，参考hosts-muno文件进行master和worker节点的配置，当前仅支持一台master节点，一台或多台worker节点。部署控制节点也可以作为某一个master或者worker节点。
 
     ```
     [master]
-    192.168.0.110
+    xxx.xxx.xxx.xxx
+
     [worker]
-    192.168.0.111
-    192.168.0.112
+    xxx.xxx.xxx.xxx
+    xxx.xxx.xxx.xxx
+    ```
+
+- ssh的端口不是默认的22端口时：
+
+    ```
+    [master]
+    xxx.xxx.xxx.xxx
+    [master:vars]
+    ansible_ssh_port=xx
+
+    [worker]
+    xxx.xxx.xxx.xxx
+    xxx.xxx.xxx.xxx
+    [worker:vars]
+    ansible_ssh_port=xx
     ```
 
 ### 3.2. 部署涉及的参数配置
@@ -165,7 +187,9 @@ EdgeGallery的所有离线安装包均可在官方平台[https://release.edgegal
   # Appstore，developer等页面的访问ip，默认为master节点的私有IP，可在此设置为master节点的公网IP
   # PORTAL_IP: 111.222.333.444
 
-  # 如果没有设置，会自动获取待部署节点静态IP对应的网卡名称
+  # master节点的网卡名
+  # 如果master节点是单网卡，则可以不设置这两个变量，会在部署时自动获取master节点的静态IP对应的网卡名称
+  # 如果master节点是多网卡，需要在此设置以下两个变量为不同的两个网卡的名称
   # EG_NODE_EDGE_MP1: eth0
   # EG_NODE_EDGE_MM5: eth0
   ```
@@ -321,7 +345,7 @@ ansible-playbook --inventory hosts-muno eg_all_muno_uninstall.yml
 - eg_prepare（ **必选** ）：EG部署前的必要准备工作，会进行一些特殊的网络配置，harbor安装，其他所需资源创建等。
 - mep（可选）：与EG的其他模块无特殊依赖关系，可以选择部署或者不部署。
 - mecm-mepm（可选）：与EG的其他模块无特殊依赖关系，可以选择部署或者不部署。
-- user-mgmt（可选）：是以下所有模块的依赖，若部署以下任意模块，需提前部署user-mgmt模块，用户用户管理。
+- user-mgmt（**必选**）：是以下所有模块的依赖，若部署以下任意模块，需提前部署user-mgmt模块，用户用户管理。
 - mecm-meo（可选）：除依赖user-mgmt外，与其他模块无特殊依赖关系。
 - mecm-fe（可选）：除依赖user-mgmt外，与其他模块无特殊依赖关系。
 - appstore（可选）：除依赖user-mgmt外，与其他模块无特殊依赖关系。
@@ -329,4 +353,4 @@ ansible-playbook --inventory hosts-muno eg_all_muno_uninstall.yml
 - atp（可选）：除依赖user-mgmt外，与其他模块无特殊依赖关系。
 - eg_check（可选）：不依赖任何模块，仅对已安装的模块进行检查，打印前台界面访问IP+Port。
 
-上述列出的所有模块，除init与eg_prepare是必须的之外，其他均为可选。另外所有EG模块中，除user-mgmt是一些模块的依赖之外，其余模块均可独立单独部署。
+上述列出的所有模块，除init，eg_prepare与user-mgmt是必须的之外，其他均为可选。
