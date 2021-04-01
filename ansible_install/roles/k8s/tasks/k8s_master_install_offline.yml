@@ -52,14 +52,14 @@
 - name: Comment Out port=0 in kube-scheduler.yaml
   replace:
     path: /etc/kubernetes/manifests/kube-scheduler.yaml
-    regexp: "--port=0"
-    replace: "#--port=0"
+    regexp: "- --port=0"
+    replace: "# - --port=0"
 
 - name: Comment Out port=0 in kube-controller-manager.yaml
   replace:
     path: /etc/kubernetes/manifests/kube-controller-manager.yaml
-    regexp: "--port=0"
-    replace: "#--port=0"
+    regexp: "- --port=0"
+    replace: "# - --port=0"
 
 - name: Restart kubelet Service
   service:
