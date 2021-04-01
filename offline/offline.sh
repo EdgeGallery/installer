@@ -97,7 +97,6 @@ if [[ -z "$EG_IMAGE_LIST_EDGE_X86_DEFAULT" && $PATCH != "true" ]]; then
    swr.ap-southeast-1.myhuaweicloud.com/edgegallery/edgegallery-secondary-ep-controller:$EG_IMAGE_TAG \
    swr.ap-southeast-1.myhuaweicloud.com/edgegallery/mecm-applcm:$EG_IMAGE_TAG \
    swr.ap-southeast-1.myhuaweicloud.com/edgegallery/mecm-applcm-k8splugin:$EG_IMAGE_TAG \
-   swr.ap-southeast-1.myhuaweicloud.com/edgegallery/mecm-applcm-osplugin:$EG_IMAGE_TAG \
    swr.ap-southeast-1.myhuaweicloud.com/edgegallery/mecm-apprulemgr:$EG_IMAGE_TAG \
    swr.ap-southeast-1.myhuaweicloud.com/edgegallery/mepm-fe:$EG_IMAGE_TAG \
    swr.ap-southeast-1.myhuaweicloud.com/edgegallery/deploy-tool:$EG_IMAGE_TAG \
@@ -130,7 +129,6 @@ if [[ -z "$EG_IMAGE_LIST_EDGE_ARM64_DEFAULT" && $PATCH != "true" ]]; then
    swr.ap-southeast-1.myhuaweicloud.com/edgegallery/edgegallery-secondary-ep-controller:$EG_IMAGE_TAG \
    swr.ap-southeast-1.myhuaweicloud.com/edgegallery/mecm-applcm:$EG_IMAGE_TAG \
    swr.ap-southeast-1.myhuaweicloud.com/edgegallery/mecm-applcm-k8splugin:$EG_IMAGE_TAG \
-   swr.ap-southeast-1.myhuaweicloud.com/edgegallery/mecm-applcm-osplugin:$EG_IMAGE_TAG \
    swr.ap-southeast-1.myhuaweicloud.com/edgegallery/mecm-apprulemgr:$EG_IMAGE_TAG \
    swr.ap-southeast-1.myhuaweicloud.com/edgegallery/mepm-fe:$EG_IMAGE_TAG \
    swr.ap-southeast-1.myhuaweicloud.com/edgegallery/deploy-tool:$EG_IMAGE_TAG \
@@ -337,23 +335,6 @@ function _help_install_helm_binary()
   fi
 }
 
-function _help_download_stable_charts() {
-  download_url=$1
-  file_name=$2
-  success=0
-  if [[ $SYNC_UP_HELM_CHARTS == "true" ]]; then
-    wget -N $download_url
-    success=$?
-  fi
-  if [[ $success -ne 0 || $SYNC_UP_HELM_CHARTS == "false" ]]; then
-    cp $HELM_CHART_CACHE_PATH/stable/"$file_name" .;
-    if [[ $? -ne 0 ]]; then
-      info "$file_name download got Failed" $RED
-      exit 1
-    fi
-  fi
-}
-
 function _download_helm_charts()
 {
   mkdir -p $TARBALL_PATH/helm/helm-charts
@@ -389,12 +370,18 @@ function _download_helm_charts()
 
   if [[ $PATCH == "false" ]]; then
     cd ../stable
-    if [[ $ENABLE_METRICS == "YES" ]]; then
-      _help_download_stable_charts "https://kubernetes-charts.storage.googleapis.com/grafana-5.5.5.tgz" "grafana-5.5.5.tgz"
-      _help_download_stable_charts "https://kubernetes-charts.storage.googleapis.com/prometheus-9.3.1.tgz" "prometheus-9.3.1.tgz"
-    fi
-      _help_download_stable_charts "https://kubernetes-charts.storage.googleapis.com/nginx-ingress-1.41.2.tgz" "nginx-ingress-1.41.2.tgz"
-      _help_download_stable_charts "https://kubernetes-charts.storage.googleapis.com/nfs-client-provisioner-1.2.8.tgz" "nfs-client-provisioner-1.2.8.tgz"
+    if  [ $KERNEL_ARCH == 'x86_64' ]; then
+       cp  /home/helm-charts-stable/*.tgz  .
+       cp  /home/helm-charts-stable/nfs-amd/nfs-client-provisioner-1.2.8.tgz  .
+    else
+       cp  /home/helm-charts-stable/*.tgz  .
+       cp  /home/helm-charts-stable/nfs-arm/nfs-client-provisioner-1.2.8.tgz  .
+    fi 
+
+    if [[ $? -ne 0 ]]; then
+        info "stable chart download failed " $RED
+        exit 1
+    fi  
   fi
 }
 
@@ -680,7 +667,7 @@ function eg_offline_installer()
       cp $CUR_DIR/LICENSE $TARBALL_PATH
       cp $CUR_DIR/README.md $TARBALL_PATH
       cp $CUR_DIR/env.sh $TARBALL_PATH
-
+      
       echo "#####################################################" >>  $TARBALL_PATH/env.sh
       echo "#CAUTION:: PLEASE DONOT CHANGE BELOW ENV VARS ::" >>  $TARBALL_PATH/env.sh
       echo "export EG_IMAGE_TAG=$EG_IMAGE_TAG" >>  $TARBALL_PATH/env.sh
@@ -690,6 +677,8 @@ function eg_offline_installer()
 
       cp $CUR_DIR/eg.sh $TARBALL_PATH
       cp -r $CUR_DIR/conf/ $TARBALL_PATH
+      mkdir -p  $TARBALL_PATH/nfs/
+      cp -r /home/nfs/$arch/*deb  $TARBALL_PATH/nfs/
       rm -rf $TARBALL_PATH/conf/edge/network-isolation/test/
     else
       cp -r $CUR_DIR/patch/$PATCH_ID/* $TARBALL_PATH
