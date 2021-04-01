@@ -34,9 +34,6 @@
     - user-mgmt
     - mecm-mepm
     - mep
-    - eg_prepare
-    - k8s
-    - init
 
 - hosts: worker
   become: yes
@@ -45,6 +42,21 @@
     - EG_MODE: all
     - NODE_MODE: muno
     - K8S_NODE_TYPE: worker
+  vars_files:
+    - ./var.yml
+    - ./default-var.yml
+  roles:
+    - eg_prepare
+    - k8s
+    - init
+
+- hosts: master
+  become: yes
+  vars:
+    - OPERATION: uninstall
+    - EG_MODE: all
+    - NODE_MODE: muno
+    - K8S_NODE_TYPE: master
   vars_files:
     - ./var.yml
     - ./default-var.yml
