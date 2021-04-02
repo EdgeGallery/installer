@@ -97,6 +97,7 @@ if [[ -z "$EG_IMAGE_LIST_EDGE_X86_DEFAULT" && $PATCH != "true" ]]; then
    swr.ap-southeast-1.myhuaweicloud.com/edgegallery/edgegallery-secondary-ep-controller:$EG_IMAGE_TAG \
    swr.ap-southeast-1.myhuaweicloud.com/edgegallery/mecm-applcm:$EG_IMAGE_TAG \
    swr.ap-southeast-1.myhuaweicloud.com/edgegallery/mecm-applcm-k8splugin:$EG_IMAGE_TAG \
+   swr.ap-southeast-1.myhuaweicloud.com/edgegallery/mecm-applcm-osplugin:$EG_IMAGE_TAG \
    swr.ap-southeast-1.myhuaweicloud.com/edgegallery/mecm-apprulemgr:$EG_IMAGE_TAG \
    swr.ap-southeast-1.myhuaweicloud.com/edgegallery/mepm-fe:$EG_IMAGE_TAG \
    swr.ap-southeast-1.myhuaweicloud.com/edgegallery/deploy-tool:$EG_IMAGE_TAG \
@@ -118,7 +119,6 @@ if [[ -z "$EG_IMAGE_LIST_EDGE_X86_DEFAULT" && $PATCH != "true" ]]; then
    curlimages/curl:7.70.0 \
    metallb/speaker:v0.9.3 \
    metallb/controller:v0.9.3 \
-   quay.io/external_storage/nfs-client-provisioner:v3.1.0-k8s1.11 \
    swr.ap-southeast-1.myhuaweicloud.com/eg-common/elasticsearch:7.9.0"
 fi
 
@@ -130,6 +130,7 @@ if [[ -z "$EG_IMAGE_LIST_EDGE_ARM64_DEFAULT" && $PATCH != "true" ]]; then
    swr.ap-southeast-1.myhuaweicloud.com/edgegallery/edgegallery-secondary-ep-controller:$EG_IMAGE_TAG \
    swr.ap-southeast-1.myhuaweicloud.com/edgegallery/mecm-applcm:$EG_IMAGE_TAG \
    swr.ap-southeast-1.myhuaweicloud.com/edgegallery/mecm-applcm-k8splugin:$EG_IMAGE_TAG \
+   swr.ap-southeast-1.myhuaweicloud.com/edgegallery/mecm-applcm-osplugin:$EG_IMAGE_TAG \
    swr.ap-southeast-1.myhuaweicloud.com/edgegallery/mecm-apprulemgr:$EG_IMAGE_TAG \
    swr.ap-southeast-1.myhuaweicloud.com/edgegallery/mepm-fe:$EG_IMAGE_TAG \
    swr.ap-southeast-1.myhuaweicloud.com/edgegallery/deploy-tool:$EG_IMAGE_TAG \
@@ -150,7 +151,6 @@ if [[ -z "$EG_IMAGE_LIST_EDGE_ARM64_DEFAULT" && $PATCH != "true" ]]; then
    metallb/speaker:v0.9.3 \
    metallb/controller:v0.9.3 \
    docker.io/nfvpe/multus:stable-arm64v8 \
-   quay.io/codayblue/nfs-subdir-external-provisioner-arm64:latest \
    swr.ap-southeast-1.myhuaweicloud.com/edgegallery/whereabouts-arm64:latest \
    swr.ap-southeast-1.myhuaweicloud.com/eg-common/elasticsearch:7.9.0"
 fi
@@ -374,7 +374,7 @@ function _download_helm_charts()
     cd ../stable
     if  [ $KERNEL_ARCH == 'x86_64' ]; then
        scp  192.168.100.65:/home/helm-charts-stable/*.tgz  .
-       scp  scp 192.168.100.65:/home/helm-charts-stable/nfs-amd/nfs-client-provisioner-1.2.8.tgz  .
+       scp  192.168.100.65:/home/helm-charts-stable/nfs-amd/nfs-client-provisioner-1.2.8.tgz  .
     else
        scp  192.168.100.65:/home/helm-charts-stable/*.tgz  .
        scp  192.168.100.65:/home/helm-charts-stable/nfs-arm/nfs-client-provisioner-1.2.8.tgz  .
