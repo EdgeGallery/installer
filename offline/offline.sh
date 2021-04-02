@@ -373,11 +373,11 @@ function _download_helm_charts()
   if [[ $PATCH == "false" ]]; then
     cd ../stable
     if  [ $KERNEL_ARCH == 'x86_64' ]; then
-       cp  /home/helm-charts-stable/*.tgz  .
-       cp  /home/helm-charts-stable/nfs-amd/nfs-client-provisioner-1.2.8.tgz  .
+       scp  192.168.100.65:/home/helm-charts-stable/*.tgz  .
+       scp  scp 192.168.100.65:/home/helm-charts-stable/nfs-amd/nfs-client-provisioner-1.2.8.tgz  .
     else
-       cp  /home/helm-charts-stable/*.tgz  .
-       cp  /home/helm-charts-stable/nfs-arm/nfs-client-provisioner-1.2.8.tgz  .
+       scp  192.168.100.65:/home/helm-charts-stable/*.tgz  .
+       scp  192.168.100.65:/home/helm-charts-stable/nfs-arm/nfs-client-provisioner-1.2.8.tgz  .
     fi 
 
     if [[ $? -ne 0 ]]; then
@@ -680,7 +680,7 @@ function eg_offline_installer()
       cp $CUR_DIR/eg.sh $TARBALL_PATH
       cp -r $CUR_DIR/conf/ $TARBALL_PATH
       mkdir -p  $TARBALL_PATH/nfs/
-      cp -r /home/nfs/$arch/*deb  $TARBALL_PATH/nfs/
+      scp -r   192.168.100.65:/home/nfs/$arch/*deb  $TARBALL_PATH/nfs/
       rm -rf $TARBALL_PATH/conf/edge/network-isolation/test/
     else
       cp -r $CUR_DIR/patch/$PATCH_ID/* $TARBALL_PATH
