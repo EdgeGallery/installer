@@ -1616,17 +1616,60 @@ function create_ssl_certs()
   fi
 }
 
+function install_nfs-server()
+{
+  if [ $KERNEL_ARCH == 'aarch64' ]; then
+    dpkg -i $PLATFORM_DIR/nfs/libtirpc1_0.2.5-1.2ubuntu0.1_arm64.deb
+    dpkg -i $PLATFORM_DIR/nfs/libnfsidmap2_0.25-5.1_arm64.deb
+    dpkg -i $PLATFORM_DIR/nfs/rpcbind_0.2.3-0.6ubuntu0.18.04.1_arm64.deb
+    dpkg -i $PLATFORM_DIR/nfs/keyutils_1.5.9-9.2ubuntu2_arm64.deb
+    dpkg -i $PLATFORM_DIR/nfs/nfs-common_1%3a1.3.4-2.1ubuntu5.3_arm64.deb
+    dpkg -i $PLATFORM_DIR/nfs/nfs-kernel-server_1%3a1.3.4-2.1ubuntu5.3_arm64.deb
+  else
+    dpkg -i $PLATFORM_DIR/nfs/libtirpc1_0.2.5-1.2ubuntu0.1_amd64.deb
+    dpkg -i $PLATFORM_DIR/nfs/libnfsidmap2_0.25-5.1_amd64.deb 
+    dpki -i $PLATFORM_DIR/nfs/rpcbind_0.2.3-0.6ubuntu0.18.04.1_amd64.deb
+    dpkg -i $PLATFORM_DIR/nfs/keyutils_1.5.9-9.2ubuntu2_amd64.deb
+    dpki -i $PLATFORM_DIR/nfs/nfs-common_1%3a1.3.4-2.1ubuntu5.3_amd64.deb  
+    dpki -i $PLATFORM_DIR/nfs/nfs-kernel-server_1%3a1.3.4-2.1ubuntu5.3_amd64.deb
+  fi
+  if [ $? -eq 0 ]; then
+    info "[Deployed nfs-server]" $GREEN
+  else
+    info "[nfs-server deployment Failed]" $RED
+    exit 1
+  fi
+}
+
+function uninstall_nfs-server()
+{  
+  info "[UnDeploying nfs-server]"
+  apt-get remove nfs-kernel-server
+  info "[UnDeployed nfs-server]" $GREEN
+}
+
 function install_nfs-client-provisioner()
 {
   info "[Deploying nfs-client-provisioner]"
-  if [ $KERNEL_ARCH == 'aarch64' ]; then
-    set_image_value="--set image.repository=vbouchaud/nfs-client-provisioner --set image.tag=v3.1.1"
+  if [ -n    $EG_NODE_WORKER_IPS ]; then
+    EG_NODE_MASTER_IPS=$NFS_SERVER_IP
+  elif
+     [ -n    $EG_NODE_CONTROLLER_MASTER_IPS ]; then
+    EG_NODE_CONTROLLER_MASTER_IPS=$NFS_SERVER_IP
   else
-    set_image_value=""
+     [ -n    $EG_NODE_EDGE_MASTER_IPS ]; then
+    EG_NODE_EDGE_MASTER_IPS=$NFS_SERVER_IP
   fi
-
+  if [ ! -d "/edgegallery/data/" ]; then
+     mkdir -p  /edgegallery/data/
+  fi
+  if [ $KERNEL_ARCH == 'aarch64' ]; then
+    set_image_value="--set image.repository=quay.io/codayblue/nfs-subdir-external-provisioner-arm64 --set image.tag=latest"
+  else
+    set_image_value="--set image.repository=quay.io/external_storage/nfs-client-provisioner --set image.tag=v3.1.0-k8s1.11"
+  fi
   helm install --wait  nfs-client-provisioner --set nfs.server=$NFS_SERVER_IP \
-       --set nfs.path=$NFS_PATH  $set_image_value "$CHART_PREFIX"stable/nfs-client-provisioner"$NFS_CHART_SUFFIX"
+       --set nfs.path=/edgegallery/data/  $set_image_value "$CHART_PREFIX"stable/nfs-client-provisioner"$NFS_CHART_SUFFIX"
   if [ $? -eq 0 ]; then
     info "[Deployed nfs-client-provisioner]" $GREEN
   else
@@ -1673,6 +1716,7 @@ function install_EdgeGallery ()
       info "[Both NFS_SERVER_IP and NFS_PATH values must be set for enabling persistence]" $RED
       exit 1
     fi
+    install_nfs-server
     install_nfs-client-provisioner
   fi
 
@@ -1751,6 +1795,7 @@ function uninstall_EdgeGallery ()
    elif [[ ($FEATURE == 'controller' || $FEATURE == 'all') && ($DEPLOY_TYPE == 'ingress') ]]; then
      uninstall_controller_with_ingress
    fi
+   uninstall_nfs-server
    uninstall_nfs-client-provisioner
 }
 #================================wrapper of k8s and eg===========================================
