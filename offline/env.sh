@@ -45,9 +45,7 @@ fi
 
 ##ENABLE_PERSISTENCE
 #set "true" to enable persistence storage
-export ENABLE_PERSISTENCE="false"
-export NFS_SERVER_IP=""
-export NFS_PATH=""
+export ENABLE_PERSISTENCE="true"
 
 ##SSL certs validity
 export CERT_VALIDITY_IN_DAYS=365
