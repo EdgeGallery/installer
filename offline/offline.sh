@@ -118,6 +118,7 @@ if [[ -z "$EG_IMAGE_LIST_EDGE_X86_DEFAULT" && $PATCH != "true" ]]; then
    curlimages/curl:7.70.0 \
    metallb/speaker:v0.9.3 \
    metallb/controller:v0.9.3 \
+   quay.io/external_storage/nfs-client-provisioner:v3.1.0-k8s1.11 \
    swr.ap-southeast-1.myhuaweicloud.com/eg-common/elasticsearch:7.9.0"
 fi
 
@@ -149,6 +150,7 @@ if [[ -z "$EG_IMAGE_LIST_EDGE_ARM64_DEFAULT" && $PATCH != "true" ]]; then
    metallb/speaker:v0.9.3 \
    metallb/controller:v0.9.3 \
    docker.io/nfvpe/multus:stable-arm64v8 \
+   quay.io/codayblue/nfs-subdir-external-provisioner-arm64:latest \
    swr.ap-southeast-1.myhuaweicloud.com/edgegallery/whereabouts-arm64:latest \
    swr.ap-southeast-1.myhuaweicloud.com/eg-common/elasticsearch:7.9.0"
 fi
@@ -157,7 +159,7 @@ fi
 if [[ `arch` == "x86_64" && $PATCH != "true"  ]]; then
   CLIENT_PROVISIONER="quay.io/external_storage/nfs-client-provisioner:v3.1.0-k8s1.11"
 elif [[ `arch` == "aarch64" && $PATCH != "true"  ]]; then
-  CLIENT_PROVISIONER="vbouchaud/nfs-client-provisioner:v3.1.1"
+  CLIENT_PROVISIONER="quay.io/codayblue/nfs-subdir-external-provisioner-arm64:latest"
 fi
 
 if [[ -z $EG_HELM_LIST_EDGE_X86_DEFAULT && $PATCH != "true" ]]; then
