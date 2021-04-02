@@ -1652,16 +1652,16 @@ function install_nfs-client-provisioner()
 {
   info "[Deploying nfs-client-provisioner]"
   if [ -n    $EG_NODE_MASTER_IPS ]; then
-    NFS_SERVER_IP=$EG_NODE_MASTER_IPS
+    $NFS_SERVER_IP=EG_NODE_MASTER_IPS
   elif
      [ -n    $EG_NODE_CONTROLLER_MASTER_IPS ]; then
-    NFS_SERVER_IP=$EG_NODE_CONTROLLER_MASTER_IPS
+    $NFS_SERVER_IP=EG_NODE_CONTROLLER_MASTER_IPS
   else
      [ -n    $EG_NODE_EDGE_MASTER_IPS ]; then
-    NFS_SERVER_IP=$EG_NODE_EDGE_MASTER_IPS
+    $NFS_SERVER_IP=EG_NODE_EDGE_MASTER_IPS
   fi
-  if [ ! -d $NFS_PATH ]; then
-     mkdir -p  $NFS_PATH
+  if [ ! -d "/edgegallery/data/" ]; then
+     mkdir -p  /edgegallery/data/
   fi
   if [ $KERNEL_ARCH == 'aarch64' ]; then
     set_image_value="--set image.repository=quay.io/codayblue/nfs-subdir-external-provisioner-arm64 --set image.tag=latest"
@@ -1669,7 +1669,7 @@ function install_nfs-client-provisioner()
     set_image_value="--set image.repository=quay.io/external_storage/nfs-client-provisioner --set image.tag=v3.1.0-k8s1.11"
   fi
   helm install --wait  nfs-client-provisioner --set nfs.server=$NFS_SERVER_IP \
-       --set nfs.path=$NFS_PATH  $set_image_value "$CHART_PREFIX"stable/nfs-client-provisioner"$NFS_CHART_SUFFIX"
+       --set nfs.path=/edgegallery/data/  $set_image_value "$CHART_PREFIX"stable/nfs-client-provisioner"$NFS_CHART_SUFFIX"
   if [ $? -eq 0 ]; then
     info "[Deployed nfs-client-provisioner]" $GREEN
   else
