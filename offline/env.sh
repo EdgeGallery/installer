@@ -46,6 +46,7 @@ fi
 ##ENABLE_PERSISTENCE
 #set "true" to enable persistence storage
 export ENABLE_PERSISTENCE="true"
+export NFS_PATH=/edgegallery/data/
 
 ##SSL certs validity
 export CERT_VALIDITY_IN_DAYS=365
