@@ -296,7 +296,7 @@ APPLCM注册：
 
 (IP地址为边缘节点IP,端口30204)
 
-![输入图片说明](https://images.gitee.com/uploads/images/2020/1027/174556_6517a16a_8040887.png "屏幕截图.png")
+![输入图片说明](https://images.gitee.com/uploads/images/2021/0408/162918_7935c97c_8040887.png "屏幕截图.png")
 
 APPRULE注册：
 
@@ -306,18 +306,18 @@ APPRULE注册：
 
 (IP地址为边缘节点IP,端口30206
 
-![输入图片说明](https://images.gitee.com/uploads/images/2020/1228/183252_071b093e_8040887.png "屏幕截图.png")
+![输入图片说明](https://images.gitee.com/uploads/images/2021/0408/163537_9ce69e83_8040887.png "屏幕截图.png")
 
 
 边缘节点注册：
 
-![输入图片说明](https://images.gitee.com/uploads/images/2020/1027/174634_bdcdae73_8040887.png "屏幕截图.png")
+!![输入图片说明](https://images.gitee.com/uploads/images/2021/0408/164306_34f691c0_8040887.png "屏幕截图.png")
 
 配置文件上传：
 
 配置文件为要注册的边缘节点/root/.kube/ 下config文件，下载并保存该文件在自己电脑上，在此位置上传配置文件。
 
-![输入图片说明](https://images.gitee.com/uploads/images/2020/1027/174710_1f35f6cf_8040887.png "屏幕截图.png")
+![输入图片说明](https://images.gitee.com/uploads/images/2021/0408/164523_dec63c9a_8040887.png "屏幕截图.png")
 
 在中心节点配置数据库：
   kubectl exec -it developer-be-postgres-0 /bin/sh         //进去容器
