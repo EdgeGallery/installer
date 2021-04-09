@@ -120,6 +120,7 @@ function _docker_compose_undeploy() {
 
 function _setup_harbor() {
   _docker_compose_deploy
+  HARBOR_REPO_IP=$PORTAL_IP
   cd /root
   mkdir -p /root/harbor
   tar -zxf $K8S_OFFLINE_DIR/harbor/harbor.tar.gz -C harbor
