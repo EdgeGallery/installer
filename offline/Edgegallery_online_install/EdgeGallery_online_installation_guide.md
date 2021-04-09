@@ -80,6 +80,38 @@ https://gitee.com/edgegallery/installer/blob/master/offline/harbor_install/docke
      --from-literal=postgresPassword=te9Fmv%qaq \
      --from-literal=postgresLcmCntlrPassword=te9Fmv%qaq \
      --from-literal=postgresk8sPluginPassword=te9Fmv%qaq 
+  ##### 9.生成mep secret 以下是生成证书的步骤
+  mkdir /root/mep_key   \ 
+  cd  /root/
+  openssl rand -writerand .rnd  \
+  cd   /root/mep_key     \
+  ###### 执行以下命令生成mep证书   \
+  openssl genrsa -out ca.key 2048 2>&1 >/dev/null     \ 
+  openssl req -new -key ca.key -subj /C=CN/ST=Peking/L=Beijing/O=edgegallery/CN=edgegallery -out ca.csr 2>&1 >/dev/null  \
+  openssl x509 -req -days 365 -in ca.csr -extensions v3_ca -signkey ca.key -out ca.crt 2>&1 >/dev/null  \ 
+  openssl genrsa -out mepserver_tls.key 2048 2>&1 >/dev/null  \
+  openssl rsa -in mepserver_tls.key -aes256 -passout pass:te9Fmv%qaq -out mepserver_encryptedtls.key 2>&1 >/dev/null  \
+  echo -n te9Fmv%qaq > mepserver_cert_pwd 2>&1 >/dev/null    \
+
+  openssl req -new -key mepserver_tls.key -subj /C=CN/ST=Beijing/L=Beijing/O=edgegallery/CN=edgegallery -out mepserver_tls.csr 2>&1 >/dev/null  \
+  openssl x509 -req -days 365 -in mepserver_tls.csr -extensions v3_req -CA ca.crt -CAkey ca.key -CAcreateserial -out mepserver_tls.crt 2>&1 >/dev/null  \
+  openssl genrsa -out jwt_privatekey 2048 2>&1 >/dev/null   \
+  openssl rsa -in jwt_privatekey -pubout -out jwt_publickey 2>&1 >/dev/null   \
+  openssl rsa -in jwt_privatekey -aes256 -passout pass:te9Fmv%qaq -out jwt_encrypted_privatekey 2>&1 >/dev/null   \
+
+  ###### 生成pg-secret   \
+  kubectl -n mep create secret generic pg-secret --from-literal=pg_admin_pwd=admin-Pass123 --from-literal=kong_pg_pwd=kong-Pass123 --from- 
+  file=server.key=mepserver_tls.key --from-file=server.crt=mepserver_tls.crt
+  
+  ###### 生成mep-ssl    \ 
+  kubectl -n mep create secret generic mep-ssl  --from-literal=root_key="$(openssl rand -base64 256 | tr -d '\n' | tr -dc '[[:alnum:]]' | cut -c -256)"  
+  --from-literal=cert_pwd=te9Fmv%qaq --from-file=server.cer=mepserver_tls.crt --from-file=server_key.pem=mepserver_encryptedtls.key  --from- 
+  file=trust.cer=ca.crt
+   
+  ###### 生成mepauth-secret   \
+  kubectl -n mep create secret generic mepauth-secret --from-file=server.crt=mepserver_tls.crt --from-file=server.key=mepserver_tls.key --from- 
+  file=ca.crt=ca.crt --from-file=jwt_publickey=jwt_publickey   --from-file=jwt_encrypted_privatekey=jwt_encrypted_privatekey
+
   #### 六、安装edgegallery
   ##### 1、选择自己需要的helm-chart版本下载(以下是各个版本的下载地址)
   git clone -b master  https://gitee.com/edgegallery/helm-charts.git \ 
