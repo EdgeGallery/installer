@@ -96,13 +96,13 @@ https://gitee.com/edgegallery/installer/blob/master/offline/harbor_install/docke
   ##### 4、install user-mgmt 
   helm install user-mgmt-edgegallery   helm-charts/user-mgmt  -f      edgegallery-values.yaml
   #####5、install appstore
-  helm install appstore-edgegallery    helm-charts/appsrore   -f      edgegallery-values.yaml  --set appstoreBe.repository.dockerRepoEndpoint=$HARBOR_REPO_IP   --set appstoreBe.secretName=edgegallery-appstore-docker-secret  
+  helm install appstore-edgegallery    helm-charts/appstore   -f      edgegallery-values.yaml  --set appstoreBe.repository.dockerRepoEndpoint=$HARBOR_REPO_IP   --set appstoreBe.secretName=edgegallery-appstore-docker-secret  
   ##### 6、install developer 
   helm install developer-edgegallery   helm-charts/developer  -f      edgegallery-values.yaml   --set developer.dockerRepo.endpoint=$HARBOR_REPO_IP    --set developer.dockerRepo.password=$HARBOR_PASSWORD  --set developer.dockerRepo.username=$HARBOR_USER
   ##### 7、install mecm-fe
   helm install mecm-fe-edgegallery      helm-charts/mecm-fe    -f       edgegallery-values.yaml
   ##### 8、install mecm-meo             
-  helm install mecm-meo-edgegallery   helm-charts/mecm-fe    -f      edgegallery-values.yaml   --set ssl.secretName=edgegallery-mecm-ssl-secret 
+  helm install mecm-meo-edgegallery   helm-charts/mecm-meo   -f      edgegallery-values.yaml   --set ssl.secretName=edgegallery-mecm-ssl-secret 
   --set mecm.secretName=edgegallery-mecm-secret --set mecm.repository.dockerRepoEndpoint=$HARBOR_REPO_IP  --set mecm.repository.sourceRepos="repo=$HARBOR_REPO_IP userName=$HARBOR_USER password=$HARBOR_PASSWORD"
   ##### 9、install atp
   helm install atp-edgegallery           helm-charts/atp        -f       edgegallery-values.yaml    
