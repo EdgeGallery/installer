@@ -1639,7 +1639,7 @@ function install_nfs-server()
      [ -n    $EG_NODE_CONTROLLER_MASTER_IPS ]; then
      NFS_SERVER_IP=$EG_NODE_CONTROLLER_MASTER_IPS
   else
-     [ -n    $EG_NODE_EDGE_MASTER_IPS ]; then
+     [ -n    $EG_NODE_EDGE_MASTER_IPS ];
      NFS_SERVER_IP=$EG_NODE_EDGE_MASTER_IPS
   fi
   if [ ! -d $NFS_PATH  ]; then
