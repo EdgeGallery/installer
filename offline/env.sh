@@ -34,7 +34,6 @@ $image_tag_env
 #export EG_NODE_EDGE_WORKER_IPS=
 #export SKIP_K8S=
 #export EG_IMAGE_TAG=
-export HARBOR_REPO_IP=$PORTAL_IP
 export HARBOR_USER=admin
 export HARBOR_PASSWORD=Harbor@edge
 
@@ -45,7 +44,7 @@ fi
 
 ##ENABLE_PERSISTENCE
 #set "true" to enable persistence storage
-export ENABLE_PERSISTENCE="true"
+export ENABLE_PERSISTENCE=
 export NFS_PATH=/edgegallery/data/
 
 ##SSL certs validity
