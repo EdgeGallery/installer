@@ -127,7 +127,7 @@ https://gitee.com/edgegallery/installer/blob/master/offline/harbor_install/docke
   下载edgegallery-values.yaml   \
   https://gitee.com/OSDT/dashboard/projects/edgegallery/installer/blob/master/offline/Edgegallery_online_install/edgegallery-values.yaml  #edgegallery values.yaml 的   \
   sed -i 's/192.168.1.11/192.168.1.12/g'   edgegallery-values.yaml   #需要将192.168.1.12 替换为自己的ip \
-  sed -i ‘s/latest/v1.01/g’  edgegallery-values.yaml  #用自己的版本替代v1.01 
+  sed -i ‘s/latest/v1.01/g’  edgegallery-values.yaml  #用自己的版本替代v1.01   现有的版本为v1.01 v1.0.0 v1.0.0-staging
   ##### 3、install service-center
   helm install service-center-edgegallery  helm-charts/service-center  -f edgegallery-values.yaml  
   如果安装失败或安装错误运行 helm delete service-center-edgegallery
@@ -150,10 +150,22 @@ https://gitee.com/edgegallery/installer/blob/master/offline/harbor_install/docke
   ##### 11.1 创建路由 
   ip link add eg-mp1 link eth0 type macvlan mode bridge  #用自己本机的网卡名替代eth0  \
       ip addr add 200.1.1.2/24 dev eg-mp1  \
-      ip link set dev eg-mp1 up
-
+      ip link set dev eg-mp1 up   \
       ip link add eg-mm5 link eth0 type macvlan mode bridge   #用自己本机的网卡名替代eth0  \ 
       ip addr add 100.1.1.2/24 dev eg-mm5  \
       ip link set dev eg-mm5 up   
-  ##### 
-  helm install mep-edgegallery         helm-charts/mep        -f       edgegallery-values.yaml  --set networkIsolation.ipamType=host-local   --set networkIsolation.phyInterface.mp1=eth0   --set networkIsolation.phyInterface.mm5=eth0      # 需要把eth0替换为自己的网卡名
+  ##### 11.2 安装mep-network
+  multus.yaml、eg-sp-rbac.yaml、eg-sp- 
+  controller.yaml的下载地址:
+  https://gitee.com/OSDT/dashboard/projects/edgegallery/installer/tree/master/offline/conf/edge/network-isolation  
+
+  kubectl apply -f  multus.yaml       
+
+  kubectl apply -f  eg-sp-rbac.yaml  
+
+  sed -i 's?image: edgegallery/edgegallery-secondary-ep-controller:latest?image: edgegallery/edgegallery-secondary-ep-controller:v1.01?g' eg-sp- 
+  controller.yaml   #需要把'v1.01'改为自己需要的版本  现有的版本为v1.01 v1.0.0 v1.0.0-staging    \
+  kubectl apply -f  eg-sp-controller.yaml   \
+  ##### 11.3 安装mep
+  helm install mep-edgegallery         helm-charts/mep        -f       edgegallery-values.yaml  --set networkIsolation.ipamType=host-local   --set 
+  networkIsolation.phyInterface.mp1=eth0   --set networkIsolation.phyInterface.mm5=eth0      # 需要把eth0替换为自己的网卡名
