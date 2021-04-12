@@ -165,7 +165,7 @@ https://gitee.com/edgegallery/installer/blob/master/offline/harbor_install/docke
 
   sed -i 's?image: edgegallery/edgegallery-secondary-ep-controller:latest?image: edgegallery/edgegallery-secondary-ep-controller:v1.01?g' eg-sp- 
   controller.yaml   #需要把'v1.01'改为自己需要的版本  现有的版本为v1.01 v1.0.0 v1.0.0-staging    \
-  kubectl apply -f  eg-sp-controller.yaml   \
+  kubectl apply -f  eg-sp-controller.yaml   
   ##### 11.3 安装mep
   helm install mep-edgegallery         helm-charts/mep        -f       edgegallery-values.yaml  --set networkIsolation.ipamType=host-local   --set 
   networkIsolation.phyInterface.mp1=eth0   --set networkIsolation.phyInterface.mm5=eth0      # 需要把eth0替换为自己的网卡名
