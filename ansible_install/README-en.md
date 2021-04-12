@@ -73,7 +73,7 @@ The same as online installation, the offline installation is also based on Ubunt
 
   - Ansible Offline Installation
 
-      1. Download [ _X86 Ansible package_ ](https://release.edgegallery.org/ansible-offline-install-python3-x86.tar.gz) or [ _ARM64 Ansible package_  ](https://release.edgegallery.org/ansible-offline-install-python3-arm64.tar.gz) on a machine that can access internet.
+      1. Download [ _X86 Ansible package_ ](https://edgegallery.obs.cn-east-3.myhuaweicloud.com/ansible-offline-install-python3-x86.tar.gz) or [ _ARM64 Ansible package_  ](https://edgegallery.obs.cn-east-3.myhuaweicloud.com/ansible-offline-install-python3-arm64.tar.gz) on a machine that can access internet.
       2. Copy the package to Ansible controller node, e.g. /home
       3. Do the following commands to install Ansible
 
@@ -91,13 +91,13 @@ The same as online installation, the offline installation is also based on Ubunt
 
 ### 2.3 Download EdgeGallery Offline Package
 
-All EG offline packages could be found on [https://release.edgegallery.org/](https://release.edgegallery.org/).
+All EG offline packages could be found on Edgegallery Home Page.
 Users need to choose the package with exact architecture (x86 or arm64) and EG Mode (edge, controller or all).
 
 The following guide takes x86 architecture and "all" mode (edge + controller) as the example to introduce
 how to deploy EG in single node and multi nodes cases.
 
-1. [ _Download EG offline package ("all" mode on x86)_ ](https://release.edgegallery.org/daily/x86/all/ansible-all-x86-latest.tar.gz)
+1. [ _Download EG offline package ("all" mode on x86)_ ](https://edgegallery.obs.cn-east-3.myhuaweicloud.com/releases/v1.1/x86/EdgeGallery-v1.1-all-x86.tar.gz)
     on a machine that can access internet, and copy it to Ansible controller node, e.g. /home
 
     ```
