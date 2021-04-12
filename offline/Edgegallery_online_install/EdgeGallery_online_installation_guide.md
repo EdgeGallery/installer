@@ -32,7 +32,8 @@ https://gitee.com/edgegallery/installer/blob/master/offline/harbor_install/docke
   ##### 1、生成所需的证书
   docker pull swr.ap-southeast-1.myhuaweicloud.com/edgegallery/deploy-tool:latest  
   export CERT_VALIDITY_IN_DAYS=365  \
-  env="-e CERT_VALIDITY_IN_DAYS=$CERT_VALIDITY_IN_DAYS"   \
+  env="-e CERT_VALIDITY_IN_DAYS=$CERT_VALIDITY_IN_DAYS"    
+
   mkdir /root/keys/     \
   docker run $env -v /root/keys:/certs swr.ap-southeast-1.myhuaweicloud.com/edgegallery/deploy-tool:latest
   ##### 2、生成edgegallery-ssl-secret 
@@ -51,7 +52,8 @@ https://gitee.com/edgegallery/installer/blob/master/offline/harbor_install/docke
      --from-file=encryptedPrivateKey=/root/keys/encrypted_rsa_private_key.pem \
      --from-literal=encryptPassword=te9Fmv%qaq 
   ##### 4、生成edgegallery-appstore-docker-secret
-  （下文$HARBOR_USER：本机ip  $HARBOR_USER:admin   $HARBOR_PASSWORD:默认Harbor12345 也可以自己定，安装完成后在harbor web页面改密码） \
+  （下文$HARBOR_USER：本机ip  $HARBOR_USER:admin   $HARBOR_PASSWORD:默认Harbor12345 也可以自己定，安装完成后在harbor web页面改密码）
+
   kubectl create secret generic edgegallery-appstore-docker-secret \
      --from-literal=devRepoUserName=$HARBOR_USER	 \
      --from-literal=devRepoPassword=$HARBOR_PASSWORD    \
@@ -79,36 +81,40 @@ https://gitee.com/edgegallery/installer/blob/master/offline/harbor_install/docke
      --from-file=postgres_init.sql=/root/keys/postgres_init.sql \
      --from-literal=postgresPassword=te9Fmv%qaq \
      --from-literal=postgresLcmCntlrPassword=te9Fmv%qaq \
-     --from-literal=postgresk8sPluginPassword=te9Fmv%qaq 
+     --from-literal=postgresk8sPluginPassword=te9Fmv%qaq \
+     --from-literal=postgresosPluginPassword=te9Fmv%qaq   \
+     --from-literal=postgresRuleMgrPassword=te9Fmv%qaq 
   ##### 9.生成mep secret 以下是生成证书的步骤
-  mkdir /root/mep_key   \ 
-  cd  /root/
+  mkdir /root/mep_key  
+
+  cd  /root/  \
   openssl rand -writerand .rnd  \
-  cd   /root/mep_key     \
-  ###### 执行以下命令生成mep证书   \
+  cd   /root/mep_key     
+  ###### 执行以下命令生成mep证书   
   openssl genrsa -out ca.key 2048 2>&1 >/dev/null     \ 
   openssl req -new -key ca.key -subj /C=CN/ST=Peking/L=Beijing/O=edgegallery/CN=edgegallery -out ca.csr 2>&1 >/dev/null  \
   openssl x509 -req -days 365 -in ca.csr -extensions v3_ca -signkey ca.key -out ca.crt 2>&1 >/dev/null  \ 
   openssl genrsa -out mepserver_tls.key 2048 2>&1 >/dev/null  \
   openssl rsa -in mepserver_tls.key -aes256 -passout pass:te9Fmv%qaq -out mepserver_encryptedtls.key 2>&1 >/dev/null  \
-  echo -n te9Fmv%qaq > mepserver_cert_pwd 2>&1 >/dev/null    \
+  echo -n te9Fmv%qaq > mepserver_cert_pwd 2>&1 >/dev/null    
 
   openssl req -new -key mepserver_tls.key -subj /C=CN/ST=Beijing/L=Beijing/O=edgegallery/CN=edgegallery -out mepserver_tls.csr 2>&1 >/dev/null  \
-  openssl x509 -req -days 365 -in mepserver_tls.csr -extensions v3_req -CA ca.crt -CAkey ca.key -CAcreateserial -out mepserver_tls.crt 2>&1 >/dev/null  \
+  openssl x509 -req -days 365 -in mepserver_tls.csr -extensions v3_req -CA ca.crt -CAkey ca.key -CAcreateserial -out mepserver_tls.crt 2>&1 >/dev/null  
+
   openssl genrsa -out jwt_privatekey 2048 2>&1 >/dev/null   \
   openssl rsa -in jwt_privatekey -pubout -out jwt_publickey 2>&1 >/dev/null   \
-  openssl rsa -in jwt_privatekey -aes256 -passout pass:te9Fmv%qaq -out jwt_encrypted_privatekey 2>&1 >/dev/null   \
+  openssl rsa -in jwt_privatekey -aes256 -passout pass:te9Fmv%qaq -out jwt_encrypted_privatekey 2>&1 >/dev/null   
 
-  ###### 生成pg-secret   \
+  ###### 生成pg-secret   
   kubectl -n mep create secret generic pg-secret --from-literal=pg_admin_pwd=admin-Pass123 --from-literal=kong_pg_pwd=kong-Pass123 --from- 
   file=server.key=mepserver_tls.key --from-file=server.crt=mepserver_tls.crt
   
-  ###### 生成mep-ssl    \ 
+  ###### 生成mep-ssl    
   kubectl -n mep create secret generic mep-ssl  --from-literal=root_key="$(openssl rand -base64 256 | tr -d '\n' | tr -dc '[[:alnum:]]' | cut -c -256)"  
   --from-literal=cert_pwd=te9Fmv%qaq --from-file=server.cer=mepserver_tls.crt --from-file=server_key.pem=mepserver_encryptedtls.key  --from- 
   file=trust.cer=ca.crt
    
-  ###### 生成mepauth-secret   \
+  ###### 生成mepauth-secret  
   kubectl -n mep create secret generic mepauth-secret --from-file=server.crt=mepserver_tls.crt --from-file=server.key=mepserver_tls.key --from- 
   file=ca.crt=ca.crt --from-file=jwt_publickey=jwt_publickey   --from-file=jwt_encrypted_privatekey=jwt_encrypted_privatekey
 
@@ -121,7 +127,7 @@ https://gitee.com/edgegallery/installer/blob/master/offline/harbor_install/docke
   下载edgegallery-values.yaml   \
   https://gitee.com/OSDT/dashboard/projects/edgegallery/installer/blob/master/offline/Edgegallery_online_install/edgegallery-values.yaml  #edgegallery values.yaml 的   \
   sed -i 's/192.168.1.11/192.168.1.12/g'   edgegallery-values.yaml   #需要将192.168.1.12 替换为自己的ip \
-  sed -i ‘s/latest/v1.01/g’  edgegallery-values.yaml  #用自己的版本替代v1.01 
+  sed -i ‘s/latest/v1.01/g’  edgegallery-values.yaml  #用自己的版本替代v1.01   现有的版本为v1.01 v1.0.0 v1.0.0-staging
   ##### 3、install service-center
   helm install service-center-edgegallery  helm-charts/service-center  -f edgegallery-values.yaml  
   如果安装失败或安装错误运行 helm delete service-center-edgegallery
@@ -141,4 +147,25 @@ https://gitee.com/edgegallery/installer/blob/master/offline/harbor_install/docke
  ##### 10、install  mecm-mepm
   helm install mecm-mepm-edgegallery   helm-charts/mecm-mepm  -f       edgegallery-values.yaml  --set jwt.publicKeySecretName=mecm-mepm-jwt-public-secret --set ssl.secretName=mecm-mepm-ssl-secret --set mepm.secretName=edgegallery-mepm-secret 
   ##### 11、install mep
-  helm install mep-edgegallery         helm-charts/mep        -f       edgegallery-values.yaml  --set networkIsolation.ipamType=host-local   --set networkIsolation.phyInterface.mp1=eth0   --set networkIsolation.phyInterface.mm5=eth0      # 需要把eth0替换为自己的网卡名
+  ##### 11.1 创建路由 
+  ip link add eg-mp1 link eth0 type macvlan mode bridge  #用自己本机的网卡名替代eth0  \
+      ip addr add 200.1.1.2/24 dev eg-mp1  \
+      ip link set dev eg-mp1 up   \
+      ip link add eg-mm5 link eth0 type macvlan mode bridge   #用自己本机的网卡名替代eth0  \ 
+      ip addr add 100.1.1.2/24 dev eg-mm5  \
+      ip link set dev eg-mm5 up   
+  ##### 11.2 安装mep-network
+  multus.yaml、eg-sp-rbac.yaml、eg-sp- 
+  controller.yaml的下载地址:
+  https://gitee.com/OSDT/dashboard/projects/edgegallery/installer/tree/master/offline/conf/edge/network-isolation  
+
+  kubectl apply -f  multus.yaml       
+
+  kubectl apply -f  eg-sp-rbac.yaml  
+
+  sed -i 's?image: edgegallery/edgegallery-secondary-ep-controller:latest?image: edgegallery/edgegallery-secondary-ep-controller:v1.01?g' eg-sp- 
+  controller.yaml   #需要把'v1.01'改为自己需要的版本  现有的版本为v1.01 v1.0.0 v1.0.0-staging    \
+  kubectl apply -f  eg-sp-controller.yaml   
+  ##### 11.3 安装mep
+  helm install mep-edgegallery         helm-charts/mep        -f       edgegallery-values.yaml  --set networkIsolation.ipamType=host-local   --set 
+  networkIsolation.phyInterface.mp1=eth0   --set networkIsolation.phyInterface.mm5=eth0      # 需要把eth0替换为自己的网卡名
