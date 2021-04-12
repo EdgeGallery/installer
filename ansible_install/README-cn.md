@@ -67,7 +67,7 @@ EdgeGallery离线安装是为单机环境提供的安装方式，便于各种只
 
   - 离线安装Ansible：
 
-      1. 在可访问互联网的机器上下载[ _X86 Ansible离线安装包_ ](https://release.edgegallery.org/ansible-offline-install-python3-x86.tar.gz)或者[ _ARM64 Ansible离线安装包_  ](https://release.edgegallery.org/ansible-offline-install-python3-arm64.tar.gz)
+      1. 在可访问互联网的机器上下载[ _X86 Ansible离线安装包_ ](https://edgegallery.obs.cn-east-3.myhuaweicloud.com/ansible-offline-install-python3-x86.tar.gz)或者[ _ARM64 Ansible离线安装包_  ](https://edgegallery.obs.cn-east-3.myhuaweicloud.com/ansible-offline-install-python3-arm64.tar.gz)
       2. 拷贝安装包到部署控制节点任意目录，此处假设下载的是x86的安装包，拷贝到部署控制节点的/home目录
       3. 在部署控制节点上执行以下操作，安装Ansible
 
@@ -84,11 +84,11 @@ EdgeGallery离线安装是为单机环境提供的安装方式，便于各种只
 
 ### 2.3 下载EdgeGallery离线安装包
 
-EdgeGallery的所有离线安装包均可在官方平台[https://release.edgegallery.org/](https://release.edgegallery.org/)进行下载。请点击进入[ _官方平台_ ](https://release.edgegallery.org/)，选择对应架构（x86或arm64）下的边缘（edge）部署、中心（controller）部署或边缘+中心（all）部署对应的离线安装包。
+EdgeGallery的所有离线安装包均可在EdgeGallery官网进行下载。请点击进入官网，选择对应架构（x86或arm64）下的边缘（edge）部署、中心（controller）部署或边缘+中心（all）部署对应的离线安装包。
 
 本指导以x86-all为例，介绍如何在x86环境下进行EdgeGallery的单节点与多节点部署。
 
-1. 在有互联网访问权限的机器上[ _下载EdgeGallery中心+边缘的x86架构离线包_ ](https://release.edgegallery.org/daily/x86/all/ansible-all-x86-latest.tar.gz)，拷贝到部署控制节点上，假设为/home目录。登录部署控制节点，解压EG离线安装包。
+1. 在有互联网访问权限的机器上[ _下载EdgeGallery中心+边缘的x86架构离线包_ ](https://edgegallery.obs.cn-east-3.myhuaweicloud.com/releases/v1.1/x86/EdgeGallery-v1.1-all-x86.tar.gz)，拷贝到部署控制节点上，假设为/home目录。登录部署控制节点，解压EG离线安装包。
 
     ```
     cd /home
