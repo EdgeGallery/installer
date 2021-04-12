@@ -120,6 +120,7 @@ function _docker_compose_undeploy() {
 
 function _setup_harbor() {
   _docker_compose_deploy
+  HARBOR_REPO_IP=$PORTAL_IP
   cd /root
   mkdir -p /root/harbor
   tar -zxf $K8S_OFFLINE_DIR/harbor/harbor.tar.gz -C harbor
@@ -1639,7 +1640,7 @@ function install_nfs-server()
      [ -n    $EG_NODE_CONTROLLER_MASTER_IPS ]; then
      NFS_SERVER_IP=$EG_NODE_CONTROLLER_MASTER_IPS
   else
-     [ -n    $EG_NODE_EDGE_MASTER_IPS ]; then
+     [ -n    $EG_NODE_EDGE_MASTER_IPS ];
      NFS_SERVER_IP=$EG_NODE_EDGE_MASTER_IPS
   fi
   if [ ! -d $NFS_PATH  ]; then
