@@ -81,7 +81,9 @@ https://gitee.com/edgegallery/installer/blob/master/offline/harbor_install/docke
      --from-file=postgres_init.sql=/root/keys/postgres_init.sql \
      --from-literal=postgresPassword=te9Fmv%qaq \
      --from-literal=postgresLcmCntlrPassword=te9Fmv%qaq \
-     --from-literal=postgresk8sPluginPassword=te9Fmv%qaq 
+     --from-literal=postgresk8sPluginPassword=te9Fmv%qaq \
+     --from-literal=postgresosPluginPassword=te9Fmv%qaq   \
+     --from-literal=postgresRuleMgrPassword=te9Fmv%qaq 
   ##### 9.生成mep secret 以下是生成证书的步骤
   mkdir /root/mep_key  
 
@@ -145,4 +147,13 @@ https://gitee.com/edgegallery/installer/blob/master/offline/harbor_install/docke
  ##### 10、install  mecm-mepm
   helm install mecm-mepm-edgegallery   helm-charts/mecm-mepm  -f       edgegallery-values.yaml  --set jwt.publicKeySecretName=mecm-mepm-jwt-public-secret --set ssl.secretName=mecm-mepm-ssl-secret --set mepm.secretName=edgegallery-mepm-secret 
   ##### 11、install mep
+  ##### 11.1 创建路由 
+  ip link add eg-mp1 link eth0 type macvlan mode bridge  #用自己本机的网卡名替代eth0  \
+      ip addr add 200.1.1.2/24 dev eg-mp1  \
+      ip link set dev eg-mp1 up
+
+      ip link add eg-mm5 link eth0 type macvlan mode bridge   #用自己本机的网卡名替代eth0  \ 
+      ip addr add 100.1.1.2/24 dev eg-mm5  \
+      ip link set dev eg-mm5 up   
+  ##### 
   helm install mep-edgegallery         helm-charts/mep        -f       edgegallery-values.yaml  --set networkIsolation.ipamType=host-local   --set networkIsolation.phyInterface.mp1=eth0   --set networkIsolation.phyInterface.mm5=eth0      # 需要把eth0替换为自己的网卡名
