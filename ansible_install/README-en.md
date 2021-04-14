@@ -91,7 +91,7 @@ The same as online installation, the offline installation is also based on Ubunt
 
 ### 2.3 Download EdgeGallery Offline Package
 
-All EG offline packages could be found on Edgegallery Home Page.
+All EG offline packages could be found on [Edgegallery Home Page](https://www.edgegallery.org/).
 Users need to choose the package with exact architecture (x86 or arm64) and EG Mode (edge, controller or all).
 
 The following guide takes x86 architecture and "all" mode (edge + controller) as the example to introduce
@@ -102,7 +102,7 @@ how to deploy EG in single node and multi nodes cases.
 
     ```
     cd /home
-    tar -xvf ansible-all-x86-latest.tar.gz
+    tar -xvf EdgeGallery-v1.1-all-x86.tar.gz
     ```
 
 2. Set password-less ssh from Ansible controller node to other nodes
@@ -128,11 +128,11 @@ how to deploy EG in single node and multi nodes cases.
     ```
 
     2.3 Do the following to set the password-less ssh, execute the command several times for all master and worker nodes
-        one by one where `<master-or-worker-node-ip>` is the private IP and `<master-or-worker-node-root-password>` is
-        the password of root user of that node.
+        one by one where `<master-or-worker-node-ip>` is the private IP, `<master-or-worker-node-root-password>` is
+        the password of root user of that node and `<ssh-port>` is the port used to ssh which default is 22.
 
     ```
-    sshpass -p <master-or-worker-node-root-password> ssh-copy-id -o StrictHostKeyChecking=no root@<master-or-worker-node-ip>
+    sshpass -p <master-or-worker-node-root-password> ssh-copy-id -p <ssh-port> -o StrictHostKeyChecking=no root@<master-or-worker-node-ip>
     ```
 
 ## 3. EdgeGallery Deployment -- Deploy Both k8s and EdgeGallery

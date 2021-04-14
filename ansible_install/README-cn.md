@@ -84,7 +84,7 @@ EdgeGallery离线安装是为单机环境提供的安装方式，便于各种只
 
 ### 2.3 下载EdgeGallery离线安装包
 
-EdgeGallery的所有离线安装包均可在EdgeGallery官网进行下载。请点击进入官网，选择对应架构（x86或arm64）下的边缘（edge）部署、中心（controller）部署或边缘+中心（all）部署对应的离线安装包。
+EdgeGallery的所有离线安装包均可在EdgeGallery官网进行下载。请[点击进入官网](https://www.edgegallery.org/)，选择对应架构（x86或arm64）下的边缘（edge）部署、中心（controller）部署或边缘+中心（all）部署对应的离线安装包。
 
 本指导以x86-all为例，介绍如何在x86环境下进行EdgeGallery的单节点与多节点部署。
 
@@ -92,7 +92,7 @@ EdgeGallery的所有离线安装包均可在EdgeGallery官网进行下载。请�
 
     ```
     cd /home
-    tar -xvf ansible-all-x86-latest.tar.gz
+    tar -xvf EdgeGallery-v1.1-all-x86.tar.gz
     ```
 
 2. 配置从部署控制节点到master和worker节点的ssh免密登录
@@ -117,10 +117,10 @@ EdgeGallery的所有离线安装包均可在EdgeGallery官网进行下载。请�
     ssh-keygen -t rsa
     ```
 
-    2.3 在部署控制节点执行以下命令，配置部署控制节点免密登录所有待部署节点权限，依次替换`<master-or-worker-node-ip>`为各节点（Master和Worker）私有IP，`<master-or-worker-node-root-password>`为对应的节点的root用户登录密码。
+    2.3 在部署控制节点执行以下命令，配置部署控制节点免密登录所有待部署节点权限，依次替换`<master-or-worker-node-ip>`为各节点（Master和Worker）私有IP，`<master-or-worker-node-root-password>`为对应的节点的root用户登录密码, `<ssh-port>`为ssh登录的端口，默认为22。
 
     ```
-    sshpass -p <master-or-worker-node-root-password> ssh-copy-id -o StrictHostKeyChecking=no root@<master-or-worker-node-ip>
+    sshpass -p <master-or-worker-node-root-password> ssh-copy-id -p <ssh-port> -o StrictHostKeyChecking=no root@<master-or-worker-node-ip>
     ```
 
 ## 3. EdgeGallery部署--部署k8s与EdgeGallery
