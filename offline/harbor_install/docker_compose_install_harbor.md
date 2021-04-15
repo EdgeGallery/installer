@@ -10,7 +10,7 @@ chmod +x /usr/local/bin/docker-compose
 cat <<EOF | tee /etc/docker/daemon.json   
 {                                               
     "insecure-registries" : ["192.168.1.11"]     
-}
+}  \
 EOF
 #### 2.Download harbor offline pankage and set harbor.yml文件
 wget https://github.com/goharbor/harbor/releases/download/v2.0.6/harbor-offline-installer-v2.0.6.tgz \
