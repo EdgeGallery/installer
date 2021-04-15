@@ -1,7 +1,7 @@
 ##                                     EdgeGallery离线安装说明
 
 
-EdgeGallery离线安装是基于程序ubuntu x86_64或arm64体系结构的给Kubernetes的EdgeGallery部署提供了部署程序，方便各种只有局域网无公网环境，单机环境提供了新的安装方式
+EdgeGallery离线安装程序是基于ubuntu x86_64或arm64体系结构的给Kubernetes的EdgeGallery部署提供了部署程序，方便各种只有局域网无公网环境，单机环境提供了新的安装方式
 
  
 
@@ -13,7 +13,7 @@ EdgeGallery离线安装是基于程序ubuntu x86_64或arm64体系结构的给Kub
 
 场景
 
-![输入图片说明](https://images.gitee.com/uploads/images/2021/0304/112324_c1bb4086_8040887.png "屏幕截图.png")
+
 
 支持的系统版本
 
@@ -34,13 +34,13 @@ EdgeGallery离线安装是基于程序ubuntu x86_64或arm64体系结构的给Kub
 
 2.在准备好的服务器上安装Ubuntu 18.04操作系统(ububntu 18.04是经过安装测试的版本)。
 
-3.下载离线安装程程序，[下载地址](http://release.edgegallery.org/，根据具建议使用EdgeGallery-v1.0.1-all-x86(arm).tar.gz这个安装包
+3.下载离线安装程程序，[下载地址](http://release.edgegallery.org/，根据具建议使用v1.0.0-staging.tar.gz这个安装包
  
   （如果网速慢，可以使用多线程下载方式，具体操作可参考文档最后安装遇到的问题中多线程下载说明）
 
 4.下载完安装包后解压即可（多节点安装，安装包需要上传到deploy node(也就是场景表中EG_NODE_DEPLOY_IP对应的机器）edgegallery安装的过程是在安装节点deploy node的机器上进行，deploy节点作为安装容器和helm仓库使用)。
 
-5.该安装包里已经包含kubernetes安装程序，按照下面流程安装EdgeGallery时会自动先安装kubernetes。
+5.该安装包里已经包含kubernetes安装程序，按照下面流程安装edgegallery时会自动先安装kubernetes。
 
 #### **部署流程演示图：**
 
@@ -292,32 +292,21 @@ APPLCM注册：
 
 在MECM上完成APPLCM注册。
 
-![输入图片说明](https://images.gitee.com/uploads/images/2020/1228/182718_139e7f7d_8040887.png "屏幕截图.png")
+![输入图片说明](https://images.gitee.com/uploads/images/2020/1027/174517_a702a2bb_8040887.png "屏幕截图.png")
 
 (IP地址为边缘节点IP,端口30204)
 
-![输入图片说明](https://images.gitee.com/uploads/images/2021/0408/162918_7935c97c_8040887.png "屏幕截图.png")
-
-APPRULE注册：
-
-在MECM上完成APPRULE注册。
-
-![输入图片说明](https://images.gitee.com/uploads/images/2020/1228/184309_32d9c426_8040887.png "屏幕截图.png")
-
-(IP地址为边缘节点IP,端口30206
-
-![输入图片说明](https://images.gitee.com/uploads/images/2021/0408/163537_9ce69e83_8040887.png "屏幕截图.png")
-
+![输入图片说明](https://images.gitee.com/uploads/images/2020/1027/174556_6517a16a_8040887.png "屏幕截图.png")
 
 边缘节点注册：
 
-!![输入图片说明](https://images.gitee.com/uploads/images/2021/0408/164306_34f691c0_8040887.png "屏幕截图.png")
+![输入图片说明](https://images.gitee.com/uploads/images/2020/1027/174634_bdcdae73_8040887.png "屏幕截图.png")
 
 配置文件上传：
 
 配置文件为要注册的边缘节点/root/.kube/ 下config文件，下载并保存该文件在自己电脑上，在此位置上传配置文件。
 
-![输入图片说明](https://images.gitee.com/uploads/images/2021/0408/164523_dec63c9a_8040887.png "屏幕截图.png")
+![输入图片说明](https://images.gitee.com/uploads/images/2020/1027/174710_1f35f6cf_8040887.png "屏幕截图.png")
 
 在中心节点配置数据库：
   kubectl exec -it developer-be-postgres-0 /bin/sh         //进去容器
@@ -326,8 +315,8 @@ APPRULE注册：
  
 下面为1条指令，IP地址为边缘节点IP
   
-insert into tbl_service_host(host_id, user_id, name, address, architecture, status, protocol, ip, os, port_range_min, port_range_max, 
-port, delete) values ('3c55ac26-60e9-42c0-958b-1bf7ea4da60a', 'admin', 'Node1', 'XIAN', 'X86', 'NORMAL', 'https', '192.168.101.245', 
+insert into tbl_service_host(host_id,user_id, name, address, architecture, status, protocol, ip, os, port_range_min, port_range_max, 
+port, delete) values ('3c55ac26-60e9-42c0-958b-1bf7ea4da60a','admin', 'Node1', 'XIAN', 'X86', 'NORMAL', 'https', '192.168.101.245', 
 'Ubuntu', 30000, 32767, 30204, null);
   
 配置完成后退出。
@@ -336,7 +325,7 @@ port, delete) values ('3c55ac26-60e9-42c0-958b-1bf7ea4da60a', 'admin', 'Node1', 
 
 添加新项目：
 
-![输入图片说明](https://images.gitee.com/uploads/images/2020/1228/184502_e4f4f987_8040887.png "屏幕截图.png")
+![输入图片说明](https://images.gitee.com/uploads/images/2020/1027/174841_a53b87e1_8040887.png "屏幕截图.png")
 
 基本信息填写：
 
@@ -344,31 +333,26 @@ port, delete) values ('3c55ac26-60e9-42c0-958b-1bf7ea4da60a', 'admin', 'Node1', 
 
 按照上述选择完成项目创建。
 
-部署调测：
+构建&测试：
 
-![输入图片说明](https://images.gitee.com/uploads/images/2020/1228/184622_2ca52014_8040887.png "屏幕截图.png")
+![输入图片说明](https://images.gitee.com/uploads/images/2020/1027/175822_5ea52a73_8040887.png "屏幕截图.png")
 
-上传YAML文件：
+参数配置：
 
-![输入图片说明](https://images.gitee.com/uploads/images/2020/1228/184742_f7207614_8040887.png "屏幕截图.png")
+![输入图片说明](https://images.gitee.com/uploads/images/2020/1027/175924_e2df337c_8040887.png "屏幕截图.png")
 
-开始部署:
+选择之前插入的边缘节点服务器信息:
 
-![输入图片说明](https://images.gitee.com/uploads/images/2020/1228/184922_9c13e35d_8040887.png "屏幕截图.png")
+![输入图片说明](https://images.gitee.com/uploads/images/2020/1027/180035_d5ebfa02_8040887.png "屏幕截图.png")
 
-部署完成后点击应用发布：
+完成构建测试：
 
-![输入图片说明](https://images.gitee.com/uploads/images/2020/1228/185315_c3735204_8040887.png "屏幕截图.png")
+![输入图片说明](https://images.gitee.com/uploads/images/2020/1027/180115_f721ee5e_8040887.png "屏幕截图.png")
 
-无规则使用时可直接下一步:
+发布到应用商店：
 
-![输入图片说明](https://images.gitee.com/uploads/images/2020/1228/185450_d31efa03_8040887.png "屏幕截图.png")
+![输入图片说明](https://images.gitee.com/uploads/images/2020/1027/180153_9ed9eb8f_8040887.png "屏幕截图.png")
 
-点击应用认证进行安全，遵从性以及沙箱测试：
-
-![输入图片说明](https://images.gitee.com/uploads/images/2020/1228/185712_10ac57f1_8040887.png "屏幕截图.png")
-
-等待前面测试完成后，可发布到APP应用商店
 
 #### **卸载**
 
@@ -382,8 +366,7 @@ bash eg.sh -u controller          //卸载中心节点
 
 bash eg.sh -u edge                //卸载边缘节点
 
-#### **安装中问题汇总**
-
+安装中问题汇总：
 1. pod装置pending处理方法
 安装完成后pod状态正常为running状态，kubectl get pos --all-namespaces
 

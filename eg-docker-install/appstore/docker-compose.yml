@@ -1,0 +1,53 @@
+version: "3"
+services:
+    appstore-be-postgres:
+        image: swr.ap-southeast-1.myhuaweicloud.com/edgegallery/postgres:12.3
+        environment:
+            POSTGRES_USER: "appstore"
+            POSTGRES_PASSWORD: "te9Fmv%qaq"
+            POSTGRES_DB: "appstoredb"
+        volumes:
+          - ./postgres-data:/docker-entrypoint-initdb.d/
+       
+    appstore-fe:
+       image: swr.ap-southeast-1.myhuaweicloud.com/edgegallery/appstore-fe
+       ports:
+         - 30091:8443
+       depends_on:
+         - appstore-be-postgres
+       environment:
+           LOG_DIR: /usr/app/log
+           LOG_FILE_NAME: appstore-fe
+           LISTEN_IP: ${ENV_IP}
+           SC_ADDRESS: http://${ENV_IP}:30100
+           AUTH_SERVER_ADDRESS: http://${ENV_IP}:30067
+           COOKIE_NAME: APPSTORESESSIONID
+           CLIENT_ID: appstore-fe
+           CLIENT_SECRET: te9Fmv%qaq
+           SSL_ENABLED: "false"
+           IS_SECURE_BACKEND: "false"
+         
+    appstore-be:
+        image: swr.ap-southeast-1.myhuaweicloud.com/edgegallery/appstore-be
+        depends_on:
+          - appstore-be-postgres
+        environment:
+            CLIENT_ID: appstore-be
+            CLIENT_SECRET: te9Fmv%qaq
+            LOG_DIR: /usr/app/log
+            LISTEN_IP: ${ENV_IP}
+            SC_ADDRESS: http://${ENV_IP}:30100
+            APPSTORE_ADDRESS: http://${ENV_IP}:8099
+            POSTGRES_IP: postgres
+            POSTGRES_DB_NAME: "POSTGRES_DB"
+            IMAGE_REPO_NAME: ${ENV_IP}
+            IMAGE_REPO_PROJECT: "appstore"
+            IMAGE_REPO_PASSWORD: "Harbor12345"
+            IMAGE_REPO_USERNAME: "admin"
+            POSTGRES_USERNAME: "appstore"
+            POSTGRES_PASSWORD: "te9Fmv%qaq"
+            AUTH_SERVER_ADDRESS: http://${ENV_IP}:30067
+            SSL_ENABLED: "false"
+        volumes:
+          - /var/run/docker.sock:/var/run/docker.sock
+点评( 0 )
