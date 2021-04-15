@@ -52,7 +52,7 @@ https://gitee.com/edgegallery/installer/blob/master/offline/harbor_install/docke
      --from-file=encryptedPrivateKey=/root/keys/encrypted_rsa_private_key.pem \
      --from-literal=encryptPassword=te9Fmv%qaq 
   ##### 4、生成edgegallery-appstore-docker-secret
-  （下文HARBOR_USER：本机ip $HARBOR_USER:admin   HARBOR_PASSWORD:默认Harbor12345 也可以自己定，安装完成后在harbor web页面改密码）
+  （下文HARBOR_USER：本机ip HARBOR_USER:admin   HARBOR_PASSWORD:默认Harbor12345 也可以自己定，安装完成后在harbor web页面改密码）
 
   kubectl create secret generic edgegallery-appstore-docker-secret \
      --from-literal=devRepoUserName=HARBOR_USER	 \
@@ -135,18 +135,25 @@ https://gitee.com/edgegallery/installer/blob/master/offline/harbor_install/docke
   ##### 4、install user-mgmt 
   helm install user-mgmt-edgegallery   helm-charts/user-mgmt  -f      edgegallery-values.yaml
   ##### 5、install appstore
-  helm install appstore-edgegallery    helm-charts/appstore   -f      edgegallery-values.yaml  --set appstoreBe.repository.dockerRepoEndpoint=HARBOR_REPO_IP   --set appstoreBe.secretName=edgegallery-appstore-docker-secret  
+  helm install appstore-edgegallery    helm-charts/appstore   -f      edgegallery-values.yaml  --set appstoreBe.repository.dockerRepoEndpoint=HARBOR_REPO_IP   --set appstoreBe.secretName=edgegallery-appstore-docker-secret   --set postgres.password=te9Fmv%qaq   #master分支helm-charts 安装需要加 --set postgres.password=te9Fmv%qaq
   ##### 6、install developer 
   helm install developer-edgegallery   helm-charts/developer  -f      edgegallery-values.yaml   --set developer.dockerRepo.endpoint=HARBOR_REPO_IP    --set developer.dockerRepo.password=HARBOR_PASSWORD  --set developer.dockerRepo.username=HARBOR_USER
   ##### 7、install mecm-fe
   helm install mecm-fe-edgegallery      helm-charts/mecm-fe    -f       edgegallery-values.yaml
-  ##### 8、install mecm-meo             
+  ##### 8、install mecm-meo     
+  metric-server.yaml 下载地址：
+  https://gitee.com/OSDT/dashboard/projects/edgegallery/installer/tree/master/offline/conf/manifest/metric  \
+  kubectl apply -f metric-server.yaml      \
   helm install mecm-meo-edgegallery   helm-charts/mecm-meo   -f      edgegallery-values.yaml   --set ssl.secretName=edgegallery-mecm-ssl-secret 
   --set mecm.secretName=edgegallery-mecm-secret --set mecm.repository.dockerRepoEndpoint=HARBOR_REPO_IP  --set mecm.repository.sourceRepos="repo=HARBOR_REPO_IP userName=$HARBOR_USER password=HARBOR_PASSWORD"
   ##### 9、install atp
-  helm install atp-edgegallery           helm-charts/atp        -f       edgegallery-values.yaml    
- ##### 10、install  mecm-mepm
-  helm install mecm-mepm-edgegallery   helm-charts/mecm-mepm  -f       edgegallery-values.yaml  --set jwt.publicKeySecretName=mecm-mepm-jwt-public-secret --set ssl.secretName=mecm-mepm-ssl-secret --set mepm.secretName=edgegallery-mepm-secret 
+  helm install atp-edgegallery    helm-charts/atp    -f       edgegallery-values.yaml      
+  ##### 10、install  mecm-mepm
+  mepm-service-account.yaml下载地址:
+  https://gitee.com/OSDT/dashboard/projects/edgegallery/installer/blob/master/offline/conf/manifest/mepm/mepm-service-account.yaml  \
+  kubectl apply -f mepm-service-account.yaml     \
+  helm install mecm-mepm-edgegallery   helm-charts/mecm-mepm  -f       edgegallery-values.yaml  --set jwt.publicKeySecretName=mecm-mepm-jwt-public- 
+  secret --set ssl.secretName=mecm-mepm-ssl-secret --set mepm.secretName=edgegallery-mepm-secret 
   ##### 11、install mep
   ##### 11.1 创建路由 
   ip link add eg-mp1 link eth0 type macvlan mode bridge  #用自己本机的网卡名替代eth0  \
