@@ -24,7 +24,7 @@ https://gitee.com/edgegallery/installer/blob/master/offline/harbor_install/docke
   systemctl restart nfs-kernel-server \
   exportfs -v   
   ##### 2.安装nfs客户端
-  下载nfs客户端 
+  下载nfs客户端  \
   x86: https://gitee.com/OSDT/dashboard/projects/edgegallery/installer/blob/master/offline/Edgegallery_online_install/nfs-client-amd/nfs-client-provisioner-1.2.8.tgz  \
   ARM: https://gitee.com/OSDT/dashboard/projects/edgegallery/installer/blob/master/offline/Edgegallery_online_install/nfs-client-arm/nfs-client-provisioner-1.2.8.tgz    \
   helm install nfs-client-provisioner --set nfs.server=<nfs_sever_ip> --set nfs.path=/nfs/data/     nfs-client-provisioner-1.2.8.tgz # <nfs_sever_ip>为本机的ip  
@@ -52,13 +52,13 @@ https://gitee.com/edgegallery/installer/blob/master/offline/harbor_install/docke
      --from-file=encryptedPrivateKey=/root/keys/encrypted_rsa_private_key.pem \
      --from-literal=encryptPassword=te9Fmv%qaq 
   ##### 4、生成edgegallery-appstore-docker-secret
-  （下文$HARBOR_USER：本机ip  $HARBOR_USER:admin   $HARBOR_PASSWORD:默认Harbor12345 也可以自己定，安装完成后在harbor web页面改密码）
+  （下文HARBOR_USER：本机ip $HARBOR_USER:admin   HARBOR_PASSWORD:默认Harbor12345 也可以自己定，安装完成后在harbor web页面改密码）
 
   kubectl create secret generic edgegallery-appstore-docker-secret \
-     --from-literal=devRepoUserName=$HARBOR_USER	 \
-     --from-literal=devRepoPassword=$HARBOR_PASSWORD    \
-     --from-literal=appstoreRepoUserName=$HARBOR_USER	 \
-     --from-literal=appstoreRepoPassword=$HARBOR_PASSWORD
+     --from-literal=devRepoUserName=HARBOR_USER	 \
+     --from-literal=devRepoPassword=HARBOR_PASSWORD    \
+     --from-literal=appstoreRepoUserName=HARBOR_USER	 \
+     --from-literal=appstoreRepoPassword=HARBOR_PASSWORD
   ##### 5、生成edgegallery-mecm-secret
   kubectl create secret generic edgegallery-mecm-secret \
      --from-file=postgres_init.sql=/root/keys/postgres_init.sql \
@@ -66,8 +66,8 @@ https://gitee.com/edgegallery/installer/blob/master/offline/harbor_install/docke
      --from-literal=postgresApmPassword=te9Fmv%qaq \
      --from-literal=postgresAppoPassword=te9Fmv%qaq \
      --from-literal=postgresInventoryPassword=te9Fmv%qaq \
-     --from-literal=dockerRepoUserName=$HARBOR_USER	 \
-     --from-literal=dockerRepoPassword=$HARBOR_PASSWORD
+     --from-literal=dockerRepoUserName=HARBOR_USER	 \
+     --from-literal=dockerRepoPassword=HARBOR_PASSWORD
   ##### 6、生成mecm-mepm-ssl-secret
   kubectl create secret generic mecm-mepm-ssl-secret \
      --from-file=server_tls.key=/root/keys/tls.key \
@@ -120,7 +120,8 @@ https://gitee.com/edgegallery/installer/blob/master/offline/harbor_install/docke
 
   #### 六、安装edgegallery
   ##### 1、选择自己需要的helm-chart版本下载(以下是各个版本的下载地址)
-  git clone -b master  https://gitee.com/edgegallery/helm-charts.git    
+  git clone -b master  https://gitee.com/edgegallery/helm-charts.git     \
+  git clone -b Release-v1.1 https://gitee.com/edgegallery/helm-charts.git   \
   git clone -b Release-v1.0 https://gitee.com/edgegallery/helm-charts.git    \
   git clone -b Release-v1.0.1   https://gitee.com/edgegallery/helm-charts.git 
   ##### 2、修改edgegallery-values.yaml文件
@@ -133,15 +134,15 @@ https://gitee.com/edgegallery/installer/blob/master/offline/harbor_install/docke
   如果安装失败或安装错误运行 helm delete service-center-edgegallery
   ##### 4、install user-mgmt 
   helm install user-mgmt-edgegallery   helm-charts/user-mgmt  -f      edgegallery-values.yaml
-  #####5、install appstore
-  helm install appstore-edgegallery    helm-charts/appstore   -f      edgegallery-values.yaml  --set appstoreBe.repository.dockerRepoEndpoint=$HARBOR_REPO_IP   --set appstoreBe.secretName=edgegallery-appstore-docker-secret  
+  ##### 5、install appstore
+  helm install appstore-edgegallery    helm-charts/appstore   -f      edgegallery-values.yaml  --set appstoreBe.repository.dockerRepoEndpoint=HARBOR_REPO_IP   --set appstoreBe.secretName=edgegallery-appstore-docker-secret  
   ##### 6、install developer 
-  helm install developer-edgegallery   helm-charts/developer  -f      edgegallery-values.yaml   --set developer.dockerRepo.endpoint=$HARBOR_REPO_IP    --set developer.dockerRepo.password=$HARBOR_PASSWORD  --set developer.dockerRepo.username=$HARBOR_USER
+  helm install developer-edgegallery   helm-charts/developer  -f      edgegallery-values.yaml   --set developer.dockerRepo.endpoint=HARBOR_REPO_IP    --set developer.dockerRepo.password=HARBOR_PASSWORD  --set developer.dockerRepo.username=HARBOR_USER
   ##### 7、install mecm-fe
   helm install mecm-fe-edgegallery      helm-charts/mecm-fe    -f       edgegallery-values.yaml
   ##### 8、install mecm-meo             
   helm install mecm-meo-edgegallery   helm-charts/mecm-meo   -f      edgegallery-values.yaml   --set ssl.secretName=edgegallery-mecm-ssl-secret 
-  --set mecm.secretName=edgegallery-mecm-secret --set mecm.repository.dockerRepoEndpoint=$HARBOR_REPO_IP  --set mecm.repository.sourceRepos="repo=$HARBOR_REPO_IP userName=$HARBOR_USER password=$HARBOR_PASSWORD"
+  --set mecm.secretName=edgegallery-mecm-secret --set mecm.repository.dockerRepoEndpoint=HARBOR_REPO_IP  --set mecm.repository.sourceRepos="repo=HARBOR_REPO_IP userName=$HARBOR_USER password=HARBOR_PASSWORD"
   ##### 9、install atp
   helm install atp-edgegallery           helm-charts/atp        -f       edgegallery-values.yaml    
  ##### 10、install  mecm-mepm
