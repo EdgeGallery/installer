@@ -120,8 +120,8 @@ https://gitee.com/edgegallery/installer/blob/master/offline/harbor_install/docke
 
   #### 六、安装edgegallery
   ##### 1、选择自己需要的helm-chart版本下载(以下是各个版本的下载地址)
-  git clone -b master  https://gitee.com/edgegallery/helm-charts.git \ 
-  git clone -b Release-v1.0 https://gitee.com/edgegallery/helm-charts.git  \
+  git clone -b master  https://gitee.com/edgegallery/helm-charts.git    
+  git clone -b Release-v1.0 https://gitee.com/edgegallery/helm-charts.git    \
   git clone -b Release-v1.0.1   https://gitee.com/edgegallery/helm-charts.git 
   ##### 2、修改edgegallery-values.yaml文件
   下载edgegallery-values.yaml   \
@@ -149,11 +149,12 @@ https://gitee.com/edgegallery/installer/blob/master/offline/harbor_install/docke
   ##### 11、install mep
   ##### 11.1 创建路由 
   ip link add eg-mp1 link eth0 type macvlan mode bridge  #用自己本机的网卡名替代eth0  \
-      ip addr add 200.1.1.2/24 dev eg-mp1  \
-      ip link set dev eg-mp1 up   \
-      ip link add eg-mm5 link eth0 type macvlan mode bridge   #用自己本机的网卡名替代eth0  \ 
-      ip addr add 100.1.1.2/24 dev eg-mm5  \
-      ip link set dev eg-mm5 up   
+  ip addr add 200.1.1.2/24 dev eg-mp1  \
+  ip link set dev eg-mp1 up   
+
+  ip link add eg-mm5 link eth0 type macvlan mode bridge   #用自己本机的网卡名替代eth0  
+  ip addr add 100.1.1.2/24 dev eg-mm5  \
+  ip link set dev eg-mm5 up   
   ##### 11.2 安装mep-network
   multus.yaml、eg-sp-rbac.yaml、eg-sp- 
   controller.yaml的下载地址:
@@ -164,7 +165,8 @@ https://gitee.com/edgegallery/installer/blob/master/offline/harbor_install/docke
   kubectl apply -f  eg-sp-rbac.yaml  
 
   sed -i 's?image: edgegallery/edgegallery-secondary-ep-controller:latest?image: edgegallery/edgegallery-secondary-ep-controller:v1.01?g' eg-sp- 
-  controller.yaml   #需要把'v1.01'改为自己需要的版本  现有的版本为v1.01 v1.0.0 v1.0.0-staging    \
+  controller.yaml   #需要把'v1.01'改为自己需要的版本  现有的版本为v1.01 v1.0.0 v1.0.0-staging    
+
   kubectl apply -f  eg-sp-controller.yaml   
   ##### 11.3 安装mep
   helm install mep-edgegallery         helm-charts/mep        -f       edgegallery-values.yaml  --set networkIsolation.ipamType=host-local   --set 
