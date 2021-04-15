@@ -9,7 +9,7 @@ services:
         volumes:
           - ./postgres-data:/docker-entrypoint-initdb.d/
     appstore-fe:
-       image: swr.ap-southeast-1.myhuaweicloud.com/edgegallery/appstore-fe
+       image: swr.ap-southeast-1.myhuaweicloud.com/edgegallery/appstore-fe:latest
        ports:
          - 30091:8443
        depends_on:
@@ -26,7 +26,7 @@ services:
            SSL_ENABLED: "false"
            IS_SECURE_BACKEND: "false"
     appstore-be:
-        image: swr.ap-southeast-1.myhuaweicloud.com/edgegallery/appstore-be
+        image: swr.ap-southeast-1.myhuaweicloud.com/edgegallery/appstore-be:latest
         depends_on:
           - appstore-be-postgres
         environment:
