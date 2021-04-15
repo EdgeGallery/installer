@@ -286,6 +286,14 @@ bash eg.sh -i                                //开始安装程序
 #### **手动实例化图示：**(只支持用谷歌浏览器访问web页面)
 ![输入图片说明](https://images.gitee.com/uploads/images/2020/0921/161759_6f13ae7a_8040887.png "图片4.png")
 
+新增超级管理员权限账号密码（建议安装完成后修改此密码）：
+
+账号：admin  密码：Admin@321
+
+![输入图片说明](https://images.gitee.com/uploads/images/2021/0415/180035_d4814889_8040887.png "屏幕截图.png")
+
+![输入图片说明](https://images.gitee.com/uploads/images/2021/0415/180122_1f44fb27_8040887.png "屏幕截图.png")
+
 测试验证注意点：
 
 APPLCM注册：
@@ -308,16 +316,11 @@ APPLCM注册：
 
 ![输入图片说明](https://images.gitee.com/uploads/images/2020/1027/174710_1f35f6cf_8040887.png "屏幕截图.png")
 
-在中心节点配置数据库：
-  kubectl exec -it developer-be-postgres-0 /bin/sh         //进去容器
+在中心侧添加沙箱环境：
+
+![输入图片说明](https://images.gitee.com/uploads/images/2021/0415/175741_8e634d4d_8040887.png "屏幕截图.png")
  
- psql -U developer developerdb                      
- 
-下面为1条指令，IP地址为边缘节点IP
-  
-insert into tbl_service_host(host_id,user_id, name, address, architecture, status, protocol, ip, os, port_range_min, port_range_max, 
-port, delete) values ('3c55ac26-60e9-42c0-958b-1bf7ea4da60a','admin', 'Node1', 'XIAN', 'X86', 'NORMAL', 'https', '192.168.101.245', 
-'Ubuntu', 30000, 32767, 30204, null);
+
   
 配置完成后退出。
 
