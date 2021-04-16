@@ -1,12 +1,12 @@
 ### DOCKER_COMPOSE_INSTALL_HARBOR
 #### 1.Install docker and docker-compose
-##### install docker 
+##### 1.1install docker 
 apt-get install  docker.io 
-##### install docker-compose
+##### 1.2 install docker-compose
 要求docker-compose version >1.18 \
 sudo curl -L "https://github.com/docker/compose/releases/download/1.26.2/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose \
 chmod +x /usr/local/bin/docker-compose   
-#### 生成damon.json文件（下文所有的119.8.1.11需替换为自己的ip) 
+#### 1.3生成damon.json文件（下文所有的119.8.1.11需替换为自己的ip) 
 cat <<EOF | tee /etc/docker/daemon.json   
 {                                               
     "insecure-registries" : ["192.168.1.11"]     
@@ -21,7 +21,7 @@ mkdir cert         #创建证书存放目录  \
 mv  harbor.yml.tmpl harbor.yml  修改配置文件名称 
 ##### 设置hostname 
 hostname: 192.168.1.11  #在harbor.yml的第五行设置hostname，设置hostname的ip是用于harbor web访问的ip \
-在第8行和第10行的 http  port:80 前加#      #去掉http 用https 访问harbor web 
+在第8行和第10行的 http  port:80 前加#      #去掉http用https访问harbor web 
 ##### 设置证书目录
 certificate: /root/harbor/cert/ca.crt   #文件的17行 \
 private_key: /root/harbor/cert/ca.key   #文件的18行 
