@@ -12,7 +12,7 @@ services:
       SC_ADDRESS: http://${ENV_IP}:30100
       AUTH_SERVER_ADDRESS: http://${ENV_IP}:30067
       COOKIE_NAME: MECMSESSIONID
-      CLIENT_ID: developer-fe
+      CLIENT_ID: mecm-fe
       CLIENT_SECRET: te9Fmv%qaq
       SSL_ENABLED: "false"
       CLIENT_ID: bWVjbS1mZQ==
