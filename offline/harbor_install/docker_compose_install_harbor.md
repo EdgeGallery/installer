@@ -26,6 +26,7 @@ hostname: 192.168.1.11  #在harbor.yml的第五行设置hostname，设置hostnam
 certificate: /root/harbor/cert/ca.crt   #文件的17行 \
 private_key: /root/harbor/cert/ca.key   #文件的18行 
 ##### 修改harbor admin账号密码
+harbor_admin_password: Harbor12345  #harbor默认密码Harbor12345 可以自己修改，下文和在线安装edgegallery相关的harbor密码也需要修改 
 ##### 设置数据挂载目录
 data_volume: /root/harbor/data_volume/
 ##### 生成证书
