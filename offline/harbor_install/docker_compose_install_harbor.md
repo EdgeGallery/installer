@@ -9,7 +9,7 @@ chmod +x /usr/local/bin/docker-compose
 #### 1.3生成damon.json文件（下文所有的119.8.1.11需替换为自己的ip) 
 cat <<EOF | tee /etc/docker/daemon.json   
 {                                               
-    "insecure-registries" : ["192.168.1.11"]     
+    "insecure-registries":["119.8.63.144"]     
 }  \
 EOF
 #### 2.Download harbor offline pankage and set harbor.yml文件
@@ -51,7 +51,7 @@ cd  /root/harbor/   \
 ##### docker login harbor
 docker login -uadmin -pHarbor12345 192.168.1.11
 ##### 生成harbor secret
-kubectl create secret docker-registry  harbor  --docker-server=https://192.168.1.11 --docker-username=admin  --docker-password=Harbro12345 \
+kubectl create secret docker-registry  harbor  --docker-server=https://192.168.1.11 --docker-username=admin  --docker-password=Harbor12345 \
 kubectl patch serviceaccount default -p '{"imagePullSecrets": [{"name": "harbor"}]}'
 #### 4.登录harbor web界面
 登录url https://192.168.1.11
