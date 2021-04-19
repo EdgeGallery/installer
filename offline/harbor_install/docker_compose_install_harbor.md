@@ -6,10 +6,10 @@ apt-get install  docker.io
 要求docker-compose version >1.18 \
 sudo curl -L "https://github.com/docker/compose/releases/download/1.26.2/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose \
 chmod +x /usr/local/bin/docker-compose   
-#### 1.3生成damon.json文件（下文所有的119.8.1.11需替换为自己的ip) 
+#### 1.3生成damon.json文件（下文所有的192.168.1.11需替换为自己的ip) 
 cat <<EOF | tee /etc/docker/daemon.json   
 {                                               
-    "insecure-registries" : ["192.168.1.11"]     
+    "insecure-registries":["192.168.1.11"]     
 }  \
 EOF
 #### 2.Download harbor offline pankage and set harbor.yml文件
@@ -25,6 +25,8 @@ hostname: 192.168.1.11  #在harbor.yml的第五行设置hostname，设置hostnam
 ##### 设置证书目录
 certificate: /root/harbor/cert/ca.crt   #文件的17行 \
 private_key: /root/harbor/cert/ca.key   #文件的18行 
+##### 修改harbor admin账号密码
+harbor_admin_password: Harbor12345  #harbor默认密码Harbor12345 可以自己修改，下文和在线安装edgegallery相关的harbor密码也需要修改 
 ##### 设置数据挂载目录
 data_volume: /root/harbor/data_volume/
 ##### 生成证书
@@ -51,7 +53,7 @@ cd  /root/harbor/   \
 ##### docker login harbor
 docker login -uadmin -pHarbor12345 192.168.1.11
 ##### 生成harbor secret
-kubectl create secret docker-registry  harbor  --docker-server=https://192.168.1.11 --docker-username=admin  --docker-password=Harbro12345 \
+kubectl create secret docker-registry  harbor  --docker-server=https://192.168.1.11 --docker-username=admin  --docker-password=Harbor12345 \
 kubectl patch serviceaccount default -p '{"imagePullSecrets": [{"name": "harbor"}]}'
 #### 4.登录harbor web界面
 登录url https://192.168.1.11
