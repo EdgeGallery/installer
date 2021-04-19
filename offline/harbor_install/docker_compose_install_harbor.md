@@ -6,10 +6,10 @@ apt-get install  docker.io
 要求docker-compose version >1.18 \
 sudo curl -L "https://github.com/docker/compose/releases/download/1.26.2/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose \
 chmod +x /usr/local/bin/docker-compose   
-#### 1.3生成damon.json文件（下文所有的119.8.1.11需替换为自己的ip) 
+#### 1.3生成damon.json文件（下文所有的192.168.1.11需替换为自己的ip) 
 cat <<EOF | tee /etc/docker/daemon.json   
 {                                               
-    "insecure-registries":["119.8.63.144"]     
+    "insecure-registries":["192.168.1.11"]     
 }  \
 EOF
 #### 2.Download harbor offline pankage and set harbor.yml文件
