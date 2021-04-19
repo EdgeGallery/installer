@@ -25,6 +25,7 @@ hostname: 192.168.1.11  #在harbor.yml的第五行设置hostname，设置hostnam
 ##### 设置证书目录
 certificate: /root/harbor/cert/ca.crt   #文件的17行 \
 private_key: /root/harbor/cert/ca.key   #文件的18行 
+##### 修改harbor admin账号密码
 ##### 设置数据挂载目录
 data_volume: /root/harbor/data_volume/
 ##### 生成证书
