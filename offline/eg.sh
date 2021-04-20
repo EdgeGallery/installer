@@ -120,7 +120,6 @@ function _docker_compose_undeploy() {
 
 function _setup_harbor() {
   _docker_compose_deploy
-  HARBOR_REPO_IP=$PORTAL_IP
   cd /root
   mkdir -p /root/harbor
   tar -zxf $K8S_OFFLINE_DIR/harbor/harbor.tar.gz -C harbor
@@ -1634,14 +1633,6 @@ function install_nfs-server()
     dpki -i $PLATFORM_DIR/nfs/nfs-common_1%3a1.3.4-2.1ubuntu5.3_amd64.deb  
     dpki -i $PLATFORM_DIR/nfs/nfs-kernel-server_1%3a1.3.4-2.1ubuntu5.3_amd64.deb
   fi
-
-  if [ ! -d $NFS_PATH  ]; then
-    mkdir -p $NFS_PATH 
-    chmod -R 755 $NFS_PATH
-  fi
-  echo "$NFS_PATH $NFS_SERVER_IP(rw,no_root_squash,sync)" >> /etc/exports
-  systemctl restart nfs-kernel-server.service
-  exportfs -v
   if [ $? -eq 0 ]; then
     info "[Deployed nfs-server]" $GREEN
   else
@@ -1660,15 +1651,25 @@ function uninstall_nfs-server()
 function install_nfs-client-provisioner()
 {
   info "[Deploying nfs-client-provisioner]"
+  if [ -n   $EG_NODE_MASTER_IPS ]; then
+    NFS_SERVER_IP=$EG_NODE_MASTER_IPS
+  elif
+     [ -n   $EG_NODE_CONTROLLER_MASTER_IPS ]; then
+    NFS_SERVER_IP=$EG_NODE_CONTROLLER_MASTER_IPS
+  else
+     [ -n   $EG_NODE_EDGE_MASTER_IPS ]; then
+    NFS_SERVER_IP=$EG_NODE_EDGE_MASTER_IPS
+  fi
+  if [ ! -d "/edgegallery/data/" ]; then
+     mkdir -p  /edgegallery/data/
+  fi
   if [ $KERNEL_ARCH == 'aarch64' ]; then
     set_image_value="--set image.repository=quay.io/codayblue/nfs-subdir-external-provisioner-arm64 --set image.tag=latest"
   else
     set_image_value="--set image.repository=quay.io/external_storage/nfs-client-provisioner --set image.tag=v3.1.0-k8s1.11"
   fi
-  helm install --wait nfs-client-provisioner \
-      --set nfs.server=$NFS_SERVER_IP \
-      --set nfs.path=$NFS_PATH  \
-      $set_image_value "$CHART_PREFIX"stable/nfs-client-provisioner"$NFS_CHART_SUFFIX"
+  helm install --wait  nfs-client-provisioner --set nfs.server=$NFS_SERVER_IP \
+       --set nfs.path=/edgegallery/data/  $set_image_value "$CHART_PREFIX"stable/nfs-client-provisioner"$NFS_CHART_SUFFIX"
   if [ $? -eq 0 ]; then
     info "[Deployed nfs-client-provisioner]" $GREEN
   else
@@ -1711,18 +1712,8 @@ function install_EdgeGallery ()
   fi
 
   if [[ $ENABLE_PERSISTENCE == "true" ]]; then
-    if [ -n $EG_NODE_MASTER_IPS ]; then
-      NFS_SERVER_IP=$EG_NODE_MASTER_IPS
-    elif [ -n $EG_NODE_CONTROLLER_MASTER_IPS ]; then
-      NFS_SERVER_IP=$EG_NODE_CONTROLLER_MASTER_IPS
-    elif [ -n $EG_NODE_EDGE_MASTER_IPS ]; then
-      NFS_SERVER_IP=$EG_NODE_EDGE_MASTER_IPS
-    else
-      info "[Error: can not get NFS_SERVER_IP]" $RED
-      exit 1
-    fi
-    if [[ -z $NFS_PATH ]]; then
-      info "[NFS_PATH values must be set for enabling persistence]" $RED
+    if [[ -z $NFS_SERVER_IP || -z $NFS_PATH ]]; then
+      info "[Both NFS_SERVER_IP and NFS_PATH values must be set for enabling persistence]" $RED
       exit 1
     fi
     install_nfs-server

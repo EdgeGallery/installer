@@ -1,6 +1,8 @@
-Edge gallery installer  on ubuntu x86_64 or arm64 architecture available at https://release.edgegallery.org/release
+Edge gallery installer  on ubuntu x86_64 or arm64 architecture 
+x86_64  architecture pankage download url: https://edgegallery.obs.cn-east-3.myhuaweicloud.com:443/releases/v1.1/x86/EdgeGallery-v1.1-all-x86.tar.gz
+arm64   architecture pankage download url: https://edgegallery.obs.cn-east-3.myhuaweicloud.com:443/releases/v1.1/arm64/EdgeGallery-v1.1-all-arm64.tar.gz
 
-For more details, please [refer](offline/README_en.md)
+For more details, please [refer](https://gitee.com/OSDT/dashboard/projects/edgegallery/installer/blob/master/ansible_install/README-cn.md)
 
-参考详细安装步骤，[请参考](offline/README-cn.md)
+参考详细安装步骤，[请参考](https://gitee.com/OSDT/dashboard/projects/edgegallery/installer/blob/master/ansible_install/README-cn.md)
 
