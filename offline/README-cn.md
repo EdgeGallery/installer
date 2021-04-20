@@ -300,21 +300,40 @@ APPLCM注册：
 
 在MECM上完成APPLCM注册。
 
-![输入图片说明](https://images.gitee.com/uploads/images/2020/1027/174517_a702a2bb_8040887.png "屏幕截图.png")
+![输入图片说明](https://images.gitee.com/uploads/images/2021/0420/162340_23cd8220_8040887.png "屏幕截图.png")
 
 (IP地址为边缘节点IP,端口30204)
 
-![输入图片说明](https://images.gitee.com/uploads/images/2020/1027/174556_6517a16a_8040887.png "屏幕截图.png")
+![输入图片说明](https://images.gitee.com/uploads/images/2021/0420/162427_d3571336_8040887.png "屏幕截图.png")
+
+在MECM上完成APPrule注册:点击系统→App Rule MGR→新增注册.
+
+![输入图片说明](https://images.gitee.com/uploads/images/2021/0420/162623_80151d10_8040887.png "屏幕截图.png")
+
+输入IP地址为边缘节点IP,多节点边缘只需输入master节点IP即可,端口30206，点击确定
+
+![输入图片说明](https://images.gitee.com/uploads/images/2021/0420/162756_9eb4692c_8040887.png "屏幕截图.png")
+
+应用市场注册：
+
+![输入图片说明](https://images.gitee.com/uploads/images/2021/0420/162813_1e07a2b2_8040887.png "屏幕截图.png")
+
 
 边缘节点注册：
 
-![输入图片说明](https://images.gitee.com/uploads/images/2020/1027/174634_bdcdae73_8040887.png "屏幕截图.png")
+点击边缘节点→新增注册:
+
+输入IP地址为边缘节点IP,多节点安装只需输入master节点IP即可,选择安装环境的架和硬件能力
+（没有可以不选）硬件品牌和型号 ，选择AppLCM IP，App Rule MGR IP,填写边缘IP，输入边缘仓库端口
+点击确认
+
+![输入图片说明](https://images.gitee.com/uploads/images/2021/0420/162855_6c16e0cb_8040887.png "屏幕截图.png")
 
 配置文件上传：
 
 配置文件为要注册的边缘节点/root/.kube/ 下config文件，下载并保存该文件在自己电脑上，在此位置上传配置文件。
 
-![输入图片说明](https://images.gitee.com/uploads/images/2020/1027/174710_1f35f6cf_8040887.png "屏幕截图.png")
+![输入图片说明](https://images.gitee.com/uploads/images/2021/0420/162951_488e01ed_8040887.png "屏幕截图.png")
 
 在中心侧添加沙箱环境：
 
@@ -336,25 +355,33 @@ APPLCM注册：
 
 按照上述选择完成项目创建。
 
-构建&测试：
+部署测试：
 
-![输入图片说明](https://images.gitee.com/uploads/images/2020/1027/175822_5ea52a73_8040887.png "屏幕截图.png")
+![输入图片说明](https://images.gitee.com/uploads/images/2021/0420/163145_189cf4a1_8040887.png "屏幕截图.png")
 
-参数配置：
+yaml文件上传：
 
-![输入图片说明](https://images.gitee.com/uploads/images/2020/1027/175924_e2df337c_8040887.png "屏幕截图.png")
+![输入图片说明](https://images.gitee.com/uploads/images/2021/0420/163318_502897e9_8040887.png "屏幕截图.png")
 
-选择之前插入的边缘节点服务器信息:
+开始部署：
 
-![输入图片说明](https://images.gitee.com/uploads/images/2020/1027/180035_d5ebfa02_8040887.png "屏幕截图.png")
+![输入图片说明](https://images.gitee.com/uploads/images/2021/0420/163704_c73152c0_8040887.png "屏幕截图.png")
 
-完成构建测试：
+部署完成后释放资源然后：
 
-![输入图片说明](https://images.gitee.com/uploads/images/2020/1027/180115_f721ee5e_8040887.png "屏幕截图.png")
+![输入图片说明](https://images.gitee.com/uploads/images/2021/0420/163818_9d6feda3_8040887.png "屏幕截图.png")
 
-发布到应用商店：
+无规则使用时可直接下一步:
 
-![输入图片说明](https://images.gitee.com/uploads/images/2020/1027/180153_9ed9eb8f_8040887.png "屏幕截图.png")
+![输入图片说明](https://images.gitee.com/uploads/images/2021/0420/163856_8ebbe59d_8040887.png "屏幕截图.png")
+
+点击应用认证进行安全，遵从性以及沙箱测试：
+
+![输入图片说明](https://images.gitee.com/uploads/images/2021/0420/163932_8ea03778_8040887.png "屏幕截图.png")
+
+等待前面测试完成后，可发布到APP应用商店：
+
+
 
 
 #### **卸载**
