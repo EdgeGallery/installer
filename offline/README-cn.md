@@ -65,8 +65,16 @@ EdgeGallery离线安装程序是基于ubuntu x86_64或arm64体系结构的给Kub
   CONTROLLER_MASTER_IPS地址；在使用双网卡或网卡的安装时候，DEPLOY_IP,MASTER_IPS，WORKER_IPS一般使用的是局域网IP地址，PORTAL_IP
   可以使用公网IP作为外部地址。
  
+建议使用ansible方式部署:
+
+部署指导：https://gitee.com/OSDT/dashboard/projects/edgegallery/installer/blob/master/ansible_install/README-cn.md
+
+x86_64安装包下载地址：https://edgegallery.obs.cn-east-3.myhuaweicloud.com:443/releases/v1.1/x86/EdgeGallery-v1.1-all-x86.tar.gz
+
+ARM安装包下载地址: https://edgegallery.obs.cn-east-3.myhuaweicloud.com:443/releases/v1.1/arm64/EdgeGallery-v1.1-all-arm64.tar.gz
 
 ### **一．单节点安装edgegallery场景：** 
+
 
 
  **1.edgegallery部署：** 
