@@ -298,9 +298,9 @@ bash eg.sh -i                                //开始安装程序
 
 账号：admin  密码：Admin@321
 
-![输入图片说明](https://images.gitee.com/uploads/images/2021/0415/180035_d4814889_8040887.png "屏幕截图.png")
+![输入图片说明](https://images.gitee.com/uploads/images/2021/0421/111220_aa0f6b19_8040887.png "屏幕截图.png")
 
-![输入图片说明](https://images.gitee.com/uploads/images/2021/0415/180122_1f44fb27_8040887.png "屏幕截图.png")
+![输入图片说明](https://images.gitee.com/uploads/images/2021/0421/111243_7291ec67_8040887.png "屏幕截图.png")
 
 测试验证注意点：
 
@@ -345,7 +345,7 @@ APPLCM注册：
 
 在中心侧添加沙箱环境：
 
-![输入图片说明](https://images.gitee.com/uploads/images/2021/0415/175741_8e634d4d_8040887.png "屏幕截图.png")
+![输入图片说明](https://images.gitee.com/uploads/images/2021/0421/111320_3efe424c_8040887.png "屏幕截图.png")
  
 
   
@@ -355,7 +355,7 @@ APPLCM注册：
 
 添加新项目：
 
-![输入图片说明](https://images.gitee.com/uploads/images/2020/1027/174841_a53b87e1_8040887.png "屏幕截图.png")
+![输入图片说明](https://images.gitee.com/uploads/images/2021/0421/111452_39dcb27f_8040887.png "屏幕截图.png")
 
 基本信息填写：
 
