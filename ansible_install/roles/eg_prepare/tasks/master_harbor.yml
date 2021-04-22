@@ -95,9 +95,15 @@
     regexp: "private_key: .*"
     replace: "private_key: {{ HARBOR_DIR }}/harbor/cert/ca.key"
 
-- name: Create Data Volume for Harbor
+- name: Remove Old Harbor Root When ENABLE_PERSISTENCE is false
   file:
-    path: "{{ HARBOR_DATA_VOLUME }}"
+    path: "{{ HARBOR_ROOT }}"
+    state: absent
+  when: ENABLE_PERSISTENCE is false
+
+- name: Create Directory for Harbor Root
+  file:
+    path: "{{ HARBOR_ROOT }}"
     state: directory
 
 - name: Set Data Volume for Harbor
@@ -124,8 +130,95 @@
   retries: 12
   delay: 5
 
+- name: Check Whether appstore Project Already Exists
+  uri:
+    url: "https://{{ ansible_default_ipv4['address'] }}/api/v2.0/projects?project_name=appstore"
+    user: admin
+    password: "{{ HARBOR_ADMIN_PASSWORD }}"
+    method: HEAD
+    validate_certs: no
+    force_basic_auth: yes
+    headers:
+      Accept: application/json
+  register: getAppstoreProject
+  ignore_errors: yes
+
+- name: Create appstore Project
+  uri:
+    url: "https://{{ ansible_default_ipv4['address'] }}/api/v2.0/projects"
+    user: admin
+    password: "{{ HARBOR_ADMIN_PASSWORD }}"
+    method: POST
+    validate_certs: no
+    force_basic_auth: yes
+    headers:
+      Content-Type: application/json
+      Accept: application/json
+    body_format: json
+    body: {"project_name":"appstore","metadata":{"public":"true"}}
+    status_code: 201
+  when: getAppstoreProject.status != 200
+
+- name: Check Whether developer Project Already Exists
+  uri:
+    url: "https://{{ ansible_default_ipv4['address'] }}/api/v2.0/projects?project_name=developer"
+    user: admin
+    password: "{{ HARBOR_ADMIN_PASSWORD }}"
+    method: HEAD
+    validate_certs: no
+    force_basic_auth: yes
+    headers:
+      Accept: application/json
+  register: getDeveloperProject
+  ignore_errors: yes
+
+- name: Create developer Project
+  uri:
+    url: "https://{{ ansible_default_ipv4['address'] }}/api/v2.0/projects"
+    user: admin
+    password: "{{ HARBOR_ADMIN_PASSWORD }}"
+    method: POST
+    validate_certs: no
+    force_basic_auth: yes
+    headers:
+      Content-Type: application/json
+      Accept: application/json
+    body_format: json
+    body: {"project_name":"developer","metadata":{"public":"true"}}
+    status_code: 201
+  when: getDeveloperProject.status != 200
+
+- name: Check Whether mecm Project Already Exists
+  uri:
+    url: "https://{{ ansible_default_ipv4['address'] }}/api/v2.0/projects?project_name=mecm"
+    user: admin
+    password: "{{ HARBOR_ADMIN_PASSWORD }}"
+    method: HEAD
+    validate_certs: no
+    force_basic_auth: yes
+    headers:
+      Accept: application/json
+  register: getMecmProject
+  ignore_errors: yes
+
+- name: Create mecm Project
+  uri:
+    url: "https://{{ ansible_default_ipv4['address'] }}/api/v2.0/projects"
+    user: admin
+    password: "{{ HARBOR_ADMIN_PASSWORD }}"
+    method: POST
+    validate_certs: no
+    force_basic_auth: yes
+    headers:
+      Content-Type: application/json
+      Accept: application/json
+    body_format: json
+    body: {"project_name":"mecm","metadata":{"public":"true"}}
+    status_code: 201
+  when: getMecmProject.status != 200
+
 - name: Create docker-registry Secret For Harbor
-  shell: kubectl create secret docker-registry  harbor  --docker-server=https://{{ ansible_default_ipv4['address'] }} --docker-username=admin --docker-password={{ HARBOR_ADMIN_PASSWORD }}
+  shell: kubectl create secret docker-registry harbor --docker-server=https://{{ ansible_default_ipv4['address'] }} --docker-username=admin --docker-password={{ HARBOR_ADMIN_PASSWORD }}
 
 - name: Add Harbor Secret to Default serviceaccount
   shell: >

@@ -29,11 +29,11 @@
   when: K8S_NODE_TYPE == "master" and EG_MODE != "edge" and ARCH == "amd64"
   ignore_errors: yes
 
-- name: Remove Harbor Data Volume
+- name: Remove Harbor Data Volume When ENABLE_PERSISTENCE is false
   file:
-    path: "{{ HARBOR_DATA_VOLUME }}"
+    path: "{{ HARBOR_ROOT }}"
     state: absent
-  when: K8S_NODE_TYPE == "master" and EG_MODE != "edge" and ARCH == "amd64"
+  when: K8S_NODE_TYPE == "master" and EG_MODE != "edge" and ARCH == "amd64" and ENABLE_PERSISTENCE is false
   ignore_errors: yes
 
 - name: Uninstalled Docker Compose
