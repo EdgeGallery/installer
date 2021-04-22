@@ -378,3 +378,16 @@ Besides of k8s, there are 11 parts related to the EG deployment. Some of them ar
 - eg_check (optional): Independent with all other EG modules and only check the deployed modules and print the Web portal URL
 
 In summary, all modules are optional except init, eg_prepare and user-mgmt.
+
+## 7. TroubleShoot
+
+1. **error**:    fatal: [1.2.3.4]: FAILED! => {"msg": "Timeout (12s) waiting for privilege escalation prompt: "}
+- **solution**: deploy eg as a 'root' user
+
+2. **error**:    ESTABLISH SSH CONNECTION FOR USER: None
+- **solution**: append '-e "ansible_user=root"' to ansible-playbook command
+- **eg**: ansible-playbook --inventory hosts-aio eg_all_aio_uninstall.yml -e "ansible_user=root"
+
+3. **Info**: For more verbosity add '-v' flag to ansible-playbook command
+- **eg1**:  ansible-playbook --inventory hosts-aio eg_all_aio_uninstall.yml -vvv
+- **eg2**:  ansible-playbook --inventory hosts-aio eg_all_aio_uninstall.yml -v
