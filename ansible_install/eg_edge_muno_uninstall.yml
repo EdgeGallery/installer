@@ -26,8 +26,8 @@
     - ./var.yml
     - ./default-var.yml
   roles:
-    - mecm-mepm
-    - mep
+    - { role: mecm-mepm, tags: ['mecm-mepm'] }
+    - { role: mep, tags: ['mep'] }
 
 - hosts: worker
   become: yes
@@ -40,9 +40,9 @@
     - ./var.yml
     - ./default-var.yml
   roles:
-    - eg_prepare
-    - k8s
-    - init
+    - { role: eg_prepare, tags: ['eg_prepare-worker'] }
+    - { role: k8s, tags: ['k8s-worker'] }
+    - { role: init, tags: ['init-worker'] }
 
 - hosts: master
   become: yes
@@ -55,6 +55,6 @@
     - ./var.yml
     - ./default-var.yml
   roles:
-    - eg_prepare
-    - k8s
-    - init
+    - { role: eg_prepare, tags: ['eg_prepare-master'] }
+    - { role: k8s, tags: ['k8s-master'] }
+    - { role: init, tags: ['init-master'] }

@@ -27,9 +27,9 @@
     - ./var.yml
     - ./default-var.yml
   roles:
-    - init
-    - k8s
-    - eg_prepare
+    - { role: init, tags: ['init-master'] }
+    - { role: k8s, tags: ['k8s-master'] }
+    - { role: eg_prepare, tags: ['eg_prepare-master'] }
 
 - hosts: worker
   become: yes
@@ -42,9 +42,9 @@
     - ./var.yml
     - ./default-var.yml
   roles:
-    - init
-    - k8s
-    - eg_prepare
+    - { role: init, tags: ['init-worker'] }
+    - { role: k8s, tags: ['k8s-worker'] }
+    - { role: eg_prepare, tags: ['eg_prepare-worker'] }
 
 # PaaS Deployment on Master
 - hosts: master
@@ -58,12 +58,12 @@
     - ./var.yml
     - ./default-var.yml
   roles:
-    - mep
-    - mecm-mepm
-    - user-mgmt
-    - mecm-meo
-    - mecm-fe
-    - appstore
-    - developer
-    - atp
-    - eg_check
+    - { role: mep, tags: ['mep'] }
+    - { role: mecm-mepm, tags: ['mecm-mepm'] }
+    - { role: user-mgmt, tags: ['user-mgmt'] }
+    - { role: mecm-meo, tags: ['mecm-meo'] }
+    - { role: mecm-fe, tags: ['mecm-fe'] }
+    - { role: appstore, tags: ['appstore'] }
+    - { role: developer, tags: ['developer'] }
+    - { role: atp, tags: ['atp'] }
+    - { role: eg_check, tags: ['eg_check'] }

@@ -26,12 +26,12 @@
     - ./var.yml
     - ./default-var.yml
   roles:
-    - atp
-    - developer
-    - appstore
-    - mecm-fe
-    - mecm-meo
-    - user-mgmt
-    - eg_prepare
-    - k8s
-    - init
+    - { role: atp, tags: ['atp'] }
+    - { role: developer, tags: ['developer'] }
+    - { role: appstore, tags: ['appstore'] }
+    - { role: mecm-fe, tags: ['mecm-fe'] }
+    - { role: mecm-meo, tags: ['mecm-meo'] }
+    - { role: user-mgmt, tags: ['user-mgmt'] }
+    - { role: eg_prepare, tags: ['eg_prepare'] }
+    - { role: k8s, tags: ['k8s'] }
+    - { role: init, tags: ['init'] }

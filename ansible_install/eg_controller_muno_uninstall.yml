@@ -26,12 +26,12 @@
     - ./var.yml
     - ./default-var.yml
   roles:
-    - atp
-    - developer
-    - appstore
-    - mecm-fe
-    - mecm-meo
-    - user-mgmt
+    - { role: atp, tags: ['atp'] }
+    - { role: developer, tags: ['developer'] }
+    - { role: appstore, tags: ['appstore'] }
+    - { role: mecm-fe, tags: ['mecm-fe'] }
+    - { role: mecm-meo, tags: ['mecm-meo'] }
+    - { role: user-mgmt, tags: ['user-mgmt'] }
 
 - hosts: worker
   become: yes
@@ -44,9 +44,9 @@
     - ./var.yml
     - ./default-var.yml
   roles:
-    - eg_prepare
-    - k8s
-    - init
+    - { role: eg_prepare, tags: ['eg_prepare-worker'] }
+    - { role: k8s, tags: ['k8s-worker'] }
+    - { role: init, tags: ['init-worker'] }
 
 - hosts: master
   become: yes
@@ -59,6 +59,6 @@
     - ./var.yml
     - ./default-var.yml
   roles:
-    - eg_prepare
-    - k8s
-    - init
+    - { role: eg_prepare, tags: ['eg_prepare-master'] }
+    - { role: k8s, tags: ['k8s-master'] }
+    - { role: init, tags: ['init-master'] }

@@ -26,9 +26,9 @@
     - ./var.yml
     - ./default-var.yml
   roles:
-    - init
-    - k8s
-    - eg_prepare
-    - mep
-    - mecm-mepm
-    - eg_check
+    - { role: init, tags: ['init'] }
+    - { role: k8s, tags: ['k8s'] }
+    - { role: eg_prepare, tags: ['eg_prepare'] }
+    - { role: mep, tags: ['mep'] }
+    - { role: mecm-mepm, tags: ['mecm-mepm'] }
+    - { role: eg_check, tags: ['eg_check'] }
