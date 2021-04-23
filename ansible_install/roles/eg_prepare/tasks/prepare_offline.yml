@@ -84,6 +84,10 @@
     EG_NODE_EDGE_MM5: "{{ mm5.stdout }}"
   when: EG_NODE_EDGE_MM5 is undefined
 
+- name: Setup Persistent Network Interface Config File
+  import_tasks: create_network_interface_setting.yml
+  when: K8S_NODE_TYPE == "worker" or K8S_NODE_TYPE == "master"
+
 - name: Setup Master Node Network Interface
   import_tasks: master_network_interface_setting.yml
   when: K8S_NODE_TYPE == "master"

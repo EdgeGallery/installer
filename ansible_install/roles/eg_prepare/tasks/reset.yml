@@ -51,6 +51,12 @@
     ip link delete eg-mm5
   ignore_errors: yes
 
+- name: Deleting interface config file
+  file:
+    path: /etc/network/interfaces.d/eg-if.cfg
+    state: absent
+  ignore_errors: yes
+
 - name: Cleanup Other Network Settings for Multi Node Mode
   shell: |
     ip link delete vxlan-mp1
