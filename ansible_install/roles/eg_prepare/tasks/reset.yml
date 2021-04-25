@@ -15,6 +15,10 @@
 
 ---
 
+- name: Delete Harbor Secret
+  shell: kubectl delete secret harbor
+  ignore_errors: yes
+
 - name: Remove Harbor Certs
   file:
     path: /etc/docker/certs.d
@@ -85,10 +89,4 @@
 - name: Remove Helm Repo Container
   shell: "docker rm -f {{ HELM_REPO_CONTAINER_NAME }}"
   when: NODE_MODE == "muno" and K8S_NODE_TYPE == "master"
-  ignore_errors: yes
-
-- name: Uninstall Helm
-  file:
-    path: /usr/local/bin/helm
-    state: absent
   ignore_errors: yes

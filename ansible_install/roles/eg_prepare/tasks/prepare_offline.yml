@@ -23,41 +23,6 @@
   import_tasks: push_images_to_registry.yml
   when: NODE_MODE == "muno" and K8S_NODE_TYPE == "master"
 
-- name: Try to Get Helm Version
-  shell: helm version | cut -d \" -f2
-  register: helmVersion
-  ignore_errors: yes
-
-- name: Helm is Installed
-  debug:
-    msg: "helm {{ HELM_VERSION }} is already installed"
-  when: helmVersion.stdout == (HELM_VERSION)
-
-- name: Helm doesn't be Installed
-  debug:
-    msg: "helm {{ HELM_VERSION }} is not installed yet"
-  when: helmVersion.stdout != (HELM_VERSION)
-
-- name: Unarchive Helm Offline Tarball File
-  unarchive:
-    src: "{{ HELM_TARBALL_FILE }}"
-    dest: "{{ HELM_OFFLINE_DIR }}"
-    copy: no
-  register: unarchiveHelm
-  when: helmVersion.stdout != (HELM_VERSION)
-
-- name : Move Helm Exec File to /usr/local/bin/
-  copy:
-    src: "{{ HELM_OFFLINE_DIR }}/linux-{{ ARCH }}/helm"
-    dest: /usr/local/bin/
-    mode: '0755'
-    remote_src: yes
-  when: helmVersion.stdout != (HELM_VERSION) and unarchiveHelm is succeeded
-
-- name: Check Helm Installed
-  shell: helm version
-  when: helmVersion.stdout != (HELM_VERSION) and unarchiveHelm is succeeded
-
 - name: Setup Helm Repo
   import_tasks: setup_helm_repo.yml
   when: NODE_MODE == "muno" and K8S_NODE_TYPE == "master"

@@ -89,3 +89,42 @@
   file:
     path: /var/run/docker.sock
     mode: 0666
+
+- name: Try to Get Helm Version
+  shell: helm version | cut -d \" -f2
+  register: helmVersion
+  ignore_errors: yes
+
+- name: Helm is Installed
+  debug:
+    msg: "helm {{ HELM_VERSION }} is already installed"
+  when: helmVersion.stdout == (HELM_VERSION)
+
+- name: Helm doesn't be Installed
+  debug:
+    msg: "helm {{ HELM_VERSION }} is not installed yet"
+  when: helmVersion.stdout != (HELM_VERSION)
+
+- name: Unarchive Helm Offline Tarball File
+  unarchive:
+    src: "{{ HELM_TARBALL_FILE }}"
+    dest: "{{ HELM_OFFLINE_DIR }}"
+    copy: no
+  register: unarchiveHelm
+  when: helmVersion.stdout != (HELM_VERSION)
+
+- name : Move Helm Exec File to /usr/local/bin/
+  copy:
+    src: "{{ HELM_OFFLINE_DIR }}/linux-{{ ARCH }}/helm"
+    dest: /usr/local/bin/
+    mode: '0755'
+    remote_src: yes
+  when: helmVersion.stdout != (HELM_VERSION) and unarchiveHelm is succeeded
+
+- name: Check Helm Installed
+  shell: helm version
+  when: helmVersion.stdout != (HELM_VERSION) and unarchiveHelm is succeeded
+
+- name: Setup NFS for Storage Persistent on Master Node
+  import_tasks: nfs_setup.yml
+  when: K8S_NODE_TYPE == "master" and ENABLE_PERSISTENCE is true

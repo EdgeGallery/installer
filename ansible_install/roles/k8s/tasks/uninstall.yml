@@ -15,6 +15,22 @@
 
 ---
 
+- name: Uninstall nfs-client-provisioner
+  shell: helm uninstall nfs-client-provisioner
+  when: K8S_NODE_TYPE == "master" and ENABLE_PERSISTENCE is true
+  ignore_errors: yes
+
+- name: Remove nfs-kernel-server
+  shell: apt-get remove -y nfs-kernel-server
+  when: K8S_NODE_TYPE == "master" and ENABLE_PERSISTENCE is true
+  ignore_errors: yes
+
+- name: Uninstall Helm
+  file:
+    path: /usr/local/bin/helm
+    state: absent
+  ignore_errors: yes
+
 - name: Remove CNI Bin Dir
   file:
     path: "{{ CNI_BIN_PATH }}"

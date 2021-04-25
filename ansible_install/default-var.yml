@@ -46,10 +46,3 @@ MECM_PORT: 30093
 ATP_PORT: 30094
 USER_MGMT_PORT: 30067
 LAB_PORT: 30096
-
-# Could be true or false, currently only support false
-ENABLE_PERSISTENCE: false
-
-# Should set the following 2 params if ENABLE_PERSISTENCE is true
-# NFS_SERVER_IP:
-# NFS_PATH:

@@ -85,3 +85,6 @@
 - name: Copy harbor.tar.gz From FTP Server
   shell: "scp root@{{ FTP_SERVER }}:/home/harbor.tar.gz {{ HARBOR_DIR }}"
   when: ARCH == "amd64" and EG_MODE != "edge"
+
+- name: Copy NFS Packages From FTP Server
+  shell: "scp -r root@{{ FTP_SERVER }}:/home/nfs/{{ ARCH }} {{ NFS_DEB_PATH }}"

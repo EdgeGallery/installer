@@ -1,0 +1,60 @@
+#
+#   Copyright 2021 Huawei Technologies Co., Ltd.
+#
+#   Licensed under the Apache License, Version 2.0 (the "License");
+#   you may not use this file except in compliance with the License.
+#   You may obtain a copy of the License at
+#
+#       http://www.apache.org/licenses/LICENSE-2.0
+#
+#   Unless required by applicable law or agreed to in writing, software
+#   distributed under the License is distributed on an "AS IS" BASIS,
+#   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+#   See the License for the specific language governing permissions and
+#   limitations under the License.
+
+---
+
+- name: Create Directory for NFS
+  file:
+    path: "{{ NFS_PATH }}"
+    state: directory
+    mode: 0755
+
+- name: Install NFS Kernel Server
+  shell: "dpkg -i {{ NFS_DEB_PATH }}/{{ item }}_{{ ARCH }}.deb"
+  loop:
+    - "libtirpc1_0.2.5-1.2ubuntu0.1"
+    - "libnfsidmap2_0.25-5.1"
+    - "rpcbind_0.2.3-0.6ubuntu0.18.04.1"
+    - "keyutils_1.5.9-9.2ubuntu2"
+    - "nfs-common_1%3a1.3.4-2.1ubuntu5.3"
+    - "nfs-kernel-server_1%3a1.3.4-2.1ubuntu5.3"
+
+- name: Edit NFS /etc/exports File
+  lineinfile:
+    path: /etc/exports
+    line: "{{ NFS_PATH }} {{ ansible_default_ipv4['address'] }}(rw,no_root_squash,sync)"
+
+- name: Restart NFS Server
+  service:
+    name: nfs-kernel-server.service
+    state: restarted
+
+- name: Install NFS Client Provisioner For AMD64
+  shell: |
+    helm install --wait nfs-client-provisioner {{ NFS_CHART_FILE }} \
+    --set nfs.server={{ ansible_default_ipv4['address'] }} \
+    --set nfs.path={{ NFS_PATH }} \
+    --set image.repository={{ nfs_image_repository_amd64 }} \
+    --set image.tag={{ nfs_image_tag_amd64 }}
+  when: ARCH == "amd64"
+
+- name: Install NFS Client Provisioner For ARM64
+  shell: |
+    helm install --wait nfs-client-provisioner {{ NFS_CHART_FILE }} \
+    --set nfs.server={{ ansible_default_ipv4['address'] }} \
+    --set nfs.path={{ NFS_PATH }} \
+    --set image.repository={{ nfs_image_repository_arm64 }} \
+    --set image.tag={{ nfs_image_tag_arm64 }}
+  when: ARCH == "arm64"

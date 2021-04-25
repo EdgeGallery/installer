@@ -40,3 +40,15 @@ K8S_DOCKER_IMAGES:
 K8S_TAR_IMAGE: k8s_images.tar.gz
 
 CNI_BIN_PATH: /opt/cni/bin
+
+HELM_VERSION: v3.2.4
+HELM_TARBALL_FILE: "{{ TARBALL_PATH }}/helm/helm-{{ HELM_VERSION }}-linux-{{ ARCH }}.tar.gz"
+HELM_OFFLINE_DIR: "{{ TARBALL_PATH }}/helm"
+
+NFS_DEB_PATH: "{{ TARBALL_PATH }}/nfs"
+NFS_PATH: "/edgegallery/data"
+NFS_CHART_FILE: "{{ HELM_CHARTS_DIR }}/stable/nfs-client-provisioner-1.2.8.tgz"
+nfs_image_repository_amd64: quay.io/external_storage/nfs-client-provisioner
+nfs_image_tag_amd64: v3.1.0-k8s1.11
+nfs_image_repository_arm64: quay.io/codayblue/nfs-subdir-external-provisioner-arm64
+nfs_image_tag_arm64: latest
