@@ -17,7 +17,7 @@ HELM_CHARTS_EG: "{{ HELM_CHARTS_OFFLINE_DIR }}/edgegallery"
 HELM_CHARTS_STABLE: "{{ HELM_CHARTS_OFFLINE_DIR }}/stable"
 
 
-EG_HELM_REPO: "http://helm.edgegallery.org:30002/chartrepo/edgegallery_helm_chart"
+EG_HELM_REPO: "http://119.8.55.191:30002/chartrepo/edgegallery_helm_chart"
 
 EG_HELM_LIST_CONTROLLER:
   - servicecenter
