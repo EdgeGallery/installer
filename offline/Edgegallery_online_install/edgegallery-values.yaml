@@ -204,8 +204,8 @@ images:
     tag: latest
     pullPolicy: Always
   
-# poke config
-poke:
+# app-share config
+app-share:
   enabled: true
   platformName: EdgeGallery AppStore
   platformUrl:  https://192.168.1.11:30099
