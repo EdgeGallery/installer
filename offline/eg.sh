@@ -1238,8 +1238,8 @@ function install_appstore ()
     --set global.ssl.enabled=$appstore_global_ssl_enabled \
     --set global.ssl.secretName=$appstore_global_ssl_secretName \
     --set global.persistence.enabled=$ENABLE_PERSISTENCE \
-    --set app-share.platformUrl=$appstore_poke_platformUrl \
-    --set app-share.atpReportUrl=$appstore_poke_atpReportUrl \
+    --set appShare.platformUrl=$appstore_poke_platformUrl \
+    --set appShare.atpReportUrl=$appstore_poke_atpReportUrl \
     --set appstoreBe.repository.dockerRepoEndpoint=$HARBOR_REPO_IP \
     --set appstoreBe.secretName=edgegallery-appstore-docker-secret
     if [ $? -eq 0 ]; then
