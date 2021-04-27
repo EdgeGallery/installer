@@ -90,7 +90,8 @@
     --set images.postgres.pullPolicy={{ mep_images_postgres_pullPolicy }} \
     --set images.elasticsearch.pullPolicy={{ mep_images_elasticsearch_pullPolicy }} \
     --set ssl.secretName={{ mep_ssl_secretName }} \
-    --set global.persistence.enabled={{ ENABLE_PERSISTENCE }}
+    --set global.persistence.enabled={{ ENABLE_PERSISTENCE }} \
+    --set postgres.password={{ mepPostgresPassword }}
 
 - name: Check MEP Status
   include: "check_pod_status.yml"

@@ -27,6 +27,7 @@
   shell: |
     helm install --wait {{ APPSTORE_HELM_RELEASE_NAME }} {{ HELM_CHARTS_PATH }}/edgegallery/appstore-{{ HELM_TAG }}.tgz \
     --set global.oauth2.authServerAddress=https://{{ PORTAL_IP }}:{{ USER_MGMT_PORT }} \
+    --set global.oauth2.clients.appstore.clientSecret={{ appstoreOauth2ClientSecret }} \
     --set images.appstoreFe.repository={{ appstore_images_appstoreFe_repository }} \
     --set images.appstoreBe.repository={{ appstore_images_appstoreBe_repository }} \
     --set images.postgres.repository={{ appstore_images_postgres_repository }} \
@@ -45,7 +46,8 @@
     --set appShare.platformUrl={{ appstore_poke_platformUrl }} \
     --set appShare.atpReportUrl={{ appstore_poke_atpReportUrl }} \
     --set appstoreBe.repository.dockerRepoEndpoint={{ ansible_default_ipv4['address'] }} \
-    --set appstoreBe.secretName=edgegallery-appstore-docker-secret
+    --set appstoreBe.secretName=edgegallery-appstore-docker-secret \
+    --set postgres.password={{ appstorePostgresPassword }}
 
 - name: Check APPSTORE Status
   uri:

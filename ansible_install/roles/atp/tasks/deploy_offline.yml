@@ -19,6 +19,7 @@
   shell: |
     helm install --wait {{ ATP_HELM_RELEASE_NAME }} {{ HELM_CHARTS_PATH }}/edgegallery/atp-{{ HELM_TAG }}.tgz \
     --set global.oauth2.authServerAddress=https://{{ PORTAL_IP }}:{{ USER_MGMT_PORT }} \
+    --set global.oauth2.clients.atp.clientSecret={{ atpOauth2ClientSecret }} \
     --set images.atpFe.repository={{ atp_images_atpFe_repository }} \
     --set images.atp.repository={{ atp_images_atp_repository }} \
     --set images.postgres.repository={{ atp_images_postgres_repository }} \
@@ -32,7 +33,8 @@
     --set images.postgres.pullPolicy={{ atp_images_postgres_pullPolicy }} \
     --set images.initservicecenter.pullPolicy={{ atp_images_initservicecenter_pullPolicy }} \
     --set global.ssl.enabled={{ atp_global_ssl_enabled }} \
-    --set global.ssl.secretName={{ atp_global_ssl_secretName }}
+    --set global.ssl.secretName={{ atp_global_ssl_secretName }} \
+    --set postgres.password={{ atpPostgresPassword }}
 
 - name: Check ATP Status
   uri:

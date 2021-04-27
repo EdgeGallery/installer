@@ -25,7 +25,16 @@
 - name: Deploy USER_MGMT
   shell: |
     helm install --wait user-mgmt-edgegallery {{ HELM_CHARTS_PATH }}/edgegallery/usermgmt-{{ HELM_TAG }}.tgz \
-    --set global.oauth2.clients.appstore.clientUrl=https://{{ PORTAL_IP }}:{{ APPSTORE_PORT }},global.oauth2.clients.developer.clientUrl=https://{{ PORTAL_IP }}:{{ DEVELOPER_PORT }},global.oauth2.clients.mecm.clientUrl=https://{{ PORTAL_IP }}:{{ MECM_PORT }},global.oauth2.clients.atp.clientUrl=https://{{ PORTAL_IP }}:{{ ATP_PORT }},global.oauth2.clients.lab.clientUrl=https://{{ PORTAL_IP }}:{{ LAB_PORT }}, \
+    --set global.oauth2.clients.appstore.clientUrl=https://{{ PORTAL_IP }}:{{ APPSTORE_PORT }} \
+    --set global.oauth2.clients.appstore.clientSecret={{ userMgmtOauth2AppstoreClientSecret }} \
+    --set global.oauth2.clients.developer.clientUrl=https://{{ PORTAL_IP }}:{{ DEVELOPER_PORT }} \
+    --set global.oauth2.clients.developer.clientSecret={{ userMgmtOauth2DeveloperClientSecret }} \
+    --set global.oauth2.clients.mecm.clientUrl=https://{{ PORTAL_IP }}:{{ MECM_PORT }} \
+    --set global.oauth2.clients.mecm.clientSecret={{ userMgmtOauth2MecmClientSecret }} \
+    --set global.oauth2.clients.atp.clientUrl=https://{{ PORTAL_IP }}:{{ ATP_PORT }} \
+    --set global.oauth2.clients.atp.clientSecret={{ userMgmtOauth2AtpClientSecret }} \
+    --set global.oauth2.clients.lab.clientUrl=https://{{ PORTAL_IP }}:{{ LAB_PORT }} \
+    --set global.oauth2.clients.lab.clientSecret={{ userMgmtOauth2LabClientSecret }} \
     --set jwt.secretName={{ usermgmt_jwt_secretName }} \
     --set images.usermgmt.repository={{ usermgmt_images_usermgmt_repository }} \
     --set images.postgres.repository={{ usermgmt_images_postgres_repository }} \
@@ -41,7 +50,9 @@
     --set images.initservicecenter.pullPolicy={{ usermgmt_images_initservicecenter_pullPolicy }} \
     --set global.ssl.enabled={{ usermgmt_global_ssl_enabled }} \
     --set global.ssl.secretName={{ usermgmt_global_ssl_secretName }} \
-    --set global.persistence.enabled={{ ENABLE_PERSISTENCE }}
+    --set global.persistence.enabled={{ ENABLE_PERSISTENCE }} \
+    --set postgres.password={{ userMgmtPostgresPassword }} \
+    --set redis.password={{ userMgmtRedisPassword }}
 
 - name: Check USER_MGMT Status
   uri:

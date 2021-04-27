@@ -19,6 +19,7 @@
   shell: |
     helm install --wait {{ DEVELOPER_HELM_RELEASE_NAME }} {{ HELM_CHARTS_PATH }}/edgegallery/developer-{{ HELM_TAG }}.tgz \
     --set global.oauth2.authServerAddress=https://{{ PORTAL_IP }}:{{ USER_MGMT_PORT }} \
+    --set global.oauth2.clients.developer.clientSecret={{ developerOauth2ClientSecret }} \
     --set images.developerFe.repository={{ developer_images_developerFe_repository }} \
     --set images.developerBe.repository={{ developer_images_developerBe_repository }} \
     --set images.postgres.repository={{ developer_images_postgres_repository }} \
@@ -42,7 +43,9 @@
     --set global.persistence.enabled={{ ENABLE_PERSISTENCE }} \
     --set developer.dockerRepo.endpoint={{ ansible_default_ipv4['address'] }} \
     --set developer.dockerRepo.password={{ HARBOR_ADMIN_PASSWORD }} \
-    --set developer.dockerRepo.username=admin
+    --set developer.dockerRepo.username=admin \
+    --set postgres.password={{ developerPostgresPassword }} \
+    --set developer.vmImage.password={{ developerVMImagePassword }}
 
 - name: Check DEVELOPER Status
   uri:
