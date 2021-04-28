@@ -25,6 +25,7 @@
   vars_files:
     - ./var.yml
     - ./default-var.yml
+    - ./password-var.yml
   roles:
     - { role: init, tags: ['init'] }
     - { role: k8s, tags: ['k8s'] }
