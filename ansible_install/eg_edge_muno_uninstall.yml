@@ -40,6 +40,7 @@
   vars_files:
     - ./var.yml
     - ./default-var.yml
+    - ./password-var.yml
   roles:
     - { role: eg_prepare, tags: ['eg_prepare-worker'] }
     - { role: k8s, tags: ['k8s-worker'] }
@@ -55,6 +56,7 @@
   vars_files:
     - ./var.yml
     - ./default-var.yml
+    - ./password-var.yml
   roles:
     - { role: eg_prepare, tags: ['eg_prepare-master'] }
     - { role: k8s, tags: ['k8s-master'] }
