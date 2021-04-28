@@ -34,7 +34,7 @@
 - name: Edit NFS /etc/exports File
   lineinfile:
     path: /etc/exports
-    line: "{{ NFS_PATH }} {{ ansible_default_ipv4['address'] }}(rw,no_root_squash,sync)"
+    line: "{{ NFS_PATH }} *(rw,no_root_squash,sync)"
 
 - name: Restart NFS Server
   service:
