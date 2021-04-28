@@ -41,6 +41,9 @@
     name: nfs-kernel-server.service
     state: restarted
 
+- name: Load NFS Images
+  shell: "docker load --input {{ NFS_IMAGE }}"
+
 - name: Install NFS Client Provisioner For AMD64
   shell: |
     helm install --wait nfs-client-provisioner {{ NFS_CHART_FILE }} \

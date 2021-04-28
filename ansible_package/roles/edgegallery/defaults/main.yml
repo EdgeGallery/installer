@@ -13,7 +13,6 @@
 
 EG_IMAGES_DIR: "{{ TARBALL_PATH }}/eg_swr_images"
 HARBOR_DIR: "{{ TARBALL_PATH }}/harbor"
-NFS_DEB_PATH: "{{ TARBALL_PATH }}/nfs"
 
 EG_IMAGE_LIST_CONTROLLER:
   - swr.ap-southeast-1.myhuaweicloud.com/edgegallery/appstore-fe:{{ EG_IMAGE_TAG }}
@@ -60,9 +59,3 @@ EG_IMAGE_LIST_EDGE_X86:
 EG_IMAGE_LIST_EDGE_ARM64:
   - swr.ap-southeast-1.myhuaweicloud.com/eg-common/metallb/speaker:v0.9.3-arm64
   - swr.ap-southeast-1.myhuaweicloud.com/eg-common/metallb/controller:v0.9.3-arm64
-
-CLIENT_PROVISIONER_X86:
-  - quay.io/external_storage/nfs-client-provisioner:v3.1.0-k8s1.11
-
-CLIENT_PROVISIONER_ARM64:
-  - quay.io/codayblue/nfs-subdir-external-provisioner-arm64:latest

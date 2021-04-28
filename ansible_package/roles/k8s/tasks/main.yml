@@ -91,3 +91,32 @@
   file:
     path: "{{ K8S_OFFLINE_DIR }}"
     state: absent
+
+- name: Create NFS Directory
+  file:
+    path: "{{ NFS_OFFLINE_DIR }}"
+    state: directory
+
+- name: Copy NFS Packages From FTP Server
+  shell: "scp -r -P {{ FTP_SSH_PORT }} root@{{ FTP_SERVER }}:/home/nfs/{{ ARCH }} {{ NFS_OFFLINE_DIR }}/deb"
+
+- name: Create NFS Images Directory
+  file:
+    path: "{{ NFS_OFFLINE_DIR }}/images"
+    state: directory
+
+- name: Pull Retag and Save NFS Images For AMD64
+  shell: |
+    docker pull {{ NFS_DOCKER_IMAGES_AMD64 }}
+    new_image_name=`echo {{ NFS_DOCKER_IMAGES_AMD64 }} | sed -e "s#swr.ap-southeast-1.myhuaweicloud.com/##g"`
+    docker image tag {{ NFS_DOCKER_IMAGES_AMD64 }} $new_image_name
+    docker save $new_image_name | gzip > {{ NFS_OFFLINE_DIR }}/images/nfs_images.tar.gz
+  when: ARCH == "amd64"
+
+- name: Pull and Retag NFS Images For ARM64
+  shell: |
+    docker pull {{ NFS_DOCKER_IMAGES_ARM64 }}
+    new_image_name=`echo {{ NFS_DOCKER_IMAGES_ARM64 }} | sed -e "s#swr.ap-southeast-1.myhuaweicloud.com/##g"`
+    docker image tag {{ NFS_DOCKER_IMAGES_ARM64 }} $new_image_name
+    docker save $new_image_name | gzip > {{ NFS_OFFLINE_DIR }}/images/nfs_images.tar.gz
+  when: ARCH == "arm64"

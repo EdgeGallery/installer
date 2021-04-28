@@ -45,10 +45,11 @@ HELM_VERSION: v3.2.4
 HELM_TARBALL_FILE: "{{ TARBALL_PATH }}/helm/helm-{{ HELM_VERSION }}-linux-{{ ARCH }}.tar.gz"
 HELM_OFFLINE_DIR: "{{ TARBALL_PATH }}/helm"
 
-NFS_DEB_PATH: "{{ TARBALL_PATH }}/nfs"
+NFS_DEB_PATH: "{{ TARBALL_PATH }}/nfs/deb"
+NFS_IMAGE: "{{ TARBALL_PATH }}/nfs/images/nfs_images.tar.gz"
 NFS_PATH: "/edgegallery/data"
 NFS_CHART_FILE: "{{ HELM_CHARTS_DIR }}/stable/nfs-client-provisioner-1.2.8.tgz"
-nfs_image_repository_amd64: quay.io/external_storage/nfs-client-provisioner
+nfs_image_repository_amd64: eg-common/quay.io/external_storage/nfs-client-provisioner
 nfs_image_tag_amd64: v3.1.0-k8s1.11
-nfs_image_repository_arm64: quay.io/codayblue/nfs-subdir-external-provisioner-arm64
+nfs_image_repository_arm64: eg-common/quay.io/codayblue/nfs-subdir-external-provisioner-arm64
 nfs_image_tag_arm64: latest
