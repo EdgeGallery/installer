@@ -24,6 +24,7 @@ postgresAppoPassword: te9Fmv%qaq
 postgresInventoryPassword: te9Fmv%qaq
 edgeRepoUserName: admin
 
+meo_global_ssl_enabled: true
 meo_ssl_secretName: mecm-ssl-secret
 meo_mecm_secretName: edgegallery-mecm-secret
 meo_images_inventory_repository: "{{ REGISTRY_URL }}edgegallery/mecm-inventory"

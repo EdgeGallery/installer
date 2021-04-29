@@ -46,6 +46,7 @@
   shell: |
     helm install --wait mecm-meo-edgegallery {{ HELM_CHARTS_PATH }}/edgegallery/mecm-meo-{{ HELM_TAG }}.tgz \
     --set ssl.secretName={{ meo_ssl_secretName }} \
+    --set global.ssl.enabled={{ meo_global_ssl_enabled }} \
     --set mecm.secretName={{ meo_mecm_secretName }} \
     --set images.inventory.repository={{ meo_images_inventory_repository }} \
     --set images.appo.repository={{ meo_images_appo_repository }} \
