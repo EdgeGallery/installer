@@ -23,7 +23,6 @@ postgresApmPassword: te9Fmv%qaq
 postgresAppoPassword: te9Fmv%qaq 
 postgresInventoryPassword: te9Fmv%qaq
 edgeRepoUserName: admin
-edgeRepoPassword: admin123
 
 meo_ssl_secretName: mecm-ssl-secret
 meo_mecm_secretName: edgegallery-mecm-secret
