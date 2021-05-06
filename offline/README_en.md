@@ -1,3 +1,7 @@
+
+## This installer is deprecated since version 1.1. Please use ansible based installer mode instead.
+
+
 Edge gallery offline installer provides deployer for kubernetes based edge gallery deployment based on ubuntu x86_64 or arm64 architecture.
 
 Deployment Architecture
