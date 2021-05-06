@@ -36,7 +36,7 @@
   when: PORTAL_IP is undefined
 
 - name: Check whether DEVELOPER is Deployed
-  shell: "helm list | grep {{ DEVELOPER_HELM_RELEASE_NAME }}"
+  shell: "helm list -A | grep {{ DEVELOPER_HELM_RELEASE_NAME }}"
   register: developerDeployed 
   ignore_errors: yes
 
@@ -49,12 +49,8 @@
   when: developerDeployed is failed and OPERATION == "install"
 
 - debug:
-    msg: DEVELOPER is already deployed, will be undeployed
-  when: developerDeployed is succeeded and OPERATION == "uninstall"
-
-- debug:
-    msg: DEVELOPER is not deployed, no need to be undeployed anymore
-  when: developerDeployed is failed and OPERATION == "uninstall"
+    msg: DEVELOPER is already deployed or not deployed successfully, will be undeployed
+  when: OPERATION == "uninstall"
 
 - name: Deploy DEVELOPER Online
   include: "deploy_online.yml"
@@ -66,4 +62,4 @@
 
 - name: Undeploy DEVELOPER
   include: "undeploy.yml"
-  when: developerDeployed is succeeded and OPERATION == "uninstall"
+  when: OPERATION == "uninstall"

@@ -36,7 +36,7 @@
   when: PORTAL_IP is undefined
 
 - name: Check whether USER_MGMT is Deployed
-  shell: helm list | grep user-mgmt-edgegallery 
+  shell: helm list -A | grep user-mgmt-edgegallery 
   register: userMgmtDeployed
   ignore_errors: yes
 
@@ -49,12 +49,8 @@
   when: userMgmtDeployed is failed and OPERATION == "install"
 
 - debug:
-    msg: USER_MGMT is already deployed, will be undeployed
-  when: userMgmtDeployed is succeeded and OPERATION == "uninstall"
-
-- debug:
-    msg: USER_MGMT is not deployed, no need to be undeployed anymore
-  when: userMgmtDeployed is failed and OPERATION == "uninstall"
+    msg: USER_MGMT is already deployed or not deployed successfully, will be undeployed
+  when: OPERATION == "uninstall"
 
 - name: Deploy USER_MGMT Online
   include: "deploy_online.yml"
@@ -66,4 +62,4 @@
 
 - name: Undeploy USER_MGMT
   include: "undeploy.yml"
-  when: userMgmtDeployed is succeeded and OPERATION == "uninstall"
+  when: OPERATION == "uninstall"
