@@ -37,7 +37,7 @@ The same as online installation, the offline installation is also based on Ubunt
   - 100G Storage
   - Single or Multi NIC
 
-  INFO: The Ansible controller node and the Master Node could be the same node.
+   **INFO: The Ansible controller node and the Master Node could be the same node.** 
 
 ### 1.2 Multi-Node Deployment
 
@@ -91,7 +91,7 @@ The same as online installation, the offline installation is also based on Ubunt
 
 ### 2.3 Download EdgeGallery Offline Package
 
-All EG offline packages could be found on [Edgegallery Home Page](https://www.edgegallery.org/).
+All EG offline packages could be found on [EdgeGallery Download Page](https://www.edgegallery.org/en/downloaden/).
 Users need to choose the package with exact architecture (x86 or arm64) and EG Mode (edge, controller or all).
 
 The following guide takes x86 architecture and "all" mode (edge + controller) as the example to introduce
@@ -192,6 +192,23 @@ Please refer to the files, `hosts-aio` and `hosts-muno` under /home/ansible-all-
     ansible_ssh_port=xx
     ```
 
+- SSH user must be root, if failed with the log "Timeout (12s) waiting for privilege escalation prompt: ", then need to set the user to be root.
+
+    ```
+    [master]
+    xxx.xxx.xxx.xxx
+    [master:vars]
+    ansible_ssh_port=xx
+    ansible_ssh_user=root
+
+    [worker]
+    xxx.xxx.xxx.xxx
+    xxx.xxx.xxx.xxx
+    [worker:vars]
+    ansible_ssh_port=xx
+    ansible_ssh_user=root
+    ```
+
 NOTE: Release v1.1 only supports one master and several worker (less than 12) nodes.
 Also the Ansible controller node can also act as one of the master or worker node.
 
@@ -200,8 +217,8 @@ Also the Ansible controller node can also act as one of the master or worker nod
   All parameters that user could set are in file /home/ansible-all-x86-latest/install/var.yml.
 
   ```
-  # Set the Password of Harbor admin account
-  HARBOR_ADMIN_PASSWORD: Harbor@edge
+  # Set the Password of Harbor admin account, no default value, must set by users here
+  HARBOR_ADMIN_PASSWORD:
 
   # ip for portals, will be set to private IP of master node default or reset it to be the public IP of master node here
   # PORTAL_IP: xxx.xxx.xxx.xxx
@@ -229,49 +246,13 @@ ansible-playbook --inventory hosts-muno eg_all_muno_install.yml
 
 ## 4. EdgeGallery Deployment -- Deploy EdgeGallery only
 
-If the k8s cluster is already there, you can deploy EG directly. Here take the multi node deploy
+If the k8s cluster is already there, as well as helm and docker registry, you can deploy EG directly. Here take the multi node deploy
 with 'all' EG mode as the example to introduce how to skip the k8s deployment and directly deploy EG.
 
-```
----
-
-# IaaS Deployment on Master and Worker Node
-- hosts: master
-  become: yes
-  vars:
-    - OPERATION: install
-    - EG_MODE: all
-    - NODE_MODE: muno
-    - K8S_NODE_TYPE: master
-  vars_files:
-    - ./var.yml
-    - ./default-var.yml
-  roles:
-    - init
-#    - k8s
-    - eg_prepare
-
-- hosts: worker
-  become: yes
-  vars:
-    - OPERATION: install
-    - EG_MODE: all
-    - NODE_MODE: muno
-    - K8S_NODE_TYPE: worker
-  vars_files:
-    - ./var.yml
-    - ./default-var.yml
-  roles:
-    - init
-#    - k8s
-    - eg_prepare
-```
-
-As showing in the previous file, it only needs to comment out 2 lines of `- k8s`, then the k8s deployment has been skipped.
-After that, use the same command to deploy EG as the previous section.
+Use the command below to deploy EG directly ans skip the step of deploying k8s.
 
 ```
-ansible-playbook --inventory hosts-muno eg_all_muno_install.yml
+ansible-playbook --inventory hosts-muno eg_all_muno_install.yml --skip-tags=k8s
 ```
 
 ## 5. Uninstall EdgeGallery
@@ -298,66 +279,11 @@ ansible-playbook --inventory hosts-muno eg_all_muno_uninstall.yml
 
 ## 6. How to install EdgeGallery with self-defined Scenario File
 
-Besides using the scenario files given in the offline packages, users can self-define the scenario
-files to decide which modules you want to deploy and which you don't.
-
-You can refer to the following eg_all_muno_install.yml to learn how to self-define the scenario file.
+Besides using the scenario files given in the offline packages, users can choose which roles to deploy and which don't
+with the ansible-playbook command lines by using options --skip-tags and --tags.
 
 ```
----
-
-# IaaS Deployment on Master and Worker Node
-- hosts: master
-  become: yes
-  vars:
-    - OPERATION: install
-    - EG_MODE: all
-    - NODE_MODE: muno
-    - K8S_NODE_TYPE: master
-  vars_files:
-    - ./var.yml
-    - ./default-var.yml
-  roles:
-    - init
-    - k8s
-    - eg_prepare
-
-- hosts: worker
-  become: yes
-  vars:
-    - OPERATION: install
-    - EG_MODE: all
-    - NODE_MODE: muno
-    - K8S_NODE_TYPE: worker
-  vars_files:
-    - ./var.yml
-    - ./default-var.yml
-  roles:
-    - init
-    - k8s
-    - eg_prepare
-
-# PaaS Deployment on Master
-- hosts: master
-  become: yes
-  vars:
-    - OPERATION: install
-    - EG_MODE: all
-    - NODE_MODE: muno
-    - K8S_NODE_TYPE: master
-  vars_files:
-    - ./var.yml
-    - ./default-var.yml
-  roles:
-    - mep
-    - mecm-mepm
-    - user-mgmt
-    - mecm-meo
-    - mecm-fe
-    - appstore
-    - developer
-    - atp
-    - eg_check
+ansible-playbook --inventory hosts-muno eg_all_muno_install.yml --tags=eg_prepare
 ```
 
 The file is deploying multiple node cluster with both edge and controller. The self-defined deployment

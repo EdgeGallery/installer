@@ -13,9 +13,9 @@ EdgeGallery离线安装是为单机环境提供的安装方式，便于各种只
 
 1. 一个部署控制节点
 
-    部署控制节点建议选择有互联网访问权限的机器，便于进行Python与Ansible安装，以及下载EdgeGallery离线安装包。
+    部署控制节点建议选择有互联网访问权限的机器，便于进行Python，pip3与Ansible安装，以及下载EdgeGallery离线安装包。
 
-    部署控制节点需预安装如下依赖组件，若部署控制节点无互联网访问权限，可以参考下一节内容进行Ansible的离线安装。
+    部署控制节点需预安装如下依赖组件，若部署控制节点无互联网访问权限，可以参考下一节内容进行Ansible的离线安装，python与pip3安装请自行安装。
 
     以下版本为经过开发与测试验证的可使用版本，推荐使用，其他版本未经验证。
 
@@ -35,8 +35,8 @@ EdgeGallery离线安装是为单机环境提供的安装方式，便于各种只
     - 100G硬盘
     - 单网卡或者多网卡。
 
-    待部署节点与部署控制节点可以为同一节点。
-
+    **注：待部署节点与部署控制节点可以为同一节点。** 
+ 
 ### 1.2 多节点部署
 
 1. 一个部署控制节点
@@ -45,7 +45,7 @@ EdgeGallery离线安装是为单机环境提供的安装方式，便于各种只
 
 2. 多个待部署节点
 
-    待部署节点分为一个Master节点和一个或多个Worker节点。节点要求与单节点部署要求一致。
+    待部署节点分为一个Master节点与一个或多个Worker节点。节点要求与单节点部署要求一致。
 
 ## 2. 部署控制节点配置
 
@@ -68,7 +68,7 @@ EdgeGallery离线安装是为单机环境提供的安装方式，便于各种只
   - 离线安装Ansible：
 
       1. 在可访问互联网的机器上下载[ _X86 Ansible离线安装包_ ](https://edgegallery.obs.cn-east-3.myhuaweicloud.com/ansible-offline-install-python3-x86.tar.gz)或者[ _ARM64 Ansible离线安装包_  ](https://edgegallery.obs.cn-east-3.myhuaweicloud.com/ansible-offline-install-python3-arm64.tar.gz)
-      2. 拷贝安装包到部署控制节点任意目录，此处假设下载的是x86的安装包，拷贝到部署控制节点的/home目录
+      2. 拷贝安装包到部署控制节点任意目录，此处假设下载的是x86的Ansible离线安装包，拷贝到部署控制节点的/home目录
       3. 在部署控制节点上执行以下操作，安装Ansible
 
             ```
@@ -84,7 +84,7 @@ EdgeGallery离线安装是为单机环境提供的安装方式，便于各种只
 
 ### 2.3 下载EdgeGallery离线安装包
 
-EdgeGallery的所有离线安装包均可在EdgeGallery官网进行下载。请[点击进入官网](https://www.edgegallery.org/)，选择对应架构（x86或arm64）下的边缘（edge）部署、中心（controller）部署或边缘+中心（all）部署对应的离线安装包。
+EdgeGallery的所有离线安装包均可在EdgeGallery官网进行下载。请[点击进入官网下载页面](https://www.edgegallery.org/download/)，选择对应架构（x86或arm64）下的边缘（edge）部署、中心（controller）部署或边缘+中心（all）部署对应的离线安装包。
 
 本指导以x86-all为例，介绍如何在x86环境下进行EdgeGallery的单节点与多节点部署。
 
@@ -150,7 +150,7 @@ EdgeGallery的所有离线安装包均可在EdgeGallery官网进行下载。请[
     xxx.xxx.xxx.xxx
     ```
 
-- 多节点部署配置，参考hosts-muno文件进行master和worker节点的配置，当前仅支持一台master节点，一台或多台worker节点。部署控制节点也可以作为某一个master或者worker节点。
+- 多节点部署配置，参考hosts-muno文件进行master和worker节点的配置，当前仅支持一台master节点，一台或多台worker节点。部署控制节点也可同时作为某一个master或者worker节点。
 
     ```
     [master]
@@ -176,13 +176,30 @@ EdgeGallery的所有离线安装包均可在EdgeGallery官网进行下载。请[
     ansible_ssh_port=xx
     ```
 
+- 若默认ssh用户不是root，会提示错误"Timeout (12s) waiting for privilege escalation prompt: "，则需要显示指定ssh的用户为root：
+
+    ```
+    [master]
+    xxx.xxx.xxx.xxx
+    [master:vars]
+    ansible_ssh_port=xx
+    ansible_ssh_user=root
+
+    [worker]
+    xxx.xxx.xxx.xxx
+    xxx.xxx.xxx.xxx
+    [worker:vars]
+    ansible_ssh_port=xx
+    ansible_ssh_user=root
+    ```
+
 ### 3.2. 部署涉及的参数配置
 
   部署输入参数在文件/home/ansible-all-x86-latest/install/var.yml中。输入参数请参考以下信息进行配置：
 
   ```
-  # 部署过程中搭建的Harbor服务器的admin用户的密码
-  HARBOR_ADMIN_PASSWORD: Harbor@edge
+  # 部署过程中搭建的Harbor服务器的admin用户的密码，不提供默认值，须由用户自行设定
+  HARBOR_ADMIN_PASSWORD:
 
   # Appstore，developer等页面的访问ip，默认为master节点的私有IP，可在此设置为master节点的公网IP
   # PORTAL_IP: 111.222.333.444
@@ -210,47 +227,13 @@ ansible-playbook --inventory hosts-muno eg_all_muno_install.yml
 
 ## 4. EdgeGallery部署--已有k8s，仅部署EdgeGallery
 
-若机器已部署k8s（AIO或者多节点部署均可），则可以直接部署EdgeGallery。以下仅以EG_MODE为all，NODE_MODE为muno为例，介绍如何跳过k8s部署步骤，直接部署EG。
+若机器已部署k8s（AIO或者多节点部署均可），helm，docker registry，则可以直接部署EdgeGallery。以下仅以EG_MODE为all，NODE_MODE为muno为例，介绍如何跳过k8s部署步骤，直接部署EG。
+
+
+执行如下命令，跳过k8s部署，即可采用如下命令部署EG。
 
 ```
----
-
-# IaaS Deployment on Master and Worker Node
-- hosts: master
-  become: yes
-  vars:
-    - OPERATION: install
-    - EG_MODE: all
-    - NODE_MODE: muno
-    - K8S_NODE_TYPE: master
-  vars_files:
-    - ./var.yml
-    - ./default-var.yml
-  roles:
-    - init
-#    - k8s
-    - eg_prepare
-
-- hosts: worker
-  become: yes
-  vars:
-    - OPERATION: install
-    - EG_MODE: all
-    - NODE_MODE: muno
-    - K8S_NODE_TYPE: worker
-  vars_files:
-    - ./var.yml
-    - ./default-var.yml
-  roles:
-    - init
-#    - k8s
-    - eg_prepare
-```
-
-在上面给出的文件eg_all_muno_install.yml部分内容中，注释掉master和worker的`- k8s`这行，即可采用如下命令部署EG。
-
-```
-ansible-playbook --inventory hosts-muno eg_all_muno_install.yml
+ansible-playbook --inventory hosts-muno eg_all_muno_install.yml --skip-tags=k8s
 ```
 
 ## 5. EdgeGallery卸载
@@ -276,66 +259,10 @@ ansible-playbook --inventory hosts-muno eg_all_muno_uninstall.yml
 
 ## 6. EdgeGallery用户自定义部署
 
-除以上给出的部署模板，用户也可以进行自定义部署，通过编写部署模板，自定义需要部署的EdgeGallery组件。
-
-用户可参照如下文件eg_all_muno_install.yml进行自定义部署。
-
+除以上给出的部署模板，用户也可以进行自定义部署，通过添加选项--skip-tags和--tags到ansible-playbook命令行，自定义需要部署或跳过的EdgeGallery组件。
 
 ```
----
-
-# IaaS Deployment on Master and Worker Node
-- hosts: master
-  become: yes
-  vars:
-    - OPERATION: install
-    - EG_MODE: all
-    - NODE_MODE: muno
-    - K8S_NODE_TYPE: master
-  vars_files:
-    - ./var.yml
-    - ./default-var.yml
-  roles:
-    - init
-    - k8s
-    - eg_prepare
-
-- hosts: worker
-  become: yes
-  vars:
-    - OPERATION: install
-    - EG_MODE: all
-    - NODE_MODE: muno
-    - K8S_NODE_TYPE: worker
-  vars_files:
-    - ./var.yml
-    - ./default-var.yml
-  roles:
-    - init
-    - k8s
-    - eg_prepare
-
-# PaaS Deployment on Master
-- hosts: master
-  become: yes
-  vars:
-    - OPERATION: install
-    - EG_MODE: all
-    - NODE_MODE: muno
-    - K8S_NODE_TYPE: master
-  vars_files:
-    - ./var.yml
-    - ./default-var.yml
-  roles:
-    - mep
-    - mecm-mepm
-    - user-mgmt
-    - mecm-meo
-    - mecm-fe
-    - appstore
-    - developer
-    - atp
-    - eg_check
+ansible-playbook --inventory hosts-muno eg_all_muno_install.yml --skip-tags=mep,mecm-mepm
 ```
 
 如上所列，此处以多节点部署为例，指导用户如何进行自定义部署。若待部署环境已部署k8s，则无需重复部署k8s，参考第4节内容进行设置。
