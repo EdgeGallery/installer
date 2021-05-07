@@ -272,7 +272,7 @@ ansible-playbook --inventory hosts-muno eg_all_muno_install.yml --skip-tags=mep,
 - eg_prepare（ **必选** ）：EG部署前的必要准备工作，会进行一些特殊的网络配置，harbor安装，其他所需资源创建等。
 - mep（可选）：与EG的其他模块无特殊依赖关系，可以选择部署或者不部署。
 - mecm-mepm（可选）：与EG的其他模块无特殊依赖关系，可以选择部署或者不部署。
-- user-mgmt（**必选**）：是以下所有模块的依赖，若部署以下任意模块，需提前部署user-mgmt模块，用户用户管理。
+- user-mgmt（**必选**）：是以下所有模块的依赖，若部署以下任意模块，需提前部署user-mgmt模块(用户管理)。
 - mecm-meo（可选）：除依赖user-mgmt外，与其他模块无特殊依赖关系。
 - mecm-fe（可选）：除依赖user-mgmt外，与其他模块无特殊依赖关系。
 - appstore（可选）：除依赖user-mgmt外，与其他模块无特殊依赖关系。
