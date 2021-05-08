@@ -20,6 +20,17 @@
   when: K8S_NODE_TYPE == "master" and ENABLE_PERSISTENCE is true
   ignore_errors: yes
 
+- name: Wait For Cleanup All nfs-client-provisioner K8S Resources
+  shell: |
+    kubectl get all -A | grep "nfs-client-provisioner"
+    rc=$?
+    echo $rc
+  register: atpResourceRC
+  until: atpResourceRC.stdout == "1"
+  retries: 60
+  delay: 5
+  ignore_errors: yes
+
 - name: Remove nfs-kernel-server
   shell: apt-get remove -y nfs-kernel-server
   when: K8S_NODE_TYPE == "master" and ENABLE_PERSISTENCE is true

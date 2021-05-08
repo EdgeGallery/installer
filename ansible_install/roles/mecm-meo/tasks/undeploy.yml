@@ -25,3 +25,14 @@
     - "{{ meo_mecm_secretName }}"
     - "{{ meo_ssl_secretName }}"
   ignore_errors: yes
+
+- name: Wait For Cleanup All MECM-MEO K8S Resources
+  shell: |
+    kubectl get all -A | grep -E "mecm-apm|mecm-appo|mecm-inventory|mecm-postgres"
+    rc=$?
+    echo $rc
+  register: atpResourceRC
+  until: atpResourceRC.stdout == "1"
+  retries: 60
+  delay: 5
+  ignore_errors: yes

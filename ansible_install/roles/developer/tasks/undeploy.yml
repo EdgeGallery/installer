@@ -18,3 +18,14 @@
 - name: Undeploy DEVELOPER
   shell: "helm uninstall {{ DEVELOPER_HELM_RELEASE_NAME }}"
   ignore_errors: yes
+
+- name: Wait For Cleanup All DEVELOPER K8S Resources
+  shell: |
+    kubectl get all -A | grep "developer"
+    rc=$?
+    echo $rc
+  register: atpResourceRC
+  until: atpResourceRC.stdout == "1"
+  retries: 60
+  delay: 5
+  ignore_errors: yes

@@ -22,3 +22,14 @@
 - name: Undeploy APPSTORE
   shell: "helm uninstall {{ APPSTORE_HELM_RELEASE_NAME }}"
   ignore_errors: yes
+
+- name: Wait For Cleanup All APPSTORE K8S Resources
+  shell: |
+    kubectl get all -A | grep "appstore"
+    rc=$?
+    echo $rc
+  register: atpResourceRC
+  until: atpResourceRC.stdout == "1"
+  retries: 60
+  delay: 5
+  ignore_errors: yes
