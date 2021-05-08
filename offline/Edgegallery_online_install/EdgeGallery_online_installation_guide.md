@@ -5,6 +5,8 @@
 2.服务器或虚拟机的配置要求：不低于4cpu 16G内存 100G硬盘  \
 3.操作系统：ubuntu 18.04
 #### 一、安装kubernetes 1.18.7 版本
+给docker.sock 文件设置权限（不可缺少此步骤） \
+sudo chmod 666 /var/run/docker.sock
 #### 二、安装helm 3.2.4
 wget -N https://get.helm.sh/helm-v3.2.4-linux-amd64.tar.gz   x86下载helm网址  \
 wget -N https://get.helm.sh/helm-v3.2.4-linux-arm64.tar.gz   ARM下载helm网址  \
