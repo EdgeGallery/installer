@@ -15,6 +15,10 @@
 
 ---
 
+- name: Cleanup All Docker Resources
+  shell: docker system prune -a -f --volumes
+  ignore_errors: yes
+
 - name: Stop Docker Services
   service:
     name: docker.service
