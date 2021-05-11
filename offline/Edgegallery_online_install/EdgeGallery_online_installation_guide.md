@@ -70,20 +70,28 @@ https://gitee.com/edgegallery/installer/blob/master/offline/harbor_install/docke
      --from-literal=postgresInventoryPassword=te9Fmv%qaq \
      --from-literal=dockerRepoUserName=HARBOR_USER	 \
      --from-literal=dockerRepoPassword=HARBOR_PASSWORD
-  ##### 6、生成edgegallery-mecm-secret
+  ##### 6、生成mecm-ssl-secret
+  kubectl create secret generic mecm-ssl-secret \
+     --from-file=keystore.p12=/root/keys/keystore.p12 \
+     --from-file=keystore.jks=/root/keys/keystore.jks \
+     --from-literal=keystorePassword=te9Fmv%qaq \
+     --from-literal=keystoreType=PKCS12 \
+     --from-literal=keyAlias=edgegallery \
+     --from-literal=truststorePassword=te9Fmv%qaq
+  ##### 7、mecm-mepm-ssl-secret
   kubectl create secret generic mecm-mepm-ssl-secret \
      --from-file=server_tls.key=/root/keys/tls.key \
      --from-file=server_tls.crt=/root/keys/tls.crt \
      --from-file=ca.crt=/root/keys/ca.crt  
-  ##### 7、生成mecm-mepm-ssl-secret
+  ##### 8、生成mecm-mepm-ssl-secret
   kubectl create secret generic mecm-mepm-ssl-secret \
      --from-file=server_tls.key=/root/keys/tls.key \
      --from-file=server_tls.crt=/root/keys/tls.crt \
      --from-file=ca.crt=/root/keys/ca.crt
-  ##### 8、生成mecm-mepm-jwt-public-secret
+  ##### 9、生成mecm-mepm-jwt-public-secret
   kubectl create secret generic mecm-mepm-jwt-public-secret \
      --from-file=publicKey=/root/keys/rsa_public_key.pem
-  ##### 9、生成edgegallery-mepm-secret
+  ##### 10、生成edgegallery-mepm-secret
   kubectl create secret generic edgegallery-mepm-secret \
      --from-file=postgres_init.sql=/root/keys/postgres_init.sql \
      --from-literal=postgresPassword=te9Fmv%qaq \
@@ -91,7 +99,7 @@ https://gitee.com/edgegallery/installer/blob/master/offline/harbor_install/docke
      --from-literal=postgresk8sPluginPassword=te9Fmv%qaq \
      --from-literal=postgresosPluginPassword=te9Fmv%qaq   \
      --from-literal=postgresRuleMgrPassword=te9Fmv%qaq 
-  ##### 10.生成mep secret 以下是生成证书的步骤
+  ##### 11.生成mep secret 以下是生成证书的步骤
   mkdir /root/mep_key  
 
   cd  /root/  \
