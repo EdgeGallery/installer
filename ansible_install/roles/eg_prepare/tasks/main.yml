@@ -25,6 +25,16 @@
     ARCH: arm64
   when: ansible_architecture == "aarch64"
 
+- name: Set Harbor IP to PORTAL IP
+  set_fact:
+    HarborIP: "{{ PORTAL_IP }}"
+  when: PORTAL_IP is defined and K8S_NODE_TYPE == "master"
+
+- name: Set Harbor IP to Matser IP
+  set_fact:
+    HarborIP: "{{ groups.master[0] }}"
+  when: PORTAL_IP is undefined and K8S_NODE_TYPE == "master"
+
 - name: Prepare EG Online
   include: "prepare_online.yml"
   when: OPERATION == "install" and NETWORK_MODE == "online"

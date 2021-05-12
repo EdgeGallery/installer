@@ -37,7 +37,7 @@
   replace:
     path: /etc/docker/daemon.json
     regexp: PRIVATE_HARBOR_IP
-    replace: "{{ ansible_default_ipv4['address'] }}"
+    replace: "{{ HarborIP }}"
   when: file_status.stat.exists == False
 
 - name: Copy Docker daemon.json From Master Node to Deploy Node

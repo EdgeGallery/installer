@@ -56,7 +56,7 @@
 - name: Generate RSA Crt File
   shell: |
     openssl req -x509 -new -nodes -sha512 -days 3650 \
-    -subj "/C=CN/ST=Guangzhou/L=Guangzhou/O=example/CN="{{ ansible_default_ipv4['address'] }} \
+    -subj "/C=CN/ST=Guangzhou/L=Guangzhou/O=example/CN="{{ HarborIP }} \
     -key ca.key -out ca.crt
   args:
     chdir: "{{ HARBOR_DIR }}/harbor/cert"
@@ -68,20 +68,20 @@
 
 - name: Create Directory Under /etc/docker/certs.d to Store Cert File
   file:
-    path: "/etc/docker/certs.d/{{ ansible_default_ipv4['address'] }}:443"
+    path: "/etc/docker/certs.d/{{ HarborIP }}:443"
     state: directory
 
 - name: Copy Cert File to the New Directory Under /etc/docker/certs.d
   copy:
     src: "{{ HARBOR_DIR }}/harbor/cert/ca.cert"
-    dest: "/etc/docker/certs.d/{{ ansible_default_ipv4['address'] }}:443"
+    dest: "/etc/docker/certs.d/{{ HarborIP }}:443"
     remote_src: yes
 
 - name: Set Hostname for Harbor
   replace:
     path: "{{ HARBOR_DIR }}/harbor/harbor.yml"
     regexp: "hostname: .*"
-    replace: "hostname: {{ ansible_default_ipv4['address'] }}"
+    replace: "hostname: {{ HarborIP }}"
 
 - name: Set Certificate for Harbor
   replace:
@@ -124,7 +124,7 @@
     chdir: "{{ HARBOR_DIR }}/harbor"
 
 - name: Docker Login Harbor
-  shell: docker login -u admin -p {{ HARBOR_ADMIN_PASSWORD }} {{ ansible_default_ipv4['address'] }}
+  shell: docker login -u admin -p {{ HARBOR_ADMIN_PASSWORD }} {{ HarborIP }}
   register: harborLogin
   until: harborLogin is succeeded
   retries: 12
@@ -132,7 +132,7 @@
 
 - name: Check Whether appstore Project Already Exists
   uri:
-    url: "https://{{ ansible_default_ipv4['address'] }}/api/v2.0/projects?project_name=appstore"
+    url: "https://{{ HarborIP }}/api/v2.0/projects?project_name=appstore"
     user: admin
     password: "{{ HARBOR_ADMIN_PASSWORD }}"
     method: HEAD
@@ -145,7 +145,7 @@
 
 - name: Create appstore Project
   uri:
-    url: "https://{{ ansible_default_ipv4['address'] }}/api/v2.0/projects"
+    url: "https://{{ HarborIP }}/api/v2.0/projects"
     user: admin
     password: "{{ HARBOR_ADMIN_PASSWORD }}"
     method: POST
@@ -161,7 +161,7 @@
 
 - name: Check Whether developer Project Already Exists
   uri:
-    url: "https://{{ ansible_default_ipv4['address'] }}/api/v2.0/projects?project_name=developer"
+    url: "https://{{ HarborIP }}/api/v2.0/projects?project_name=developer"
     user: admin
     password: "{{ HARBOR_ADMIN_PASSWORD }}"
     method: HEAD
@@ -174,7 +174,7 @@
 
 - name: Create developer Project
   uri:
-    url: "https://{{ ansible_default_ipv4['address'] }}/api/v2.0/projects"
+    url: "https://{{ HarborIP }}/api/v2.0/projects"
     user: admin
     password: "{{ HARBOR_ADMIN_PASSWORD }}"
     method: POST
@@ -190,7 +190,7 @@
 
 - name: Check Whether mecm Project Already Exists
   uri:
-    url: "https://{{ ansible_default_ipv4['address'] }}/api/v2.0/projects?project_name=mecm"
+    url: "https://{{ HarborIP }}/api/v2.0/projects?project_name=mecm"
     user: admin
     password: "{{ HARBOR_ADMIN_PASSWORD }}"
     method: HEAD
@@ -203,7 +203,7 @@
 
 - name: Create mecm Project
   uri:
-    url: "https://{{ ansible_default_ipv4['address'] }}/api/v2.0/projects"
+    url: "https://{{ HarborIP }}/api/v2.0/projects"
     user: admin
     password: "{{ HARBOR_ADMIN_PASSWORD }}"
     method: POST
@@ -218,7 +218,7 @@
   when: getMecmProject.status != 200
 
 - name: Create docker-registry Secret For Harbor
-  shell: kubectl create secret docker-registry harbor --docker-server=https://{{ ansible_default_ipv4['address'] }} --docker-username=admin --docker-password={{ HARBOR_ADMIN_PASSWORD }}
+  shell: kubectl create secret docker-registry harbor --docker-server=https://{{ HarborIP }} --docker-username=admin --docker-password={{ HARBOR_ADMIN_PASSWORD }}
 
 - name: Add Harbor Secret to Default serviceaccount
   shell: >
