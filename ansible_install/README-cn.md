@@ -86,13 +86,13 @@ EdgeGallery离线安装是为单机环境提供的安装方式，便于各种只
 
 EdgeGallery的所有离线安装包均可在EdgeGallery官网进行下载。请[点击进入官网下载页面](https://www.edgegallery.org/download/)，选择对应架构（x86或arm64）下的边缘（edge）部署、中心（controller）部署或边缘+中心（all）部署对应的离线安装包。
 
-本指导以x86-all为例，介绍如何在x86环境下进行EdgeGallery的单节点与多节点部署。
+本指导以x86-all为例，介绍如何在x86环境下进行EdgeGallery 1.1.1版本的单节点与多节点部署。
 
-1. 在有互联网访问权限的机器上[ _下载EdgeGallery中心+边缘的x86架构离线包_ ](https://edgegallery.obs.cn-east-3.myhuaweicloud.com/releases/v1.1/x86/EdgeGallery-v1.1-all-x86.tar.gz)，拷贝到部署控制节点上，假设为/home目录。登录部署控制节点，解压EG离线安装包。
+1. 在有互联网访问权限的机器上[ _下载EdgeGallery中心+边缘的x86架构离线包_ ](https://edgegallery.obs.cn-east-3.myhuaweicloud.com/releases/v1.1.1/x86/EdgeGallery-v1.1.1-all-x86.tar.gz)，拷贝到部署控制节点上，假设为/home目录。登录部署控制节点，解压EG离线安装包。
 
     ```
     cd /home
-    tar -xvf EdgeGallery-v1.1-all-x86.tar.gz
+    tar -xvf EdgeGallery-v1.1.1-all-x86.tar.gz
     ```
 
 2. 配置从部署控制节点到master和worker节点的ssh免密登录
@@ -104,7 +104,7 @@ EdgeGallery的所有离线安装包均可在EdgeGallery官网进行下载。请[
     sshpass -V
 
     # 若未安装，则安装sshpass
-    cd /home/ansible-all-x86-latest
+    cd /home/EdgeGallery-v1.1.1-all-x86
     dpkg -i -G -E sshpass_1.06-1_amd64.deb
 
     # 查看sshpass是否安装成功
@@ -141,7 +141,7 @@ EdgeGallery的所有离线安装包均可在EdgeGallery官网进行下载。请[
  
 ### 3.1. 配置待部署节点信息
 
-请参考部署控制节点的/home/ansible-all-x86-latest/install文件夹里的hosts-aio和hosts-muno进行节点配置。
+请参考部署控制节点的/home/EdgeGallery-v1.1.1-all-x86/install文件夹里的hosts-aio和hosts-muno进行节点配置。
 
 - 单节点部署配置，将host-aio中的信息改成待部署节点IP，如下所示：
 
@@ -195,7 +195,7 @@ EdgeGallery的所有离线安装包均可在EdgeGallery官网进行下载。请[
 
 ### 3.2. 部署涉及的参数配置
 
-  部署输入参数在文件/home/ansible-all-x86-latest/install/var.yml中。输入参数请参考以下信息进行配置：
+  部署输入参数在文件/home/EdgeGallery-v1.1.1-all-x86/install/var.yml中。输入参数请参考以下信息进行配置：
 
   ```
   # 部署过程中搭建的Harbor服务器的admin用户的密码，不提供默认值，须由用户自行设定
@@ -216,7 +216,7 @@ EdgeGallery的所有离线安装包均可在EdgeGallery官网进行下载。请[
 执行部署时只需要指定相应的inventory文件（host-aio或host-muno）和模板文件即可。
 
 ```
-cd /home/ansible-all-x86-latest/install
+cd /home/EdgeGallery-v1.1.1-all-x86/install
 
 # 单节点部署
 ansible-playbook --inventory hosts-aio eg_all_aio_install.yml

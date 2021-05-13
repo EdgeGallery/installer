@@ -97,12 +97,12 @@ Users need to choose the package with exact architecture (x86 or arm64) and EG M
 The following guide takes x86 architecture and "all" mode (edge + controller) as the example to introduce
 how to deploy EG in single node and multi nodes cases.
 
-1. [ _Download EG offline package ("all" mode on x86)_ ](https://edgegallery.obs.cn-east-3.myhuaweicloud.com/releases/v1.1/x86/EdgeGallery-v1.1-all-x86.tar.gz)
+1. [ _Download EG offline package ("all" mode on x86)_ ](https://edgegallery.obs.cn-east-3.myhuaweicloud.com/releases/v1.1.1/x86/EdgeGallery-v1.1.1-all-x86.tar.gz)
     on a machine that can access internet, and copy it to Ansible controller node, e.g. /home
 
     ```
     cd /home
-    tar -xvf EdgeGallery-v1.1-all-x86.tar.gz
+    tar -xvf EdgeGallery-v1.1.1-all-x86.tar.gz
     ```
 
 2. Set password-less ssh from Ansible controller node to other nodes
@@ -114,7 +114,7 @@ how to deploy EG in single node and multi nodes cases.
     sshpass -V
 
     # If not, install sshpass
-    cd /home/ansible-all-x86-latest
+    cd /home/EdgeGallery-v1.1.1-all-x86
     dpkg -i -G -E sshpass_1.06-1_amd64.deb
 
     # Check whether sshpass installed successfully
@@ -140,7 +140,7 @@ how to deploy EG in single node and multi nodes cases.
 Currently, the Ansible scripts support deploying both IaaS (k8s) and PaaS (EG). If the k8s cluster has already been
 deployed, then you can jump to the next section for deploying EG only.
 
-The following table gives some deployment scenarios pre-defineded in the EG offline package (under `/home/ansible-all-x86-latest/install/` directory),
+The following table gives some deployment scenarios pre-defineded in the EG offline package (under `/home/EdgeGallery-v1.1.1-all-x86/install/` directory),
 and you can use them directly to deploy EG.
 
 
@@ -157,7 +157,7 @@ and you can use them directly to deploy EG.
 ### 3.1. How to config Ansible Inventory
 
 Ansible inventory is used to set the master and worker nodes info which used to ssh to these nodes by Ansible.
-Please refer to the files, `hosts-aio` and `hosts-muno` under /home/ansible-all-x86-latest/install to do the ansible inventory configuration.
+Please refer to the files, `hosts-aio` and `hosts-muno` under /home/EdgeGallery-v1.1.1-all-x86/install to do the ansible inventory configuration.
 
 - AIO Inventory, replace the exactly master node IP in file `host-aio`:
 
@@ -214,7 +214,7 @@ Also the Ansible controller node can also act as one of the master or worker nod
 
 ### 3.2. How to Set the Parameters
 
-  All parameters that user could set are in file /home/ansible-all-x86-latest/install/var.yml.
+  All parameters that user could set are in file /home/EdgeGallery-v1.1.1-all-x86/install/var.yml.
 
   ```
   # Set the Password of Harbor admin account, no default value, must set by users here
@@ -235,7 +235,7 @@ Also the Ansible controller node can also act as one of the master or worker nod
 It only needs to specify the inventory file (host-aio or host-muno) and the scenario file when deploying.
 
 ```
-cd /home/ansible-all-x86-latest/install
+cd /home/EdgeGallery-v1.1.1-all-x86/install
 
 # AIO Deployment
 ansible-playbook --inventory hosts-aio eg_all_aio_install.yml
