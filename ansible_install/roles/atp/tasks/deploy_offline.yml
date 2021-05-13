@@ -38,7 +38,7 @@
 
 - name: Check ATP Status
   uri:
-    url: "https://{{ ansible_default_ipv4['address'] }}:{{ item }}/health"
+    url: "https://{{ PORTAL_IP }}:{{ item }}/health"
     validate_certs: no
   loop:
     - 30094

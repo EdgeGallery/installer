@@ -25,6 +25,11 @@
     REGISTRY_URL: ""
   when: NODE_MODE == "aio"
 
+- name: Set Portal IP
+  set_fact:
+    PORTAL_IP: "{{ groups.master[0] }}"
+  when: PORTAL_IP is undefined
+
 - name: Check EG_MODE for MECM_MEO
   fail:
     msg: "Could not {{ OPERATION }} MECM_MEO with EG_MODE: {{ EG_MODE }}"

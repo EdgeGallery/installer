@@ -41,7 +41,7 @@
     --set global.ssl.enabled={{ developer_global_ssl_enabled }} \
     --set global.ssl.secretName={{ developer_global_ssl_secretName }} \
     --set global.persistence.enabled={{ ENABLE_PERSISTENCE }} \
-    --set developer.dockerRepo.endpoint={{ ansible_default_ipv4['address'] }} \
+    --set developer.dockerRepo.endpoint={{ PORTAL_IP }} \
     --set developer.dockerRepo.password={{ HARBOR_ADMIN_PASSWORD }} \
     --set developer.dockerRepo.username=admin \
     --set postgres.password={{ developerPostgresPassword }} \
@@ -49,5 +49,5 @@
 
 - name: Check DEVELOPER Status
   uri:
-    url: "https://{{ ansible_default_ipv4['address'] }}:30092/health"
+    url: "https://{{ PORTAL_IP }}:30092/health"
     validate_certs: no

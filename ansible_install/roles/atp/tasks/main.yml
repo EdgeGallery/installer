@@ -32,7 +32,7 @@
 
 - name: Set Portal IP
   set_fact:
-    PORTAL_IP: "{{ ansible_default_ipv4['address'] }}"
+    PORTAL_IP: "{{ groups.master[0] }}"
   when: PORTAL_IP is undefined
 
 - name: Check whether ATP is Deployed

@@ -62,12 +62,12 @@
     --set images.postgres.pullPolicy={{ meo_images_postgres_pullPolicy }} \
     --set mecm.docker.fsgroup={{ dockerGroup.gid }} \
     --set global.persistence.enabled={{ ENABLE_PERSISTENCE }} \
-    --set mecm.repository.dockerRepoEndpoint={{ ansible_default_ipv4['address'] }} \
-    --set mecm.repository.sourceRepos="repo={{ ansible_default_ipv4['address'] }} userName=admin password={{ HARBOR_ADMIN_PASSWORD }}"
+    --set mecm.repository.dockerRepoEndpoint={{ PORTAL_IP }} \
+    --set mecm.repository.sourceRepos="repo={{ PORTAL_IP }} userName=admin password={{ HARBOR_ADMIN_PASSWORD }}"
 
 - name: Check MECM-MEO Status
   uri:
-    url: "https://{{ ansible_default_ipv4['address'] }}:{{ item }}/v1/health"
+    url: "https://{{ PORTAL_IP }}:{{ item }}/v1/health"
     validate_certs: no
   loop:
     - 30201/appo
