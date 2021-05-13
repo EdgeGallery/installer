@@ -29,6 +29,7 @@
   until: atpResourceRC.stdout == "1"
   retries: 60
   delay: 5
+  when: K8S_NODE_TYPE == "master" and ENABLE_PERSISTENCE is true
   ignore_errors: yes
 
 - name: Remove nfs-kernel-server
