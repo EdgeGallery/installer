@@ -82,6 +82,7 @@
   until: atpResourceRC.stdout == "1"
   retries: 60
   delay: 5
+  when: EG_MODE == "all" or EG_MODE == "controller"
   ignore_errors: yes
 
 - name: Delete Secret edgegallery-ssl-secret
