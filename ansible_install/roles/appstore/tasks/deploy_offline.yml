@@ -43,15 +43,15 @@
     --set global.ssl.enabled={{ appstore_global_ssl_enabled }} \
     --set global.ssl.secretName={{ appstore_global_ssl_secretName }} \
     --set global.persistence.enabled={{ ENABLE_PERSISTENCE }} \
-    --set appShare.platformUrl={{ appstore_poke_platformUrl }} \
-    --set appShare.atpReportUrl={{ appstore_poke_atpReportUrl }} \
-    --set appstoreBe.repository.dockerRepoEndpoint={{ ansible_default_ipv4['address'] }} \
+    --set appShare.platformUrl=https://{{ PORTAL_IP }}:30099 \
+    --set appShare.atpReportUrl=https://{{ PORTAL_IP }}:30094/#/atpreport?taskid=%s \
+    --set appstoreBe.repository.dockerRepoEndpoint={{ PORTAL_IP }} \
     --set appstoreBe.secretName=edgegallery-appstore-docker-secret \
     --set postgres.password={{ appstorePostgresPassword }}
 
 - name: Check APPSTORE Status
   uri:
-    url: "https://{{ ansible_default_ipv4['address'] }}:{{ item }}/health"
+    url: "https://{{ PORTAL_IP }}:{{ item }}/health"
     validate_certs: no
   loop:
     - 30091

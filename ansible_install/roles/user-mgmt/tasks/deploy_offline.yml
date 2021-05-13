@@ -56,5 +56,5 @@
 
 - name: Check USER_MGMT Status
   uri:
-    url: "https://{{ ansible_default_ipv4['address'] }}:{{ USER_MGMT_PORT }}/health"
+    url: "https://{{ PORTAL_IP }}:{{ USER_MGMT_PORT }}/health"
     validate_certs: no

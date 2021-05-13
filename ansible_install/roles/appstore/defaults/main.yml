@@ -27,5 +27,3 @@ appstore_images_postgres_pullPolicy: IfNotPresent
 appstore_images_initservicecenter_pullPolicy: IfNotPresent
 appstore_global_ssl_enabled: true
 appstore_global_ssl_secretName: edgegallery-ssl-secret
-appstore_poke_platformUrl: "https://{{ ansible_default_ipv4['address'] }}:30099"
-appstore_poke_atpReportUrl: "https://{{ ansible_default_ipv4['address'] }}:30094/#/atpreport?taskid=%s"
