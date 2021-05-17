@@ -39,65 +39,65 @@ https://gitee.com/edgegallery/installer/blob/master/offline/harbor_install/docke
   mkdir /root/keys/     \
   docker run $env -v /root/keys:/certs swr.ap-southeast-1.myhuaweicloud.com/edgegallery/deploy-tool:latest
   ##### 2、生成edgegallery-ssl-secret 
-  kubectl create secret generic edgegallery-ssl-secret \
-     --from-file=keystore.p12=/root/keys/keystore.p12 \
-     --from-literal=keystorePassword=te9Fmv%qaq \
-     --from-literal=keystoreType=PKCS12 \
-     --from-literal=keyAlias=edgegallery \
-     --from-file=trust.cer=/root/keys/ca.crt \
-     --from-file=server.cer=/root/keys/tls.crt \
-     --from-file=server_key.pem=/root/keys/encryptedtls.key \
+  kubectl create secret generic edgegallery-ssl-secret \  \
+     --from-file=keystore.p12=/root/keys/keystore.p12 \  \
+     --from-literal=keystorePassword=te9Fmv%qaq \  \
+     --from-literal=keystoreType=PKCS12 \  \
+     --from-literal=keyAlias=edgegallery \  \
+     --from-file=trust.cer=/root/keys/ca.crt \  \
+     --from-file=server.cer=/root/keys/tls.crt \  \
+     --from-file=server_key.pem=/root/keys/encryptedtls.key \ \
      --from-literal=cert_pwd=te9Fmv%qaq
   ##### 3、生成user-mgmt-jwt-secret
-  kubectl create secret generic user-mgmt-jwt-secret \
-     --from-file=publicKey=/root/keys/rsa_public_key.pem \
-     --from-file=encryptedPrivateKey=/root/keys/encrypted_rsa_private_key.pem \
+  kubectl create secret generic user-mgmt-jwt-secret \  \
+     --from-file=publicKey=/root/keys/rsa_public_key.pem \ \
+     --from-file=encryptedPrivateKey=/root/keys/encrypted_rsa_private_key.pem \ \
      --from-literal=encryptPassword=te9Fmv%qaq 
   ##### 4、生成edgegallery-appstore-docker-secret
   （下文HARBOR_USER：本机ip HARBOR_USER:admin   HARBOR_PASSWORD:默认Harbor12345 也可以自己定，安装完成后在harbor web页面改密码）
 
-  kubectl create secret generic edgegallery-appstore-docker-secret \
-     --from-literal=devRepoUserName=HARBOR_USER	 \
-     --from-literal=devRepoPassword=HARBOR_PASSWORD    \
-     --from-literal=appstoreRepoUserName=HARBOR_USER	 \
+  kubectl create secret generic edgegallery-appstore-docker-secret \ \
+     --from-literal=devRepoUserName=HARBOR_USER	 \ \
+     --from-literal=devRepoPassword=HARBOR_PASSWORD    \  \
+     --from-literal=appstoreRepoUserName=HARBOR_USER	 \ \
      --from-literal=appstoreRepoPassword=HARBOR_PASSWORD
   ##### 5、生成edgegallery-mecm-secret
-  kubectl create secret generic edgegallery-mecm-secret \
-     --from-file=postgres_init.sql=/root/keys/postgres_init.sql \
-     --from-literal=postgresPassword=te9Fmv%qaq \
-     --from-literal=postgresApmPassword=te9Fmv%qaq \
-     --from-literal=postgresAppoPassword=te9Fmv%qaq \
-     --from-literal=postgresInventoryPassword=te9Fmv%qaq \
-     --from-literal=dockerRepoUserName=HARBOR_USER	 \
+  kubectl create secret generic edgegallery-mecm-secret \  \
+     --from-file=postgres_init.sql=/root/keys/postgres_init.sql \  \
+     --from-literal=postgresPassword=te9Fmv%qaq \  \
+     --from-literal=postgresApmPassword=te9Fmv%qaq \  \
+     --from-literal=postgresAppoPassword=te9Fmv%qaq \  \
+     --from-literal=postgresInventoryPassword=te9Fmv%qaq \  \
+     --from-literal=dockerRepoUserName=HARBOR_USER \  
      --from-literal=dockerRepoPassword=HARBOR_PASSWORD
   ##### 6、生成mecm-ssl-secret
-  kubectl create secret generic mecm-ssl-secret \
-     --from-file=keystore.p12=/root/keys/keystore.p12 \
-     --from-file=keystore.jks=/root/keys/keystore.jks \
-     --from-literal=keystorePassword=te9Fmv%qaq \
-     --from-literal=keystoreType=PKCS12 \
-     --from-literal=keyAlias=edgegallery \
+  kubectl create secret generic mecm-ssl-secret \   \
+     --from-file=keystore.p12=/root/keys/keystore.p12 \  \
+     --from-file=keystore.jks=/root/keys/keystore.jks \  \
+     --from-literal=keystorePassword=te9Fmv%qaq \  \
+     --from-literal=keystoreType=PKCS12 \  \
+     --from-literal=keyAlias=edgegallery \  \
      --from-literal=truststorePassword=te9Fmv%qaq
   ##### 7、生成mecm-mepm-ssl-secret
-  kubectl create secret generic mecm-mepm-ssl-secret \
-     --from-file=server_tls.key=/root/keys/tls.key \
-     --from-file=server_tls.crt=/root/keys/tls.crt \
+  kubectl create secret generic mecm-mepm-ssl-secret \ \
+     --from-file=server_tls.key=/root/keys/tls.key \ \
+     --from-file=server_tls.crt=/root/keys/tls.crt \ \
      --from-file=ca.crt=/root/keys/ca.crt  
   ##### 8、生成mecm-mepm-ssl-secret
-  kubectl create secret generic mecm-mepm-ssl-secret \
-     --from-file=server_tls.key=/root/keys/tls.key \
-     --from-file=server_tls.crt=/root/keys/tls.crt \
+  kubectl create secret generic mecm-mepm-ssl-secret \  \
+     --from-file=server_tls.key=/root/keys/tls.key \  \
+     --from-file=server_tls.crt=/root/keys/tls.crt \   \
      --from-file=ca.crt=/root/keys/ca.crt
   ##### 8、生成mecm-mepm-jwt-public-secret
-  kubectl create secret generic mecm-mepm-jwt-public-secret \
+  kubectl create secret generic mecm-mepm-jwt-public-secret \  \
      --from-file=publicKey=/root/keys/rsa_public_key.pem
   ##### 9、生成edgegallery-mepm-secret
-  kubectl create secret generic edgegallery-mepm-secret \
-     --from-file=postgres_init.sql=/root/keys/postgres_init.sql \
-     --from-literal=postgresPassword=te9Fmv%qaq \
-     --from-literal=postgresLcmCntlrPassword=te9Fmv%qaq \
-     --from-literal=postgresk8sPluginPassword=te9Fmv%qaq \
-     --from-literal=postgresosPluginPassword=te9Fmv%qaq   \
+  kubectl create secret generic edgegallery-mepm-secret \  \
+     --from-file=postgres_init.sql=/root/keys/postgres_init.sql \  \
+     --from-literal=postgresPassword=te9Fmv%qaq \ \
+     --from-literal=postgresLcmCntlrPassword=te9Fmv%qaq \  \
+     --from-literal=postgresk8sPluginPassword=te9Fmv%qaq \  \
+     --from-literal=postgresosPluginPassword=te9Fmv%qaq   \  \
      --from-literal=postgresRuleMgrPassword=te9Fmv%qaq 
   ##### 10.生成mep secret 以下是生成证书的步骤
   mkdir /root/mep_key  
@@ -151,17 +151,22 @@ https://gitee.com/edgegallery/installer/blob/master/offline/harbor_install/docke
   ##### 4、install user-mgmt 
   helm install user-mgmt-edgegallery   helm-charts/user-mgmt  -f      edgegallery-values.yaml
   ##### 5、install appstore
-  helm install appstore-edgegallery    helm-charts/appstore   -f      edgegallery-values.yaml    --set appstoreBe.repository.dockerRepoEndpoint=HARBOR_REPO_IP     --set appstoreBe.secretName=edgegallery-appstore-docker-secret     --set postgres.password=te9Fmv%qaq      #master分支helm-charts 安装需要加 --set postgres.password=te9Fmv%qaq
+  helm install appstore-edgegallery    helm-charts/appstore   -f      edgegallery-values.yaml    \ \
+  --set    appstoreBe.repository.dockerRepoEndpoint=HARBOR_REPO_IP     --set appstoreBe.secretName=edgegallery-appstore-docker-secret   \  
+  --set postgres.password=te9Fmv%qaq      #master分支helm-charts 安装需要加 --set postgres.password=te9Fmv%qaq
   ##### 6、install developer 
-  helm install developer-edgegallery   helm-charts/developer  -f      edgegallery-values.yaml    --set developer.dockerRepo.endpoint=HARBOR_REPO_IP    --set developer.dockerRepo.password=HARBOR_PASSWORD    --set developer.dockerRepo.username=HARBOR_USER     --set postgres.password=te9Fmv%qaq      --set  developer.vmImage.password=123456        #master分支helm-charts 安装需要加   --set postgres.password=te9Fmv%qaq   --set  developer.vmImage.password=123456
+  helm install developer-edgegallery   helm-charts/developer  -f      edgegallery-values.yaml    --set developer.dockerRepo.endpoint=HARBOR_REPO_IP   \  
+ --set developer.dockerRepo.password=HARBOR_PASSWORD    --set developer.dockerRepo.username=HARBOR_USER     --set postgres.password=te9Fmv%qaq      \ \
+ --set  developer.vmImage.password=123456        #master分支helm-charts 安装需要加   --set postgres.password=te9Fmv%qaq   --set  developer.vmImage.password=123456
   ##### 7、install mecm-fe
   helm install mecm-fe-edgegallery      helm-charts/mecm-fe    -f       edgegallery-values.yaml
   ##### 8、install mecm-meo     
   metric-server.yaml 下载地址：
   https://gitee.com/OSDT/dashboard/projects/edgegallery/installer/tree/master/offline/conf/manifest/metric  \
   kubectl apply -f metric-server.yaml      \
-  helm install mecm-meo-edgegallery   helm-charts/mecm-meo   -f      edgegallery-values.yaml      --set ssl.secretName=edgegallery-mecm-ssl-secret 
-     --set mecm.secretName=edgegallery-mecm-secret --set mecm.repository.dockerRepoEndpoint=HARBOR_REPO_IP  --set mecm.repository.sourceRepos="repo=HARBOR_REPO_IP userName=HARBOR_USER password=HARBOR_PASSWORD"
+  helm install mecm-meo-edgegallery   helm-charts/mecm-meo   -f      edgegallery-values.yaml      --set ssl.secretName=edgegallery-mecm-ssl-secret  \ \
+  --set mecm.secretName=edgegallery-mecm-secret --set mecm.repository.dockerRepoEndpoint=HARBOR_REPO_IP   \ \
+  --set mecm.repository.sourceRepos="repo=HARBOR_REPO_IP userName=HARBOR_USER password=HARBOR_PASSWORD"
   ##### 9、install atp
   helm install atp-edgegallery    helm-charts/atp    -f       edgegallery-values.yaml      --set postgres.password=te9Fmv%qaq     #master分支helm-charts 安装需要加 --set postgres.password=te9Fmv%qaq  
   ##### 10、install mecm-mepm
@@ -169,8 +174,8 @@ https://gitee.com/edgegallery/installer/blob/master/offline/harbor_install/docke
   https://gitee.com/OSDT/dashboard/projects/edgegallery/installer/blob/master/offline/conf/manifest/mepm/mepm-service-account.yaml  \
   kubectl apply -f mepm-service-account.yaml     
   
-  helm install mecm-mepm-edgegallery helm-charts/mecm-mepm  -f  edgegallery-values.yaml  --set jwt.publicKeySecretName=mecm-mepm-jwt-public-secret      
- --set ssl.secretName=mecm-mepm-ssl-secret   --set mepm.secretName=edgegallery-mepm-secret 
+  helm install mecm-mepm-edgegallery helm-charts/mecm-mepm  -f  edgegallery-values.yaml  --set jwt.publicKeySecretName=mecm-mepm-jwt-public-secret   \    
+  --set ssl.secretName=mecm-mepm-ssl-secret   --set mepm.secretName=edgegallery-mepm-secret 
   ##### 11、install mep
   ##### 11.1 创建路由 
   ip link add eg-mp1 link eth0 type macvlan mode bridge  #用自己本机的网卡名替代eth0  \
@@ -197,5 +202,5 @@ https://gitee.com/edgegallery/installer/blob/master/offline/harbor_install/docke
   arm： curl -LO  https://github.com/containernetworking/plugins/releases/download/v0.8.7/cni-plugins-linux-arm64-v0.8.7.tgz \
   解压下载的cni 文件后copy macvlan和host-local 到/opt/cni/bin 目录下
   ##### 11.4 安装mep
-  helm install mep-edgegallery         helm-charts/mep        -f       edgegallery-values.yaml  --set networkIsolation.ipamType=host-local   --set 
-  networkIsolation.phyInterface.mp1=eth0   --set networkIsolation.phyInterface.mm5=eth0      # 需要把eth0替换为自己的网卡名
+  helm install mep-edgegallery         helm-charts/mep        -f       edgegallery-values.yaml  --set networkIsolation.ipamType=host-local   \              
+  --set networkIsolation.phyInterface.mp1=eth0   --set networkIsolation.phyInterface.mm5=eth0      # 需要把eth0替换为自己的网卡名
