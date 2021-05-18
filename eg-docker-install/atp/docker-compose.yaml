@@ -1,0 +1,42 @@
+version: "3"
+services:
+  atpFe:
+    image:
+　　  swr.ap-southeast-1.myhuaweicloud.com/edgegallery/atp-fe:latest
+    ports:
+      - 30094:8443
+    environment:
+      LOG_DIR: /usr/app/log
+      LOG_FILE_NAME: atp-fe
+      SC_ADDRESS: http://${ENV_IP}:30100
+      LISTEN_IP: ${ENV_IP}
+      AUTH_SERVER_ADDRESS: http://${ENV_IP}:30067
+      COOKIE_NAME: ATPSESSIONID
+      CLIENT_ID: atp-fe
+      SSL_ENABLED: "false"
+      IS_SECURE_BACKEND: "false"
+      
+  atp:
+    image:
+　　  swr.ap-southeast-1.myhuaweicloud.com/edgegallery/atp-be:latest
+    environment:
+      LOG_DIR: /usr/app/log
+      SC_ADDRESS: http://${ENV_IP}:30100
+      LISTEN_IP: ${ENV_IP}
+      POSTGRES_IP: atp-postgres-svc
+      POSTGRES_PORT: "5432"
+      POSTGRES_DB_NAME: "atpdb"
+      POSTGRES_USERNAME: "atp"
+      POSTGRES_PASSWORD: "te9Fmv%qaq"
+      AUTH_SERVER_ADDRESS: http://${ENV_IP}:30067
+      SSL_ENABLED: "false"
+  postgres:
+    image: 
+      swr.ap-southeast-1.myhuaweicloud.com/edgegallery/postgres:12.3
+    environment:
+      POSTGRES_USER："atp"
+      POSTGRES_PASSWORD: "te9Fmv%qaq"
+      POSTGRES_DB: "atpdb"
+    volumes:
+      - ./postgres-data:/docker-entrypoint-initdb.d/      
+    
