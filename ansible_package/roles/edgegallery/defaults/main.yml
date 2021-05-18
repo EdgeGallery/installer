@@ -37,6 +37,7 @@ EG_IMAGE_LIST_CONTROLLER:
 EG_IMAGE_LIST_EDGE_COMMON:
   - swr.ap-southeast-1.myhuaweicloud.com/edgegallery/mepauth:{{ EG_IMAGE_TAG }}
   - swr.ap-southeast-1.myhuaweicloud.com/edgegallery/mep:{{ EG_IMAGE_TAG }}
+  - swr.ap-southeast-1.myhuaweicloud.com/edgegallery/mep-agent:{{ EG_IMAGE_TAG }}
   - swr.ap-southeast-1.myhuaweicloud.com/edgegallery/mep-fe:{{ EG_IMAGE_TAG }}
   - swr.ap-southeast-1.myhuaweicloud.com/edgegallery/mep-dns-server:{{ EG_IMAGE_TAG }}
   - swr.ap-southeast-1.myhuaweicloud.com/edgegallery/edgegallery-secondary-ep-controller:{{ EG_IMAGE_TAG }}
