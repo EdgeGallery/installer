@@ -1,0 +1,24 @@
+# docker install#
+
+curl -sSL https://get.daocloud.io/docker | sh
+
+sudo chmod 666 /var/run/docker.sock
+
+# helm install#
+
+wget -N https://get.helm.sh/helm-v3.2.4-linux-amd64.tar.gz
+
+tar -zxvf helm-v3.2.4-linux-amd64.tar.gz
+
+cp ./linux-amd64/helm /usr/local/bin/
+
+helm version
+
+
+# daemon.json#
+
+vim /etc/docker/daemon.json
+{
+    "insecure-registries" : ["*.*.*.*"]
+}
+
