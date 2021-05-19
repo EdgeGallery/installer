@@ -1216,11 +1216,6 @@ function install_appstore ()
   if resilient_utility "read" "APPSTORE:UN_DEPLOYED";then
     info "[Deploying AppStore  ........]" $BLUE
     info "[it would take maximum of 5mins .......]" $BLUE
-    kubectl create secret generic edgegallery-appstore-docker-secret \
-      --from-literal=devRepoUserName=$HARBOR_USER	 \
-      --from-literal=devRepoPassword=$HARBOR_PASSWORD    \
-      --from-literal=appstoreRepoUserName=$HARBOR_USER	 \
-      --from-literal=appstoreRepoPassword=$HARBOR_PASSWORD
     helm install --wait appstore-edgegallery "$CHART_PREFIX"edgegallery/appstore"$CHART_SUFFIX" \
     --set global.oauth2.authServerAddress=https://$NODEIP:$USER_MGMT \
     --set images.appstoreFe.repository=$appstore_images_appstoreFe_repository \
@@ -1240,8 +1235,11 @@ function install_appstore ()
     --set global.persistence.enabled=$ENABLE_PERSISTENCE \
     --set appShare.platformUrl=$appstore_poke_platformUrl \
     --set appShare.atpReportUrl=$appstore_poke_atpReportUrl \
-    --set appstoreBe.repository.dockerRepoEndpoint=$HARBOR_REPO_IP \
-    --set appstoreBe.secretName=edgegallery-appstore-docker-secret
+    --set appstoreBe.dockerRepo.endpoint=$HARBOR_REPO_IP \
+    --set appstoreBe.dockerRepo.appstore.password=$HARBOR_PASSWORD \
+    --set appstoreBe.dockerRepo.appstore.username=$HARBOR_USER \
+    --set appstoreBe.dockerRepo.developer.password=$HARBOR_PASSWORD \
+    --set appstoreBe.dockerRepo.developer.username=$HARBOR_USER
     if [ $? -eq 0 ]; then
       info "[Deployed AppStore  .........]" $GREEN
       resilient_utility "write" "APPSTORE:DEPLOYED"
@@ -1257,7 +1255,6 @@ function uninstall_appstore ()
 {
   info "[UnDeploying AppStore  ......]" $BLUE
   helm uninstall appstore-edgegallery
-  kubectl delete secret edgegallery-appstore-docker-secret
   resilient_utility "write" "APPSTORE:UN_DEPLOYED"
   info "[UnDeployed AppStore  .......]" $GREEN
 }

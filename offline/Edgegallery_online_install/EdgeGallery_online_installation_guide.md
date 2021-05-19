@@ -53,15 +53,7 @@ https://gitee.com/edgegallery/installer/blob/master/offline/harbor_install/docke
      --from-file=publicKey=/root/keys/rsa_public_key.pem \ \
      --from-file=encryptedPrivateKey=/root/keys/encrypted_rsa_private_key.pem \ \
      --from-literal=encryptPassword=te9Fmv%qaq 
-  ##### 4、生成edgegallery-appstore-docker-secret
-  （下文HARBOR_USER：本机ip HARBOR_USER:admin   HARBOR_PASSWORD:默认Harbor12345 也可以自己定，安装完成后在harbor web页面改密码）
-
-  kubectl create secret generic edgegallery-appstore-docker-secret \ \
-     --from-literal=devRepoUserName=HARBOR_USER	 \ \
-     --from-literal=devRepoPassword=HARBOR_PASSWORD    \  \
-     --from-literal=appstoreRepoUserName=HARBOR_USER	 \ \
-     --from-literal=appstoreRepoPassword=HARBOR_PASSWORD
-  ##### 5、生成edgegallery-mecm-secret
+  ##### 4、生成edgegallery-mecm-secret
   kubectl create secret generic edgegallery-mecm-secret \  \
      --from-file=postgres_init.sql=/root/keys/postgres_init.sql \  \
      --from-literal=postgresPassword=te9Fmv%qaq \  \
@@ -70,7 +62,7 @@ https://gitee.com/edgegallery/installer/blob/master/offline/harbor_install/docke
      --from-literal=postgresInventoryPassword=te9Fmv%qaq \  \
      --from-literal=dockerRepoUserName=HARBOR_USER \  
      --from-literal=dockerRepoPassword=HARBOR_PASSWORD
-  ##### 6、生成mecm-ssl-secret
+  ##### 5、生成mecm-ssl-secret
   kubectl create secret generic mecm-ssl-secret \   \
      --from-file=keystore.p12=/root/keys/keystore.p12 \  \
      --from-file=keystore.jks=/root/keys/keystore.jks \  \
@@ -78,12 +70,12 @@ https://gitee.com/edgegallery/installer/blob/master/offline/harbor_install/docke
      --from-literal=keystoreType=PKCS12 \  \
      --from-literal=keyAlias=edgegallery \  \
      --from-literal=truststorePassword=te9Fmv%qaq
-  ##### 7、生成mecm-mepm-ssl-secret
+  ##### 6、生成mecm-mepm-ssl-secret
   kubectl create secret generic mecm-mepm-ssl-secret \ \
      --from-file=server_tls.key=/root/keys/tls.key \ \
      --from-file=server_tls.crt=/root/keys/tls.crt \ \
      --from-file=ca.crt=/root/keys/ca.crt  
-  ##### 8、生成mecm-mepm-ssl-secret
+  ##### 7、生成mecm-mepm-ssl-secret
   kubectl create secret generic mecm-mepm-ssl-secret \  \
      --from-file=server_tls.key=/root/keys/tls.key \  \
      --from-file=server_tls.crt=/root/keys/tls.crt \   \
@@ -151,9 +143,11 @@ https://gitee.com/edgegallery/installer/blob/master/offline/harbor_install/docke
   ##### 4、install user-mgmt 
   helm install user-mgmt-edgegallery   helm-charts/user-mgmt  -f      edgegallery-values.yaml
   ##### 5、install appstore
-  helm install appstore-edgegallery    helm-charts/appstore   -f      edgegallery-values.yaml    \ \
-  --set    appstoreBe.repository.dockerRepoEndpoint=HARBOR_REPO_IP     --set appstoreBe.secretName=edgegallery-appstore-docker-secret   \  
-  --set postgres.password=te9Fmv%qaq      #master分支helm-charts 安装需要加 --set postgres.password=te9Fmv%qaq
+  helm install appstore-edgegallery    helm-charts/appstore   -f      edgegallery-values.yaml  \ \
+  --set appstoreBe.dockerRepo.endpoint=HARBOR_REPO_IP   --set appstoreBe.dockerRepo.appstore.password=HARBOR_PASSWORD  \  
+  --set appstoreBe.dockerRepo.appstore.username=HARBOR_USER   --set appstoreBe.dockerRepo.developer.password=HARBOR_PASSWORD  \  
+  --set appstoreBe.dockerRepo.developer.username=HARBOR_USER  \  
+  --set postgres.password=te9Fmv%qaq   #master分支helm-charts 安装需要加 --set postgres.password=te9Fmv%qaq
   ##### 6、install developer 
   helm install developer-edgegallery   helm-charts/developer  -f      edgegallery-values.yaml    --set developer.dockerRepo.endpoint=HARBOR_REPO_IP   \  
  --set developer.dockerRepo.password=HARBOR_PASSWORD    --set developer.dockerRepo.username=HARBOR_USER     --set postgres.password=te9Fmv%qaq      \ \

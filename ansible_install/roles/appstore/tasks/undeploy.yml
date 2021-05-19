@@ -15,10 +15,6 @@
 
 ---
 
-- name: Delete Secret edgegallery-appstore-docker-secret
-  shell: kubectl delete secret edgegallery-appstore-docker-secret
-  ignore_errors: yes
-
 - name: Undeploy APPSTORE
   shell: "helm uninstall {{ APPSTORE_HELM_RELEASE_NAME }}"
   ignore_errors: yes
