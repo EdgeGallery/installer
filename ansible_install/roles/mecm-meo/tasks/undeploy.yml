@@ -28,7 +28,7 @@
 
 - name: Wait For Cleanup All MECM-MEO K8S Resources
   shell: |
-    kubectl get all -A | grep -E "mecm-apm|mecm-appo|mecm-inventory|mecm-postgres"
+    kubectl get all -A | grep -E "mecm-apm|mecm-appo|mecm-inventory|mecm-postgres|mecm-fe"
     rc=$?
     echo $rc
   register: atpResourceRC
