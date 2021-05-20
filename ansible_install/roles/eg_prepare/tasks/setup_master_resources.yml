@@ -30,6 +30,19 @@
       --from-file=server_key.pem={{ TARBALL_PATH }}/conf/keys/encryptedtls.key \
       --from-literal=cert_pwd={{ cert_pwd }}
   when: EG_MODE == "all" or EG_MODE == "controller"
+  no_log: true
+  ignore_errors: yes
+  register: secret_sslout
+
+- name: Output of "Create Secret edgegallery-ssl-secret" task
+  debug:
+    msg: "rc: {{secret_sslout.rc}}, stderr: {{secret_sslout.stderr}}, stderr_lines: {{secret_sslout.stderr_lines}}, stdout: {{secret_sslout.stdout}}, stdout_lines: {{secret_sslout.stdout_lines}}"
+  when: secret_sslout is failed
+
+- name: Failing as task "Create Secret edgegallery-ssl-secret" failed
+  fail:
+    msg: The task Create Secret edgegallery-ssl-secret has failed
+  when: secret_sslout is failed
 
 - name: Install Service Center
   shell: |

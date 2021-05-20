@@ -43,6 +43,19 @@
     --set appstoreBe.dockerRepo.developer.password={{ HARBOR_ADMIN_PASSWORD }} \
     --set appstoreBe.dockerRepo.developer.username=admin \
     --set postgres.password={{ appstorePostgresPassword }}
+  no_log: true
+  ignore_errors: true
+  register: appstore_out
+
+- name: Output of "Deploy APPSTORE" task
+  debug:
+    msg: "rc: {{appstore_out.rc}}, stderr: {{appstore_out.stderr}}, stderr_lines: {{appstore_out.stderr_lines}}, stdout: {{appstore_out.stdout}}, stdout_lines: {{appstore_out.stdout_lines}}"
+  when: appstore_out is failed
+
+- name: Failing as task "Deploy APPSTORE" failed
+  fail:
+    msg: The task Deploy APPSTORE has failed
+  when: appstore_out is failed
 
 - name: Check APPSTORE Status
   uri:

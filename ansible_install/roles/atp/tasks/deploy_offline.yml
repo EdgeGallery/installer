@@ -35,6 +35,19 @@
     --set global.ssl.enabled={{ atp_global_ssl_enabled }} \
     --set global.ssl.secretName={{ atp_global_ssl_secretName }} \
     --set postgres.password={{ atpPostgresPassword }}
+  no_log: true
+  ignore_errors: yes
+  register: atp_out
+
+- name: Output of "Deploy ATP" task
+  debug:
+    msg: "rc: {{atp_out.rc}}, stderr: {{atp_out.stderr}}, stderr_lines: {{atp_out.stderr_lines}}, stdout: {{atp_out.stdout}}, stdout_lines: {{atp_out.stdout_lines}}"
+  when: atp_out is failed
+
+- name: Failing as task "Deploy ATP" failed
+  fail:
+    msg: The task Deploy ATP has failed
+  when: atp_out is failed
 
 - name: Check ATP Status
   uri:

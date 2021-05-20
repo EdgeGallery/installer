@@ -92,6 +92,19 @@
       --from-literal=kong_pg_pwd={{ KONG_PG_PWD }} \
       --from-file=server.key={{ MEP_CERTS_DIR }}/{{ CERT_NAME }}_tls.key \
       --from-file=server.crt={{ MEP_CERTS_DIR }}/{{ CERT_NAME }}_tls.crt
+  no_log: true
+  ignore_errors: yes
+  register: pgsecret_out
+
+- name: Output of "Create Secret pg-secret" task
+  debug:
+    msg: "rc: {{pgsecret_out.rc}}, stderr: {{pgsecret_out.stderr}}, stderr_lines: {{pgsecret_out.stderr_lines}}, stdout: {{pgsecret_out.stdout}}, stdout_lines: {{pgsecret_out.stdout_lines}}"
+  when: pgsecret_out is failed
+
+- name: Failing as task "Create Secret pg-secret" failed
+  fail:
+    msg: The task Create Secret pg-secret has failed
+  when: pgsecret_out is failed
 
 - name: Create Secret mep-ssl
   shell: |
@@ -101,6 +114,19 @@
       --from-file=server.cer={{ MEP_CERTS_DIR }}/{{ CERT_NAME }}_tls.crt \
       --from-file=server_key.pem={{ MEP_CERTS_DIR }}/{{ CERT_NAME }}_encryptedtls.key \
       --from-file=trust.cer={{ MEP_CERTS_DIR }}/ca.crt
+  no_log: true
+  ignore_errors: yes
+  register: mep_sslout
+
+- name: Output of "Create Secret mep-ssl" task
+  debug:
+    msg: "rc: {{mep_sslout.rc}}, stderr: {{mep_sslout.stderr}}, stderr_lines: {{mep_sslout.stderr_lines}}, stdout: {{mep_sslout.stdout}}, stdout_lines: {{mep_sslout.stdout_lines}}"
+  when: mep_sslout is failed
+
+- name: Failing as task "Create Secret mep-ssl" failed
+  fail:
+    msg: The task Create Secret mep-ssl has failed
+  when: mep_sslout is failed
 
 - name: Create Secret mepauth-secret
   shell: |

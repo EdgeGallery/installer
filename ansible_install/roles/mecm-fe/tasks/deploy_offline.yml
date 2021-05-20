@@ -29,3 +29,16 @@
     --set global.ssl.enabled={{ mecm_fe_global_ssl_enabled }} \
     --set global.ssl.secretName={{ mecm_fe_global_ssl_secretName }} \
     --set global.persistence.enabled={{ ENABLE_PERSISTENCE }}
+  no_log: ture
+  ignore_errors: yes
+  register: mecm_feout
+
+- name: Output of "Deploy MECM-FE" task
+  debug:
+    msg: "rc: {{mecm_feout.rc}}, stderr: {{mecm_feout.stderr}}, stderr_lines: {{mecm_feout.stderr_lines}}, stdout: {{mecm_feout.stdout}}, stdout_lines: {{mecm_feout.stdout_lines}}"
+  when: mecm_feout is failed
+
+- name: Failing as task "Deploy MECM-FE" failed
+  fail:
+    msg: The task Deploy MECM-FE has failed
+  when: mecm_feout is failed

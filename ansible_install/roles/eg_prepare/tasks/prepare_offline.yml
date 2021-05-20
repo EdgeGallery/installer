@@ -75,3 +75,16 @@
 - name: Login Harbor on Worker Node
   shell: docker login -u admin -p {{ HARBOR_ADMIN_PASSWORD }} {{ HarborIP }}
   when: K8S_NODE_TYPE == "worker" and EG_MODE != "edge" and ARCH == "amd64"
+  no_log: true
+  ignore_errors: yes
+  register: harbor_login
+
+- name: Output of "Login Harbor on Worker Node" task
+  debug:
+    msg: "rc: {{harbor_login.rc}}, stderr: {{harbor_login.stderr}}, stderr_lines: {{harbor_login.stderr_lines}}, stdout: {{harbor_login.stdout}}, stdout_lines: {{harbor_login.stdout_lines}}"
+  when: harbor_login is failed
+
+- name: Failing as task "Login Harbor on Worker Node" failed
+  fail:
+    msg: The task Login Harbor on Worker Node has failed
+  when: harbor_login is failed
