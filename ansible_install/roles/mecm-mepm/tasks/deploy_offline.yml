@@ -36,6 +36,19 @@
       --from-literal=postgresk8sPluginPassword={{ postgresk8sPluginPassword }} \
       --from-literal=postgresosPluginPassword={{ postgresosPluginPassword }} \
       --from-literal=postgresRuleMgrPassword={{ postgresRuleMgrPassword }}
+  no_log: true
+  ignore_ errors: yes
+  register: mepm_secretedge
+
+- name: Output of "Create Secret edgegallery-mepm-secret" task
+  debug:
+    msg: "rc: {{mepm_secretedge.rc}}, stderr: {{mepm_secretedge.stderr}}, stderr_lines: {{mepm_secretedge.stderr_lines}}, stdout: {{mepm_secretedge.stdout}}, stdout_lines: {{mepm_secretedge.stdout_lines}}"
+  when: mepm_secretedge is failed
+
+- name: Failing as task "Create Secret edgegallery-mepm-secret" failed
+  fail:
+    msg: The task Create Secret edgegallery-mepm-secret has failed
+  when: mepm_secretedge is failed
 
 - name: Create MECM-MEPM Service Account
   shell: "kubectl apply -f {{ TARBALL_PATH }}/conf/manifest/mepm/mepm-service-account.yaml"
@@ -65,6 +78,19 @@
     --set images.mepmFe.pullPolicy={{ mepm_images_mepmFe_pullPolicy }} \
     --set images.postgres.pullPolicy={{ mepm_images_postgres_pullPolicy }} \
     --set global.persistence.enabled={{ ENABLE_PERSISTENCE }}
+  no_log: true
+  ignore_errors: yes
+  register: mecm_mepmout
+
+- name: Output of "Deploy MECM-MEPM" task
+  debug:
+    msg: "rc: {{mecm_mepmout.rc}}, stderr: {{mecm_mepmout.stderr}}, stderr_lines: {{mecm_mepmout.stderr_lines}}, stdout: {{mecm_mepmout.stdout}}, stdout_lines: {{mecm_mepmout.stdout_lines}}"
+  when: mecm_mepmout is failed
+
+- name: Failing as task "Deploy MECM-MEPM" failed
+  fail:
+    msg: The task Deploy MECM-MEPM has failed
+  when: mecm_mepmout is failed
 
 - name: Check MECM-MEPM Status
   uri:

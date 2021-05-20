@@ -92,6 +92,19 @@
     --set ssl.secretName={{ mep_ssl_secretName }} \
     --set global.persistence.enabled={{ ENABLE_PERSISTENCE }} \
     --set postgres.password={{ mepPostgresPassword }}
+  no_log: true
+  ignore_errors: yes
+  register: mep_outp
+
+- name: Output of "Deploy MEP" task
+  debug:
+    msg: "rc: {{mep_outp.rc}}, stderr: {{mep_outp.stderr}}, stderr_lines: {{mep_outp.stderr_lines}}, stdout: {{mep_outp.stdout}}, stdout_lines: {{mep_outp.stdout_lines}}"
+  when: mep_outp is failed
+
+- name: Failing as task "Deploy MEP" failed
+  fail:
+    msg: The task Deploy MEP has failed
+  when: mep_outp is failed
 
 - name: Check MEP Status
   include: "check_pod_status.yml"

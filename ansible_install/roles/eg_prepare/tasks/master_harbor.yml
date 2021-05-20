@@ -129,6 +129,18 @@
   until: harborLogin is succeeded
   retries: 12
   delay: 5
+  no_log: true
+  ignore_errors: yes
+
+- name: Output of "Docker Login Harbor" task
+  debug:
+    msg: "rc: {{harborLogin.rc}}, stderr: {{harborLogin.stderr}}, stderr_lines: {{harborLogin.stderr_lines}}, stdout: {{harborLogin.stdout}}, stdout_lines: {{harborLogin.stdout_lines}}"
+  when: harborLogin is failed
+
+- name: Failing as task "Docker Login Harbor" failed
+  fail:
+    msg: The task Docker Login Harbor has failed
+  when: harborLogin is failed
 
 - name: Check Whether appstore Project Already Exists
   uri:
@@ -219,6 +231,19 @@
 
 - name: Create docker-registry Secret For Harbor
   shell: kubectl create secret docker-registry harbor --docker-server=https://{{ HarborIP }} --docker-username=admin --docker-password={{ HARBOR_ADMIN_PASSWORD }}
+  no_log: true
+  ignore_errors: yes
+  register: harbor_secret
+
+- name: Output of "Create docker-registry Secret For Harbor" task
+  debug:
+    msg: "rc: {{harbor_secret.rc}}, stderr: {{harbor_secret.stderr}}, stderr_lines: {{harbor_secret.stderr_lines}}, stdout: {{harbor_secret.stdout}}, stdout_lines: {{harbor_secret.stdout_lines}}"
+  when: harbor_secret is failed
+
+- name: Failing as task "Create docker-registry Secret For Harbor" failed
+  fail:
+    msg: The task Create docker-registry Secret For Harbor has failed
+  when: harbor_secret is failed
 
 - name: Add Harbor Secret to Default serviceaccount
   shell: >

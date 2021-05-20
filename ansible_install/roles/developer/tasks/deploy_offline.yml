@@ -46,6 +46,19 @@
     --set developer.dockerRepo.username=admin \
     --set postgres.password={{ developerPostgresPassword }} \
     --set developer.vmImage.password={{ developerVMImagePassword }}
+  no_log: true
+  ignore_errors: yes
+  register: developer_out
+
+- name: Output of "Deploy DEVELOPER" task
+  debug:
+    msg: "rc: {{developer_out.rc}}, stderr: {{developer_out.stderr}}, stderr_lines: {{developer_out.stderr_lines}}, stdout: {{developer_out.stdout}}, stdout_lines: {{developer_out.stdout_lines}}"
+  when: developer_out is failed
+
+- name: Failing as task "Deploy DEVELOPER" failed
+  fail:
+    msg: The task Deploy DEVELOPER has failed
+  when: developer_out is failed
 
 - name: Check DEVELOPER Status
   uri:
