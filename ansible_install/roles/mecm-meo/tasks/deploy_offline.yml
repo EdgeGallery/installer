@@ -102,17 +102,17 @@
     --set mecm.repository.sourceRepos="repo={{ PORTAL_IP }} userName=admin password={{ HARBOR_ADMIN_PASSWORD }}"
   no_log: true
   ignore_errors: yes
-  register: mecm-meoout
+  register: mecmMeoout
 
 - name: Output of "Deploy MECM-MEO" task
   debug:
-    msg: "rc: {{mecm-meoout.rc}}, stderr: {{mecm-meoout.stderr}}, stderr_lines: {{mecm-meoout.stderr_lines}}, stdout: {{mecm-meoout.stdout}}, stdout_lines: {{mecm-meoout.stdout_lines}}"
-  when: mecm-meoout is failed
+    msg: "rc: {{mecmMeoout.rc}}, stderr: {{mecmMeoout.stderr}}, stderr_lines: {{mecmMeoout.stderr_lines}}, stdout: {{mecmMeoout.stdout}}, stdout_lines: {{mecmMeoout.stdout_lines}}"
+  when: mecmMeoout is failed
 
 - name: Failing as task "Deploy MECM-MEO" failed
   fail:
     msg: The task Deploy MECM-MEO has failed
-  when: mecm-meoout is failed
+  when: mecmMeoout is failed
 
 - name: Check MECM-MEO Status
   uri:

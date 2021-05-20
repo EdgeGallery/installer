@@ -37,7 +37,7 @@
       --from-literal=postgresosPluginPassword={{ postgresosPluginPassword }} \
       --from-literal=postgresRuleMgrPassword={{ postgresRuleMgrPassword }}
   no_log: true
-  ignore_ errors: yes
+  ignore_errors: yes
   register: mepm_secretedge
 
 - name: Output of "Create Secret edgegallery-mepm-secret" task
