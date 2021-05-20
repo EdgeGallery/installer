@@ -34,7 +34,7 @@ nfs-client-provisioner-1.2.8.tgz \# &lt;nfs\_sever\_ip&gt;为本机的ip
 
 #### 3.  **开启持久化**
 在线安装将Edgegallery-values.yaml 中设置persistence 状态为true  \
-Edgegallery-values.yaml 网址：https://gitee.com/OSDT/dashboard/projects/edgegallery/installer/tree/master/offline/Edgegallery_online_install
+Edgegallery-values.yaml 网址：https://gitee.com/edgegallery/installer/blob/master/EdgeGallery_online_install/edgegallery-values.yaml
   
 #### 4. **ARM架构安装镜像**
 

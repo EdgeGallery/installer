@@ -15,7 +15,7 @@ cp ./linux-amd64/helm /usr/local/bin/  \
 helm version 
 #### 三、安装harbor 
 安装harbor指导链接：
-https://gitee.com/edgegallery/installer/blob/master/offline/harbor_install/docker_compose_install_harbor.md
+https://gitee.com/edgegallery/installer/blob/master/EdgeGallery_online_install/docker_compose_install_harbor.md
 #### 四、安装nfs持久化
 ##### 1. 安装nfs服务
   apt-get install nfs-kernel-server \
@@ -27,8 +27,8 @@ https://gitee.com/edgegallery/installer/blob/master/offline/harbor_install/docke
   exportfs -v   
   ##### 2.安装nfs客户端
   下载nfs客户端  \
-  x86: https://gitee.com/OSDT/dashboard/projects/edgegallery/installer/blob/master/offline/Edgegallery_online_install/nfs-client-amd/nfs-client-provisioner-1.2.8.tgz  \
-  ARM: https://gitee.com/OSDT/dashboard/projects/edgegallery/installer/blob/master/offline/Edgegallery_online_install/nfs-client-arm/nfs-client-provisioner-1.2.8.tgz    \
+  x86: https://gitee.com/edgegallery/installer/blob/master/EdgeGallery_online_install/nfs-client-amd/nfs-client-provisioner-1.2.8.tgz
+  ARM: https://gitee.com/edgegallery/installer/blob/master/EdgeGallery_online_install/nfs-client-arm/nfs-client-provisioner-1.2.8.tgz
   helm install nfs-client-provisioner --set nfs.server=<nfs_sever_ip> --set nfs.path=/nfs/data/     nfs-client-provisioner-1.2.8.tgz # <nfs_sever_ip>为本机的ip  
   #### 五、生成edgegallery的secret
   ##### 1、生成所需的证书
@@ -134,7 +134,7 @@ https://gitee.com/edgegallery/installer/blob/master/offline/harbor_install/docke
   git clone -b Release-v1.0.1   https://gitee.com/edgegallery/helm-charts.git 
   ##### 2、修改edgegallery-values.yaml文件
   下载edgegallery-values.yaml   \
-  https://gitee.com/OSDT/dashboard/projects/edgegallery/installer/blob/master/offline/Edgegallery_online_install/edgegallery-values.yaml  #edgegallery values.yaml 的   \
+  https://gitee.com/edgegallery/installer/blob/master/EdgeGallery_online_install/edgegallery-values.yaml
   sed -i 's/192.168.1.11/192.168.1.12/g'   edgegallery-values.yaml     #需要将192.168.1.12 替换为自己的ip \
   sed -i ‘s/latest/v1.01/g’  edgegallery-values.yaml     #用自己的版本替代v1.01   现有的版本为v1.01 v1.0.0 v1.0.0-staging
   ##### 3、install service-center
@@ -156,7 +156,7 @@ https://gitee.com/edgegallery/installer/blob/master/offline/harbor_install/docke
   helm install mecm-fe-edgegallery      helm-charts/mecm-fe    -f       edgegallery-values.yaml
   ##### 8、install mecm-meo     
   metric-server.yaml 下载地址：
-  https://gitee.com/OSDT/dashboard/projects/edgegallery/installer/tree/master/offline/conf/manifest/metric  \
+  https://gitee.com/edgegallery/installer/blob/master/ansible_package/roles/k8s/files/metric-server.yaml
   kubectl apply -f metric-server.yaml      \
   helm install mecm-meo-edgegallery   helm-charts/mecm-meo   -f      edgegallery-values.yaml      --set ssl.secretName=edgegallery-mecm-ssl-secret  \ \
   --set mecm.secretName=edgegallery-mecm-secret --set mecm.repository.dockerRepoEndpoint=HARBOR_REPO_IP   \ \
@@ -165,7 +165,7 @@ https://gitee.com/edgegallery/installer/blob/master/offline/harbor_install/docke
   helm install atp-edgegallery    helm-charts/atp    -f       edgegallery-values.yaml      --set postgres.password=te9Fmv%qaq     #master分支helm-charts 安装需要加 --set postgres.password=te9Fmv%qaq  
   ##### 10、install mecm-mepm
   mepm-service-account.yaml下载地址:
-  https://gitee.com/OSDT/dashboard/projects/edgegallery/installer/blob/master/offline/conf/manifest/mepm/mepm-service-account.yaml  \
+  https://gitee.com/edgegallery/installer/blob/master/ansible_package/roles/init/files/conf/manifest/mepm/mepm-service-account.yaml
   kubectl apply -f mepm-service-account.yaml     
   
   helm install mecm-mepm-edgegallery helm-charts/mecm-mepm  -f  edgegallery-values.yaml  --set jwt.publicKeySecretName=mecm-mepm-jwt-public-secret   \    
@@ -181,7 +181,7 @@ https://gitee.com/edgegallery/installer/blob/master/offline/harbor_install/docke
   ip link set dev eg-mm5 up   
   ##### 11.2 安装mep-network
   multus.yaml、eg-sp-rbac.yaml、eg-sp-controller.yaml的下载地址:
-  https://gitee.com/OSDT/dashboard/projects/edgegallery/installer/tree/master/offline/conf/edge/network-isolation  
+  https://gitee.com/edgegallery/installer/tree/master/ansible_package/roles/init/files/conf/edge/network-isolation
 
   kubectl apply -f  multus.yaml       
 

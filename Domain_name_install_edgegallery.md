@@ -69,4 +69,4 @@ helm install edgegallery-ingress /root/helm-charts/edgegallery-center -f
 \#部署ingress配置实现访问域名与k8s service间的映射
 
 ### 后续操作按照在线安装指导操作 网址：
-https://gitee.com/OSDT/dashboard/projects/edgegallery/installer/blob/master/offline/Edgegallery_online_install/EdgeGallery_online_installation_guide.md
+https://gitee.com/edgegallery/installer/blob/master/EdgeGallery_online_install/EdgeGallery_online_installation_guide.md
