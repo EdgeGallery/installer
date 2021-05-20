@@ -39,7 +39,7 @@ MEP_HELM_RELEASE_NAME: mep-edgegallery
 MEPM_HELM_RELEASE_NAME: mecm-mepm-edgegallery
 APPSTORE_HELM_RELEASE_NAME: appstore-edgegallery
 DEVELOPER_HELM_RELEASE_NAME: developer-edgegallery
-MECM_FE_HELM_RELEASE_NAME: mecm-fe-edgegallery
+MECM_MEO_HELM_RELEASE_NAME: mecm-meo-edgegallery
 ATP_HELM_RELEASE_NAME: atp-edgegallery
 
 MEP_PORT: 30095
