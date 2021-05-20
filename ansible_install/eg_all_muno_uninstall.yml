@@ -30,7 +30,6 @@
     - { role: atp, tags: ['atp'] }
     - { role: developer, tags: ['developer'] }
     - { role: appstore, tags: ['appstore'] }
-    - { role: mecm-fe, tags: ['mecm-fe'] }
     - { role: mecm-meo, tags: ['mecm-meo'] }
     - { role: user-mgmt, tags: ['user-mgmt'] }
     - { role: mecm-mepm, tags: ['mecm-mepm'] }

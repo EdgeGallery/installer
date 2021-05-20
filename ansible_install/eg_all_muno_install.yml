@@ -65,7 +65,6 @@
     - { role: mecm-mepm, tags: ['mecm-mepm'] }
     - { role: user-mgmt, tags: ['user-mgmt'] }
     - { role: mecm-meo, tags: ['mecm-meo'] }
-    - { role: mecm-fe, tags: ['mecm-fe'] }
     - { role: appstore, tags: ['appstore'] }
     - { role: developer, tags: ['developer'] }
     - { role: atp, tags: ['atp'] }

@@ -25,17 +25,26 @@ postgresInventoryPassword: te9Fmv%qaq
 edgeRepoUserName: admin
 
 meo_global_ssl_enabled: true
+mecm_fe_global_ssl_enabled: true
 meo_ssl_secretName: mecm-ssl-secret
+mecm_fe_global_ssl_secretName: edgegallery-ssl-secret
 meo_mecm_secretName: edgegallery-mecm-secret
 meo_images_inventory_repository: "{{ REGISTRY_URL }}edgegallery/mecm-inventory"
 meo_images_appo_repository: "{{ REGISTRY_URL }}edgegallery/mecm-appo"
 meo_images_apm_repository: "{{ REGISTRY_URL }}edgegallery/mecm-apm"
 meo_images_postgres_repository: "{{ REGISTRY_URL }}eg-common/postgres"
+mecm_fe_images_mecmFe_repository: "{{ REGISTRY_URL }}edgegallery/mecm-fe"
+mecm_fe_images_initservicecenter_repository: "{{ REGISTRY_URL }}edgegallery/curl"
 meo_images_inventory_tag: "{{ EG_IMAGE_TAG }}"
 meo_images_appo_tag: "{{ EG_IMAGE_TAG }}"
 meo_images_apm_tag: "{{ EG_IMAGE_TAG }}"
+mecm_fe_images_mecmFe_tag: "{{ EG_IMAGE_TAG }}"
+mecm_fe_images_initservicecenter_tag: 7.75.0
 meo_images_postgres_tag: 12.3
 meo_images_inventory_pullPolicy: IfNotPresent
 meo_images_appo_pullPolicy: IfNotPresent
 meo_images_apm_pullPolicy: IfNotPresent
 meo_images_postgres_pullPolicy: IfNotPresent
+mecm_fe_images_mecmFe_pullPolicy: IfNotPresent
+mecm_fe_images_initservicecenter_pullPolicy: IfNotPresent
+
