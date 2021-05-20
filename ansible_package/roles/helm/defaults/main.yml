@@ -24,7 +24,6 @@ EG_HELM_LIST_CONTROLLER:
   - usermgmt
   - developer
   - appstore
-  - mecm-fe
   - mecm-meo
   - atp
 
