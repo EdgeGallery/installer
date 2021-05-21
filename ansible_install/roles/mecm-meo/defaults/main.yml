@@ -13,11 +13,6 @@
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
 
-keystorePassword: te9Fmv%qaq
-keystoreType: PKCS12
-keyAlias: edgegallery
-truststorePassword: te9Fmv%qaq
-
 postgresPassword: te9Fmv%qaq
 postgresApmPassword: te9Fmv%qaq
 postgresAppoPassword: te9Fmv%qaq 
