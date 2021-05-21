@@ -80,8 +80,7 @@
     --set images.mecmFe.pullPolicy={{ mecm_fe_images_mecmFe_pullPolicy }} \
     --set images.initservicecenter.pullPolicy={{ mecm_fe_images_initservicecenter_pullPolicy }} \
     --set global.ssl.enabled={{ mecm_fe_global_ssl_enabled }} \
-    --set global.ssl.secretName={{ mecm_fe_global_ssl_secretName }} \
-    --set ssl.secretName={{ meo_ssl_secretName }} \
+    --set global.ssl.secretName={{ meo_ssl_secretName }} \
     --set global.ssl.enabled={{ meo_global_ssl_enabled }} \
     --set mecm.secretName={{ meo_mecm_secretName }} \
     --set images.inventory.repository={{ meo_images_inventory_repository }} \
