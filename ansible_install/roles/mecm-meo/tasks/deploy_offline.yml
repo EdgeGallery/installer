@@ -15,29 +15,6 @@
 
 ---
 
-- name: Create Secret mecm-ssl-secret
-  shell: |
-    kubectl create secret generic {{ meo_ssl_secretName }} \
-    --from-file=keystore.p12={{ TARBALL_PATH }}/conf/keys/keystore.p12 \
-    --from-file=keystore.jks={{ TARBALL_PATH }}/conf/keys/keystore.jks \
-    --from-literal=keystorePassword={{ keystorePassword }} \
-    --from-literal=keystoreType={{ keystoreType }} \
-    --from-literal=keyAlias={{ keyAlias }} \
-    --from-literal=truststorePassword={{ truststorePassword }}
-  no_log: true
-  ignore_errors: yes
-  register: mecm_sslsecret
-
-- name: Output of "Create Secret mecm-ssl-secret" task
-  debug:
-    msg: "rc: {{mecm_sslsecret.rc}}, stderr: {{mecm_sslsecret.stderr}}, stderr_lines: {{mecm_sslsecret.stderr_lines}}, stdout: {{mecm_sslsecret.stdout}}, stdout_lines: {{mecm_sslsecret.stdout_lines}}"
-  when: mecm_sslsecret is failed
-
-- name: Failing as task "Create Secret mecm-ssl-secret" failed
-  fail:
-    msg: The task Create Secret mecm-ssl-secret has failed
-  when: mecm_sslsecret is failed
-
 - name : Create Secret edgegallery-mecm-secret
   shell: |
     kubectl create secret generic {{ meo_mecm_secretName }} \

@@ -20,10 +20,7 @@
   ignore_errors: yes
 
 - name: Delete MECM-MEO Secret
-  shell: "kubectl delete secret {{ item }}"
-  loop:
-    - "{{ meo_mecm_secretName }}"
-    - "{{ meo_ssl_secretName }}"
+  shell: "kubectl delete secret {{ meo_mecm_secretName }}"
   ignore_errors: yes
 
 - name: Wait For Cleanup All MECM-MEO K8S Resources
