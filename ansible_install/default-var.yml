@@ -33,6 +33,10 @@ COPY_TAR_TO_TARGET: yes
 # true means clean and false means not clean
 TARBALL_PATH_CLEANUP: true
 
+# Whether enable ingress
+#true means enable and false means disable
+ENABLE_INGRESS: true
+
 HELM_CHARTS_PATH: "{{ TARBALL_PATH }}/helm/helm-charts"
 
 MEP_HELM_RELEASE_NAME: mep-edgegallery
