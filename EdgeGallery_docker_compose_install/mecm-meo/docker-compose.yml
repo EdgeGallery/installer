@@ -1,57 +1,76 @@
 version: "3"
 services:
-    inventory:
-        image: swr.ap-southeast-1.myhuaweicloud.com/edgegallery/mecm-inventory:latest
+　mecm-fe:
+    image: swr.ap-southeast-1.myhuaweicloud.com/edgegallery/mecm-fe:v1.1.1
+    ports:
+    　- 30093:8443
+    depends_on:
+    　- postgres
+    environment:
+      LOG_DIR: /var/log/mecm-fe
+      LOG_FILE_NAME: mecm-fe    
+      LISTEN_IP: ${ENV_IP}
+      fieldPath: status.podIP
+      SC_ADDRESS: http://${ENV_IP}:30100
+      AUTH_SERVER_ADDRESS: http://${ENV_IP}:30067
+      COOKIE_NAME: MECMSESSIONID
+      CLIENT_ID: mecm-fe
+      CLIENT_SECRET: te9Fmv%qaq
+      SSL_ENABLED: "false"
+      CLIENT_ID: bWVjbS1mZQ==
+      
+　inventory:
+　　image: swr.ap-southeast-1.myhuaweicloud.com/edgegallery/mecm-inventory:v1.1.1
 		ports:
-         - 30203:8093
+  　　- 30203:8093
 		depends_on:
-         - mecm-meo-postgres 
-        environment:
-		    LOG_DIR: /usr/app/log
+  　　- postgres 
+  　environment:
+  　　LOG_DIR: /usr/app/log
 			LOG_FILE_NAME: inventory-log
 			LISTEN_IP: ${ENV_IP}
 			SC_ADDRESS: http://${ENV_IP}:30100
-            COOKIE_NAME: MECMSTORESESSIONID
-            CLIENT_ID: mecm
-            CLIENT_SECRET: te9Fmv%qaq
-            SSL_ENABLED: "false"
-            IS_SECURE_BACKEND: "false"
+　　　COOKIE_NAME: MECMSTORESESSIONID
+　　　CLIENT_ID: mecm
+　　　CLIENT_SECRET: te9Fmv%qaq
+　　　SSL_ENABLED: "false"
+　　　IS_SECURE_BACKEND: "false"
         
-    appo:
-       image: swr.ap-southeast-1.myhuaweicloud.com/edgegallery/mecm-appo:latest
-       ports:
-         - 30201:8091
-       #depends_on:
-         #- appstore-be-postgres
-       environment:
-           LOG_DIR: /usr/app/log
-           LOG_FILE_NAME: appo-log
-           LISTEN_IP: ${ENV_IP}
-           SC_ADDRESS: http://${ENV_IP}:30100
-           AUTH_SERVER_ADDRESS: http://${ENV_IP}:30067
-           COOKIE_NAME: MECMSTORESESSIONID
-           CLIENT_ID: mecm
-           CLIENT_SECRET: te9Fmv%qaq
-           SSL_ENABLED: "false"
-           IS_SECURE_BACKEND: "false"
+　appo:
+　　image: swr.ap-southeast-1.myhuaweicloud.com/edgegallery/mecm-appo:v1.1.1
+　　ports:
+　　　- 30201:8091
+    depends_on:
+    　- postgres
+　　environment:
+　　　LOG_DIR: /usr/app/log
+　　　LOG_FILE_NAME: appo-log
+　　　LISTEN_IP:appstore_appstore-be_1  ${ENV_IP}
+　　　SC_ADDRESS: http://${ENV_IP}:30100
+　　　AUTH_SERVER_ADDRESS: http://${ENV_IP}:30067
+　　　COOKIE_NAME: MECMSTORESESSIONID
+　　　CLIENT_ID: mecm
+　　　CLIENT_SECRET: te9Fmv%qaq
+　　　SSL_ENABLED: "false"
+　　　IS_SECURE_BACKEND: "false"
 		   
-    apm:
-        image: swr.ap-southeast-1.myhuaweicloud.com/edgegallery/mecm-apm:latest
-		 ports:
-         - 30202:8092
-        depends_on:
-          - appstore-be-postgres
-        environment:
-            LOG_DIR: /usr/app/log
-            LISTEN_IP: ${ENV_IP}
-            SC_ADDRESS: http://${ENV_IP}:30100
-            COOKIE_NAME: MECMSTORESESSIONID
-            CLIENT_ID: mecm
-            CLIENT_SECRET: te9Fmv%qaq
-            SSL_ENABLED: "false"
+　apm:
+　　image: swr.ap-southeast-1.myhuaweicloud.com/edgegallery/mecm-apm:v1.1.1
+		ports:
+  　　- 30202:8092
+　　depends_on:
+　　　- postgres
+　　environment:
+　　　LOG_DIR: /usr/app/log
+　　　LISTEN_IP: ${ENV_IP}
+　　　SC_ADDRESS: http://${ENV_IP}:30100
+　　　COOKIE_NAME: MECMSTORESESSIONID
+　　　CLIENT_ID: mecm
+　　　CLIENT_SECRET: te9Fmv%qaq
+　　　SSL_ENABLED: "false"
          
 
-    mecm-meo-postgres:
+    postgres:
         image: swr.ap-southeast-1.myhuaweicloud.com/edgegallery/postgres:12.3
         environment:
             CLIENT_ID: appstore-be
@@ -69,4 +88,3 @@ services:
             SSL_ENABLED: "false"
         volumes:
           - ./postgres-data:/docker-entrypoint-initdb.d/
-       		  

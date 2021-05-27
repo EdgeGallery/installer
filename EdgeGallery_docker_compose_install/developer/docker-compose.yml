@@ -1,7 +1,7 @@
 version: "3"
 services:
     tool-chain:
-        image: swr.ap-southeast-1.myhuaweicloud.com/edgegallery/tool-chain:latest
+        image: swr.ap-southeast-1.myhuaweicloud.com/edgegallery/tool-chain:v1.1.1
         environment:
             LOG_DIR: /var/log/tool-chain
             SC_ADDRESS: http://${ENV_IP}:30100
@@ -26,7 +26,7 @@ services:
           - ./postgres-data:/docker-entrypoint-initdb.d/
        
     developer-fe:
-       image: swr.ap-southeast-1.myhuaweicloud.com/edgegallery/developer-fe:latest
+       image: swr.ap-southeast-1.myhuaweicloud.com/edgegallery/developer-fe:v1.1.1
        ports:
          - 30092:8443
        depends_on:
@@ -46,7 +46,7 @@ services:
            IS_SECURE_BACKEND: "false"
          
     developer-be:
-        image: swr.ap-southeast-1.myhuaweicloud.com/edgegallery/developer-be:latest
+        image: swr.ap-southeast-1.myhuaweicloud.com/edgegallery/developer-be:v1.1.1
         depends_on:
           - postgres
           - tool-chain
@@ -59,6 +59,7 @@ services:
             SC_ADDRESS: http://${ENV_IP}:30100
             APPSTORE_ADDRESS: http://${ENV_IP}:8099
             POSTGRES_IP: postgres
+            POSTGRES_PORT: "5432"
             POSTGRES_DB_NAME: "developerdb"
             IMAGE_REPO_NAME: ${ENV_IP}
             IMAGE_REPO_PROJECT: "developer"
@@ -66,6 +67,8 @@ services:
             IMAGE_REPO_USERNAME: "admin"
             POSTGRES_USERNAME: "developer"
             POSTGRES_PASSWORD: "te9Fmv%qaq"
+            VNC_USERNAME: "ubuntu"
+            VNC_PASSWORD: "12345"
             AUTH_SERVER_ADDRESS: http://${ENV_IP}:30067
             SSL_ENABLED: "false"
         volumes:

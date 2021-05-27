@@ -1,9 +1,10 @@
 version: "3"
 services:
   atpFe:
-    image:
-　　  swr.ap-southeast-1.myhuaweicloud.com/edgegallery/atp-fe:latest
-    ports:
+    image: swr.ap-southeast-1.myhuaweicloud.com/edgegallery/atp-fe:v1.1.1
+    depends_on:
+      - postgres  
+    ports
       - 30094:8443
     environment:
       LOG_DIR: /usr/app/log
@@ -13,12 +14,14 @@ services:
       AUTH_SERVER_ADDRESS: http://${ENV_IP}:30067
       COOKIE_NAME: ATPSESSIONID
       CLIENT_ID: atp-fe
+      CLIENT_SECRET: te9Fmv%qaq
       SSL_ENABLED: "false"
       IS_SECURE_BACKEND: "false"
       
   atp:
-    image:
-　　  swr.ap-southeast-1.myhuaweicloud.com/edgegallery/atp-be:latest
+    image: swr.ap-southeast-1.myhuaweicloud.com/edgegallery/atp-be:v1.1.1
+    depends_on:
+      - postgres
     environment:
       LOG_DIR: /usr/app/log
       SC_ADDRESS: http://${ENV_IP}:30100
@@ -31,10 +34,9 @@ services:
       AUTH_SERVER_ADDRESS: http://${ENV_IP}:30067
       SSL_ENABLED: "false"
   postgres:
-    image: 
-      swr.ap-southeast-1.myhuaweicloud.com/edgegallery/postgres:12.3
+    image: swr.ap-southeast-1.myhuaweicloud.com/edgegallery/postgres:12.3
     environment:
-      POSTGRES_USER："atp"
+      POSTGRES_USER: "atp"
       POSTGRES_PASSWORD: "te9Fmv%qaq"
       POSTGRES_DB: "atpdb"
     volumes:

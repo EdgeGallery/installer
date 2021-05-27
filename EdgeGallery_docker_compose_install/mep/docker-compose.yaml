@@ -1,9 +1,9 @@
 version: '3'
 services:
   mep-fe:
-    image: swr.ap-southeast-1.myhuaweicloud.com/edgegallery/mep-fe:latest
+    image: swr.ap-southeast-1.myhuaweicloud.com/edgegallery/mep-fe:v1.1.1
     ports:
-         - 30095:8100
+      - 30095:8100
     depends_on:
       - postgres
       - kong
@@ -29,13 +29,13 @@ services:
       KONG_DATABASE: postgres
       KONG_PG_USER: kong
       KONG_PG_PASSWORD: kong-Pass123
-    volumes:
+   
       
          
   mep:
-    image: swr.ap-southeast-1.myhuaweicloud.com/edgegallery/mep:latest
+    image: swr.ap-southeast-1.myhuaweicloud.com/edgegallery/mep:v1.1.1
     ports:
-         - 30443:8443
+      - 30443:8443
     environment: 
        MEPSERVER_APIGW_HOST: "localhost"
        MEPSERVER_APIGW_PORT: "8444"
@@ -44,9 +44,9 @@ services:
        TLS_KEY: te9Fmv%qaq  
  
  mep-auth:
-    image: swr.ap-southeast-1.myhuaweicloud.com/edgegallery/mepauth:latest
+    image: swr.ap-southeast-1.myhuaweicloud.com/edgegallery/mepauth:v1.1.1
     ports:
-         - 10443
+      - 10443
     environment:   
       MEPAUTH_APIGW_HOST: "localhost"
       MEPAUTH_APIGW_PORT: "8444"
@@ -57,7 +57,7 @@ services:
       
   
   mep-dns:
-    image: swr.ap-southeast-1.myhuaweicloud.com/edgegallery/mep-dns-server:latest
+    image: swr.ap-southeast-1.myhuaweicloud.com/edgegallery/mep-dns-server:v1.1.1
     ports:
       - 30444:53
 

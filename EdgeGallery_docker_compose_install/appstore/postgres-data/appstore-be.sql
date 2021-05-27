@@ -1,4 +1,11 @@
-  create TABLE if not exists catalog_package_table (
+  DROP TABLE IF EXISTS catalog_package_table;
+DROP TABLE IF EXISTS APP_TABLE;
+DROP TABLE IF EXISTS CSAR_PACKAGE_SCORE;
+DROP TABLE IF EXISTS app_store_table;
+DROP TABLE IF EXISTS PUSHABLE_PACKAGE_TABLE;
+DROP TABLE IF EXISTS message_table;
+
+    create TABLE if not exists catalog_package_table (
     	PACKAGEID                VARCHAR(200)       NOT NULL,
     	PACKAGEADDRESS           VARCHAR(200)       NULL,
     	ICONADDRESS              VARCHAR(200)       NULL,
@@ -10,7 +17,6 @@
     	APPNAME                  VARCHAR(100)       NULL,
     	VERSION                  VARCHAR(20)        NULL,
     	APPLICATIONTYPE          VARCHAR(300)       NULL,
-    	DEPLOYMODE               VARCHAR(100)       NULL,
     	MARKDOWNCONTENT          TEXT			    NULL,
     	AFFINITY                 VARCHAR(100)       NULL,
     	INDUSTRY                 VARCHAR(100)       NULL,
@@ -28,7 +34,6 @@
     	APPID                    VARCHAR(200)       NOT NULL,
     	APPNAME                  VARCHAR(100)       NULL,
     	APPLICATIONTYPE          VARCHAR(300)       NULL,
-    	DEPLOYMODE               VARCHAR(100)       NULL,
     	SHORTDESC	             TEXT		        NULL,
     	PROVIDER                 VARCHAR(300)       NULL,
     	APPINTRODUCTION		     TEXT			    NULL,
@@ -105,14 +110,28 @@
         CONSTRAINT PUSHABLE_PACKAGE_TABLE_PKEY PRIMARY KEY (PACKAGEID)
     );
 
-    alter table catalog_package_table add column IF NOT EXISTS DEMOVIDEOADDRESS VARCHAR(200) NULL;
+INSERT INTO app_table(
+	appid, appname, applicationtype, shortdesc, provider, appintroduction, downloadcount, affinity, industry, contact, userid, username, createtime, modifytime, score, STATUS)
+	VALUES ('appid-test-0001', 'app-001', 'game', 'shortdesc', 'provider', 'appintroduction', 5, 'affinity', 'industry', 'contactcontact', 'test-userid-0001', 'test-username-0001', now(), now(), 3.2, 'Published');
 
-    alter table message_table add column IF NOT EXISTS DEMOVIDEODOWNLOADURL VARCHAR(255) NULL;
+INSERT INTO catalog_package_table(
+	packageid, packageaddress, iconaddress, demovideoaddress, size, filestructure, createtime, shortdesc, appname,
+	version, applicationtype, markdowncontent, affinity, industry, contact, appid, userid, username, status, TESTTASKID, PROVIDER)
+	VALUES ('packageid-0003', '/package/test/face.csar', '/user/test/icon.png', '', 10004, 'file-trees', now(),
+	'shortdesc', 'appname', 'version', 'game', 'markdowncontent', 'affinity', 'industry', 'contact', 'appid-test-0001',
+	'test-userid-0001', 'test-username-0002', 'Published', 'apt-taskid-0002', 'PROVIDER');
 
-    alter table catalog_package_table add column IF NOT EXISTS DEPLOYMODE VARCHAR(100) NULL;
+INSERT INTO catalog_package_table(
+	packageid, packageaddress, iconaddress, demovideoaddress, size, filestructure, createtime, shortdesc, appname,
+	version, applicationtype, markdowncontent, affinity, industry, contact, appid, userid, username, status, TESTTASKID, PROVIDER)
+	VALUES ('packageid-0002', '/package/test/face.csar', '/user/test/icon.png', '', 10002, 'file-trees', now(),
+	'shortdesc', 'appname', 'version', 'game', 'markdowncontent', 'affinity', 'industry', 'contact', 'appid-test-0001',
+	'test-userid-0001', 'test-username-0001', 'Published', 'apt-taskid-0001', 'PROVIDER');
 
-    alter table app_table add column IF NOT EXISTS DEPLOYMODE VARCHAR(100) NULL;
+INSERT INTO app_store_table(
+	appstoreid, APPSTORENAME, APPSTOREVERSION, company, url, schema, apppushintf, APPDTRANSID, addedtime, modifiedtime, description)
+	VALUES ('a09bca74-04cb-4bae-9ee2-9c5072ec9d4b', 'liantong', 'v1.0', 'liantong', 'http://127.0.0.1:8099', 'http', '', '', now(), null, 'description-5555');
 
-    update catalog_package_table set DEPLOYMODE = 'container' where DEPLOYMODE is NULL;
-
-    update app_table set DEPLOYMODE = 'container' where DEPLOYMODE is NULL;
+INSERT INTO app_store_table(
+	appstoreid, APPSTORENAME, APPSTOREVERSION, company, url, schema, apppushintf, APPDTRANSID, addedtime, modifiedtime, description)
+	VALUES ('02ef9eeb-d50e-4835-8d05-e5fdb87b7596', '移动', 'v1.0', '移动', 'http://127.0.0.1:8099', 'http', '', '', now(), null, 'description-5555');

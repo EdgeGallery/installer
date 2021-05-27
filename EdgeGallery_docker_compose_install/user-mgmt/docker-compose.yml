@@ -21,7 +21,7 @@ services:
          - "30100:30100"
 
     user-mgmt:
-       image: swr.ap-southeast-1.myhuaweicloud.com/edgegallery/user-mgmt:latest
+       image: swr.ap-southeast-1.myhuaweicloud.com/edgegallery/user-mgmt:v1.1.1
        depends_on:
          - postgres
          - redis
