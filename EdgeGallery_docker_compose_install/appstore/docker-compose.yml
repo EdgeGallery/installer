@@ -6,7 +6,7 @@ services:
           - 30091:8443
         depends_on:
           - postgres
-        environment:
+        environment: 
             LOG_DIR: /usr/app/log
             LOG_FILE_NAME: appstore-fe
             LISTEN_IP: ${ENV_IP}
@@ -31,7 +31,7 @@ services:
             SC_ADDRESS: http://${ENV_IP}:30100
             APPSTORE_ADDRESS: http://${ENV_IP}:8099
             POSTGRES_IP: postgres
-            POSTGRES_DB_NAME: "POSTGRES_DB"
+            POSTGRES_DB_NAME: "appstoredb"
             IMAGE_REPO_NAME: ${ENV_IP}
             IMAGE_REPO_PROJECT: "appstore"
             IMAGE_REPO_PASSWORD: "Harbor12345"

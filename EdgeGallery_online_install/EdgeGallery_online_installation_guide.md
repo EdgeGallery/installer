@@ -28,7 +28,7 @@ https://gitee.com/edgegallery/installer/blob/master/EdgeGallery_online_install/d
   ##### 2.安装nfs客户端
   下载nfs客户端  \
   x86: https://gitee.com/edgegallery/installer/blob/master/EdgeGallery_online_install/nfs-client-amd/nfs-client-provisioner-1.2.8.tgz
-  ARM: https://gitee.com/edgegallery/installer/blob/master/EdgeGallery_online_install/nfs-client-arm/nfs-client-provisioner-1.2.8.tgz
+  ARM: https://gitee.com/edgegallery/installer/blob/master/EdgeGallery_online_install/nfs-client-arm/nfs-client-provisioner-1.2.8.tgz  \
   helm install nfs-client-provisioner --set nfs.server=<nfs_sever_ip> --set nfs.path=/nfs/data/     nfs-client-provisioner-1.2.8.tgz # <nfs_sever_ip>为本机的ip  
   #### 五、生成edgegallery的secret
   ##### 1、生成所需的证书
@@ -75,11 +75,12 @@ https://gitee.com/edgegallery/installer/blob/master/EdgeGallery_online_install/d
      --from-file=server_tls.key=/root/keys/tls.key \ \
      --from-file=server_tls.crt=/root/keys/tls.crt \ \
      --from-file=ca.crt=/root/keys/ca.crt  
-  ##### 7、生成mecm-mepm-ssl-secret
-  kubectl create secret generic mecm-mepm-ssl-secret \  \
-     --from-file=server_tls.key=/root/keys/tls.key \  \
-     --from-file=server_tls.crt=/root/keys/tls.crt \   \
-     --from-file=ca.crt=/root/keys/ca.crt
+  ##### 7、生成edgegallery-appstore-docker-secret
+  kubectl create secret generic edgegallery-appstore-docker-secret \ \
+      --from-literal=devRepoUserName=HARBOR_USER	 \ \
+      --from-literal=devRepoPassword=HARBOR_PASSWORD   \  \
+      --from-literal=appstoreRepoUserName=HARBOR_USER	 \ \
+      --from-literal=appstoreRepoPassword=HARBOR_PASSWORD
   ##### 8、生成mecm-mepm-jwt-public-secret
   kubectl create secret generic mecm-mepm-jwt-public-secret \  \
      --from-file=publicKey=/root/keys/rsa_public_key.pem
@@ -144,10 +145,8 @@ https://gitee.com/edgegallery/installer/blob/master/EdgeGallery_online_install/d
   helm install user-mgmt-edgegallery   helm-charts/user-mgmt  -f      edgegallery-values.yaml
   ##### 5、install appstore
   helm install appstore-edgegallery    helm-charts/appstore   -f      edgegallery-values.yaml  \ \
-  --set appstoreBe.dockerRepo.endpoint=HARBOR_REPO_IP   --set appstoreBe.dockerRepo.appstore.password=HARBOR_PASSWORD  \  
-  --set appstoreBe.dockerRepo.appstore.username=HARBOR_USER   --set appstoreBe.dockerRepo.developer.password=HARBOR_PASSWORD  \  
-  --set appstoreBe.dockerRepo.developer.username=HARBOR_USER  \  
-  --set postgres.password=te9Fmv%qaq   #master分支helm-charts 安装需要加 --set postgres.password=te9Fmv%qaq
+  --set appstoreBe.repository.dockerRepoEndpoint=HARBOR_REPO_IP   --set postgres.password=te9Fmv%qaq   \ \
+  --set appstoreBe.secretName=edgegallery-appstore-docker-secret     #master分支helm-charts 安装需要加 --set postgres.password=te9Fmv%qaq
   ##### 6、install developer 
   helm install developer-edgegallery   helm-charts/developer  -f      edgegallery-values.yaml    --set developer.dockerRepo.endpoint=HARBOR_REPO_IP   \  
  --set developer.dockerRepo.password=HARBOR_PASSWORD    --set developer.dockerRepo.username=HARBOR_USER     --set postgres.password=te9Fmv%qaq      \ \
@@ -158,7 +157,7 @@ https://gitee.com/edgegallery/installer/blob/master/EdgeGallery_online_install/d
   metric-server.yaml 下载地址：
   https://gitee.com/edgegallery/installer/blob/master/ansible_package/roles/k8s/files/metric-server.yaml
   kubectl apply -f metric-server.yaml      \
-  helm install mecm-meo-edgegallery   helm-charts/mecm-meo   -f      edgegallery-values.yaml      --set ssl.secretName=edgegallery-mecm-ssl-secret  \ \
+  helm install mecm-meo-edgegallery   helm-charts/mecm-meo   -f      edgegallery-values.yaml      --set ssl.secretName=mecm-ssl-secret  \ \
   --set mecm.secretName=edgegallery-mecm-secret --set mecm.repository.dockerRepoEndpoint=HARBOR_REPO_IP   \ \
   --set mecm.repository.sourceRepos="repo=HARBOR_REPO_IP userName=HARBOR_USER password=HARBOR_PASSWORD"
   ##### 9、install atp
