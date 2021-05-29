@@ -3,23 +3,20 @@ services:
     mecm-fe:
       image: swr.ap-southeast-1.myhuaweicloud.com/edgegallery/mecm-fe:v1.1.1
       ports: 
-           - 30093:8443
+        - 30093:8443
       depends_on: 
-       - postgres  
+        - postgres
       environment:
         LOG_DIR: /var/log/mecm-fe
-        LOG_FILE_NAME: mecm-fe    
-        LISTEN_IP: ${ENV_IP}
+        LOG_FILE_NAME: "mecm-fe"
+        LISTEN_IP: mecm-fe
         SC_ADDRESS: http://${ENV_IP}:30100
         AUTH_SERVER_ADDRESS: http://${ENV_IP}:30067
         COOKIE_NAME: MECMSESSIONID
-        CLIENT_ID: mecm-fe
+        CLIENT_ID: "mecm-fe"
         CLIENT_SECRET: "te9Fmv%qaq"
         SSL_ENABLED: "false"
         IS_SECURE_BACKEND: "false"
-
-   
-    
   
     appo:
       image: swr.ap-southeast-1.myhuaweicloud.com/edgegallery/mecm-appo:v1.1.1
@@ -27,39 +24,41 @@ services:
         - postgres
       environment:
         LOG_DIR: /usr/app/log
-        LOG_FILE_NAME: appo-log
-        LISTEN_IP: ${ENV_IP}  
+        LISTEN_IP: appo
         SC_ADDRESS: http://${ENV_IP}:30100
         APPO_DB_PASSWORD: "te9Fmv%qaq"
         SSL_ENABLED: "false"
 
     apm:
-　　  image: wr.ap-southeast-1.myhuaweicloud.com/edgegallery/mecm-apm:v1.1.1
-　　  depends_on:
+      image: swr.ap-southeast-1.myhuaweicloud.com/edgegallery/mecm-apm:v1.1.1
+      depends_on:
         - postgres
-　　  environment:
-　　    LOG_DIR: /usr/app/log
-　　　  LISTEN_IP: ${ENV_IP}
-　　　  SC_ADDRESS: http://${ENV_IP}:30100
-　　　　APM_DB_PASSWORD: "te9Fmv%qaq"
-　　　　MECM_REPO_PASSWORD: "Harbor12345"
-　　　　MECM_REPO_USERNAME: "admin"
-　　　　MECM_REPO_ENDPOINT: ${ENV_IP}
-　　　　SSL_ENABLED: "false"
+      environment:
+        LOG_DIR: /usr/app/log
+        LISTEN_IP: apm
+        SC_ADDRESS: http://${ENV_IP}:30100
+        APM_DB_PASSWORD: "te9Fmv%qaq"
+        MECM_REPO_PASSWORD: "Harbor@12345"
+        MECM_REPO_USERNAME: "admin"
+        MECM_REPO_ENDPOINT: ${ENV_IP}
+        SSL_ENABLED: "false"
+        PUSH_IMAGE: "false"
+      volumes:
+        - /var/run/docker.sock:/var/run/docker.sock
 
-　　inventory:
+    inventory:
       image: swr.ap-southeast-1.myhuaweicloud.com/edgegallery/mecm-inventory:v1.1.1
       depends_on:
         - postgres 
       environment: 
         LOG_DIR: /usr/app/log
-        LISTEN_IP: ${ENV_IP}
+        LISTEN_IP: inventory
         SC_ADDRESS: http://${ENV_IP}:30100
         INVENTORY_DB_PASSWORD: "te9Fmv%qaq"
-        SOURCE_REPOS: "repo"
-　　　　SSL_ENABLED: "false"
+        SOURCE_REPOS: repo=${ENV_IP} userName=admin password=Harbor@12345
+        SSL_ENABLED: "false"
 
-　　postgres:
+    postgres:
       image: swr.ap-southeast-1.myhuaweicloud.com/edgegallery/postgres:12.3
       environment:
         POSTGRES_USER: "root"
@@ -67,4 +66,3 @@ services:
         POSTGRES_DB: "root"
       volumes:
         - ./postgres-data:/docker-entrypoint-initdb.d/
-        - ./postgres-data:/var/lib/postgresql/data
