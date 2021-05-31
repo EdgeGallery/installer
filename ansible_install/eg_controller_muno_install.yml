@@ -27,7 +27,7 @@
     - ./default-var.yml
     - ./password-var.yml
   roles:
-    - init
+    - { role: init, tags: ['init-master','init-worker'] }
 
 - hosts: master
   become: yes
