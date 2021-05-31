@@ -20,7 +20,13 @@
     path: /etc/docker/daemon.json
   register: file_status
 
-- name: Create File /etc/docker/daemon.json
+- name: Appending daemon.json file with aio-daemon.json contents, when daemon.json exists
+  blockinfile:
+    block: "{{ lookup('file', 'aio-daemon.json') }}"
+    path: /etc/docker/daemon.json
+  when: file_status.stat.exists == True
+
+- name: Create File /etc/docker/daemon.json, when it does not exist
   copy:
     src: aio-daemon.json
     dest: /etc/docker/daemon.json
