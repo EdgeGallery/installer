@@ -16,6 +16,19 @@
 ---
 
 # IaaS Deployment on Master and Worker Node
+- hosts: master:worker
+  become: yes
+  vars:
+    - OPERATION: install
+    - EG_MODE: all
+    - NODE_MODE: muno
+  vars_files:
+    - ./var.yml
+    - ./default-var.yml
+    - ./password-var.yml
+  roles:
+    - { role: init, tags: ['init-master','init-worker'] }
+
 - hosts: master
   become: yes
   vars:
@@ -28,7 +41,6 @@
     - ./default-var.yml
     - ./password-var.yml
   roles:
-    - { role: init, tags: ['init-master'] }
     - { role: k8s, tags: ['k8s-master'] }
     - { role: eg_prepare, tags: ['eg_prepare-master'] }
 
@@ -44,7 +56,6 @@
     - ./default-var.yml
     - ./password-var.yml
   roles:
-    - { role: init, tags: ['init-worker'] }
     - { role: k8s, tags: ['k8s-worker'] }
     - { role: eg_prepare, tags: ['eg_prepare-worker'] }
 
