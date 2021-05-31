@@ -29,7 +29,7 @@ function wait_for_service() {
       echo "Timeout of waiting for service $1 is ready"
       break
     else
-      if [[ "$(curl -sL -w '%{http_code}' $1)" = "200" ]]; then
+      if [[ "$(curl -skL -w '%{http_code}' $1)" = "200" ]]; then
         break
       else
         echo "loop $loop: waiting for service $1 is ready"
@@ -52,6 +52,7 @@ chmod 666 /var/run/docker.sock
 cd $curPath/setup
 docker-compose up -d
 
+echo -n "te9Fmv%qaq" > /tmp/keys/cert_pwd
 wait_for_file /tmp/keys/rsa_public_key.pem
 wait_for_file /tmp/keys/encrypted_rsa_private_key.pem
 
@@ -63,22 +64,29 @@ echo "==========Install UserMgmt=========="
 cd $curPath/user-mgmt
 docker-compose up -d
 
-wait_for_service http://$ENV_IP:30067
+wait_for_service https://$ENV_IP:30067
 
 echo "==========Install Appstore=========="
 cd $curPath/appstore
 docker-compose up -d
 
-wait_for_service http://$ENV_IP:30091
-
-echo "==========Install ATP=========="
-cd $curPath/atp
-docker-compose up -d
-
-wait_for_service http://$ENV_IP:30094
+wait_for_service https://$ENV_IP:30091
 
 echo "==========Install Developer=========="
 cd $curPath/developer
 docker-compose up -d
 
-wait_for_service http://$ENV_IP:30092
+wait_for_service https://$ENV_IP:30092
+
+echo "==========Install MECM-MEO=========="
+cd $curPath/mecm-meo
+docker-compose up -d
+
+wait_for_service https://$ENV_IP:30093
+
+echo "==========Install ATP=========="
+cd $curPath/atp
+docker-compose up -d
+
+wait_for_service https://$ENV_IP:30094
+

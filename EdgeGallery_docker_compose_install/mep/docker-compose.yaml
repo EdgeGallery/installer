@@ -19,8 +19,9 @@ services:
       POSTGRES_USER: admin
       POSTGRES_DB: kong 
       POSTGRES_PASSWORD: admin-Pass123
-      POSTGRES_INITDB_ARGS: password  
+      POSTGRES_INITDB_ARGS: "--auth-local=password"
     volumes:
+      - /tmp/.mep_tmp_cer/:/etc/mep/ssl/
       - ./postgres-data:/docker-entrypoint-initdb.d/
      
   kong:

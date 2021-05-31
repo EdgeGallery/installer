@@ -4,12 +4,16 @@ set -e
 
 curPath=$(dirname $(readlink -f "$0"))
 
-echo "==========Uninstall Developer=========="
-cd $curPath/developer
-docker-compose down
-
 echo "==========Uninstall ATP=========="
 cd $curPath/atp
+docker-compose down
+
+echo "==========Uninstall MECM-MEO=========="
+cd $curPath/mecm-meo
+docker-compose down
+
+echo "==========Uninstall Developer=========="
+cd $curPath/developer
 docker-compose down
 
 echo "==========Uninstall Appstore=========="
