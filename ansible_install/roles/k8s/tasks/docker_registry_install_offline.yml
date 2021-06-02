@@ -20,11 +20,34 @@
     path: /etc/docker/daemon.json
   register: file_status
 
+- name: write Harbor IP to a file
+  copy:
+    content: "{{ HarborIP  }}"
+    dest: "/tmp/harborip"
+  when: file_status.stat.exists == True
+
+- name: write Private Registry IP to a file
+  copy:
+    content: "{{ ansible_default_ipv4['address'] }}"
+    dest: "/tmp/private_registryip"
+  when: file_status.stat.exists == True
+
+- name: Create File /etc/docker/daemon.json
+  copy:
+    src: daemon_verify.py
+    dest: /home/daemon_verify.py
+  when: file_status.stat.exists == True
+
+- name: Running script to verify contents of /etc/docker/daemon.json
+  shell: "python3 /home/daemon_verify.py muno"
+  register: script_out
+  when: file_status.stat.exists == True
+
 - name: Appending daemon.json file with muno-daemon.json contents, when daemon.json exists
   blockinfile:
     block: "{{ lookup('file', 'muno-daemon.json') }}"
     path: /etc/docker/daemon.json
-  when: file_status.stat.exists == True
+  when: file_status.stat.exists == True and and script_out.stdout == "not present"
 
 - name: Create File /etc/docker/daemon.json
   copy:
