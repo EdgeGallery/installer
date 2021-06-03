@@ -50,7 +50,7 @@
 
 - debug:
     msg: "MECM PORTAL   : https://{{ PORTAL_IP }}:{{ MECM_PORT }}"
-  when: releasesDeployed is succeeded and MECM_FE_HELM_RELEASE_NAME in releasesDeployed.stdout
+  when: releasesDeployed is succeeded and MECM_MEO_HELM_RELEASE_NAME in releasesDeployed.stdout
 
 - debug:
     msg: "ATP PORTAL   : https://{{ PORTAL_IP }}:{{ ATP_PORT }}"

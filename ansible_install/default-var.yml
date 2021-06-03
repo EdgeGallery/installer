@@ -15,7 +15,7 @@
 
 # The image tag here could only be latest, and helm tag could only be 1.1.0
 EG_IMAGE_TAG: latest
-HELM_TAG: 1.1.0
+HELM_TAG: 1.2.0
 
 # Mode for online or offline install, currently only support offline
 NETWORK_MODE: offline
@@ -32,6 +32,10 @@ COPY_TAR_TO_TARGET: yes
 # Whether clean the TARBALL_PATH before install and after uninstall
 # true means clean and false means not clean
 TARBALL_PATH_CLEANUP: true
+
+# Whether enable ingress
+#true means enable and false means disable
+ENABLE_INGRESS: true
 
 HELM_CHARTS_PATH: "{{ TARBALL_PATH }}/helm/helm-charts"
 

@@ -15,29 +15,6 @@
 
 ---
 
-- name: Create Secret mecm-ssl-secret
-  shell: |
-    kubectl create secret generic {{ meo_ssl_secretName }} \
-    --from-file=keystore.p12={{ TARBALL_PATH }}/conf/keys/keystore.p12 \
-    --from-file=keystore.jks={{ TARBALL_PATH }}/conf/keys/keystore.jks \
-    --from-literal=keystorePassword={{ keystorePassword }} \
-    --from-literal=keystoreType={{ keystoreType }} \
-    --from-literal=keyAlias={{ keyAlias }} \
-    --from-literal=truststorePassword={{ truststorePassword }}
-  no_log: true
-  ignore_errors: yes
-  register: mecm_sslsecret
-
-- name: Output of "Create Secret mecm-ssl-secret" task
-  debug:
-    msg: "rc: {{mecm_sslsecret.rc}}, stderr: {{mecm_sslsecret.stderr}}, stderr_lines: {{mecm_sslsecret.stderr_lines}}, stdout: {{mecm_sslsecret.stdout}}, stdout_lines: {{mecm_sslsecret.stdout_lines}}"
-  when: mecm_sslsecret is failed
-
-- name: Failing as task "Create Secret mecm-ssl-secret" failed
-  fail:
-    msg: The task Create Secret mecm-ssl-secret has failed
-  when: mecm_sslsecret is failed
-
 - name : Create Secret edgegallery-mecm-secret
   shell: |
     kubectl create secret generic {{ meo_mecm_secretName }} \
@@ -80,8 +57,7 @@
     --set images.mecmFe.pullPolicy={{ mecm_fe_images_mecmFe_pullPolicy }} \
     --set images.initservicecenter.pullPolicy={{ mecm_fe_images_initservicecenter_pullPolicy }} \
     --set global.ssl.enabled={{ mecm_fe_global_ssl_enabled }} \
-    --set global.ssl.secretName={{ mecm_fe_global_ssl_secretName }} \
-    --set ssl.secretName={{ meo_ssl_secretName }} \
+    --set global.ssl.secretName={{ meo_ssl_secretName }} \
     --set global.ssl.enabled={{ meo_global_ssl_enabled }} \
     --set mecm.secretName={{ meo_mecm_secretName }} \
     --set images.inventory.repository={{ meo_images_inventory_repository }} \
@@ -102,17 +78,17 @@
     --set mecm.repository.sourceRepos="repo={{ PORTAL_IP }} userName=admin password={{ HARBOR_ADMIN_PASSWORD }}"
   no_log: true
   ignore_errors: yes
-  register: mecm-meoout
+  register: mecmMeoout
 
 - name: Output of "Deploy MECM-MEO" task
   debug:
-    msg: "rc: {{mecm-meoout.rc}}, stderr: {{mecm-meoout.stderr}}, stderr_lines: {{mecm-meoout.stderr_lines}}, stdout: {{mecm-meoout.stdout}}, stdout_lines: {{mecm-meoout.stdout_lines}}"
-  when: mecm-meoout is failed
+    msg: "rc: {{mecmMeoout.rc}}, stderr: {{mecmMeoout.stderr}}, stderr_lines: {{mecmMeoout.stderr_lines}}, stdout: {{mecmMeoout.stdout}}, stdout_lines: {{mecmMeoout.stdout_lines}}"
+  when: mecmMeoout is failed
 
 - name: Failing as task "Deploy MECM-MEO" failed
   fail:
     msg: The task Deploy MECM-MEO has failed
-  when: mecm-meoout is failed
+  when: mecmMeoout is failed
 
 - name: Check MECM-MEO Status
   uri:

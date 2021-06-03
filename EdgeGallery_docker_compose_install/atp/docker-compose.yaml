@@ -1,0 +1,56 @@
+version: "3"
+services:
+  atpFe:
+    image: swr.ap-southeast-1.myhuaweicloud.com/edgegallery/atp-fe:v1.1.1
+    depends_on:
+      - postgres
+    ports:
+      - 30094:8443
+    environment:
+      LOG_DIR: /usr/app/log
+      LOG_FILE_NAME: atp-fe
+      SC_ADDRESS: https://${ENV_IP}:30100
+      LISTEN_IP: atp
+      AUTH_SERVER_ADDRESS: https://${ENV_IP}:30067
+      COOKIE_NAME: ATPSESSIONID
+      CLIENT_ID: atp-fe
+      CLIENT_SECRET: te9Fmv%qaq
+      SSL_ENABLED: "true"
+      IS_SECURE_BACKEND: "true"
+      SSL_KEY_STORE_PATH: /usr/app/ssl/keystore.p12
+      SSL_KEY_STORE_PASSWORD: "te9Fmv%qaq"
+      SSL_KEY_STORE_TYPE: PKCS12
+      SSL_KEY_ALIAS: edgegallery
+    volumes:
+      - /tmp/keys/keystore.p12:/usr/app/ssl/keystore.p12
+
+  atp:
+    image: swr.ap-southeast-1.myhuaweicloud.com/edgegallery/atp-be:v1.1.1
+    depends_on:
+      - postgres
+    environment:
+      LOG_DIR: /usr/app/log
+      SC_ADDRESS: https://${ENV_IP}:30100
+      LISTEN_IP: atp
+      POSTGRES_IP: postgres
+      POSTGRES_PORT: "5432"
+      POSTGRES_DB_NAME: "atpdb"
+      POSTGRES_USERNAME: "atp"
+      POSTGRES_PASSWORD: "te9Fmv%qaq"
+      AUTH_SERVER_ADDRESS: https://${ENV_IP}:30067
+      SSL_ENABLED: "true"
+      SSL_KEY_STORE_PATH: /usr/app/ssl/keystore.p12
+      SSL_KEY_STORE_PASSWORD: "te9Fmv%qaq"
+      SSL_KEY_STORE_TYPE: PKCS12
+      SSL_KEY_ALIAS: edgegallery
+    volumes:
+      - /tmp/keys/keystore.p12:/usr/app/ssl/keystore.p12
+
+  postgres:
+    image: swr.ap-southeast-1.myhuaweicloud.com/edgegallery/postgres:12.3
+    environment:
+      POSTGRES_USER: "atp"
+      POSTGRES_PASSWORD: "te9Fmv%qaq"
+      POSTGRES_DB: "atpdb"
+    volumes:
+      - ./postgres-data:/docker-entrypoint-initdb.d/

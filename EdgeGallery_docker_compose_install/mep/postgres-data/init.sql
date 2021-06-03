@@ -1,0 +1,10 @@
+CREATE USER kong WITH PASSWORD 'kong-Pass123';
+REVOKE connect ON DATABASE kong FROM PUBLIC;
+GRANT ALL PRIVILEGES ON DATABASE kong TO admin;
+GRANT ALL PRIVILEGES ON DATABASE kong TO kong;
+GRANT connect ON DATABASE kong TO kong;
+ALTER DATABASE template0 is_template false;
+ALTER DATABASE template1 is_template false;
+DROP DATABASE template0;
+DROP DATABASE template1;
+DROP DATABASE postgres;
