@@ -20,28 +20,15 @@
     path: /etc/docker/daemon.json
   register: file_status
 
-- name: write Harbor IP to a file
+- name: Copying script to /tmp for execution
   copy:
-    content: "{{ HarborIP  }}"
-    dest: "/tmp/harborip"
+    src: docker-daemon-update.py
+    dest: /tmp/docker-daemon-update.py
   when: file_status.stat.exists == True
 
-- name: Create File /etc/docker/daemon.json
-  copy:
-    src: daemon_verify.py
-    dest: /home/daemon_verify.py
+- name: Running script docker-daemon-update.py to append daemon.json
+  shell: "python3 /tmp/docker-daemon-update.py {{ PRIVATE_HARBOR_IP }}"
   when: file_status.stat.exists == True
-
-- name: Running script to verify contents of /etc/docker/daemon.json
-  shell: "python3 /home/daemon_verify.py aio"
-  register: script_out
-  when: file_status.stat.exists == True
-
-- name: Appending daemon.json file with aio-daemon.json contents, when daemon.json exists
-  blockinfile:
-    block: "{{ lookup('file', 'aio-daemon.json') }}"
-    path: /etc/docker/daemon.json
-  when: file_status.stat.exists == True and script_out.stdout == "not present"
 
 - name: Create File /etc/docker/daemon.json, when it does not exist
   copy:
