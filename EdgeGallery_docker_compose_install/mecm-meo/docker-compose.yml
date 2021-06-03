@@ -2,9 +2,9 @@ version: "3"
 services:
   mecm-fe:
     image: swr.ap-southeast-1.myhuaweicloud.com/edgegallery/mecm-fe:v1.1.1
-    ports: 
+    ports:
       - 30093:8443
-    depends_on: 
+    depends_on:
       - postgres
     environment:
       LOG_DIR: /var/log/mecm-fe
@@ -84,8 +84,8 @@ services:
     ports:
       - 8093:8093
     depends_on:
-      - postgres 
-    environment: 
+      - postgres
+    environment:
       LOG_DIR: /usr/app/log
       LISTEN_IP: ${ENV_IP}
       SC_ADDRESS: https://${ENV_IP}:30100

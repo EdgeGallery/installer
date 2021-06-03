@@ -1,72 +1,124 @@
 version: '3'
 services:
-  mep-fe:
-    image: swr.ap-southeast-1.myhuaweicloud.com/edgegallery/mep-fe:v1.1.1
-    ports:
-      - 30095:8100
-    depends_on:
-      - postgres
-      - kong
-      - mep
-      - mep-auth
-      - mep-dns
-      - mep-elasticsearch
-     
+  mep-elasticsearch:
+    image: swr.ap-southeast-1.myhuaweicloud.com/eg-common/elasticsearch:7.9.0
+    environment:
+      discovery.type: "single-node"
 
   postgres:
-    image: swr.ap-southeast-1.myhuaweicloud.com/edgegallery/postgres:12.3  
+    image: swr.ap-southeast-1.myhuaweicloud.com/edgegallery/postgres:12.3
     environment: 
-      POSTGRES_USER: admin
-      POSTGRES_DB: kong 
-      POSTGRES_PASSWORD: admin-Pass123
+      POSTGRES_USER: "admin"
+      POSTGRES_DB: "kong"
+      POSTGRES_PASSWORD: "admin-Pass123"
       POSTGRES_INITDB_ARGS: "--auth-local=password"
     volumes:
-      - /tmp/.mep_tmp_cer/:/etc/mep/ssl/
+      - /tmp/.mep_tmp_cer/mepserver_tls.crt:/etc/mep/ssl/server.crt
+      - /tmp/.mep_tmp_cer/mepserver_tls.key:/etc/mep/ssl/server.key
       - ./postgres-data:/docker-entrypoint-initdb.d/
-     
-  kong:
+
+  kong-migrations:
     image: swr.ap-southeast-1.myhuaweicloud.com/eg-common/kong:2.0.4-ubuntu
+    depends_on:
+      - postgres
+    environment:
+      KONG_DATABASE: "postgres"
+      KONG_PG_HOST: postgres
+      KONG_PG_USER: "kong"
+      KONG_PG_PASSWORD: "kong-Pass123"
+    command:
+      - sh
+      - -c
+      - /tmp/kong-migrations-start.sh
+    volumes:
+      - ./kong-data/kong-migrations-start.sh:/tmp/kong-migrations-start.sh
+
+  kong-proxy:
+    image: swr.ap-southeast-1.myhuaweicloud.com/eg-common/kong:2.0.4-ubuntu
+    depends_on:
+      - postgres
+      - kong-migrations
+    restart: always
     environment: 
-      KONG_DATABASE: postgres
-      KONG_PG_USER: kong
-      KONG_PG_PASSWORD: kong-Pass123
-   
-      
-         
-  mep:
-    image: swr.ap-southeast-1.myhuaweicloud.com/edgegallery/mep:v1.1.1
+      KONG_NGINX_WORKER_PROCESSES: 1
+      KONG_ADMIN_LISTEN: "0.0.0.0:8001, 0.0.0.0:8444 ssl"
+      KONG_PROXY_LISTEN: "0.0.0.0:8000, 0.0.0.0:8443 ssl http2"
+      KONG_DATABASE: "postgres"
+      KONG_PG_DATABASE: "kong"
+      KONG_PG_HOST: postgres
+      KONG_PG_USER: "kong"
+      KONG_PG_PASSWORD: "kong-Pass123"
+      KONG_PROXY_ACCESS_LOG: /tmp/access.log
+      KONG_ADMIN_ACCESS_LOG: /tmp/admin-access.log
+      KONG_PROXY_ERROR_LOG: /tmp/proxy.log
+      KONG_ADMIN_ERROR_LOG: /tmp/proxy-admin.log
+      KONG_HEADERS: "off"
+    volumes:
+      - ./kong-data/kong.conf:/etc/kong/kong.conf
+      - /tmp/.mep_tmp_cer/mepserver_tls.crt:/var/lib/kong/data/kong.crt
+      - /tmp/.mep_tmp_cer/mepserver_tls.key:/var/lib/kong/data/kong.key
+      - /tmp/.mep_tmp_cer/ca.crt:/var/lib/kong/data/ca.crt
+      - ./kong-data/handler.lua:/usr/local/share/lua/5.1/kong/plugins/appid-header/handler.lua
+      - ./kong-data/schema.lua:/usr/local/share/lua/5.1/kong/plugins/appid-header/schema.lua
+
+  mepauth:
+    image: swr.ap-southeast-1.myhuaweicloud.com/edgegallery/mepauth:v1.1.1
+    depends_on:
+      - kong-proxy
+      - mepserver
+    restart: always
     ports:
-      - 30443:8443
-    environment: 
+      - 10443:10443
+    environment:
+      MEPAUTH_APIGW_HOST: kong-proxy
+      MEPAUTH_APIGW_PORT: "8444"
+      MEPAUTH_CERT_DOMAIN_NAME: "edgegallery"
+      MEPSERVER_HOST: mepserver
+      MEPAUTH_DB_NAME: "kong"
+      MEPAUTH_DB_HOST: postgres
+      MEPAUTH_DB_USER: "kong"
+      MEPAUTH_DB_PASSWD: "kong-Pass123"
+    volumes:
+      - /tmp/.mep_tmp_cer/mepserver_tls.crt:/usr/mep/ssl/server.crt
+      - /tmp/.mep_tmp_cer/mepserver_tls.key:/usr/mep/ssl/server.key
+      - /tmp/.mep_tmp_cer/ca.crt:/usr/mep/ssl/ca.crt
+      - /tmp/.mep_tmp_cer/jwt_publickey:/usr/mep/keys/jwt_publickey
+      - /tmp/.mep_tmp_cer/jwt_encrypted_privatekey:/usr/mep/keys/jwt_encrypted_privatekey
+      - ./mepauth-data/mepauth.properties:/usr/mep/mprop/mepauth.properties
+
+  mepserver:
+    image: swr.ap-southeast-1.myhuaweicloud.com/edgegallery/mep:v1.1.1
+    depends_on:
+      - mep-elasticsearch
+    restart: always
+    ports:
+      - 8088:8088
+    environment:
        MEPSERVER_APIGW_HOST: "localhost"
        MEPSERVER_APIGW_PORT: "8444"
        MEPSERVER_CERT_DOMAIN_NAME: "edgegallery"
-       ROOT_KEY: "$(openssl rand -base64 256 | tr -d '\n' | tr -dc '[[:alnum:]]' | cut -c -256)"
-       TLS_KEY: te9Fmv%qaq  
- 
- mep-auth:
-    image: swr.ap-southeast-1.myhuaweicloud.com/edgegallery/mepauth:v1.1.1
-    ports:
-      - 10443
-    environment:   
-      MEPAUTH_APIGW_HOST: "localhost"
-      MEPAUTH_APIGW_PORT: "8444"
-      MEPAUTH_CERT_DOMAIN_NAME: "edgegallery"
-      MEPAUTH_DB_NAME: kong
-      MEPAUTH_DB_USER: kong 
-      MEPAUTH_DB_PASSWD: kong-Pass123
-      
-  
-  mep-dns:
-    image: swr.ap-southeast-1.myhuaweicloud.com/edgegallery/mep-dns-server:v1.1.1
-    ports:
-      - 30444:53
+       SSL_ROOT: /usr/mep/ssl
+       ROOT_KEY: $MEP_ROOT_KEY
+       TLS_KEY: "te9Fmv%qaq"
+    volumes:
+      - /tmp/.mep_tmp_cer/mepserver_tls.crt:/usr/mep/ssl_tmp/server.cer
+      - /tmp/.mep_tmp_cer/mepserver_encryptedtls.key:/usr/mep/ssl_tmp/server_key.pem
+      - /tmp/.mep_tmp_cer/ca.crt:/usr/mep/ssl_tmp/trust.cer
+      - ./mepserver-data/config.yaml:/usr/mep/conf/mep/config.yaml
 
-  mep-elasticsearch:
-    image: swr.ap-southeast-1.myhuaweicloud.com/eg-common/elasticsearch:7.9.0
+  dns-server:
+    image: swr.ap-southeast-1.myhuaweicloud.com/edgegallery/mep-dns-server:v1.1.1
+    restart: always
+
+  mep-fe:
+    image: swr.ap-southeast-1.myhuaweicloud.com/edgegallery/mep-fe:v1.1.1
+    restart: always
     ports:
-      - 9200
-    environment:
-      discovery.type: "single-node"
-    
-    
+      - 30095:8100
+    depends_on:
+      - kong-proxy
+      - mepserver
+      - mepauth
+      - dns-server
+    volumes:
+      - ./mepserver-data/nginx.conf:/etc/nginx/nginx.conf

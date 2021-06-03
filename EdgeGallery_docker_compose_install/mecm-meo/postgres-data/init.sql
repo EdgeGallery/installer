@@ -1,6 +1,6 @@
 CREATE USER inventory WITH PASSWORD 'te9Fmv%qaq' CREATEDB;
 CREATE DATABASE inventorydb
-    WITH 
+    WITH
     OWNER = inventory
     ENCODING = 'UTF8'
     LC_COLLATE = 'en_US.utf8'
@@ -10,7 +10,7 @@ CREATE DATABASE inventorydb
 
 CREATE USER appo WITH PASSWORD 'te9Fmv%qaq' CREATEDB;
 CREATE DATABASE appodb
-    WITH 
+    WITH
     OWNER = appo
     ENCODING = 'UTF8'
     LC_COLLATE = 'en_US.utf8'
@@ -20,7 +20,7 @@ CREATE DATABASE appodb
 
 CREATE USER apm WITH PASSWORD 'te9Fmv%qaq' CREATEDB;
 CREATE DATABASE apmdb
-    WITH 
+    WITH
     OWNER = apm
     ENCODING = 'UTF8'
     LC_COLLATE = 'en_US.utf8'
@@ -30,7 +30,7 @@ CREATE DATABASE apmdb
 
 CREATE USER lcmcontroller WITH PASSWORD 'te9Fmv%qaq' CREATEDB;
 CREATE DATABASE lcmcontrollerdb
-    WITH 
+    WITH
     OWNER = lcmcontroller
     ENCODING = 'UTF8'
     LC_COLLATE = 'en_US.utf8'
@@ -40,7 +40,7 @@ CREATE DATABASE lcmcontrollerdb
 
 CREATE USER k8splugin WITH PASSWORD 'te9Fmv%qaq' CREATEDB;
 CREATE DATABASE k8splugindb
-    WITH 
+    WITH
     OWNER = k8splugin
     ENCODING = 'UTF8'
     LC_COLLATE = 'en_US.utf8'

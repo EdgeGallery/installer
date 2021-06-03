@@ -29,7 +29,7 @@ services:
       POSTGRES_DB: "developerdb"
     volumes:
       - ./postgres-data:/docker-entrypoint-initdb.d/
-       
+
   developer-fe:
     image: swr.ap-southeast-1.myhuaweicloud.com/edgegallery/developer-fe:v1.1.1
     ports:
@@ -55,7 +55,7 @@ services:
       SSL_KEY_ALIAS: edgegallery
     volumes:
       - /tmp/keys/keystore.p12:/usr/app/ssl/keystore.p12
-         
+
   developer-be:
     image: swr.ap-southeast-1.myhuaweicloud.com/edgegallery/developer-be:v1.1.1
     depends_on:
