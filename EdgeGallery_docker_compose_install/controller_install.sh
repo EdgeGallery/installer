@@ -49,12 +49,15 @@ curPath=$(dirname $(readlink -f "$0"))
 
 echo "==========Setup for the Install=========="
 chmod 666 /var/run/docker.sock
-cd $curPath/setup
-docker-compose up -d
+
+if [ ! -f /tmp/keys/rsa_public_key.pem ]; then
+    cd $curPath/setup
+    docker-compose up -d
+    wait_for_file /tmp/keys/rsa_public_key.pem
+    wait_for_file /tmp/keys/encrypted_rsa_private_key.pem
+fi
 
 echo -n "te9Fmv%qaq" > /tmp/keys/cert_pwd
-wait_for_file /tmp/keys/rsa_public_key.pem
-wait_for_file /tmp/keys/encrypted_rsa_private_key.pem
 
 export ENV_IP=$1
 export JWT_PUBLIC_KEY=`cat /tmp/keys/rsa_public_key.pem`

@@ -23,7 +23,7 @@ CREATE TABLE TEST_CASE_TABLE (
     NAMEEN                   VARCHAR(200)       NULL,
     TYPE                     VARCHAR(200)       NULL,
     CLASSNAME                VARCHAR(200)       NULL,
-    HASHCODE                 TEXT               NULL, 
+    HASHCODE                 TEXT               NULL,
     DESCRIPTIONCH            TEXT               NULL,
     DESCRIPTIONEN            TEXT               NULL,
     FILEPATH                 VARCHAR(200)       NULL,
@@ -55,7 +55,7 @@ CREATE TABLE TEST_SUITE_TABLE (
     NAMECH                   VARCHAR(200)       NULL,
     NAMEEN                   VARCHAR(200)       NULL,
     DESCRIPTIONCh            TEXT               NULL,
-    DESCRIPTIONEN            TEXT               NULL, 
+    DESCRIPTIONEN            TEXT               NULL,
     SCENARIOIDLIST           VARCHAR(255)       NULL,
     CONSTRAINT test_suite_table_pkey PRIMARY KEY (ID)
 );
@@ -77,7 +77,7 @@ CREATE TABLE CONTRIBUTION_TABLE (
     NAME                     VARCHAR(200)       NULL,
     OBJECTIVE                VARCHAR(200)       NULL,
     STEP                     TEXT               NULL,
-    EXPECTRESULT             TEXT               NULL, 
+    EXPECTRESULT             TEXT               NULL,
     TYPE                     VARCHAR(255)       NULL,
     CREATETIME               TIMESTAMP          NULL,
     FILEPATH                 VARCHAR(200)       NULL,
@@ -112,7 +112,7 @@ INSERT INTO public.test_suite_table(
   ('4d203173-5555-4f62-aabb-8ebcec357f87','应用实例化','Application Instantiation','','automatic','InstantiateAppTestCaseInner','将应用包部署到边缘节点','Instantiate application and its dependency application on one edge host','','jar','应用包可以成功部署','app can instantiate successfully.','部署应用包到对应的边缘节点','Deploy application package to edge node','6d04da1b-1f36-4295-920a-8074f7f9d942'),
   ('4d203173-6666-4f62-aabb-8ebcec357f87','应用实例化终止','Application Termination','','automatic','UninstantiateAppTestCaseInner','将实例化后的应用包卸载','Uninstantiate application and its dependency application on one edge host','','jar','实例化后的应用包成功卸载','app can uninstantiate successfully.','卸载实例化后的应用','Terminate the application instance','6d04da1b-1f36-4295-920a-8074f7f9d942'),
   ('4d203173-7777-4f62-aabb-8ebcec357f87','病毒扫描','Virus Scanning','','automatic','VirusScanTestCaseInner','对应用包进行病毒扫描','scan application package virus','','java','应用包中未扫描出病毒','app has no virus.','1.启动病毒扫描三方件 2.扫描应用包','1.start third-party software 2.scan application package','743abd93-57a3-499d-9591-fa7db86a4778'),
-  ('4d203173-8888-4f62-aabb-8ebcec357f87','防炸弹攻击','Bomb Defense','','automatic','BombDefenseTestCase','对应用包进行防炸弹攻击校验','bomb defense','','jar','应用包具有防炸弹攻击能力','no bomb defense.','1.校验文件大小不大于50MB 2.解压后的文件大小不大于100MB 3.文件数量不大于1024个','1.file size can not exceeding 50MB 2.uncompress file can not exceeding 100MB 3.the number of file can not exceeding 1024','743abd93-57a3-499d-9591-fa7db86a4778'), 
+  ('4d203173-8888-4f62-aabb-8ebcec357f87','防炸弹攻击','Bomb Defense','','automatic','BombDefenseTestCase','对应用包进行防炸弹攻击校验','bomb defense','','jar','应用包具有防炸弹攻击能力','no bomb defense.','1.校验文件大小不大于50MB 2.解压后的文件大小不大于100MB 3.文件数量不大于1024个','1.file size can not exceeding 50MB 2.uncompress file can not exceeding 100MB 3.the number of file can not exceeding 1024','743abd93-57a3-499d-9591-fa7db86a4778'),
   ('4d203173-9999-4f62-aabb-8ebcec357f87','APPD文件目录校验','APPD File Dir Validation','','automatic','APPDValidation','根目录下必须包含APPD文件目录','Root directory must contain APPD file dir','','java','根目录下存在APPD文件目录','Root directory contains APPD file dir','1.打开csar包 2.校验根目录下存在APPD目录','1.open csar package 2.validate root directory contains APPD directory','522684bd-d6df-4b47-aab8-b43f1b4c19c0'),
   ('4d203173-1000-4f62-aabb-8ebcec357f87','Artifacts文件目录校验','Artifacts File Dir Validation','','automatic','ArtifactsValidation','根目录下必须包含Artifacts文件目录','Root directory must contain Artifacts file dir','','java','根目录下存在Artifacts文件目录','Root directory contains Artifacts file dir','1.打开csar包 2.校验根目录下存在Artifacts目录','1.open csar package 2.validate root directory contains Artifacts directory','522684bd-d6df-4b47-aab8-b43f1b4c19c0'),
   ('4d203173-1001-4f62-aabb-8ebcec357f87','TOSCA-Metadata文件目录校验','Tosca Metadata File Dir Validation','','automatic','ToscaMetadataValidation','根目录下必须包含TOSCA-Metadata文件目录','Root directory must contain TOSCA-Metadata file dir','','java','根目录下存在TOSCA-Metadata文件目录','Root directory contains TOSCA-Metadata file dir','1.打开csar包 2.校验根目录下存在TOSCA-Metadata目录','1.open csar package 2.validate root directory contains TOSCA-Metadata directory','522684bd-d6df-4b47-aab8-b43f1b4c19c0,111684bd-d6df-4b47-aab8-b43f1b4c19c0'),
@@ -120,5 +120,3 @@ INSERT INTO public.test_suite_table(
   ('4d203173-1003-4f62-aabb-8ebcec357f87','mf文件hash值列表校验','Manifest File Hash List Validation','','automatic','ManifestFileHashListValidation','.mf文件中，每个文件必须有对应的hash值描述','Every Source file must has Hash field in manifest file','','java','.mf文件中每个文件都有对应的hash值描述','Every Source file has Hash field in manifest file','1.打开csar包 2.打开.mf文件 3.校验每个Source字段对应的文件都有Hash字段的描述','1.open csar package 2.open .mf file 3.validate every Source file has Hash field in manifest file','743abd93-57a3-499d-9591-fa7db86a4778'),
   ('4d203173-1004-4f62-aabb-8ebcec357f87','CPU数量描述字段校验','CPU Number Description Validation','','automatic','CPUNumberDescriptionValidation','yaml描述文件中必须有对cpu数量的描述字段：num_virtual_cpu','There must contain cpu number description in yaml file','','java','yaml描述文件中包含对cpu数量的描述','There contains cpu number description in yaml file','1.打开csar包 2.打开yaml描述文件 3.校验有num_virtual_cpu字段','1.open csar package 2.open yaml description file 3.validate existence of num_virtual_cpu field','522684bd-d6df-4b47-aab8-b43f1b4c19c0,111684bd-d6df-4b47-aab8-b43f1b4c19c0'),
   ('4d203173-1005-4f62-aabb-8ebcec357f87','虚拟内存描述字段校验','Virtual Memory Description Validation','','automatic','VirtualMemoryDescriptionValidation','yaml文件中有对虚拟内存大小的描述字段：virtual_mem_size','There must contain virtual memory size description in yaml file','','java','yaml描述文件中包含对虚拟内存大小的描述','There contains virtual memory size description in yaml file','1.打开csar包 2.打开yaml描述文件 3.校验有virtual_mem_size字段','1.open csar package 2.open yaml description file 3.validate existence of virtual_mem_size','522684bd-d6df-4b47-aab8-b43f1b4c19c0,333684bd-d6df-4b47-aab8-b43f1b4c19c0');
-  
-  

@@ -1,6 +1,36 @@
+CREATE USER inventory WITH PASSWORD 'te9Fmv%qaq' CREATEDB;
+CREATE DATABASE inventorydb
+    WITH
+    OWNER = inventory
+    ENCODING = 'UTF8'
+    LC_COLLATE = 'en_US.utf8'
+    LC_CTYPE = 'en_US.utf8'
+    TABLESPACE = pg_default
+    CONNECTION LIMIT = -1;
+
+CREATE USER appo WITH PASSWORD 'te9Fmv%qaq' CREATEDB;
+CREATE DATABASE appodb
+    WITH
+    OWNER = appo
+    ENCODING = 'UTF8'
+    LC_COLLATE = 'en_US.utf8'
+    LC_CTYPE = 'en_US.utf8'
+    TABLESPACE = pg_default
+    CONNECTION LIMIT = -1;
+
+CREATE USER apm WITH PASSWORD 'te9Fmv%qaq' CREATEDB;
+CREATE DATABASE apmdb
+    WITH
+    OWNER = apm
+    ENCODING = 'UTF8'
+    LC_COLLATE = 'en_US.utf8'
+    LC_CTYPE = 'en_US.utf8'
+    TABLESPACE = pg_default
+    CONNECTION LIMIT = -1;
+
 CREATE USER lcmcontroller WITH PASSWORD 'te9Fmv%qaq' CREATEDB;
 CREATE DATABASE lcmcontrollerdb
-    WITH 
+    WITH
     OWNER = lcmcontroller
     ENCODING = 'UTF8'
     LC_COLLATE = 'en_US.utf8'
@@ -10,7 +40,7 @@ CREATE DATABASE lcmcontrollerdb
 
 CREATE USER k8splugin WITH PASSWORD 'te9Fmv%qaq' CREATEDB;
 CREATE DATABASE k8splugindb
-    WITH 
+    WITH
     OWNER = k8splugin
     ENCODING = 'UTF8'
     LC_COLLATE = 'en_US.utf8'
@@ -20,17 +50,17 @@ CREATE DATABASE k8splugindb
 
 CREATE USER osplugin WITH PASSWORD 'te9Fmv%qaq' CREATEDB;
 CREATE DATABASE osplugindb
-    WITH 
+    WITH
     OWNER = osplugin
     ENCODING = 'UTF8'
     LC_COLLATE = 'en_US.utf8'
     LC_CTYPE = 'en_US.utf8'
     TABLESPACE = pg_default
     CONNECTION LIMIT = -1;
-	
+
 CREATE USER apprulemgr WITH PASSWORD 'te9Fmv%qaq' CREATEDB;
 CREATE DATABASE apprulemgrdb
-    WITH 
+    WITH
     OWNER = apprulemgr
     ENCODING = 'UTF8'
     LC_COLLATE = 'en_US.utf8'

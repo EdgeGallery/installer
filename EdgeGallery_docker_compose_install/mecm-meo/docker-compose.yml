@@ -2,9 +2,9 @@ version: "3"
 services:
   mecm-fe:
     image: swr.ap-southeast-1.myhuaweicloud.com/edgegallery/mecm-fe:v1.1.1
-    ports: 
+    ports:
       - 30093:8443
-    depends_on: 
+    depends_on:
       - postgres
     environment:
       LOG_DIR: /var/log/mecm-fe
@@ -32,7 +32,7 @@ services:
       - postgres
     environment:
       LOG_DIR: /usr/app/log
-      LISTEN_IP: ${ENV_IP}
+      LISTEN_IP: appo
       SC_ADDRESS: https://${ENV_IP}:30100
       SSL_KEY_STORE_PATH: /usr/app/ssl/keystore.p12
       SSL_KEY_STORE_PASSWORD: "te9Fmv%qaq"
@@ -48,6 +48,7 @@ services:
     volumes:
       - /tmp/keys/keystore.p12:/usr/app/ssl/keystore.p12
       - /tmp/keys/keystore.jks:/usr/app/ssl/keystore.jks
+      - ./appo-data/start.sh:/usr/app/bin/start.sh
 
   apm:
     image: swr.ap-southeast-1.myhuaweicloud.com/edgegallery/mecm-apm:v1.1.1
@@ -58,7 +59,7 @@ services:
     environment:
       LOG_DIR: /usr/app/log
       PUSH_IMAGE: "false"
-      LISTEN_IP: ${ENV_IP}
+      LISTEN_IP: apm
       SC_ADDRESS: https://${ENV_IP}:30100
       SSL_KEY_STORE_PATH: /usr/app/ssl/keystore.p12
       SSL_KEY_STORE_PASSWORD: "te9Fmv%qaq"
@@ -78,16 +79,17 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock
       - /tmp/keys/keystore.p12:/usr/app/ssl/keystore.p12
       - /tmp/keys/keystore.jks:/usr/app/ssl/keystore.jks
+      - ./apm-data/start.sh:/usr/app/bin/start.sh
 
   inventory:
     image: swr.ap-southeast-1.myhuaweicloud.com/edgegallery/mecm-inventory:v1.1.1
     ports:
       - 8093:8093
     depends_on:
-      - postgres 
-    environment: 
+      - postgres
+    environment:
       LOG_DIR: /usr/app/log
-      LISTEN_IP: ${ENV_IP}
+      LISTEN_IP: inventory
       SC_ADDRESS: https://${ENV_IP}:30100
       SSL_KEY_STORE_PATH: /usr/app/ssl/keystore.p12
       SSL_KEY_STORE_PASSWORD: "te9Fmv%qaq"
@@ -104,6 +106,7 @@ services:
     volumes:
       - /tmp/keys/keystore.p12:/usr/app/ssl/keystore.p12
       - /tmp/keys/keystore.jks:/usr/app/ssl/keystore.jks
+      - ./inventory-data/start.sh:/usr/app/bin/start.sh
 
   postgres:
     image: swr.ap-southeast-1.myhuaweicloud.com/edgegallery/postgres:12.3

@@ -3,7 +3,7 @@ services:
   atpFe:
     image: swr.ap-southeast-1.myhuaweicloud.com/edgegallery/atp-fe:v1.1.1
     depends_on:
-      - postgres  
+      - postgres
     ports:
       - 30094:8443
     environment:
@@ -23,7 +23,7 @@ services:
       SSL_KEY_ALIAS: edgegallery
     volumes:
       - /tmp/keys/keystore.p12:/usr/app/ssl/keystore.p12
-      
+
   atp:
     image: swr.ap-southeast-1.myhuaweicloud.com/edgegallery/atp-be:v1.1.1
     depends_on:
@@ -53,4 +53,4 @@ services:
       POSTGRES_PASSWORD: "te9Fmv%qaq"
       POSTGRES_DB: "atpdb"
     volumes:
-      - ./postgres-data:/docker-entrypoint-initdb.d/      
+      - ./postgres-data:/docker-entrypoint-initdb.d/
