@@ -109,7 +109,7 @@ services:
       - ./inventory-data/start.sh:/usr/app/bin/start.sh
 
   postgres:
-    image: swr.ap-southeast-1.myhuaweicloud.com/edgegallery/postgres:12.3
+    image: swr.ap-southeast-1.myhuaweicloud.com/eg-common/postgres:12.3
     ports:
       - 8094:5432
     environment:

@@ -55,7 +55,7 @@ services:
         - /tmp/keys/keystore.p12:/usr/app/ssl/keystore.p12
 
     postgres:
-        image: swr.ap-southeast-1.myhuaweicloud.com/edgegallery/postgres:12.3
+        image: swr.ap-southeast-1.myhuaweicloud.com/eg-common/postgres:12.3
         environment:
             POSTGRES_USER: "appstore"
             POSTGRES_PASSWORD: "te9Fmv%qaq"

@@ -22,7 +22,7 @@ services:
       - /opt/portadv/portadmin:/opt/portadv/portadmin
 
   postgres:
-    image: swr.ap-southeast-1.myhuaweicloud.com/edgegallery/postgres:12.3
+    image: swr.ap-southeast-1.myhuaweicloud.com/eg-common/postgres:12.3
     environment:
       POSTGRES_USER: "developer"
       POSTGRES_PASSWORD: "te9Fmv%qaq"

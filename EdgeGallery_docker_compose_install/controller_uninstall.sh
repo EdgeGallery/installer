@@ -27,3 +27,8 @@ docker-compose down
 echo "==========Uninstall Setup=========="
 cd $curPath/setup
 docker-compose down
+
+echo "==========Uninstall Harbor=========="
+cd $curPath/harbor/harbor-files
+docker-compose down
+rm -rf /root/harbor
