@@ -15,17 +15,17 @@
 
 ---
 
-#- name: Load k3s Images
-  #shell: for f in "{{ TARBALL_PATH }}"/k3s-airgap-images-amd64.tar; do docker load -i $f; done
+- name: Load k3s Images
+  shell: for f in "{{ TARBALL_PATH }}"/k3s-airgap-images-amd64.tar; do docker load -i $f; done
 
-#- name: k3s files chmod
-  #command: sudo chmod a+x "{{ TARBALL_PATH }}"/k3s "{{ TARBALL_PATH }}"/k3s-install.sh
+- name: k3s files chmod
+  command: sudo chmod a+x "{{ TARBALL_PATH }}"/k3s "{{ TARBALL_PATH }}"/k3s-install.sh
 
-#- name: k3s files copy
-  #command: sudo cp "{{ TARBALL_PATH }}"/k3s /usr/local/bin/
+- name: k3s files copy
+  command: sudo cp "{{ TARBALL_PATH }}"/k3s /usr/local/bin/
 
-#- name: k3s install offline
-  #shell: INSTALL_K3S_SKIP_DOWNLOAD=true  "{{ TARBALL_PATH }}"/k3s-install.sh 
+- name: k3s install offline
+  shell: INSTALL_K3S_SKIP_DOWNLOAD=true INSTALL_K3S_EXEC="--node-ip={{ master }} --node-external-ip={{ master }} --bind-address={{ master }} --flannel-iface=eth0 --docker --no-deploy=servicelb --no-deploy=traefik --write-kubeconfig-mode 644 --kube-apiserver-arg="service-node-port-range=30000-36000""  "{{ TARBALL_PATH }}"/k3s-install.sh 
 
 #- name: System Daemon Reload
   #command: systemctl daemon-reload
@@ -53,15 +53,14 @@
 - name: Modprobe br_netfilter
   command: modprobe br_netfilter
 
-- name: install k3s online
-  shell: curl -sfL https://get.k3s.io | INSTALL_K3S_EXEC="--node-ip={{ master }} --node-external-ip={{ master }} --bind-address={{ master }} --flannel-iface=eth0 --docker --no-deploy=servicelb --no-deploy=traefik --write-kubeconfig-mode 644 --kube-apiserver-arg="service-node-port-range=30000-36000"" sh -
+#- name: install k3s online
+  #shell: curl -sfL https://get.k3s.io | INSTALL_K3S_EXEC="--node-ip={{ master }} --node-external-ip={{ master }} --bind-address={{ master }} --flannel-iface=eth0 --docker --no-deploy=servicelb --no-deploy=traefik --write-kubeconfig-mode 644 #--kube-apiserver-arg="service-node-port-range=30000-36000"" sh -
 
 - name: create .kube dir
   command: mkdir -p $HOME/.kube/
 
 - name: copy kubeconfig
   command: cp /etc/rancher/k3s/k3s.yaml $HOME/.kube/config
-~
 
 
 
