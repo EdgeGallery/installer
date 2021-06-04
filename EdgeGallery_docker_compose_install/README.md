@@ -17,13 +17,15 @@
 
 执行以下命令加载镜像，并安装部署edge和controller。
 
+ **注：需要先部署controller，再部署edge。因为部署controller时需要配置docker/daemon.json，会重启docker service。** 
+
 
 ```
-docker load -i edge-images.tar.gz
-bash edge_install.sh <IP-of-this-machine>
-
 docker load -i controller-images.tar.gz
 bash controller_install.sh <IP-of-this-machine>
+
+docker load -i edge-images.tar.gz
+bash edge_install.sh <IP-of-this-machine>
 ```
 
 上面公式里的`<IP-of-this-machine>`可以为此机器的私有IP，则EdgeGallery部署后只能在机器上用此私有IP进行访问。
