@@ -1,0 +1,84 @@
+#
+#   Copyright 2021 Huawei Technologies Co., Ltd.
+#
+#   Licensed under the Apache License, Version 2.0 (the "License");
+#   you may not use this file except in compliance with the License.
+#   You may obtain a copy of the License at
+#
+#       http://www.apache.org/licenses/LICENSE-2.0
+#
+#   Unless required by applicable law or agreed to in writing, software
+#   distributed under the License is distributed on an "AS IS" BASIS,
+#   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+#   See the License for the specific language governing permissions and
+#   limitations under the License.
+
+---
+
+- name: Reset Kubeadm
+  command: kubeadm reset -f
+  ignore_errors: yes
+
+- name: Remove k8s Exec Files
+  file:
+    path: "/usr/bin/{{ item }}"
+    state: absent
+  loop:
+    - kubectl
+    - kubeadm
+    - kubelet
+  ignore_errors: yes
+
+- name: Stop Kubelet Services
+  service:
+    name: kubelet.service
+    state: stopped
+  ignore_errors: yes
+
+- name: Disable Kubelet Service
+  service:
+    name: kubelet.service
+    enabled: no
+  ignore_errors: yes
+
+- name: Remove Kubelet System Files
+  file:
+    path: "/etc/systemd/system/{{ item }}"
+    state: absent
+  loop:
+    - kubelet.service
+    - kubelet.service.d
+  ignore_errors: yes
+
+- name: System Daemon Reload
+  command: systemctl daemon-reload
+
+- name: Remove Other Files
+  file:
+    path: "{{ item }}"
+    state: absent
+  loop:
+    - ~/.kube
+    - /var/lib/etcd
+    - /etc/kubernetes/
+    - /etc/cni/net.d
+    - /opt/cni
+    - /var/lib/kubelet
+  ignore_errors: yes
+
+- name: Set Iptables
+  shell: iptables -F && iptables -t nat -F && iptables -t mangle -F && iptables -X
+  ignore_errors: yes
+
+- name: uninstall socat and conntrack
+  shell: dpkg -r socat conntrack
+  ignore_errors: yes
+
+- name: Delete tunl0 Interface
+  shell: modprobe -r ipip
+  ignore_errors: yes
+
+- name: remove k8s docker images
+  shell: docker rmi "{{ item }}"
+  loop: "{{ K8S_DOCKER_IMAGES }}"
+  ignore_errors: yes
