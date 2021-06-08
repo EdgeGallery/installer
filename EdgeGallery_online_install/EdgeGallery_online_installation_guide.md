@@ -15,7 +15,7 @@ cp ./linux-amd64/helm /usr/local/bin/  \
 helm version 
 #### 三、安装harbor 
 安装harbor指导链接：
-https://gitee.com/edgegallery/installer/blob/master/EdgeGallery_online_install/docker_compose_install_harbor.md
+https://gitee.com/OSDT/dashboard/projects/edgegallery/installer/blob/master/EdgeGallery_online_install/docker_compose_install_harbor.md
 #### 四、安装nfs持久化
 ##### 1. 安装nfs服务
   apt-get install nfs-kernel-server \
@@ -27,9 +27,9 @@ https://gitee.com/edgegallery/installer/blob/master/EdgeGallery_online_install/d
   exportfs -v   
   ##### 2.安装nfs客户端
   下载nfs客户端  \
-  x86: https://gitee.com/edgegallery/installer/blob/master/EdgeGallery_online_install/nfs-client-amd/nfs-client-provisioner-1.2.8.tgz
+  x86: https://gitee.com/edgegallery/installer/blob/master/EdgeGallery_online_install/nfs-client-amd/nfs-client-provisioner-1.2.8.tgz  \
   ARM: https://gitee.com/edgegallery/installer/blob/master/EdgeGallery_online_install/nfs-client-arm/nfs-client-provisioner-1.2.8.tgz  \
-  helm install nfs-client-provisioner --set nfs.server=<nfs_sever_ip> --set nfs.path=/nfs/data/     nfs-client-provisioner-1.2.8.tgz # <nfs_sever_ip>为本机的ip  
+  helm install nfs-client-provisioner --set nfs.server=<nfs_sever_ip> --set nfs.path=/nfs/data/   nfs-client-provisioner-1.2.8.tgz      #<nfs_sever_ip>为本机的ip  
   #### 五、生成edgegallery的secret
   ##### 1、生成所需的证书
   docker pull swr.ap-southeast-1.myhuaweicloud.com/edgegallery/deploy-tool:latest  
@@ -54,6 +54,9 @@ https://gitee.com/edgegallery/installer/blob/master/EdgeGallery_online_install/d
      --from-file=encryptedPrivateKey=/root/keys/encrypted_rsa_private_key.pem \ \
      --from-literal=encryptPassword=te9Fmv%qaq 
   ##### 4、生成edgegallery-mecm-secret
+  下载postgres_init.sql 
+  url:https://gitee.com/OSDT/dashboard/projects/edgegallery/installer/blob/master/ansible_package/roles/init/files/conf/keys/postgres_init.sql
+
   kubectl create secret generic edgegallery-mecm-secret \  \
      --from-file=postgres_init.sql=/root/keys/postgres_init.sql \  \
      --from-literal=postgresPassword=te9Fmv%qaq \  \
@@ -115,17 +118,17 @@ https://gitee.com/edgegallery/installer/blob/master/EdgeGallery_online_install/d
   openssl rsa -in jwt_privatekey -aes256 -passout pass:te9Fmv%qaq -out jwt_encrypted_privatekey 2>&1 >/dev/null   
 
   ###### 生成pg-secret   
-  kubectl -n mep create secret generic pg-secret --from-literal=pg_admin_pwd=admin-Pass123 --from-literal=kong_pg_pwd=kong-Pass123 --from-
-  file=server.key=mepserver_tls.key --from-file=server.crt=mepserver_tls.crt
+  kubectl -n mep create secret generic pg-secret --from-literal=pg_admin_pwd=admin-Pass123 --from-literal=kong_pg_pwd=kong-Pass123  \ \
+  --from-file=server.key=mepserver_tls.key --from-file=server.crt=mepserver_tls.crt
   
   ###### 生成mep-ssl    
-  kubectl -n mep create secret generic mep-ssl  --from-literal=root_key="$(openssl rand -base64 256 | tr -d '\n' | tr -dc '[[:alnum:]]' | cut -c -256)"  
-  --from-literal=cert_pwd=te9Fmv%qaq --from-file=server.cer=mepserver_tls.crt --from-file=server_key.pem=mepserver_encryptedtls.key  --from-
-  file=trust.cer=ca.crt
+ kubectl -n mep create secret generic mep-ssl --from-literal=root_key="$(openssl rand -base64 256 | tr -d '\n' | tr -dc '[[:alnum:]]' | cut -c -256)"\ \
+  --from-literal=cert_pwd=te9Fmv%qaq --from-file=server.cer=mepserver_tls.crt --from-file=server_key.pem=mepserver_encryptedtls.key   \ \
+  --from-file=trust.cer=ca.crt
    
   ###### 生成mepauth-secret  
-  kubectl -n mep create secret generic mepauth-secret --from-file=server.crt=mepserver_tls.crt --from-file=server.key=mepserver_tls.key --from- 
-  file=ca.crt=ca.crt --from-file=jwt_publickey=jwt_publickey   --from-file=jwt_encrypted_privatekey=jwt_encrypted_privatekey
+  kubectl -n mep create secret generic mepauth-secret --from-file=server.crt=mepserver_tls.crt --from-file=server.key=mepserver_tls.key   \        
+  --from-file=ca.crt=ca.crt --from-file=jwt_publickey=jwt_publickey  --from-file=jwt_encrypted_privatekey=jwt_encrypted_privatekey
 
   #### 六、安装edgegallery
   ##### 1、选择自己需要的helm-chart版本下载(以下是各个版本的下载地址)
@@ -137,8 +140,8 @@ https://gitee.com/edgegallery/installer/blob/master/EdgeGallery_online_install/d
   下载edgegallery-values.yaml   \
   https://gitee.com/edgegallery/installer/blob/master/EdgeGallery_online_install/edgegallery-values.yaml
   sed -i 's/192.168.1.11/192.168.1.12/g'   edgegallery-values.yaml     #需要将192.168.1.12 替换为自己的ip \
-  sed -i ‘s/latest/v1.01/g’  edgegallery-values.yaml     #用自己的版本替代v1.01   现有的版本为v1.01 v1.0.0 v1.0.0-staging
-  ##### 3、install service-center
+  sed -i ‘s/latest/v1.01/g’  edgegallery-values.yaml     #用自己的版本替代v1.01   现有的版本为v1.01 v1.0.0 v1.0.0-staging v1.1.1
+  ##### 3、install service-center 
   helm install service-center-edgegallery  helm-charts/service-center  -f edgegallery-values.yaml  
   如果安装失败或安装错误运行 helm delete service-center-edgegallery
   ##### 4、install user-mgmt 
@@ -164,11 +167,11 @@ https://gitee.com/edgegallery/installer/blob/master/EdgeGallery_online_install/d
   helm install atp-edgegallery    helm-charts/atp    -f       edgegallery-values.yaml      --set postgres.password=te9Fmv%qaq     #master分支helm-charts 安装需要加 --set postgres.password=te9Fmv%qaq  
   ##### 10、install mecm-mepm
   mepm-service-account.yaml下载地址:
-  https://gitee.com/edgegallery/installer/blob/master/ansible_package/roles/init/files/conf/manifest/mepm/mepm-service-account.yaml
+  https://gitee.com/edgegallery/installer/blob/master/ansible_package/roles/init/files/conf/manifest/mepm/mepm-service-account.yaml  \
   kubectl apply -f mepm-service-account.yaml     
   
   helm install mecm-mepm-edgegallery helm-charts/mecm-mepm  -f  edgegallery-values.yaml  --set jwt.publicKeySecretName=mecm-mepm-jwt-public-secret   \    
-  --set ssl.secretName=mecm-mepm-ssl-secret   --set mepm.secretName=edgegallery-mepm-secret 
+   --set ssl.secretName=mecm-mepm-ssl-secret   --set mepm.secretName=edgegallery-mepm-secret 
   ##### 11、install mep
   ##### 11.1 创建路由 
   ip link add eg-mp1 link eth0 type macvlan mode bridge  #用自己本机的网卡名替代eth0  \
