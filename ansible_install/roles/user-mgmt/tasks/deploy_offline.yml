@@ -35,7 +35,7 @@
     msg: The task Create Secret user-mgmt-jwt-secret has failed
   when: usermgmt_out is failed
 
-- name: Deploy USER_MGMT
+- name: Deploy USER_MGMT Without Email Server
   shell: |
     helm install --wait user-mgmt-edgegallery {{ HELM_CHARTS_PATH }}/edgegallery/usermgmt-{{ HELM_TAG }}.tgz \
     --set global.oauth2.clients.appstore.clientUrl=https://{{ PORTAL_IP }}:{{ APPSTORE_PORT }} \
@@ -69,7 +69,58 @@
   no_log: true
   ignore_errors: true
   register: user_mgmtout
+  when: usermgmt_mail_enabled is false
 
+- name: Deploy USER_MGMT With Email Server
+  shell: |
+    helm install --wait user-mgmt-edgegallery {{ HELM_CHARTS_PATH }}/edgegallery/usermgmt-{{ HELM_TAG }}.tgz \
+    --set global.oauth2.clients.appstore.clientUrl=https://{{ PORTAL_IP }}:{{ APPSTORE_PORT }} \
+    --set global.oauth2.clients.appstore.clientSecret={{ userMgmtOauth2AppstoreClientSecret }} \
+    --set global.oauth2.clients.developer.clientUrl=https://{{ PORTAL_IP }}:{{ DEVELOPER_PORT }} \
+    --set global.oauth2.clients.developer.clientSecret={{ userMgmtOauth2DeveloperClientSecret }} \
+    --set global.oauth2.clients.mecm.clientUrl=https://{{ PORTAL_IP }}:{{ MECM_PORT }} \
+    --set global.oauth2.clients.mecm.clientSecret={{ userMgmtOauth2MecmClientSecret }} \
+    --set global.oauth2.clients.atp.clientUrl=https://{{ PORTAL_IP }}:{{ ATP_PORT }} \
+    --set global.oauth2.clients.atp.clientSecret={{ userMgmtOauth2AtpClientSecret }} \
+    --set global.oauth2.clients.lab.clientUrl=https://{{ PORTAL_IP }}:{{ LAB_PORT }} \
+    --set global.oauth2.clients.lab.clientSecret={{ userMgmtOauth2LabClientSecret }} \
+    --set jwt.secretName={{ usermgmt_jwt_secretName }} \
+    --set images.usermgmt.repository={{ usermgmt_images_usermgmt_repository }} \
+    --set images.postgres.repository={{ usermgmt_images_postgres_repository }} \
+    --set images.redis.repository={{ usermgmt_images_redis_repository }} \
+    --set images.initservicecenter.repository={{ usermgmt_images_initservicecenter_repository }} \
+    --set images.usermgmt.tag={{ usermgmt_images_usermgmt_tag }} \
+    --set images.postgres.tag={{ usermgmt_images_postgres_tag }} \
+    --set images.redis.tag={{ usermgmt_images_redis_tag }} \
+    --set images.initservicecenter.tag={{ usermgmt_images_initservicecenter_tag }} \
+    --set images.usermgmt.pullPolicy={{ usermgmt_images_usermgmt_pullPolicy }} \
+    --set images.postgres.pullPolicy={{ usermgmt_images_postgres_pullPolicy }} \
+    --set images.redis.pullPolicy={{ usermgmt_images_redis_pullPolicy }} \
+    --set images.initservicecenter.pullPolicy={{ usermgmt_images_initservicecenter_pullPolicy }} \
+    --set global.ssl.enabled={{ usermgmt_global_ssl_enabled }} \
+    --set global.ssl.secretName={{ usermgmt_global_ssl_secretName }} \
+    --set global.persistence.enabled={{ ENABLE_PERSISTENCE }} \
+    --set postgres.password={{ userMgmtPostgresPassword }} \
+    --set redis.password={{ userMgmtRedisPassword }} \
+    --set mail.enabled={{ usermgmt_mail_enabled }} \
+    --set mail.host={{ usermgmt_mail_host }} \
+    --set mail.port={{ usermgmt_mail_port }} \
+    --set mail.sender={{ usermgmt_mail_sender }} \
+    --set mail.authCode={{ usermgmt_mail_authcode }}
+  no_log: true
+  ignore_errors: true
+  register: user_mgmtout
+  when: usermgmt_mail_enabled is true
+
+- name: Output of "Deploy USER_MGMT" task
+  debug:
+    msg: "rc: {{user_mgmtout.rc}}, stderr: {{user_mgmtout.stderr}}, stderr_lines: {{user_mgmtout.stderr_lines}}, stdout: {{user_mgmtout.stdout}}, stdout_lines: {{user_mgmtout.stdout_lines}}"
+  when: user_mgmtout is failed
+
+- name: Failing as task "Deploy USER_MGMT" failed
+  fail:
+    msg: The task Deploy USER_MGMT has failed
+  when: user_mgmtout is failed
 - name: Output of "Deploy USER_MGMT" task
   debug:
     msg: "rc: {{user_mgmtout.rc}}, stderr: {{user_mgmtout.stderr}}, stderr_lines: {{user_mgmtout.stderr_lines}}, stdout: {{user_mgmtout.stdout}}, stdout_lines: {{user_mgmtout.stdout_lines}}"

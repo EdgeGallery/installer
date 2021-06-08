@@ -29,3 +29,11 @@ ENABLE_PERSISTENCE: true
 # If master node is with multiple NICs, should set it here to be 2 different NICs
 # EG_NODE_EDGE_MP1: eth0
 # EG_NODE_EDGE_MM5: eth0
+
+# Email Server Config for User Mgmt
+usermgmt_mail_enabled: false
+# If usermgmt_mail_enabled is true, then the following 4 params need to be set
+# usermgmt_mail_host:
+# usermgmt_mail_port:
+# usermgmt_mail_sender:
+# usermgmt_mail_authcode:
