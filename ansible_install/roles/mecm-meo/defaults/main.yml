@@ -13,10 +13,6 @@
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
 
-postgresPassword: te9Fmv%qaq
-postgresApmPassword: te9Fmv%qaq
-postgresAppoPassword: te9Fmv%qaq 
-postgresInventoryPassword: te9Fmv%qaq
 edgeRepoUserName: admin
 
 meo_global_ssl_enabled: true

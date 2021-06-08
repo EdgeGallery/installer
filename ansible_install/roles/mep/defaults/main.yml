@@ -15,10 +15,6 @@
 
 MEP_CERTS_DIR: "{{ TARBALL_PATH }}/.mep_tmp_cer"
 
-PG_ADMIN_PWD: admin-Pass123
-KONG_PG_PWD: kong-Pass123
-CERT_PWD: te9Fmv%qaq
-
 CERT_NAME: mepserver
 
 DOMAIN_NAME: edgegallery
