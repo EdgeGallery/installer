@@ -4,6 +4,8 @@ services:
     image: swr.ap-southeast-1.myhuaweicloud.com/edgegallery/mecm-apprulemgr:v1.1.1
     depends_on:
       - mepm-postgres
+    ports:
+      - 30206:8096
     restart: always
     environment:
       LOG_DIR: /usr/app/log
@@ -22,6 +24,8 @@ services:
     image: swr.ap-southeast-1.myhuaweicloud.com/edgegallery/mecm-applcm-k8splugin:v1.1.1
     depends_on:
       - mepm-postgres
+    ports:
+      - 30205:8095
     restart: always
     environment:     
       LOG_DIR: /usr/app/log
@@ -37,6 +41,8 @@ services:
       
   mecm-mepm-lcmcontroller:
     image: swr.ap-southeast-1.myhuaweicloud.com/edgegallery/mecm-applcm:v1.1.1
+    ports:
+      - 30204:8094
     depends_on:
       - mepm-postgres
     restart: always
@@ -62,6 +68,8 @@ services:
     image: swr.ap-southeast-1.myhuaweicloud.com/edgegallery/mecm-applcm-osplugin:v1.1.1
     depends_on:
       - mepm-postgres
+    ports:
+      - 30207:8234
     restart: always
     environment:
       LISTEN_IP: mecm-mepm-osplugin
