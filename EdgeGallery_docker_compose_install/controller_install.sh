@@ -74,11 +74,12 @@ docker-compose up -d
 
 wait_for_service https://$ENV_IP:30067
 
-echo "==========Install Appstore=========="
-cd $curPath/appstore
+echo "==========Install Appstore and ATP=========="
+cd $curPath/appstore-atp
 docker-compose up -d
 
 wait_for_service https://$ENV_IP:30091
+wait_for_service https://$ENV_IP:30094
 
 echo "==========Install Developer=========="
 cd $curPath/developer
@@ -91,10 +92,3 @@ cd $curPath/mecm-meo
 docker-compose up -d
 
 wait_for_service https://$ENV_IP:30093
-
-echo "==========Install ATP=========="
-cd $curPath/atp
-docker-compose up -d
-
-wait_for_service https://$ENV_IP:30094
-
