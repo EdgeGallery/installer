@@ -15,6 +15,17 @@
 
 ---
 
+- name: Setup Nginx Ingress Controller
+  shell: |
+    helm install --wait eg-ingress {{ HELM_CHARTS_PATH }}/stable/nginx-ingress-1.41.2.tgz \
+      --set controller.service.type=NodePort \
+      --set controller.service.nodePorts.http=30102 \
+      --set controller.image.registry="" \
+      --set controller.image.repository={{ ingress_controller_image_repository }} \
+      --set controller.admissionWebhooks.patch.image.repository={{ ingress_controller_admissionWebhooks_patch_image_repository }} \
+      --set defaultBackend.image.repository={{ ingress_defaultBackend_image_repository }}
+  when: K8S_NODE_TYPE == "master" and EG_MODE != "controller" and ENABLE_INGRESS is true and ARCH == "amd64"
+
 - name: Create Secret mecm-mepm-jwt-public-secret
   shell: |
     kubectl create secret generic mecm-mepm-jwt-public-secret \
