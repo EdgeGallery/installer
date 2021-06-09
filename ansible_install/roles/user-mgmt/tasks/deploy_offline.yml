@@ -68,8 +68,18 @@
     --set redis.password={{ userMgmtRedisPassword }}
   no_log: true
   ignore_errors: true
-  register: user_mgmtout
+  register: user_mgmtout_without_email
   when: usermgmt_mail_enabled is false
+
+- name: Output of "Deploy USER_MGMT Without Email Server" task
+  debug:
+    msg: "rc: {{user_mgmtout_without_email.rc}}, stderr: {{user_mgmtout_without_email.stderr}}, stderr_lines: {{user_mgmtout_without_email.stderr_lines}}, stdout: {{user_mgmtout_without_email.stdout}}, stdout_lines: {{user_mgmtout_without_email.stdout_lines}}"
+  when: usermgmt_mail_enabled is false and user_mgmtout_without_email is failed
+
+- name: Failing as task "Deploy USER_MGMT Without Email Server" failed
+  fail:
+    msg: The task Deploy USER_MGMT has failed
+  when: usermgmt_mail_enabled is false and user_mgmtout_without_email is failed
 
 - name: Deploy USER_MGMT With Email Server
   shell: |
@@ -109,27 +119,18 @@
     --set mail.authCode={{ usermgmt_mail_authcode }}
   no_log: true
   ignore_errors: true
-  register: user_mgmtout
+  register: user_mgmtout_with_email
   when: usermgmt_mail_enabled is true
 
-- name: Output of "Deploy USER_MGMT" task
+- name: Output of "Deploy USER_MGMT With Email Server" task
   debug:
-    msg: "rc: {{user_mgmtout.rc}}, stderr: {{user_mgmtout.stderr}}, stderr_lines: {{user_mgmtout.stderr_lines}}, stdout: {{user_mgmtout.stdout}}, stdout_lines: {{user_mgmtout.stdout_lines}}"
-  when: user_mgmtout is failed
+    msg: "rc: {{user_mgmtout_with_email.rc}}, stderr: {{user_mgmtout_with_email.stderr}}, stderr_lines: {{user_mgmtout_with_email.stderr_lines}}, stdout: {{user_mgmtout_with_email.stdout}}, stdout_lines: {{user_mgmtout_with_email.stdout_lines}}"
+  when: usermgmt_mail_enabled is true and user_mgmtout_with_email is failed
 
-- name: Failing as task "Deploy USER_MGMT" failed
+- name: Failing as task "Deploy USER_MGMT With Email Server" failed
   fail:
     msg: The task Deploy USER_MGMT has failed
-  when: user_mgmtout is failed
-- name: Output of "Deploy USER_MGMT" task
-  debug:
-    msg: "rc: {{user_mgmtout.rc}}, stderr: {{user_mgmtout.stderr}}, stderr_lines: {{user_mgmtout.stderr_lines}}, stdout: {{user_mgmtout.stdout}}, stdout_lines: {{user_mgmtout.stdout_lines}}"
-  when: user_mgmtout is failed
-
-- name: Failing as task "Deploy USER_MGMT" failed
-  fail:
-    msg: The task Deploy USER_MGMT has failed
-  when: user_mgmtout is failed
+  when: usermgmt_mail_enabled is true and user_mgmtout_with_email is failed
 
 - name: Check USER_MGMT Status
   uri:

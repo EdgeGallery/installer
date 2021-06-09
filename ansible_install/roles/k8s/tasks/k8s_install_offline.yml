@@ -94,7 +94,7 @@
   replace:
     path: "{{ K8S_OFFLINE_DIR }}/k8s/calico.yaml"
     regexp: "interface=.*"
-    replace: "interface={{ NETWORK_INTERFACE }}"
+    replace: "interface={{ NETWORK_INTERFACE }}\""
 
 - name: Install K8S Master Special Configurations
   import_tasks: k8s_master_install_offline.yml

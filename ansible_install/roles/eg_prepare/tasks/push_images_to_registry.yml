@@ -25,7 +25,7 @@
 
 - name: Set Fact of Registry Path
   set_fact:
-    registry_path: "{{ ansible_default_ipv4['address'] }}:5000"
+    registry_path: "{{ groups.master[0] }}:5000"
 
 - name: Push All Images to Registry
   shell: |
