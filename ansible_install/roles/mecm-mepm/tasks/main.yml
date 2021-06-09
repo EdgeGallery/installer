@@ -15,6 +15,15 @@
 
 ---
 
+- name: List All NonRunning Pods with Namespace "mep", to verify mep deployment
+  shell: kubectl get pods -n mep --field-selector=status.phase!=Running
+  register: MEPNonRunningPod
+
+- name: Failing the Installation as 'mep' deployment needs to be completed before 'mecm-mepm'
+  fail:
+    msg: "MEP has not been deployed, Deploy 'mep' before 'mecm-mepm'"
+  when: MEPNonRunningPod.stderr != "No resources found in mep namespace."
+
 - name: Set Registry URL for Multi Node
   set_fact:
     REGISTRY_URL: "{{ groups.master[0] }}:5000/"

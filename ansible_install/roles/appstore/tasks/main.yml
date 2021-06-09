@@ -15,6 +15,18 @@
 
 ---
 
+- name: Check USER_MGMT Status
+  uri:
+    url: "https://{{ PORTAL_IP }}:{{ USER_MGMT_PORT }}/health"
+    validate_certs: no
+  register: user_mgmt_interacts
+  ignore_errors: yes
+
+- name: Failing the Installation as 'user-mgmt' deployement needs to be completed before 'appstore'
+  fail:
+    msg: "'user_mgmt' is not reachable, complete user_mgmt deployment before 'appstore'"
+  when: user_mgmt_interacts is failed
+
 - name: Set Registry URL for Multi Node
   set_fact:
     REGISTRY_URL: "{{ groups.master[0] }}:5000/"
