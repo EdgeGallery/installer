@@ -28,12 +28,12 @@
 - name: Set Harbor IP to PORTAL IP
   set_fact:
     HarborIP: "{{ PORTAL_IP }}"
-  when: PORTAL_IP is defined and K8S_NODE_TYPE == "master"
+  when: PORTAL_IP is defined
 
 - name: Set Harbor IP to Matser IP
   set_fact:
     HarborIP: "{{ groups.master[0] }}"
-  when: PORTAL_IP is undefined and K8S_NODE_TYPE == "master"
+  when: PORTAL_IP is undefined
 
 - name: Prepare EG Online
   include: "prepare_online.yml"
