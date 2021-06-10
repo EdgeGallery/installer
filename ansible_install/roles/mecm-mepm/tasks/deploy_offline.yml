@@ -20,6 +20,7 @@
     helm install --wait eg-ingress {{ HELM_CHARTS_PATH }}/stable/nginx-ingress-1.41.2.tgz \
       --set controller.service.type=NodePort \
       --set controller.service.nodePorts.http=30102 \
+      --set controller.service.nodePorts.https=31252 \
       --set controller.image.registry="" \
       --set controller.image.repository={{ ingress_controller_image_repository }} \
       --set controller.admissionWebhooks.patch.image.repository={{ ingress_controller_admissionWebhooks_patch_image_repository }} \
