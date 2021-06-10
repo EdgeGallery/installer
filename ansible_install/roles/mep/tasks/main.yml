@@ -67,4 +67,8 @@
 
 - name: Undeploy MEP
   include: "undeploy.yml"
-  when: OPERATION == "uninstall"
+  when: OPERATION == "uninstall" and K8S_NODE_TYPE == "master"
+
+- name: Cleanup MEP Worker Node
+  include: "cleanup_worker_node.yml"
+  when: OPERATION == "uninstall" and K8S_NODE_TYPE == "worker"
