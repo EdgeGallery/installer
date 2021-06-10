@@ -65,13 +65,6 @@
   import_tasks: master_harbor.yml
   when: K8S_NODE_TYPE == "master" and EG_MODE != "edge" and ARCH == "amd64"
 
-- name: Add Harbor IP to All Workers
-  add_host:
-    name: "{{ item.1 }}"
-    HarborIP: "{{ HarborIP }}"
-  with_indexed_items: "{{ groups.worker }}"
-  when: NODE_MODE == "muno" and K8S_NODE_TYPE == "master" and EG_MODE != "edge" and ARCH == "amd64"
-
 - name: Login Harbor on Worker Node
   shell: docker login -u admin -p {{ HARBOR_ADMIN_PASSWORD }} {{ HarborIP }}
   when: K8S_NODE_TYPE == "worker" and EG_MODE != "edge" and ARCH == "amd64"

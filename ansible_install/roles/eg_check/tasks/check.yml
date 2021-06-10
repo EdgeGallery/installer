@@ -33,11 +33,7 @@
   ignore_errors: yes
 
 - debug:
-    msg: "MEP PORTAL   : https://{{ PORTAL_IP }}:{{ MEP_PORT }}"
-  when: releasesDeployed is succeeded and MEP_HELM_RELEASE_NAME in releasesDeployed.stdout
-
-- debug:
-    msg: "MEPM PORTAL   : https://{{ PORTAL_IP }}:{{ MEPM_PORT }}"
+    msg: "MEPM PORTAL   : http://{{ PORTAL_IP }}:{{ MEPM_PORT }}"
   when: releasesDeployed is succeeded and MEPM_HELM_RELEASE_NAME in releasesDeployed.stdout
 
 - debug:

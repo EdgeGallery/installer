@@ -305,7 +305,13 @@ Besides of k8s, there are 11 parts related to the EG deployment. Some of them ar
 
 In summary, all modules are optional except init, eg_prepare and user-mgmt.
 
-## 7. TroubleShoot
+## 7. Advanced Features
+
+### 7.1 Ingress.
+  Ingress is enabled by default.
+  to disable, set 'ENABLE_INGRESS: false' in default-var.yml
+
+## 8. TroubleShoot
 
 1. **error**:    fatal: [1.2.3.4]: FAILED! => {"msg": "Timeout (12s) waiting for privilege escalation prompt: "}
 - **solution**: deploy eg as a 'root' user

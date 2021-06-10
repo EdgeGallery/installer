@@ -1,0 +1,64 @@
+#
+#   Copyright 2021 Huawei Technologies Co., Ltd.
+#
+#   Licensed under the Apache License, Version 2.0 (the "License");
+#   you may not use this file except in compliance with the License.
+#   You may obtain a copy of the License at
+#
+#       http://www.apache.org/licenses/LICENSE-2.0
+#
+#   Unless required by applicable law or agreed to in writing, software
+#   distributed under the License is distributed on an "AS IS" BASIS,
+#   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+#   See the License for the specific language governing permissions and
+#   limitations under the License.
+
+---
+
+- name: Uninstall nfs-client-provisioner
+  shell: helm uninstall nfs-client-provisioner
+  when: K8S_NODE_TYPE == "master" and ENABLE_PERSISTENCE is true
+  ignore_errors: yes
+
+- name: Wait For Cleanup All nfs-client-provisioner K8S Resources
+  shell: |
+    kubectl get all -A | grep "nfs-client-provisioner"
+    rc=$?
+    echo $rc
+  register: atpResourceRC
+  until: atpResourceRC.stdout == "1"
+  retries: 60
+  delay: 5
+  when: K8S_NODE_TYPE == "master" and ENABLE_PERSISTENCE is true
+  ignore_errors: yes
+
+- name: Remove nfs-kernel-server
+  shell: apt-get remove -y nfs-kernel-server
+  when: K8S_NODE_TYPE == "master" and ENABLE_PERSISTENCE is true
+  ignore_errors: yes
+
+- name: Uninstall Helm
+  file:
+    path: /usr/local/bin/helm
+    state: absent
+  ignore_errors: yes
+
+- name: Remove CNI Bin Dir
+  file:
+    path: "{{ CNI_BIN_PATH }}"
+    state: absent
+  ignore_errors: yes
+
+- name: Delete K8S Metric Server
+  shell: "kubectl delete -f {{ K8S_OFFLINE_DIR }}/k8s/metric-server.yaml"
+  when: NODE_MODE == "muno" and K8S_NODE_TYPE == "master"
+  ignore_errors: yes
+
+- name: Uninstall K8S
+  import_tasks: "k8s_uninstall.yml"
+
+- name: Uninstall Docker Registry
+  import_tasks: "docker_registry_uninstall.yml"
+
+- name: Uninstall Docker
+  import_tasks: "docker_uninstall.yml"

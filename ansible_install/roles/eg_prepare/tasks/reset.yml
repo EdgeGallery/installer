@@ -17,6 +17,7 @@
 
 - name: Delete Harbor Secret
   shell: kubectl delete secret harbor
+  when: K8S_NODE_TYPE == "master" and EG_MODE != "edge" and ARCH == "amd64"
   ignore_errors: yes
 
 - name: Remove Harbor Certs
@@ -70,7 +71,7 @@
 
 - name: Uninstall Service Center
   shell: helm uninstall service-center-edgegallery
-  when: EG_MODE == "all" or EG_MODE == "controller"
+  when: K8S_NODE_TYPE == "master" and EG_MODE != "edge"
   ignore_errors: yes
 
 - name: Wait For Cleanup All Service Center K8S Resources
@@ -82,12 +83,12 @@
   until: atpResourceRC.stdout == "1"
   retries: 60
   delay: 5
-  when: EG_MODE == "all" or EG_MODE == "controller"
+  when: K8S_NODE_TYPE == "master" and EG_MODE != "edge"
   ignore_errors: yes
 
 - name: Delete Secret edgegallery-ssl-secret
   shell: kubectl delete secret edgegallery-ssl-secret
-  when: EG_MODE == "all" or EG_MODE == "controller"
+  when: K8S_NODE_TYPE == "master" and EG_MODE != "edge"
   ignore_errors: yes
 
 - name: Remove edgagallery and stable Helm Repos

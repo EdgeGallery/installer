@@ -90,6 +90,12 @@
 - name: Install Package socat
   command: dpkg -i "{{ K8S_OFFLINE_DIR }}/tools/socat_1.7.3.2-2ubuntu2_{{ ARCH }}.deb"
 
+- name: Set Network Interface For Calico
+  replace:
+    path: "{{ K8S_OFFLINE_DIR }}/k8s/calico.yaml"
+    regexp: "interface=.*"
+    replace: "interface={{ NETWORK_INTERFACE }}\""
+
 - name: Install K8S Master Special Configurations
   import_tasks: k8s_master_install_offline.yml
   when: K8S_NODE_TYPE == "master"

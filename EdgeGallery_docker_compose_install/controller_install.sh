@@ -46,9 +46,15 @@ if [[ -z $1 ]]; then
 fi
 
 curPath=$(dirname $(readlink -f "$0"))
+export ENV_IP=$1
+
+echo "==========Install Harbor=========="
+bash $curPath/harbor/harbor_install.sh $ENV_IP
+
+echo "==========Config Docker Sock=========="
+chmod 666 /var/run/docker.sock
 
 echo "==========Setup for the Install=========="
-chmod 666 /var/run/docker.sock
 
 if [ ! -f /tmp/keys/rsa_public_key.pem ]; then
     cd $curPath/setup
@@ -59,7 +65,6 @@ fi
 
 echo -n "te9Fmv%qaq" > /tmp/keys/cert_pwd
 
-export ENV_IP=$1
 export JWT_PUBLIC_KEY=`cat /tmp/keys/rsa_public_key.pem`
 export JWT_ENCRYPTED_PRIVATE_KEY=`cat /tmp/keys/encrypted_rsa_private_key.pem`
 
@@ -69,11 +74,12 @@ docker-compose up -d
 
 wait_for_service https://$ENV_IP:30067
 
-echo "==========Install Appstore=========="
-cd $curPath/appstore
+echo "==========Install Appstore and ATP=========="
+cd $curPath/appstore-atp
 docker-compose up -d
 
 wait_for_service https://$ENV_IP:30091
+wait_for_service https://$ENV_IP:30094
 
 echo "==========Install Developer=========="
 cd $curPath/developer
@@ -86,10 +92,3 @@ cd $curPath/mecm-meo
 docker-compose up -d
 
 wait_for_service https://$ENV_IP:30093
-
-echo "==========Install ATP=========="
-cd $curPath/atp
-docker-compose up -d
-
-wait_for_service https://$ENV_IP:30094
-

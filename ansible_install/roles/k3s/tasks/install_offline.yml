@@ -1,0 +1,155 @@
+#
+#   Copyright 2021 Huawei Technologies Co., Ltd.
+#
+#   Licensed under the Apache License, Version 2.0 (the "License");
+#   you may not use this file except in compliance with the License.
+#   You may obtain a copy of the License at
+#
+#       http://www.apache.org/licenses/LICENSE-2.0
+#
+#   Unless required by applicable law or agreed to in writing, software
+#   distributed under the License is distributed on an "AS IS" BASIS,
+#   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+#   See the License for the specific language governing permissions and
+#   limitations under the License.
+
+---
+
+- name: Create the Directory for k8s Offline Tarball File
+  file:
+    path: "{{ K8S_OFFLINE_DIR }}"
+    state: directory
+
+- name: Unarchive k8s Offline Tarball File
+  unarchive:
+    src: "{{ K8S_TARBALL_FILE }}"
+    dest: "{{ K8S_OFFLINE_DIR }}"
+    copy: no
+
+- name: Check whether Docker is installed
+  command: docker version
+  register: dockerInstalled
+  ignore_errors: yes
+
+- debug:
+    msg: Docker is already installed, no need to be installed again
+  when: dockerInstalled is succeeded
+
+- debug:
+    msg: Docker is not installed, will be installed
+  when: dockerInstalled is failed
+
+- name: Install Docker Offline
+  import_tasks: docker_install_offline.yml
+  when: dockerInstalled is failed
+
+- name: Create Directory /etc/docker For Docker Registry
+  file:
+    path: /etc/docker
+    state: directory
+
+- name: Install and Setup Docker Registry
+  import_tasks: docker_registry_install_offline.yml
+  when: NODE_MODE == "muno" and K8S_NODE_TYPE == "master"
+
+- name: Setup Docker Daemon For AIO
+  import_tasks: docker_daemon_set_aio.yml
+  when: NODE_MODE == "aio" and K8S_NODE_TYPE == "master"
+
+- name: Set Docker daemon.json on Worker Node
+  copy:
+    src: "/home/{{ groups.master[0] }}/etc/docker/daemon.json"
+    dest: /etc/docker/
+  when: NODE_MODE == "muno" and K8S_NODE_TYPE == "worker"
+
+- name: Restart Docker Service
+  service:
+    name: docker.service
+    state: restarted
+
+- name: Install K3S
+  import_tasks: k3s_install_offline.yml
+
+- name: Create CNI Bin Directory
+  file:
+    path: "{{ CNI_BIN_PATH }}"
+    state: directory
+
+- name: Copy CNI to CNI Bin Directory
+  copy:
+    src: "{{ K8S_OFFLINE_DIR }}/cni/{{ item }}"
+    dest: "{{ CNI_BIN_PATH }}"
+    mode: '0755'
+    remote_src: yes
+  loop:
+    - macvlan
+    - host-local
+
+- name: Set /var/run/docker.sock Mode From 660 to 666
+  file:
+    path: /var/run/docker.sock
+    mode: 0666
+
+- name: Try to Get Helm Version
+  shell: helm version | cut -d \" -f2
+  register: helmVersion
+  ignore_errors: yes
+
+- name: Helm is Installed
+  debug:
+    msg: "helm {{ HELM_VERSION }} is already installed"
+  when: helmVersion.stdout == (HELM_VERSION)
+
+- name: Helm doesn't be Installed
+  debug:
+    msg: "helm {{ HELM_VERSION }} is not installed yet"
+  when: helmVersion.stdout != (HELM_VERSION)
+
+- name: Unarchive Helm Offline Tarball File
+  unarchive:
+    src: "{{ HELM_TARBALL_FILE }}"
+    dest: "{{ HELM_OFFLINE_DIR }}"
+    copy: no
+  register: unarchiveHelm
+  when: helmVersion.stdout != (HELM_VERSION)
+
+- name : Move Helm Exec File to /usr/local/bin/
+  copy:
+    src: "{{ HELM_OFFLINE_DIR }}/linux-{{ ARCH }}/helm"
+    dest: /usr/local/bin/
+    mode: '0755'
+    remote_src: yes
+  when: helmVersion.stdout != (HELM_VERSION) and unarchiveHelm is succeeded
+
+- name: Check Helm Installed
+  shell: helm version
+  when: helmVersion.stdout != (HELM_VERSION) and unarchiveHelm is succeeded
+
+- name: Install NFS Common Util
+  shell: "dpkg -i -G -E {{ NFS_DEB_PATH }}/{{ item }}_{{ ARCH }}.deb"
+  loop:
+    - "libtirpc1_0.2.5-1.2ubuntu0.1"
+    - "libnfsidmap2_0.25-5.1"
+    - "rpcbind_0.2.3-0.6ubuntu0.18.04.1"
+    - "keyutils_1.5.9-9.2ubuntu2"
+    - "nfs-common_1%3a1.3.4-2.1ubuntu5.3"
+  when: ENABLE_PERSISTENCE is true
+
+- name: Setup NFS for Storage Persistent on Master Node
+  import_tasks: nfs_setup.yml
+  when: K8S_NODE_TYPE == "master" and ENABLE_PERSISTENCE is true
+
+- name: Setup Nginx Ingress Controller
+  shell: helm install --wait eg-ingress {{ HELM_CHARTS_PATH }}/stable/nginx-ingress-1.41.2.tgz \
+         --set controller.kind=DaemonSet --set controller.hostNetwork=true \
+         --set controller.service.type=NodePort --set controller.image.registry "" \
+         --set controller.image.repository {{ ingress_controller_image_repository }} \
+         --set controller.admissionWebhooks.patch.image.repository {{ ingress_controller_admissionWebhooks_patch_image_repository }} \
+         --set defaultBackend.image.repository {{ ingress_defaultBackend_image_repository }}
+  when: K8S_NODE_TYPE == "master" and EG_MODE != "controller" and ENABLE_INGRESS is true and ARCH == "amd64"
+
+- name: Expose Nginx Ingress Controller NodePort
+  shell: kubectl expose svc eg-ingress-nginx-ingress-controller --name=eg-ingress-nodeport --port=80 --target-port=80 \
+         --type=NodePort \
+         --overrides '{ "apiVersion": "v1","spec":{"ports":[{"port":80,"protocol":"TCP","targetPort":80,"nodePort":30102}]}}'
+  when: K8S_NODE_TYPE == "master" and EG_MODE != "controller" and ENABLE_INGRESS is true and ARCH == "amd64"

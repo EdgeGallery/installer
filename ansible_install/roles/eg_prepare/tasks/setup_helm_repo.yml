@@ -38,7 +38,7 @@
   ignore_errors: yes
 
 - name: Add New edgagallery and stable Helm Repos
-  shell: "helm repo add {{ item }} http://{{ ansible_default_ipv4['address'] }}:8080/{{ item }}"
+  shell: "helm repo add {{ item }} http://{{ groups.master[0] }}:8080/{{ item }}"
   loop:
     - edgegallery
     - stable

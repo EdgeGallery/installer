@@ -27,6 +27,16 @@
     msg: "'MEP' is not reachable, complete MEP deployment before 'mecm-mepm'"
   when: mep_stat is failed
 
+- name: Set ARCH Value to be amd64
+  set_fact:
+    ARCH: amd64
+  when: ansible_architecture == "x86_64"
+
+- name: Set ARCH Value to be arm64
+  set_fact:
+    ARCH: arm64
+  when: ansible_architecture == "aarch64"
+
 - name: Set Registry URL for Multi Node
   set_fact:
     REGISTRY_URL: "{{ groups.master[0] }}:5000/"

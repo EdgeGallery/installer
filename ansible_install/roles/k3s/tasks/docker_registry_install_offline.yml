@@ -1,0 +1,65 @@
+#
+#   Copyright 2021 Huawei Technologies Co., Ltd.
+#
+#   Licensed under the Apache License, Version 2.0 (the "License");
+#   you may not use this file except in compliance with the License.
+#   You may obtain a copy of the License at
+#
+#       http://www.apache.org/licenses/LICENSE-2.0
+#
+#   Unless required by applicable law or agreed to in writing, software
+#   distributed under the License is distributed on an "AS IS" BASIS,
+#   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+#   See the License for the specific language governing permissions and
+#   limitations under the License.
+
+---
+
+- name: Check Whether /etc/docker/daemon.json Exists
+  stat:
+    path: /etc/docker/daemon.json
+  register: file_status
+
+- name: Create File /etc/docker/daemon.json
+  copy:
+    src: muno-daemon.json
+    dest: /etc/docker/daemon.json
+  when: file_status.stat.exists == False
+
+- name: Set insecure-registries IP in /etc/docker/daemon.json
+  replace:
+    path: /etc/docker/daemon.json
+    regexp: PRIVATE_REGISTRY_IP
+    replace: "{{ ansible_default_ipv4['address'] }}"
+  when: file_status.stat.exists == False
+
+- name: Set Harbor IP in /etc/docker/daemon.json
+  replace:
+    path: /etc/docker/daemon.json
+    regexp: PRIVATE_HARBOR_IP
+    replace: "{{ HarborIP }}"
+  when: file_status.stat.exists == False
+
+- name: Copy Docker daemon.json From Master Node to Deploy Node
+  fetch:
+    src: /etc/docker/daemon.json
+    dest: "/home"
+
+- name: Restart Docker Service
+  service:
+    name: docker.service
+    state: restarted
+  when: file_status.stat.exists == False
+
+- name: Check Whether registry Container Exists
+  shell: "docker ps | grep {{ REGISTRY_CONTAINER_NAME }}"
+  register: registry_exists
+  ignore_errors: yes
+
+- name: Load registry Image
+  shell: "docker load --input {{ DOCKER_REGISTRY_IMAGE }}"
+  when: registry_exists is failed
+
+- name: Run registry Container
+  shell: "docker run -d -p 5000:5000 --restart=always --name {{ REGISTRY_CONTAINER_NAME }} {{ REGISTRY_IMAGE_NAME }}"
+  when: registry_exists is failed

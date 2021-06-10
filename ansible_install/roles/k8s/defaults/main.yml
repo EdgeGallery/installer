@@ -53,6 +53,3 @@ nfs_image_repository_amd64: eg-common/quay.io/external_storage/nfs-client-provis
 nfs_image_tag_amd64: v3.1.0-k8s1.11
 nfs_image_repository_arm64: eg-common/quay.io/codayblue/nfs-subdir-external-provisioner-arm64
 nfs_image_tag_arm64: latest
-ingress_controller_image_repository: {{ REGISTRY_URL }}eg-common/us.gcr.io/k8s-artifacts-prod/ingress-nginx/controller
-ingress_controller_admissionWebhooks_patch_image_repository: {{ REGISTRY_URL }}eg-common/jettech/kube-webhook-certgen
-ingress_defaultBackend_image_repository: {{ REGISTRY_URL }}eg-common/k8s.gcr.io/defaultbackend-amd64

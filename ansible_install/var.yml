@@ -16,6 +16,9 @@
 # Set the Password of Harbor admin account, no default value, must set by users here
 HARBOR_ADMIN_PASSWORD:
 
+# Set the regex name of the network interface for calico
+NETWORK_INTERFACE: eth.*
+
 # Could be true or false
 # true: Deploy k8s NFS Server to keep the persistence of all pods' data
 # false: No need to keep the persistence of all pods' data
@@ -29,3 +32,11 @@ ENABLE_PERSISTENCE: true
 # If master node is with multiple NICs, should set it here to be 2 different NICs
 # EG_NODE_EDGE_MP1: eth0
 # EG_NODE_EDGE_MM5: eth0
+
+# Email Server Config for User Mgmt
+usermgmt_mail_enabled: false
+# If usermgmt_mail_enabled is true, then the following 4 params need to be set
+# usermgmt_mail_host:
+# usermgmt_mail_port:
+# usermgmt_mail_sender:
+# usermgmt_mail_authcode:

@@ -13,8 +13,6 @@
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
 
-encryptPassword: te9Fmv%qaq
-
 usermgmt_jwt_secretName: user-mgmt-jwt-secret
 usermgmt_images_usermgmt_repository: "{{ REGISTRY_URL }}edgegallery/user-mgmt"
 usermgmt_images_postgres_repository: "{{ REGISTRY_URL }}eg-common/postgres"

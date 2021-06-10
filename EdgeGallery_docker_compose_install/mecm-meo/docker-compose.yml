@@ -27,7 +27,7 @@ services:
   appo:
     image: swr.ap-southeast-1.myhuaweicloud.com/edgegallery/mecm-appo:v1.1.1
     ports:
-      - 8091:8091
+      - 30201:8091
     depends_on:
       - postgres
     environment:
@@ -53,7 +53,7 @@ services:
   apm:
     image: swr.ap-southeast-1.myhuaweicloud.com/edgegallery/mecm-apm:v1.1.1
     ports:
-      - 8092:8092
+      - 30202:8092
     depends_on:
       - postgres
     environment:
@@ -84,7 +84,7 @@ services:
   inventory:
     image: swr.ap-southeast-1.myhuaweicloud.com/edgegallery/mecm-inventory:v1.1.1
     ports:
-      - 8093:8093
+      - 30203:8093
     depends_on:
       - postgres
     environment:
@@ -109,7 +109,7 @@ services:
       - ./inventory-data/start.sh:/usr/app/bin/start.sh
 
   postgres:
-    image: swr.ap-southeast-1.myhuaweicloud.com/edgegallery/postgres:12.3
+    image: swr.ap-southeast-1.myhuaweicloud.com/eg-common/postgres:12.3
     ports:
       - 8094:5432
     environment:

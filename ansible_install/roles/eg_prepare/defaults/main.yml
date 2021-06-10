@@ -24,11 +24,8 @@ HARBOR_DATA_VOLUME: "/root/harbor/data_volume"
 
 CERT_VALIDITY_IN_DAYS: 365
 
-keystorePassword: te9Fmv%qaq
 keystoreType: PKCS12
 keyAlias: edgegallery
-cert_pwd: te9Fmv%qaq
-truststorePassword: te9Fmv%qaq
 
 servicecenter_images_repository: eg-common/service-center
 servicecenter_images_pullPolicy: IfNotPresent

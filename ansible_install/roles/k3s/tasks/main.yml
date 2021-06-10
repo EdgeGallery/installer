@@ -1,0 +1,79 @@
+#
+#   Copyright 2021 Huawei Technologies Co., Ltd.
+#
+#   Licensed under the Apache License, Version 2.0 (the "License");
+#   you may not use this file except in compliance with the License.
+#   You may obtain a copy of the License at
+#
+#       http://www.apache.org/licenses/LICENSE-2.0
+#
+#   Unless required by applicable law or agreed to in writing, software
+#   distributed under the License is distributed on an "AS IS" BASIS,
+#   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+#   See the License for the specific language governing permissions and
+#   limitations under the License.
+
+---
+
+- name: Set ARCH Value to be amd64
+  set_fact:
+    ARCH: amd64
+  when: ansible_architecture == "x86_64"
+
+- name: Set ARCH Value to be arm64
+  set_fact:
+    ARCH: arm64
+  when: ansible_architecture == "aarch64"
+
+- name: Set Registry URL for Multi Node
+  set_fact:
+    REGISTRY_URL: "{{ groups.master[0] }}:5000/"
+  when: NODE_MODE == "muno"
+
+- name: Set Registry URL for AIO
+  set_fact:
+    REGISTRY_URL: ""
+  when: NODE_MODE == "aio"
+
+- name: Set Harbor IP to PORTAL IP
+  set_fact:
+    HarborIP: "{{ PORTAL_IP }}"
+  when: PORTAL_IP is defined and K8S_NODE_TYPE == "master"
+
+- name: Set Harbor IP to Matser IP
+  set_fact:
+    HarborIP: "{{ groups.master[0] }}"
+  when: PORTAL_IP is undefined and K8S_NODE_TYPE == "master"
+
+- name: Check whether k3s is installed
+  command: kubectl cluster-info
+  register: k8sInstalled
+  ignore_errors: yes
+
+- debug:
+    msg: k3s is already installed, no need to be installed again
+  when: k8sInstalled is succeeded and OPERATION == "install"
+
+- debug:
+    msg: k3s is not installed, will be installed
+  when: k8sInstalled is failed and OPERATION == "install"
+
+- debug:
+    msg: k3s is already installed, will be uninstalled
+  when: k8sInstalled is succeeded and OPERATION == "uninstall"
+
+- debug:
+    msg: k3s is not installed successfully, will be uninstalled
+  when: k8sInstalled is failed and OPERATION == "uninstall"
+
+- name: Install k3s Online
+  import_tasks: "install_online.yml"
+  when: k8sInstalled is failed and OPERATION == "install" and NETWORK_MODE == "online"
+
+- name: Install k3s Offline
+  import_tasks: "install_offline.yml"
+  when: k8sInstalled is failed and OPERATION == "install" and NETWORK_MODE == "offline"
+
+- name: Uninstall k3s
+  import_tasks: "uninstall.yml"
+  when: OPERATION == "uninstall"

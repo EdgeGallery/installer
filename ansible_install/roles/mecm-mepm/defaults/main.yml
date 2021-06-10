@@ -13,12 +13,6 @@
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
 
-postgresPassword: te9Fmv%qaq
-postgresLcmCntlrPassword: te9Fmv%qaq
-postgresk8sPluginPassword: te9Fmv%qaq
-postgresosPluginPassword: te9Fmv%qaq
-postgresRuleMgrPassword: te9Fmv%qaq
-
 mepm_images_lcmcontroller_repository: "{{ REGISTRY_URL }}edgegallery/mecm-applcm"
 mepm_images_k8splugin_repository: "{{ REGISTRY_URL }}edgegallery/mecm-applcm-k8splugin"
 mepm_images_osplugin_repository: "{{ REGISTRY_URL }}edgegallery/mecm-applcm-osplugin"
@@ -32,3 +26,6 @@ mepm_images_osplugin_pullPolicy: IfNotPresent
 mepm_images_apprulemgr_pullPolicy: IfNotPresent
 mepm_images_mepmFe_pullPolicy: IfNotPresent
 mepm_images_postgres_pullPolicy: IfNotPresent
+ingress_controller_image_repository: "{{ REGISTRY_URL }}eg-common/us.gcr.io/k8s-artifacts-prod/ingress-nginx/controller"
+ingress_controller_admissionWebhooks_patch_image_repository: "{{ REGISTRY_URL }}eg-common/jettech/kube-webhook-certgen"
+ingress_defaultBackend_image_repository: "{{ REGISTRY_URL }}eg-common/k8s.gcr.io/defaultbackend-amd64"

@@ -1,0 +1,60 @@
+#
+#   Copyright 2021 Huawei Technologies Co., Ltd.
+#
+#   Licensed under the Apache License, Version 2.0 (the "License");
+#   you may not use this file except in compliance with the License.
+#   You may obtain a copy of the License at
+#
+#       http://www.apache.org/licenses/LICENSE-2.0
+#
+#   Unless required by applicable law or agreed to in writing, software
+#   distributed under the License is distributed on an "AS IS" BASIS,
+#   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+#   See the License for the specific language governing permissions and
+#   limitations under the License.
+
+---
+
+- name: Create the Directory for Docker Offline Tarball File
+  file:
+    path: "{{ DOCKER_OFFLINE_DIR }}"
+    state: directory
+
+- name: Unarchive Docker Offline Tarball File
+  unarchive:
+    src: "{{ DOCKER_TARBALL_FILE }}"
+    dest: "{{ DOCKER_OFFLINE_DIR }}"
+    copy: no
+
+- name: Copy Docker Exec File to /usr/bin
+  copy:
+    dest: /usr/bin
+    src: "{{ DOCKER_OFFLINE_DIR }}/docker/{{ item }}"
+    mode: '0755'
+    remote_src: yes
+  loop:
+    - containerd
+    - containerd-shim
+    - ctr
+    - docker
+    - dockerd
+    - docker-init
+    - docker-proxy
+    - runc
+
+- name: Copy Docker Service File to /etc/systemd/system/
+  copy:
+    dest: /etc/systemd/system/
+    src: "{{ DOCKER_OFFLINE_DIR }}/docker.service"
+    remote_src: yes
+
+- name: System Daemon Reload
+  command: systemctl daemon-reload
+
+- name: Restart Docker Service
+  service:
+    name: docker.service
+    state: restarted
+
+- name: Check whether Docker is installed
+  command: docker version

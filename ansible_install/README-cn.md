@@ -198,17 +198,32 @@ EdgeGallery的所有离线安装包均可在EdgeGallery官网进行下载。请[
   部署输入参数在文件/home/ansible-all-x86-latest/install/var.yml中。输入参数请参考以下信息进行配置：
 
   ```
-  # 部署过程中搭建的Harbor服务器的admin用户的密码，不提供默认值，须由用户自行设定
+  # 部署过程中搭建的Harbor服务器的admin用户的密码，不提供默认值，必须由用户自行设定
   HARBOR_ADMIN_PASSWORD:
 
-  # Appstore，developer等页面的访问ip，默认为master节点的私有IP，可在此设置为master节点的公网IP
-  # PORTAL_IP: 111.222.333.444
+  # 设置calico所使用的网卡的匹配模式，如下表示使用名为eth0、eth1等的网卡
+  NETWORK_INTERFACE: eth.*
+
+  # 是否需要开启数据持久化，开启后，重新部署EdgeGallery某个模块，可以恢复之前的数据
+  ENABLE_PERSISTENCE: true
+
+  # Appstore，developer等页面的访问ip，默认为host inventory文件中给出的master节点的IP，可在此设置为master节点的公网IP
+  # PORTAL_IP: xxx.xxx.xxx.xxx
 
   # master节点的网卡名
   # 如果master节点是单网卡，则可以不设置这两个变量，会在部署时自动获取master节点的静态IP对应的网卡名称
   # 如果master节点是多网卡，需要在此设置以下两个变量为不同的两个网卡的名称
   # EG_NODE_EDGE_MP1: eth0
   # EG_NODE_EDGE_MM5: eth0
+
+  # 是否设置邮箱服务器，设置为false，则无法使用用户登录时的找回密码功能，其他功能无任何影响
+  usermgmt_mail_enabled: false
+  # 如果上述参数设置为true，则需要给出如下参数值，可根据自己选定的邮箱类型，自行搜索如何开启邮箱SMTP服务并获取如下值
+  # usermgmt_mail_host:
+  # usermgmt_mail_port:
+  # usermgmt_mail_sender:
+  # usermgmt_mail_authcode:
+
   ```
 
 ### 3.3. 执行部署
