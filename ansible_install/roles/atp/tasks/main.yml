@@ -14,6 +14,18 @@
 #   limitations under the License.
 
 ---
+ 
+- name: Check USER_MGMT Status
+  uri:
+    url: "https://{{ PORTAL_IP }}:{{ USER_MGMT_PORT }}/health"
+    validate_certs: no
+  register: user_mgmt_reachable
+  ignore_errors: yes
+
+- name: Failing the Installation as 'user-mgmt' deployement needs to be completed before 'atp'
+  fail:
+    msg: "'user_mgmt' is not reachable, complete user_mgmt deployment before 'atp'"
+  when: user_mgmt_reachable is failed
 
 - name: Set Registry URL for Multi Node
   set_fact:
