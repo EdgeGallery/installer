@@ -49,7 +49,7 @@ if __name__ == "__main__":
     try:
         if len(sys.argv) > 1:
             check_and_update_docker_json(list_of_entries=sys.argv[1:],
-            daemon_json='./daemon.json')
+            daemon_json='/etc/docker/daemon.json')
             print('done')
             sys.exit(0) # successful update
         else:
