@@ -15,18 +15,6 @@
 
 ---
 
-- name: Check MEP Status
-  uri:
-    url: "https://{{ PORTAL_IP }}:{{ MEP_PORT }}/health"
-    validate_certs: no
-  register: mep_stat
-  ignore_errors: yes
-
-- name: Failing the Installation as 'MEP' deployement needs to be completed before 'mecm-mepm'
-  fail:
-    msg: "'MEP' is not reachable, complete MEP deployment before 'mecm-mepm'"
-  when: mep_stat is failed
-
 - name: Set ARCH Value to be amd64
   set_fact:
     ARCH: amd64
