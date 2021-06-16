@@ -30,26 +30,6 @@
   shell: "python3 /tmp/docker-daemon-update.py {{ PRIVATE_REGISTRY_IP:5000 }} {{ PRIVATE_HARBOR_IP }}"
   when: file_status.stat.exists == True
 
-- name: Create File /etc/docker/daemon.json
-  copy:
-    src: muno-daemon.json
-    dest: /etc/docker/daemon.json
-  when: file_status.stat.exists == False
-
-- name: Set insecure-registries IP in /etc/docker/daemon.json
-  replace:
-    path: /etc/docker/daemon.json
-    regexp: PRIVATE_REGISTRY_IP
-    replace: "{{ groups.master[0] }}"
-  when: file_status.stat.exists == False
-
-- name: Set Harbor IP in /etc/docker/daemon.json
-  replace:
-    path: /etc/docker/daemon.json
-    regexp: PRIVATE_HARBOR_IP
-    replace: "{{ HarborIP }}"
-  when: file_status.stat.exists == False
-
 - name: Copy Docker daemon.json From Master Node to Deploy Node
   fetch:
     src: /etc/docker/daemon.json
