@@ -19,7 +19,7 @@
   shell: |
     helm install --wait {{ DEVELOPER_HELM_RELEASE_NAME }} {{ HELM_CHARTS_PATH }}/edgegallery/developer-{{ HELM_TAG }}.tgz \
     --set global.oauth2.authServerAddress=https://{{ PORTAL_IP }}:{{ USER_MGMT_PORT }} \
-    --set global.oauth2.clients.developer.clientSecret={{ developerOauth2ClientSecret }} \
+    --set global.oauth2.clients.developer.clientSecret={{ oauth2ClientPassword }} \
     --set images.developerFe.repository={{ developer_images_developerFe_repository }} \
     --set images.developerBe.repository={{ developer_images_developerBe_repository }} \
     --set images.postgres.repository={{ developer_images_postgres_repository }} \
@@ -44,7 +44,7 @@
     --set developer.dockerRepo.endpoint={{ PORTAL_IP }} \
     --set developer.dockerRepo.password={{ HARBOR_ADMIN_PASSWORD }} \
     --set developer.dockerRepo.username=admin \
-    --set postgres.password={{ developerPostgresPassword }} \
+    --set postgres.password={{ postgresPassword }} \
     --set developer.vmImage.password={{ developerVMImagePassword }}
   no_log: true
   ignore_errors: yes

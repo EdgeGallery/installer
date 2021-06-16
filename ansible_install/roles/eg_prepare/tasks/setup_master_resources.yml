@@ -23,14 +23,14 @@
     kubectl create secret generic edgegallery-ssl-secret \
       --from-file=keystore.p12={{ TARBALL_PATH }}/conf/keys/keystore.p12 \
       --from-file=keystore.jks={{ TARBALL_PATH }}/conf/keys/keystore.jks \
-      --from-literal=keystorePassword={{ keystorePassword }} \
+      --from-literal=keystorePassword={{ certPassword }} \
       --from-literal=keystoreType={{ keystoreType }} \
       --from-literal=keyAlias={{ keyAlias }} \
-      --from-literal=truststorePassword={{ truststorePassword }} \
+      --from-literal=truststorePassword={{ certPassword }} \
       --from-file=trust.cer={{ TARBALL_PATH }}/conf/keys/ca.crt \
       --from-file=server.cer={{ TARBALL_PATH }}/conf/keys/tls.crt \
       --from-file=server_key.pem={{ TARBALL_PATH }}/conf/keys/encryptedtls.key \
-      --from-literal=cert_pwd={{ cert_pwd }}
+      --from-literal=cert_pwd={{ certPassword }}
   when: EG_MODE == "all" or EG_MODE == "controller"
   no_log: true
   ignore_errors: yes

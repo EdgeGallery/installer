@@ -20,7 +20,7 @@
     kubectl create secret generic {{ usermgmt_jwt_secretName }} \
       --from-file=publicKey={{ TARBALL_PATH }}/conf/keys/rsa_public_key.pem \
       --from-file=encryptedPrivateKey={{ TARBALL_PATH }}/conf/keys/encrypted_rsa_private_key.pem \
-      --from-literal=encryptPassword={{ encryptPassword }}
+      --from-literal=encryptPassword={{ certPassword }}
   no_log: true
   ignore_errors: yes
   register: usermgmt_out
@@ -39,15 +39,15 @@
   shell: |
     helm install --wait user-mgmt-edgegallery {{ HELM_CHARTS_PATH }}/edgegallery/usermgmt-{{ HELM_TAG }}.tgz \
     --set global.oauth2.clients.appstore.clientUrl=https://{{ PORTAL_IP }}:{{ APPSTORE_PORT }} \
-    --set global.oauth2.clients.appstore.clientSecret={{ userMgmtOauth2AppstoreClientSecret }} \
+    --set global.oauth2.clients.appstore.clientSecret={{ oauth2ClientPassword }} \
     --set global.oauth2.clients.developer.clientUrl=https://{{ PORTAL_IP }}:{{ DEVELOPER_PORT }} \
-    --set global.oauth2.clients.developer.clientSecret={{ userMgmtOauth2DeveloperClientSecret }} \
+    --set global.oauth2.clients.developer.clientSecret={{ oauth2ClientPassword }} \
     --set global.oauth2.clients.mecm.clientUrl=https://{{ PORTAL_IP }}:{{ MECM_PORT }} \
-    --set global.oauth2.clients.mecm.clientSecret={{ userMgmtOauth2MecmClientSecret }} \
+    --set global.oauth2.clients.mecm.clientSecret={{ oauth2ClientPassword }} \
     --set global.oauth2.clients.atp.clientUrl=https://{{ PORTAL_IP }}:{{ ATP_PORT }} \
-    --set global.oauth2.clients.atp.clientSecret={{ userMgmtOauth2AtpClientSecret }} \
+    --set global.oauth2.clients.atp.clientSecret={{ oauth2ClientPassword }} \
     --set global.oauth2.clients.lab.clientUrl=https://{{ PORTAL_IP }}:{{ LAB_PORT }} \
-    --set global.oauth2.clients.lab.clientSecret={{ userMgmtOauth2LabClientSecret }} \
+    --set global.oauth2.clients.lab.clientSecret={{ oauth2ClientPassword }} \
     --set jwt.secretName={{ usermgmt_jwt_secretName }} \
     --set images.usermgmt.repository={{ usermgmt_images_usermgmt_repository }} \
     --set images.postgres.repository={{ usermgmt_images_postgres_repository }} \
@@ -64,7 +64,7 @@
     --set global.ssl.enabled={{ usermgmt_global_ssl_enabled }} \
     --set global.ssl.secretName={{ usermgmt_global_ssl_secretName }} \
     --set global.persistence.enabled={{ ENABLE_PERSISTENCE }} \
-    --set postgres.password={{ userMgmtPostgresPassword }} \
+    --set postgres.password={{ postgresPassword }} \
     --set redis.password={{ userMgmtRedisPassword }}
   no_log: true
   ignore_errors: true
@@ -85,15 +85,15 @@
   shell: |
     helm install --wait user-mgmt-edgegallery {{ HELM_CHARTS_PATH }}/edgegallery/usermgmt-{{ HELM_TAG }}.tgz \
     --set global.oauth2.clients.appstore.clientUrl=https://{{ PORTAL_IP }}:{{ APPSTORE_PORT }} \
-    --set global.oauth2.clients.appstore.clientSecret={{ userMgmtOauth2AppstoreClientSecret }} \
+    --set global.oauth2.clients.appstore.clientSecret={{ oauth2ClientPassword }} \
     --set global.oauth2.clients.developer.clientUrl=https://{{ PORTAL_IP }}:{{ DEVELOPER_PORT }} \
-    --set global.oauth2.clients.developer.clientSecret={{ userMgmtOauth2DeveloperClientSecret }} \
+    --set global.oauth2.clients.developer.clientSecret={{ oauth2ClientPassword }} \
     --set global.oauth2.clients.mecm.clientUrl=https://{{ PORTAL_IP }}:{{ MECM_PORT }} \
-    --set global.oauth2.clients.mecm.clientSecret={{ userMgmtOauth2MecmClientSecret }} \
+    --set global.oauth2.clients.mecm.clientSecret={{ oauth2ClientPassword }} \
     --set global.oauth2.clients.atp.clientUrl=https://{{ PORTAL_IP }}:{{ ATP_PORT }} \
-    --set global.oauth2.clients.atp.clientSecret={{ userMgmtOauth2AtpClientSecret }} \
+    --set global.oauth2.clients.atp.clientSecret={{ oauth2ClientPassword }} \
     --set global.oauth2.clients.lab.clientUrl=https://{{ PORTAL_IP }}:{{ LAB_PORT }} \
-    --set global.oauth2.clients.lab.clientSecret={{ userMgmtOauth2LabClientSecret }} \
+    --set global.oauth2.clients.lab.clientSecret={{ oauth2ClientPassword }} \
     --set jwt.secretName={{ usermgmt_jwt_secretName }} \
     --set images.usermgmt.repository={{ usermgmt_images_usermgmt_repository }} \
     --set images.postgres.repository={{ usermgmt_images_postgres_repository }} \
@@ -110,7 +110,7 @@
     --set global.ssl.enabled={{ usermgmt_global_ssl_enabled }} \
     --set global.ssl.secretName={{ usermgmt_global_ssl_secretName }} \
     --set global.persistence.enabled={{ ENABLE_PERSISTENCE }} \
-    --set postgres.password={{ userMgmtPostgresPassword }} \
+    --set postgres.password={{ postgresPassword }} \
     --set redis.password={{ userMgmtRedisPassword }} \
     --set mail.enabled={{ usermgmt_mail_enabled }} \
     --set mail.host={{ usermgmt_mail_host }} \

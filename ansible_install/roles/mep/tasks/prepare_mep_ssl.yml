@@ -46,7 +46,7 @@
     chdir: "{{ MEP_CERTS_DIR }}"
 
 - name: Generate Encryped TLS Key
-  shell: "openssl rsa -in {{ CERT_NAME }}_tls.key -aes256 -passout pass:{{ CERT_PWD }} -out {{ CERT_NAME }}_encryptedtls.key"
+  shell: "openssl rsa -in {{ CERT_NAME }}_tls.key -aes256 -passout pass:{{ certPassword }} -out {{ CERT_NAME }}_encryptedtls.key"
   args:
     chdir: "{{ MEP_CERTS_DIR }}"
 
@@ -71,7 +71,7 @@
     chdir: "{{ MEP_CERTS_DIR }}"
 
 - name: Generate JWT Encrypted Private Key
-  shell: "openssl rsa -in jwt_privatekey -aes256 -passout pass:{{ CERT_PWD }} -out jwt_encrypted_privatekey"
+  shell: "openssl rsa -in jwt_privatekey -aes256 -passout pass:{{ certPassword }} -out jwt_encrypted_privatekey"
   args:
     chdir: "{{ MEP_CERTS_DIR }}"
 
@@ -88,8 +88,8 @@
 - name: Create Secret pg-secret
   shell: |
     kubectl -n mep create secret generic pg-secret \
-      --from-literal=pg_admin_pwd={{ PG_ADMIN_PWD }} \
-      --from-literal=kong_pg_pwd={{ KONG_PG_PWD }} \
+      --from-literal=pg_admin_pwd={{ postgresPassword }} \
+      --from-literal=kong_pg_pwd={{ postgresPassword }} \
       --from-file=server.key={{ MEP_CERTS_DIR }}/{{ CERT_NAME }}_tls.key \
       --from-file=server.crt={{ MEP_CERTS_DIR }}/{{ CERT_NAME }}_tls.crt
   no_log: true
@@ -110,7 +110,7 @@
   shell: |
     kubectl -n mep create secret generic mep-ssl \
       --from-literal=root_key="$(openssl rand -base64 256 | tr -d '\n' | tr -dc '[[:alnum:]]' | cut -c -256)" \
-      --from-literal=cert_pwd={{ CERT_PWD }} \
+      --from-literal=cert_pwd={{ certPassword }} \
       --from-file=server.cer={{ MEP_CERTS_DIR }}/{{ CERT_NAME }}_tls.crt \
       --from-file=server_key.pem={{ MEP_CERTS_DIR }}/{{ CERT_NAME }}_encryptedtls.key \
       --from-file=trust.cer={{ MEP_CERTS_DIR }}/ca.crt

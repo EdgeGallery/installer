@@ -44,10 +44,10 @@
     kubectl create secret generic edgegallery-mepm-secret \
       --from-file=postgres_init.sql={{ TARBALL_PATH }}/conf/keys/postgres_init.sql \
       --from-literal=postgresPassword={{ postgresPassword }} \
-      --from-literal=postgresLcmCntlrPassword={{ postgresLcmCntlrPassword }} \
-      --from-literal=postgresk8sPluginPassword={{ postgresk8sPluginPassword }} \
-      --from-literal=postgresosPluginPassword={{ postgresosPluginPassword }} \
-      --from-literal=postgresRuleMgrPassword={{ postgresRuleMgrPassword }}
+      --from-literal=postgresLcmCntlrPassword={{ postgresPassword }} \
+      --from-literal=postgresk8sPluginPassword={{ postgresPassword }} \
+      --from-literal=postgresosPluginPassword={{ postgresPassword }} \
+      --from-literal=postgresRuleMgrPassword={{ postgresPassword }}
   no_log: true
   ignore_errors: yes
   register: mepm_secretedge
