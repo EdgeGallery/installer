@@ -88,7 +88,7 @@
     --set images.elasticsearch.pullPolicy={{ mep_images_elasticsearch_pullPolicy }} \
     --set ssl.secretName={{ mep_ssl_secretName }} \
     --set global.persistence.enabled={{ ENABLE_PERSISTENCE }} \
-    --set postgres.password={{ mepPostgresPassword }}
+    --set postgres.password={{ postgresPassword }}
   no_log: true
   ignore_errors: yes
   register: mep_outp

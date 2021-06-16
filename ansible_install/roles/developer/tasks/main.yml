@@ -15,17 +15,28 @@
 
 ---
 
+- name: Check HARBOR_ADMIN_PASSWORD Param
+  fail:
+    msg: "Param HARBOR_ADMIN_PASSWORD in var.yml is not defined"
+  when: HARBOR_ADMIN_PASSWORD is undefined or HARBOR_ADMIN_PASSWORD is none
+
+- name: Set Portal IP
+  set_fact:
+    PORTAL_IP: "{{ groups.master[0] }}"
+  when: PORTAL_IP is undefined
+
 - name: Check USER_MGMT Status
   uri:
     url: "https://{{ PORTAL_IP }}:{{ USER_MGMT_PORT }}/health"
     validate_certs: no
   register: user_mgmt_reach
+  when: OPERATION == "install"
   ignore_errors: yes
 
 - name: Failing the Installation as 'user-mgmt' deployement needs to be completed before 'developer'
   fail:
     msg: "'user_mgmt' is not reachable, complete user_mgmt deployment before 'developer'"
-  when: user_mgmt_reach is failed
+  when: user_mgmt_reach is failed and OPERATION == "install"
 
 - name: Set Registry URL for Multi Node
   set_fact:
@@ -41,11 +52,6 @@
   fail:
     msg: "Could not {{ OPERATION }} DEVELOPER with EG_MODE: {{ EG_MODE }}"
   when: EG_MODE != "all" and EG_MODE != "controller"
-
-- name: Set Portal IP
-  set_fact:
-    PORTAL_IP: "{{ groups.master[0] }}"
-  when: PORTAL_IP is undefined
 
 - name: Check whether DEVELOPER is Deployed
   shell: "helm list -A | grep {{ DEVELOPER_HELM_RELEASE_NAME }}"

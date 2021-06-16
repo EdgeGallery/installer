@@ -42,7 +42,7 @@
     - ./default-var.yml
     - ./password-var.yml
   roles:
-    - { role: mep, tags: ['mep_worker'] }
+    - { role: mep, tags: ['mep-worker'] }
     - { role: eg_prepare, tags: ['eg_prepare-worker'] }
     - { role: k8s, tags: ['k8s-worker'] }
     - { role: init, tags: ['init-worker'] }

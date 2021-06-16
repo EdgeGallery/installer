@@ -20,9 +20,9 @@
     kubectl create secret generic {{ meo_mecm_secretName }} \
       --from-file=postgres_init.sql={{ TARBALL_PATH }}/conf/keys/postgres_init.sql \
       --from-literal=postgresPassword={{ postgresPassword }} \
-      --from-literal=postgresApmPassword={{ postgresApmPassword }} \
-      --from-literal=postgresAppoPassword={{ postgresAppoPassword }} \
-      --from-literal=postgresInventoryPassword={{ postgresInventoryPassword }} \
+      --from-literal=postgresApmPassword={{ postgresPassword }} \
+      --from-literal=postgresAppoPassword={{ postgresPassword }} \
+      --from-literal=postgresInventoryPassword={{ postgresPassword }} \
       --from-literal=dockerRepoUserName=admin \
       --from-literal=dockerRepoPassword={{ HARBOR_ADMIN_PASSWORD }}
   no_log: true
@@ -49,7 +49,7 @@
   shell: |
     helm install --wait mecm-meo-edgegallery {{ HELM_CHARTS_PATH }}/edgegallery/mecm-meo-{{ HELM_TAG }}.tgz \
     --set global.oauth2.authServerAddress=https://{{ PORTAL_IP }}:{{ USER_MGMT_PORT }} \
-    --set global.oauth2.clients.mecm.clientSecret={{ mecmFeOauth2ClientSecret }} \
+    --set global.oauth2.clients.mecm.clientSecret={{ oauth2ClientPassword }} \
     --set images.mecmFe.repository={{ mecm_fe_images_mecmFe_repository }} \
     --set images.initservicecenter.repository={{ mecm_fe_images_initservicecenter_repository }} \
     --set images.mecmFe.tag={{ mecm_fe_images_mecmFe_tag }} \
