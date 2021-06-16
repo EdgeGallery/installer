@@ -24,45 +24,10 @@
 - name: k3s files copy
   command: sudo cp "{{ TARBALL_PATH }}"/k3s /usr/local/bin/
 
-- name: k3s install offline
-  shell: INSTALL_K3S_SKIP_DOWNLOAD=true INSTALL_K3S_EXEC="--node-ip={{ master }} --node-external-ip={{ master }} --bind-address={{ master }} --flannel-iface=eth0 --docker --no-deploy=servicelb --no-deploy=traefik --write-kubeconfig-mode 644 --kube-apiserver-arg="service-node-port-range=30000-36000""  "{{ TARBALL_PATH }}"/k3s-install.sh 
+- name: Install K3S Master Special Configurations
+  import_tasks: k3s_master_install_offline.yml
+  when: K8S_NODE_TYPE == "master"
 
-#- name: System Daemon Reload
-  #command: systemctl daemon-reload
-
-
-
-- name: Stop Firewalld Service
-  service:
-    name: firewalld
-    state: stopped
-  ignore_errors: yes
-
-- name: Disable Firewalld Service
-  service:
-    name: firewalld
-    enabled: no
-  ignore_errors: yes
-
-- name: Off Swap Area
-  command: swapoff -a
-
-- name: Sed File /etc/fstab
-  command: sed -i '/ swap / s/^\(.*\)$/#\1/g' /etc/fstab
-  
-- name: Modprobe br_netfilter
-  command: modprobe br_netfilter
-
-#- name: install k3s online
-  #shell: curl -sfL https://get.k3s.io | INSTALL_K3S_EXEC="--node-ip={{ master }} --node-external-ip={{ master }} --bind-address={{ master }} --flannel-iface=eth0 --docker --no-deploy=servicelb --no-deploy=traefik --write-kubeconfig-mode 644 #--kube-apiserver-arg="service-node-port-range=30000-36000"" sh -
-
-- name: create .kube dir
-  command: mkdir -p $HOME/.kube/
-
-- name: copy kubeconfig
-  command: cp /etc/rancher/k3s/k3s.yaml $HOME/.kube/config
-
-
-
-#- name: Check whether k8s is installed
-  #command: kubectl cluster-info
+- name: Install K3S Worker Special Configurations
+  import_tasks: k3s_worker_install_offline.yml
+  when: K8S_NODE_TYPE == "worker"
