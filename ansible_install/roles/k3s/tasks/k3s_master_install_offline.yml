@@ -1,0 +1,49 @@
+# Copyright 2020 Huawei Technologies Co., Ltd.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+---
+- name: k3s install offline
+  shell: INSTALL_K3S_SKIP_DOWNLOAD=true INSTALL_K3S_EXEC="--node-ip={{ master }} --node-external-ip={{ master }} --bind-address={{ master }} --flannel-iface=eth0 --docker --no-deploy=servicelb --no-deploy=traefik --write-kubeconfig-mode 644 --kube-apiserver-arg="service-node-port-range=30000-36000""  "{{ TARBALL_PATH }}"/k3s-install.sh
+
+- name: Stop Firewalld Service
+  service:
+    name: firewalld
+    state: stopped
+  ignore_errors: yes
+
+- name: Disable Firewalld Service
+  service:
+    name: firewalld
+    enabled: no
+  ignore_errors: yes
+
+- name: Off Swap Area
+  command: swapoff -a
+
+- name: Sed File /etc/fstab
+  command: sed -i '/ swap / s/^\(.*\)$/#\1/g' /etc/fstab
+
+- name: Modprobe br_netfilter
+  command: modprobe br_netfilter
+
+- name: create .kube dir
+  command: mkdir -p $HOME/.kube/
+
+- name: copy kubeconfig
+  command: cp /etc/rancher/k3s/k3s.yaml $HOME/.kube/config
+
+- name: Copy nodeToken to Deploy Node
+  fetch:
+    src: "/var/lib/rancher/k3s/server/node-token"
+    dest: "/home/"

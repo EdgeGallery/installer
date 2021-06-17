@@ -1,0 +1,4 @@
+mirrors:
+  "{{ groups.master[0] }}:5000":
+    endpoint:
+      - "http://{{ groups.master[0] }}:5000"
