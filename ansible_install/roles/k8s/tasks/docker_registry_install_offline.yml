@@ -15,20 +15,13 @@
 
 ---
 
-- name: Check Whether /etc/docker/daemon.json Exists
-  stat:
-    path: /etc/docker/daemon.json
-  register: file_status
-
 - name: Copying script to /tmp for execution
   copy:
     src: docker-daemon-update.py
     dest: /tmp/docker-daemon-update.py
-  when: file_status.stat.exists == True
 
 - name: Running script docker-daemon-update.py to append daemon.json
-  shell: "python3 /tmp/docker-daemon-update.py {{ PRIVATE_REGISTRY_IP:5000 }} {{ PRIVATE_HARBOR_IP }}"
-  when: file_status.stat.exists == True
+  shell: "python3 /tmp/docker-daemon-update.py {{ groups.master[0] }}:5000 {{ HarborIP }}"
 
 - name: Copy Docker daemon.json From Master Node to Deploy Node
   fetch:
@@ -39,7 +32,6 @@
   service:
     name: docker.service
     state: restarted
-  when: file_status.stat.exists == False
 
 - name: Check Whether registry Container Exists
   shell: "docker ps | grep {{ REGISTRY_CONTAINER_NAME }}"
