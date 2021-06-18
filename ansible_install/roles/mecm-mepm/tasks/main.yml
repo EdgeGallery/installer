@@ -15,6 +15,15 @@
 
 ---
 
+- name: List All NonRunning Pods with Namespace "mep"
+  shell: kubectl get pods -n mep --field-selector=status.phase!=Running
+  register: MEPNonRunningPod
+
+- name: Failing MECM-MEPM Deployment as MEP is not deployed
+  fail:
+    msg: "MEP is not deployed, complete MEP deployment before MECM-MEPM"
+  when: MEPNonRunningPod.stderr != "No resources found in mep namespace."
+
 - name: Set ARCH Value to be amd64
   set_fact:
     ARCH: amd64
