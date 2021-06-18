@@ -133,8 +133,8 @@
     - "rpcbind_0.2.3-0.6ubuntu0.18.04.1"
     - "keyutils_1.5.9-9.2ubuntu2"
     - "nfs-common_1%3a1.3.4-2.1ubuntu5.3"
-  when: ENABLE_PERSISTENCE is true
+  when: ENABLE_PERSISTENCE == true
 
 - name: Setup NFS for Storage Persistent on Master Node
   import_tasks: nfs_setup.yml
-  when: K8S_NODE_TYPE == "master" and ENABLE_PERSISTENCE is true
+  when: K8S_NODE_TYPE == "master" and ENABLE_PERSISTENCE == true

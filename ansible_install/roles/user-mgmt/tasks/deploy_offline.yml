@@ -69,17 +69,17 @@
   no_log: true
   ignore_errors: true
   register: user_mgmtout_without_email
-  when: usermgmt_mail_enabled is false
+  when: usermgmt_mail_enabled == false
 
 - name: Output of "Deploy USER_MGMT Without Email Server" task
   debug:
     msg: "rc: {{user_mgmtout_without_email.rc}}, stderr: {{user_mgmtout_without_email.stderr}}, stderr_lines: {{user_mgmtout_without_email.stderr_lines}}, stdout: {{user_mgmtout_without_email.stdout}}, stdout_lines: {{user_mgmtout_without_email.stdout_lines}}"
-  when: usermgmt_mail_enabled is false and user_mgmtout_without_email is failed
+  when: usermgmt_mail_enabled == false and user_mgmtout_without_email is failed
 
 - name: Failing as task "Deploy USER_MGMT Without Email Server" failed
   fail:
     msg: The task Deploy USER_MGMT has failed
-  when: usermgmt_mail_enabled is false and user_mgmtout_without_email is failed
+  when: usermgmt_mail_enabled == false and user_mgmtout_without_email is failed
 
 - name: Deploy USER_MGMT With Email Server
   shell: |
@@ -120,17 +120,17 @@
   no_log: true
   ignore_errors: true
   register: user_mgmtout_with_email
-  when: usermgmt_mail_enabled is true
+  when: usermgmt_mail_enabled == true
 
 - name: Output of "Deploy USER_MGMT With Email Server" task
   debug:
     msg: "rc: {{user_mgmtout_with_email.rc}}, stderr: {{user_mgmtout_with_email.stderr}}, stderr_lines: {{user_mgmtout_with_email.stderr_lines}}, stdout: {{user_mgmtout_with_email.stdout}}, stdout_lines: {{user_mgmtout_with_email.stdout_lines}}"
-  when: usermgmt_mail_enabled is true and user_mgmtout_with_email is failed
+  when: usermgmt_mail_enabled == true and user_mgmtout_with_email is failed
 
 - name: Failing as task "Deploy USER_MGMT With Email Server" failed
   fail:
     msg: The task Deploy USER_MGMT has failed
-  when: usermgmt_mail_enabled is true and user_mgmtout_with_email is failed
+  when: usermgmt_mail_enabled == true and user_mgmtout_with_email is failed
 
 - name: Check USER_MGMT Status
   uri:

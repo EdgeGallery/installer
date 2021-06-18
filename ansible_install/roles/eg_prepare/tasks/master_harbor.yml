@@ -99,7 +99,7 @@
   file:
     path: "{{ HARBOR_ROOT }}"
     state: absent
-  when: ENABLE_PERSISTENCE is false
+  when: ENABLE_PERSISTENCE == false
 
 - name: Create Directory for Harbor Root
   file:
