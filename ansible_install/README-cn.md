@@ -125,7 +125,7 @@ EdgeGallery的所有离线安装包均可在EdgeGallery官网进行下载。请[
 
 ## 3. EdgeGallery部署--部署k8s与EdgeGallery
 
-本安装部署使用EG Ansible部署脚本，可进行IaaS层（k8s）和PaaS层（EdgeGallery）安装部署。若已有k8s，仅需部署EdgeGallery，请参考下一节指导。
+本安装部署使用EG Ansible部署脚本，可进行IaaS层（k8s）和PaaS层（EdgeGallery）安装部署。其中PaaS层部署中的harbor安装，当前仅支持x86_64架构，ARM64架构因为无对应容器镜像，暂不支持。在ARM64架构上部署EG时会跳过harbor的部署步骤，用户请参考第6节内容手动进行harbor安装和配置。
 
 下表中列出当前Ansible脚本提供的一些配置场景模板，可直接使用离线安装包中的这些模板（在install文件夹下）进行相应场景的安装与卸载。
 
@@ -240,18 +240,7 @@ ansible-playbook --inventory hosts-aio eg_all_aio_install.yml
 ansible-playbook --inventory hosts-muno eg_all_muno_install.yml
 ```
 
-## 4. EdgeGallery部署--已有k8s，仅部署EdgeGallery
-
-若机器已部署k8s（AIO或者多节点部署均可），helm，docker registry，则可以直接部署EdgeGallery。以下仅以EG_MODE为all，NODE_MODE为muno为例，介绍如何跳过k8s部署步骤，直接部署EG。
-
-
-执行如下命令，跳过k8s部署，即可采用如下命令部署EG。
-
-```
-ansible-playbook --inventory hosts-muno eg_all_muno_install.yml --skip-tags=k8s
-```
-
-## 5. EdgeGallery卸载
+## 4. EdgeGallery卸载
 
 根据具体安装的场景，对应下面表格中的卸载文件，执行以下命令进行卸载。
 
@@ -272,7 +261,7 @@ ansible-playbook --inventory hosts-aio eg_all_aio_uninstall.yml
 ansible-playbook --inventory hosts-muno eg_all_muno_uninstall.yml
 ```
 
-## 6. EdgeGallery用户自定义部署
+## 5. EdgeGallery用户自定义部署
 
 除以上给出的部署模板，用户也可以进行自定义部署，通过添加选项--skip-tags和--tags到ansible-playbook命令行，自定义需要部署或跳过的EdgeGallery组件。
 
@@ -296,3 +285,43 @@ ansible-playbook --inventory hosts-muno eg_all_muno_install.yml --skip-tags=mep,
 - eg_check（可选）：不依赖任何模块，仅对已安装的模块进行检查，打印前台界面访问IP+Port。
 
 上述列出的所有模块，除init，eg_prepare与user-mgmt是必须的之外，其他均为可选。
+
+## 6. x86_64机器部署Harbor并连接ARM64架构部署的EG
+
+当EG部署是在ARM64架构机器上时，由于Harbor本身当前并未支持ARM64架构，所以需要在一台x86_64机器上手动部署Harbor，并在EG所在机器上连接该Harbor。
+
+### 6.1 在x86_64机器上部署Harbor
+
+1. 安装docker与docker-compose，Harbor安装是依赖docker-compose方式的
+
+2. [点击下载Harbor安装包](https://edgegallery.obs.cn-east-3.myhuaweicloud.com/harbor.tar.gz)
+
+3. 安装Harbor，其中`<IP-of-this-machine>`为本x86_64机器的私有或公网IP，需要与EG所在机器互通，`<password>`为用户设置的harbor admin登录密码
+
+```
+cd /root
+openssl rand -writerand .rnd
+
+export HARBOR_ROOT=/home/harbor/data_volume
+export HARBOR_DATA_VOLUME=/root/harbor/
+export HARBOR_IP=<IP-of-this-machine>
+export HARBOR_ADMIN_PASSWORD=<password>
+
+cd $HARBOR_ROOT/harbor/cert
+openssl genrsa -out ca.key 4096
+openssl req -x509 -new -nodes -sha512 -days 3650 -subj "/C=CN/ST=Guangzhou/L=Guangzhou/O=example/CN="$HARBOR_IP -key ca.key -out ca.crt
+openssl x509 -inform PEM -in ca.crt -out ca.cert
+
+mkdir -p /etc/docker/certs.d/$HARBOR_IP:443
+cp $HARBOR_ROOT/harbor/cert/ca.cert /etc/docker/certs.d/$HARBOR_IP:443
+
+sed -i "s/hostname: .*/hostname: $HARBOR_IP/g" $HARBOR_ROOT/harbor/harbor.yml
+sed -i "s#certificate: .*#certificate: $HARBOR_ROOT/harbor/cert/ca.crt#g" $HARBOR_ROOT/harbor/harbor.yml
+sed -i "s#private_key: .*#private_key: $HARBOR_ROOT/harbor/cert/ca.key#g" $HARBOR_ROOT/harbor/harbor.yml
+sed -i "s#data_volume: .*: .*#data_volume: $HARBOR_DATA_VOLUME#g" $HARBOR_ROOT/harbor/harbor.yml
+sed -i "s/harbor_admin_password: .*/harbor_admin_password: $HARBOR_ADMIN_PASSWORD/g" $HARBOR_ROOT/harbor/harbor.yml
+
+cd $HARBOR_ROOT/harbor
+bash install.sh
+```
+
