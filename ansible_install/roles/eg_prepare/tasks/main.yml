@@ -25,20 +25,25 @@
     ARCH: amd64
   when: ansible_architecture == "x86_64"
 
-- name: Set ARCH Value to be arm64
-  set_fact:
-    ARCH: arm64
-  when: ansible_architecture == "aarch64"
-
-- name: Set Harbor IP to PORTAL IP
+- name: Set Harbor IP to PORTAL IP when portal IP is defined
   set_fact:
     HarborIP: "{{ PORTAL_IP }}"
-  when: PORTAL_IP is defined
+  when: PORTAL_IP is defined and HarborIP is undefined
 
-- name: Set Harbor IP to Matser IP
+- name: Set Harbor IP to PORTAL IP when harbor IP is defined
+  set_fact:
+    HarborIP: "{{ HarborIP }}"
+  when: HarborIP is defined"
+
+- name: Set Harbor IP to Matser IP when portal IP is undefined
   set_fact:
     HarborIP: "{{ groups.master[0] }}"
-  when: PORTAL_IP is undefined
+  when: PORTAL_IP is undefined and HarborIP is undefined
+
+- name: Set Harbor IP to Matser IP when harbor IP is defined
+  set_fact:
+    HarborIP: "{{ HarborIP }}"
+  when: HarborIP is defined
 
 - name: Prepare EG Online
   include: "prepare_online.yml"
