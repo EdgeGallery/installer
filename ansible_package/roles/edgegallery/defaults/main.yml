@@ -51,6 +51,7 @@ EG_IMAGE_LIST_EDGE_COMMON:
   - swr.ap-southeast-1.myhuaweicloud.com/eg-common/nfvpe/multus:stable
   - swr.ap-southeast-1.myhuaweicloud.com/eg-common/dougbtv/whereabouts:latest
   - swr.ap-southeast-1.myhuaweicloud.com/eg-common/elasticsearch:7.9.0
+  - swr.ap-southeast-1.myhuaweicloud.com/eg-common/cturra/ntp:latest
 
 EG_IMAGE_LIST_EDGE_X86:
   - swr.ap-southeast-1.myhuaweicloud.com/eg-common/metallb/speaker:v0.9.3
