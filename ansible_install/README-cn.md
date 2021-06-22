@@ -294,34 +294,82 @@ ansible-playbook --inventory hosts-muno eg_all_muno_install.yml --skip-tags=mep,
 
 1. 安装docker与docker-compose，Harbor安装是依赖docker-compose方式的
 
-2. [点击下载Harbor安装包](https://edgegallery.obs.cn-east-3.myhuaweicloud.com/harbor.tar.gz)
+2. 配置/etc/docker/daemon.json，新增如下字段，若无该文件，需新建
 
-3. 安装Harbor，其中`<IP-of-this-machine>`为本x86_64机器的私有或公网IP，需要与EG所在机器互通，`<password>`为用户设置的harbor admin登录密码
+    ```
+    {
+        "insecure-registries" : ["192.168.100.116"]
+    }
+    ```
 
-```
-cd /root
-openssl rand -writerand .rnd
+3. 重启docker服务
 
-export HARBOR_ROOT=/home/harbor/data_volume
-export HARBOR_DATA_VOLUME=/root/harbor/
-export HARBOR_IP=<IP-of-this-machine>
-export HARBOR_ADMIN_PASSWORD=<password>
+    ```
+    systemctl restart docker.service
+    ```
 
-cd $HARBOR_ROOT/harbor/cert
-openssl genrsa -out ca.key 4096
-openssl req -x509 -new -nodes -sha512 -days 3650 -subj "/C=CN/ST=Guangzhou/L=Guangzhou/O=example/CN="$HARBOR_IP -key ca.key -out ca.crt
-openssl x509 -inform PEM -in ca.crt -out ca.cert
+4. [点击下载Harbor安装包](https://edgegallery.obs.cn-east-3.myhuaweicloud.com/harbor.tar.gz)，放在x86_64机器的/home目录
 
-mkdir -p /etc/docker/certs.d/$HARBOR_IP:443
-cp $HARBOR_ROOT/harbor/cert/ca.cert /etc/docker/certs.d/$HARBOR_IP:443
+5. 安装Harbor，其中`<IP-of-this-machine>`为本x86_64机器的私有或公网IP，需要与EG所在机器互通，`<password>`为用户设置的harbor admin登录密码
 
-sed -i "s/hostname: .*/hostname: $HARBOR_IP/g" $HARBOR_ROOT/harbor/harbor.yml
-sed -i "s#certificate: .*#certificate: $HARBOR_ROOT/harbor/cert/ca.crt#g" $HARBOR_ROOT/harbor/harbor.yml
-sed -i "s#private_key: .*#private_key: $HARBOR_ROOT/harbor/cert/ca.key#g" $HARBOR_ROOT/harbor/harbor.yml
-sed -i "s#data_volume: .*: .*#data_volume: $HARBOR_DATA_VOLUME#g" $HARBOR_ROOT/harbor/harbor.yml
-sed -i "s/harbor_admin_password: .*/harbor_admin_password: $HARBOR_ADMIN_PASSWORD/g" $HARBOR_ROOT/harbor/harbor.yml
+    ```
+    cd /root
+    openssl rand -writerand .rnd
 
-cd $HARBOR_ROOT/harbor
-bash install.sh
-```
+    cd /home
+    mkdir harbor
+    tar -xvf harbor.tar.gz -C harbor
 
+    export HARBOR_ROOT=/home/harbor
+    export HARBOR_DATA_VOLUME=/root/harbor/data_volume
+    export HARBOR_IP=<IP-of-this-machine>
+    export HARBOR_ADMIN_PASSWORD=<password>
+
+    cd $HARBOR_ROOT/cert
+    openssl genrsa -out ca.key 4096
+    openssl req -x509 -new -nodes -sha512 -days 3650 -subj "/C=CN/ST=Guangzhou/L=Guangzhou/O=example/CN="$HARBOR_IP -key ca.key -out ca.crt
+    openssl x509 -inform PEM -in ca.crt -out ca.cert
+
+    mkdir -p /etc/docker/certs.d/$HARBOR_IP:443
+    cp $HARBOR_ROOT/cert/ca.cert /etc/docker/certs.d/$HARBOR_IP:443
+
+    sed -i "s/hostname: .*/hostname: $HARBOR_IP/g" $HARBOR_ROOT/harbor.yml
+    sed -i "s#certificate: .*#certificate: $HARBOR_ROOT/cert/ca.crt#g" $HARBOR_ROOT/harbor.yml
+    sed -i "s#private_key: .*#private_key: $HARBOR_ROOT/cert/ca.key#g" $HARBOR_ROOT/harbor.yml
+    sed -i "s#data_volume: .*#data_volume: $HARBOR_DATA_VOLUME#g" $HARBOR_ROOT/harbor.yml
+    sed -i "s/harbor_admin_password: .*/harbor_admin_password: $HARBOR_ADMIN_PASSWORD/g" $HARBOR_ROOT/harbor.yml
+
+    cd $HARBOR_ROOT
+    bash install.sh
+    ```
+
+6. docker登录Harbor
+
+    ```
+    docker login -u admin -p $HARBOR_ADMIN_PASSWORD $HARBOR_IP
+    ```
+
+7. 创建appstore、developer和mecm Harbor项目
+
+
+### 6.2 在ARM64机器上连接Harbor
+
+1. 配置/etc/docker/daemon.json，新增如下字段，若无该文件，需新建
+
+    ```
+    {
+        "insecure-registries" : ["192.168.100.116"]
+    }
+    ```
+
+2. 重启docker服务
+
+    ```
+    systemctl restart docker.service
+    ```
+
+3. docker登录Harbor
+
+    ```
+    docker login -u admin -p $HARBOR_ADMIN_PASSWORD $HARBOR_IP
+    ```
