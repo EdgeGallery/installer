@@ -322,7 +322,7 @@ ansible-playbook --inventory hosts-muno eg_all_muno_install.yml --skip-tags=mep,
 
     export HARBOR_ROOT=/home/harbor
     export HARBOR_DATA_VOLUME=/root/harbor/data_volume
-    export HARBOR_IP=<IP-of-this-machine>
+    export HARBOR_IP=xxx.xxx.xxx.xxx
     export HARBOR_ADMIN_PASSWORD=<password>
 
     cd $HARBOR_ROOT/cert
