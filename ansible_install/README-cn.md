@@ -125,7 +125,18 @@ EdgeGallery的所有离线安装包均可在EdgeGallery官网进行下载。请[
 
 ## 3. EdgeGallery部署--部署k8s与EdgeGallery
 
-本安装部署使用EG Ansible部署脚本，可进行IaaS层（k8s）和PaaS层（EdgeGallery）安装部署。其中PaaS层部署中的harbor安装，当前仅支持x86_64架构，ARM64架构因为无对应容器镜像，暂不支持。在ARM64架构上部署EG时会跳过harbor的部署步骤，用户请参考第6节内容手动进行harbor安装和配置。
+本安装部署使用EG Ansible部署脚本，可进行IaaS层（k8s）和PaaS层（EdgeGallery）安装部署。
+
+其中PaaS层部署中的harbor安装，当前仅支持x86_64架构，本部署过程会自动安装并配置好Harbor，无需额外操作。
+ARM64架构因为无对应容器镜像，暂不支持自动部署。在ARM64架构上部署EG时会跳过harbor的部署步骤，用户请手动在k8s master节点上进行如下/etc/docker/daemon.json文件的设置，成功安装EG后，再参考第6节内容手动进行harbor安装和配置。
+
+在k8s master节点配置/etc/docker/daemon.json，新增如下字段，若已有该字段，在该列表中新增6.1节的x86_64机器HARBOR_IP，以逗号分隔，若无该文件，需新建
+
+```
+{
+    "insecure-registries" : ["xxx.xxx.xxx.xxx"]
+}
+```
 
 下表中列出当前Ansible脚本提供的一些配置场景模板，可直接使用离线安装包中的这些模板（在install文件夹下）进行相应场景的安装与卸载。
 
@@ -369,22 +380,8 @@ ansible-playbook --inventory hosts-muno eg_all_muno_install.yml --skip-tags=mep,
 
 ### 6.2 在ARM64机器上连接Harbor
 
-1. 登录k8s集群中的所有node，配置/etc/docker/daemon.json，新增如下字段，若已有该字段，在该列表中新增6.1节的x86_64机器HARBOR_IP，以逗号分隔，若无该文件，需新建
+登录k8s集群中的所有node，docker登录Harbor
 
-    ```
-    {
-        "insecure-registries" : ["xxx.xxx.xxx.xxx"]
-    }
-    ```
-
-2. 登录k8s集群中的所有node，重启docker服务
-
-    ```
-    systemctl restart docker.service
-    ```
-
-3. 登录k8s集群中的所有node，docker登录Harbor
-
-    ```
-    docker login -u admin -p $HARBOR_ADMIN_PASSWORD $HARBOR_IP
-    ```
+```
+docker login -u admin -p $HARBOR_ADMIN_PASSWORD $HARBOR_IP
+```
