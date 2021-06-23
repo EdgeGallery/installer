@@ -54,7 +54,7 @@
 
 - name: Setup Docker Daemon For AIO
   import_tasks: docker_daemon_set_aio.yml
-  when: NODE_MODE == "aio" and K8S_NODE_TYPE == "master"
+  when: NODE_MODE == "aio" and K8S_NODE_TYPE == "master" and ARCH == "amd64"
 
 - name: Set Docker daemon.json on Worker Node
   copy:

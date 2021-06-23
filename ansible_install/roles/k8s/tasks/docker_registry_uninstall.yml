@@ -24,9 +24,3 @@
   shell: "docker rmi {{ REGISTRY_IMAGE_NAME }}"
   when: NODE_MODE == "muno" and K8S_NODE_TYPE == "master"
   ignore_errors: yes
-
-- name: Delete File /etc/docker/daemon.json
-  file:
-    path: /etc/docker/daemon.json
-    state: absent
-  ignore_errors: yes

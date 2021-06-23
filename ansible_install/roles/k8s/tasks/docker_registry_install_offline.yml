@@ -20,8 +20,13 @@
     src: docker-daemon-update.py
     dest: /tmp/docker-daemon-update.py
 
-- name: Running script docker-daemon-update.py to append daemon.json
+- name: Running script docker-daemon-update.py to append daemon.json for amd64
   shell: "python3 /tmp/docker-daemon-update.py {{ groups.master[0] }}:5000 {{ HarborIP }}"
+  when: ARCH == "amd64"
+
+- name: Running script docker-daemon-update.py to append daemon.json for arm64
+  shell: "python3 /tmp/docker-daemon-update.py {{ groups.master[0] }}:5000"
+  when: ARCH == "arm64"
 
 - name: Copy Docker daemon.json From Master Node to Deploy Node
   fetch:
