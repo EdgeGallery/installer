@@ -310,7 +310,7 @@ ansible-playbook --inventory hosts-muno eg_all_muno_install.yml --skip-tags=mep,
 
 4. [点击下载Harbor安装包](https://edgegallery.obs.cn-east-3.myhuaweicloud.com/harbor.tar.gz)，放在x86_64机器的/home目录
 
-5. 安装Harbor，其中`xxx.xxx.xxx.xxx`与第2步相同，`<password>`为用户设置的harbor admin登录密码
+5. 安装Harbor，其中`xxx.xxx.xxx.xxx`与第2步相同，`<password>`为用户设置的harbor admin登录密码，其他命令直接拷贝即可
 
     ```
     cd /root
