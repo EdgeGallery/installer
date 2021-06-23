@@ -349,8 +349,23 @@ ansible-playbook --inventory hosts-muno eg_all_muno_install.yml --skip-tags=mep,
     docker login -u admin -p $HARBOR_ADMIN_PASSWORD $HARBOR_IP
     ```
 
-7. 创建appstore、developer和mecm Harbor项目
+7. 创建appstore、developer和mecm项目
 
+    ```
+    #查看appstore项目是否存在，返回码为200表示存在，404表示不存在，500表示其他错误
+    curl -i -k -u admin:$HARBOR_ADMIN_PASSWORD --head https://$HARBOR_IP/api/v2.0/projects?project_name=appstore
+
+    #若返回码404，appstore项目不存在，需要创建
+    curl -i -k -u admin:$HARBOR_ADMIN_PASSWORD -X POST -H "accept: application/json" -H "Content-Type: application/json" -d '{"project_name":"appstore","metadata":{"public":"true"}}' https://$HARBOR_IP/api/v2.0/projects
+
+    #查看并创建developer项目
+    curl -i -k -u admin:$HARBOR_ADMIN_PASSWORD --head https://$HARBOR_IP/api/v2.0/projects?project_name=developer
+    curl -i -k -u admin:$HARBOR_ADMIN_PASSWORD -X POST -H "accept: application/json" -H "Content-Type: application/json" -d '{"project_name":"developer","metadata":{"public":"true"}}' https://$HARBOR_IP/api/v2.0/projects
+
+    #查看并创建mecm项目
+    curl -i -k -u admin:$HARBOR_ADMIN_PASSWORD --head https://$HARBOR_IP/api/v2.0/projects?project_name=mecm
+    curl -i -k -u admin:$HARBOR_ADMIN_PASSWORD -X POST -H "accept: application/json" -H "Content-Type: application/json" -d '{"project_name":"mecm","metadata":{"public":"true"}}' https://$HARBOR_IP/api/v2.0/projects
+    ```
 
 ### 6.2 在ARM64机器上连接Harbor
 
