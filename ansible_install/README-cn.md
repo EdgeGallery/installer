@@ -355,7 +355,7 @@ ansible-playbook --inventory hosts-muno eg_all_muno_install.yml --skip-tags=mep,
     #查看appstore项目是否存在，返回码为200表示存在，404表示不存在，500表示其他错误
     curl -i -k -u admin:$HARBOR_ADMIN_PASSWORD --head https://$HARBOR_IP/api/v2.0/projects?project_name=appstore
 
-    #若返回码404，appstore项目不存在，需要创建
+    #若返回码404，appstore项目不存在，需要创建，创建成功返回码为201
     curl -i -k -u admin:$HARBOR_ADMIN_PASSWORD -X POST -H "accept: application/json" -H "Content-Type: application/json" -d '{"project_name":"appstore","metadata":{"public":"true"}}' https://$HARBOR_IP/api/v2.0/projects
 
     #查看并创建developer项目
