@@ -369,21 +369,21 @@ ansible-playbook --inventory hosts-muno eg_all_muno_install.yml --skip-tags=mep,
 
 ### 6.2 在ARM64机器上连接Harbor
 
-1. 配置/etc/docker/daemon.json，新增如下字段，若无该文件，需新建
+1. 登录k8s集群中的所有node，配置/etc/docker/daemon.json，新增如下字段，若已有该字段，在该列表中新增6.1节的x86_64机器HARBOR_IP，以逗号分隔，若无该文件，需新建
 
     ```
     {
-        "insecure-registries" : ["192.168.100.116"]
+        "insecure-registries" : ["xxx.xxx.xxx.xxx"]
     }
     ```
 
-2. 重启docker服务
+2. 登录k8s集群中的所有node，重启docker服务
 
     ```
     systemctl restart docker.service
     ```
 
-3. docker登录Harbor
+3. 登录k8s集群中的所有node，docker登录Harbor
 
     ```
     docker login -u admin -p $HARBOR_ADMIN_PASSWORD $HARBOR_IP
