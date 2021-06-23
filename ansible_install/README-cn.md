@@ -294,11 +294,11 @@ ansible-playbook --inventory hosts-muno eg_all_muno_install.yml --skip-tags=mep,
 
 1. 安装docker与docker-compose，Harbor安装是依赖docker-compose方式的
 
-2. 配置/etc/docker/daemon.json，新增如下字段，若无该文件，需新建
+2. 配置/etc/docker/daemon.json，新增如下字段，其中`xxx.xxx.xxx.xxx`为本x86_64机器的私有或公网IP，需要与EG所在机器互通，若无该文件，需新建
 
     ```
     {
-        "insecure-registries" : ["192.168.100.116"]
+        "insecure-registries" : ["xxx.xxx.xxx.xxx"]
     }
     ```
 
@@ -310,7 +310,7 @@ ansible-playbook --inventory hosts-muno eg_all_muno_install.yml --skip-tags=mep,
 
 4. [点击下载Harbor安装包](https://edgegallery.obs.cn-east-3.myhuaweicloud.com/harbor.tar.gz)，放在x86_64机器的/home目录
 
-5. 安装Harbor，其中`<IP-of-this-machine>`为本x86_64机器的私有或公网IP，需要与EG所在机器互通，`<password>`为用户设置的harbor admin登录密码
+5. 安装Harbor，其中`xxx.xxx.xxx.xxx`与第2步相同，`<password>`为用户设置的harbor admin登录密码
 
     ```
     cd /root
