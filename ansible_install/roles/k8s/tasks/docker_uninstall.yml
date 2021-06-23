@@ -29,6 +29,7 @@
   file:
     path: /etc/docker
     state: absent
+  when: NODE_MODE == "muno" and K8S_NODE_TYPE == "worker"
   ignore_errors: yes
 
 - name: Remove Docker Service File
