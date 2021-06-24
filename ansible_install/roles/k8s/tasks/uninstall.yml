@@ -17,7 +17,7 @@
 
 - name: Uninstall nfs-client-provisioner
   shell: helm uninstall nfs-client-provisioner
-  when: K8S_NODE_TYPE == "master" and ENABLE_PERSISTENCE is true
+  when: K8S_NODE_TYPE == "master" and ENABLE_PERSISTENCE == true
   ignore_errors: yes
 
 - name: Wait For Cleanup All nfs-client-provisioner K8S Resources
@@ -29,12 +29,12 @@
   until: atpResourceRC.stdout == "1"
   retries: 60
   delay: 5
-  when: K8S_NODE_TYPE == "master" and ENABLE_PERSISTENCE is true
+  when: K8S_NODE_TYPE == "master" and ENABLE_PERSISTENCE == true
   ignore_errors: yes
 
 - name: Remove nfs-kernel-server
   shell: apt-get remove -y nfs-kernel-server
-  when: K8S_NODE_TYPE == "master" and ENABLE_PERSISTENCE is true
+  when: K8S_NODE_TYPE == "master" and ENABLE_PERSISTENCE == true
   ignore_errors: yes
 
 - name: Uninstall Helm

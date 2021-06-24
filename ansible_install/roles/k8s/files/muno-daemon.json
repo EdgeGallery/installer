@@ -1,3 +1,0 @@
-{
-    "insecure-registries" : ["PRIVATE_REGISTRY_IP:5000", "PRIVATE_HARBOR_IP"]
-}

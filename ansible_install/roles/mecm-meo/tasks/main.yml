@@ -18,7 +18,7 @@
 - name: Check HARBOR_ADMIN_PASSWORD Param
   fail:
     msg: "Param HARBOR_ADMIN_PASSWORD in var.yml is not defined"
-  when: HARBOR_ADMIN_PASSWORD is undefined or HARBOR_ADMIN_PASSWORD is none
+  when: (HARBOR_ADMIN_PASSWORD is undefined or HARBOR_ADMIN_PASSWORD is none) and OPERATION == "install"
 
 - name: Set Portal IP
   set_fact:

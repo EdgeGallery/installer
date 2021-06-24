@@ -38,7 +38,7 @@
   file:
     path: "{{ HARBOR_ROOT }}"
     state: absent
-  when: K8S_NODE_TYPE == "master" and EG_MODE != "edge" and ARCH == "amd64" and ENABLE_PERSISTENCE is false
+  when: K8S_NODE_TYPE == "master" and EG_MODE != "edge" and ARCH == "amd64" and ENABLE_PERSISTENCE == false
   ignore_errors: yes
 
 - name: Uninstalled Docker Compose

@@ -55,5 +55,6 @@ if __name__ == "__main__":
         else:
             print('Usage: <list of insecure registry entries>')
             sys.exit(1) # Invalid args
-    except:
+    except Exception as e:
+        print(e)
         sys.exit(2) # Error while processing the file
