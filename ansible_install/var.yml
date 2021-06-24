@@ -16,6 +16,9 @@
 # Set the Password of Harbor admin account, no default value, must set by users here
 HARBOR_ADMIN_PASSWORD:
 
+# If harbor is setup in a remote system, then mention the remote system IP as harbor IP (Note for ARM arch type)
+HarborIP: 
+
 # Set the regex name of the network interface for calico
 NETWORK_INTERFACE: eth.*
 

@@ -110,11 +110,7 @@
   file:
     path: "{{ HARBOR_ROOT }}"
     state: absent
-<<<<<<< HEAD
-  when: ENABLE_PERSISTENCE is false and HarborIP is undefined
-=======
-  when: ENABLE_PERSISTENCE == false
->>>>>>> 6b9e1feab4793cd8ac76af2478f1afbe34af0953
+  when: ENABLE_PERSISTENCE == false and HarborIP is undefined
 
 - name: Create Directory for Harbor Root
   file:
