@@ -25,6 +25,11 @@
     ARCH: amd64
   when: ansible_architecture == "x86_64"
 
+- name: Set ARCH Value to be arm64
+  set_fact:
+    ARCH: arm64
+  when: ansible_architecture == "aarch64"
+
 - name: Set Harbor IP to PORTAL IP when portal IP is defined
   set_fact:
     HarborIP: "{{ PORTAL_IP }}"
@@ -33,7 +38,7 @@
 - name: Set Harbor IP to PORTAL IP when harbor IP is defined
   set_fact:
     HarborIP: "{{ HarborIP }}"
-  when: HarborIP is defined"
+  when: HarborIP is defined
 
 - name: Set Harbor IP to Matser IP when portal IP is undefined
   set_fact:
