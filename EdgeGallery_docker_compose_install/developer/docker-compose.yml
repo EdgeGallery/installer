@@ -13,13 +13,6 @@ services:
       SSL_KEY_ALIAS: edgegallery
     volumes:
       - /tmp/keys/keystore.p12:/usr/app/ssl/keystore.p12
-      - /opt/portadv/portadmin:/opt/portadv/portadmin
-
-  porting-advisor:
-    image: swr.ap-southeast-1.myhuaweicloud.com/eg-common/porting-advisor:latest
-    privileged: true
-    volumes:
-      - /opt/portadv/portadmin:/opt/portadv/portadmin
 
   postgres:
     image: swr.ap-southeast-1.myhuaweicloud.com/eg-common/postgres:12.3
@@ -37,7 +30,6 @@ services:
     depends_on:
       - postgres
       - tool-chain
-      - porting-advisor
     environment:
       LOG_DIR: /var/log/developer-fe
       LOG_FILE_NAME: "developer-fe"
@@ -61,7 +53,6 @@ services:
     depends_on:
       - postgres
       - tool-chain
-      - porting-advisor
     environment:
       CLIENT_ID: "developer-fe"
       CLIENT_SECRET: "te9Fmv%qaq"
