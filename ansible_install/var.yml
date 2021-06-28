@@ -17,7 +17,7 @@
 HARBOR_ADMIN_PASSWORD:
 
 # If harbor is setup in a remote system, then mention the remote system IP as harbor IP
-HarborIP: 
+#HarborIP: 
 
 # Set the regex name of the network interface for calico
 NETWORK_INTERFACE: eth.*
