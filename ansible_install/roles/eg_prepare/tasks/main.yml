@@ -35,7 +35,7 @@
     HarborIP: "{{ PORTAL_IP }}"
   when: PORTAL_IP is defined and HarborIP is undefined
 
-- name: Set Harbor IP to PORTAL IP when harbor IP is defined
+- name: Set HarborIP when harbor IP is defined
   set_fact:
     HarborIP: "{{ HarborIP }}"
   when: HarborIP is defined
@@ -44,11 +44,6 @@
   set_fact:
     HarborIP: "{{ groups.master[0] }}"
   when: PORTAL_IP is undefined and HarborIP is undefined
-
-- name: Set Harbor IP to Matser IP when harbor IP is defined
-  set_fact:
-    HarborIP: "{{ HarborIP }}"
-  when: HarborIP is defined
 
 - name: Prepare EG Online
   include: "prepare_online.yml"
