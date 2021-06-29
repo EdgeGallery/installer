@@ -36,22 +36,26 @@
   file:
     path: "{{ HARBOR_DIR }}/harbor"
     state: directory
+  when: HarborIP is undefined
 
 - name: Unarchive harbor.tar.gz
   unarchive:
     src: "{{ HARBOR_DIR }}/harbor.tar.gz"
     dest: "{{ HARBOR_DIR }}/harbor"
     copy: no
+  when: HarborIP is undefined
 
 - name: Write SLL Rand
   shell: openssl rand -writerand .rnd
   args:
     chdir: /root
+  when: HarborIP is undefined
 
 - name: Generate RSA Key File
   shell: openssl genrsa -out ca.key 4096
   args:
     chdir: "{{ HARBOR_DIR }}/harbor/cert"
+  when: HarborIP is undefined
 
 - name: Generate RSA Crt File
   shell: |
@@ -60,68 +64,79 @@
     -key ca.key -out ca.crt
   args:
     chdir: "{{ HARBOR_DIR }}/harbor/cert"
+  when: HarborIP is undefined
 
 - name: Generate RSA Cert File
   shell: openssl x509 -inform PEM -in ca.crt -out ca.cert
   args:
     chdir: "{{ HARBOR_DIR }}/harbor/cert"
+  when: HarborIP is undefined
 
 - name: Create Directory Under /etc/docker/certs.d to Store Cert File
   file:
     path: "/etc/docker/certs.d/{{ HarborIP }}:443"
     state: directory
+  when: HarborIP is undefined
 
 - name: Copy Cert File to the New Directory Under /etc/docker/certs.d
   copy:
     src: "{{ HARBOR_DIR }}/harbor/cert/ca.cert"
     dest: "/etc/docker/certs.d/{{ HarborIP }}:443"
     remote_src: yes
+  when: HarborIP is undefined
 
 - name: Set Hostname for Harbor
   replace:
     path: "{{ HARBOR_DIR }}/harbor/harbor.yml"
     regexp: "hostname: .*"
     replace: "hostname: {{ HarborIP }}"
+  when: HarborIP is undefined
 
 - name: Set Certificate for Harbor
   replace:
     path: "{{ HARBOR_DIR }}/harbor/harbor.yml"
     regexp: "certificate: .*"
     replace: "certificate: {{ HARBOR_DIR }}/harbor/cert/ca.crt"
+  when: HarborIP is undefined
 
 - name: Set Key for Harbor
   replace:
     path: "{{ HARBOR_DIR }}/harbor/harbor.yml"
     regexp: "private_key: .*"
     replace: "private_key: {{ HARBOR_DIR }}/harbor/cert/ca.key"
+  when: HarborIP is undefined
 
 - name: Remove Old Harbor Root When ENABLE_PERSISTENCE is false
   file:
     path: "{{ HARBOR_ROOT }}"
     state: absent
-  when: ENABLE_PERSISTENCE == false
+  when: ENABLE_PERSISTENCE == false and HarborIP is undefined
 
 - name: Create Directory for Harbor Root
   file:
     path: "{{ HARBOR_ROOT }}"
     state: directory
+  when: HarborIP is undefined
 
 - name: Set Data Volume for Harbor
   replace:
     path: "{{ HARBOR_DIR }}/harbor/harbor.yml"
     regexp: "data_volume: .*"
     replace: "data_volume: {{ HARBOR_DATA_VOLUME }}"
+  when: HarborIP is undefined
 
 - name: Set Password for Harbor Admin User
   replace:
     path: "{{ HARBOR_DIR }}/harbor/harbor.yml"
     regexp: "harbor_admin_password: .*"
     replace: "harbor_admin_password: {{ HARBOR_ADMIN_PASSWORD }}"
+  when: HarborIP is undefined
 
 - name: Install Harbor
   shell: bash install.sh
   args:
     chdir: "{{ HARBOR_DIR }}/harbor"
+  when: HarborIP is undefined
 
 - name: Docker Login Harbor
   shell: docker login -u admin -p {{ HARBOR_ADMIN_PASSWORD }} {{ HarborIP }}
