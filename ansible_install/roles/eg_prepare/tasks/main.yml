@@ -38,12 +38,12 @@
 - name: Set Harbor IP to PORTAL IP on amd64
   set_fact:
     HarborIP: "{{ PORTAL_IP }}"
-  when: ARCH == amd64 and PORTAL_IP is defined and (HarborIP is undefined or HarborIP is none)
+  when: ARCH == "amd64" and PORTAL_IP is defined and (HarborIP is undefined or HarborIP is none)
 
 - name: Set Harbor IP to Matser IP on amd64
   set_fact:
     HarborIP: "{{ groups.master[0] }}"
-  when: ARCH == amd64 and PORTAL_IP is undefined and (HarborIP is undefined or HarborIP is none)
+  when: ARCH == "amd64" and PORTAL_IP is undefined and (HarborIP is undefined or HarborIP is none)
 
 - name: Prepare EG Online
   include: "prepare_online.yml"
