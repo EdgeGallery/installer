@@ -53,3 +53,6 @@ MECM_PORT: 30093
 ATP_PORT: 30094
 USER_MGMT_PORT: 30067
 LAB_PORT: 30096
+
+# If harbor is setup in a remote system, then mention the remote system IP as harbor IP
+#HarborIP:

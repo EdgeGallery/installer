@@ -63,11 +63,11 @@
 
 - name: Setup Harbor on Master Node
   import_tasks: master_harbor.yml
-  when: K8S_NODE_TYPE == "master" and EG_MODE != "edge" and ARCH == "amd64"
+  when: K8S_NODE_TYPE == "master" and EG_MODE != "edge" and HarborIP is defined
 
 - name: Login Harbor on Worker Node
   shell: docker login -u admin -p {{ HARBOR_ADMIN_PASSWORD }} {{ HarborIP }}
-  when: K8S_NODE_TYPE == "worker" and EG_MODE != "edge" and ARCH == "amd64"
+  when: K8S_NODE_TYPE == "worker" and EG_MODE != "edge" and HarborIP is defined
   no_log: true
   ignore_errors: yes
   register: harbor_login

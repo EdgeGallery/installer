@@ -1,0 +1,123 @@
+#
+#   Copyright 2021 Huawei Technologies Co., Ltd.
+#
+#   Licensed under the Apache License, Version 2.0 (the "License");
+#   you may not use this file except in compliance with the License.
+#   You may obtain a copy of the License at
+#
+#       http://www.apache.org/licenses/LICENSE-2.0
+#
+#   Unless required by applicable law or agreed to in writing, software
+#   distributed under the License is distributed on an "AS IS" BASIS,
+#   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+#   See the License for the specific language governing permissions and
+#   limitations under the License.
+
+---
+
+- name: Check Whether Docker Compose Installed
+  shell: docker-compose version
+  register: dockerComposeInstalled
+  ignore_errors: yes
+
+- name: Install Docker Compose
+  copy:
+    src: "{{ HARBOR_DIR }}/docker-compose"
+    dest: /usr/local/bin/
+    mode: '0755'
+    remote_src: yes
+  when: dockerComposeInstalled is failed
+
+- name: Check Whether Docker Compose Installed Successfully
+  shell: docker-compose version
+  when: dockerComposeInstalled is failed
+
+- name: Create Directory to Unarchive harbor.tar.gz
+  file:
+    path: "{{ HARBOR_DIR }}/harbor"
+    state: directory
+
+- name: Unarchive harbor.tar.gz
+  unarchive:
+    src: "{{ HARBOR_DIR }}/harbor.tar.gz"
+    dest: "{{ HARBOR_DIR }}/harbor"
+    copy: no
+
+- name: Write SLL Rand
+  shell: openssl rand -writerand .rnd
+  args:
+    chdir: /root
+
+- name: Generate RSA Key File
+  shell: openssl genrsa -out ca.key 4096
+  args:
+    chdir: "{{ HARBOR_DIR }}/harbor/cert"
+
+- name: Generate RSA Crt File
+  shell: |
+    openssl req -x509 -new -nodes -sha512 -days 3650 \
+    -subj "/C=CN/ST=Guangzhou/L=Guangzhou/O=example/CN="{{ HarborIP }} \
+    -key ca.key -out ca.crt
+  args:
+    chdir: "{{ HARBOR_DIR }}/harbor/cert"
+
+- name: Generate RSA Cert File
+  shell: openssl x509 -inform PEM -in ca.crt -out ca.cert
+  args:
+    chdir: "{{ HARBOR_DIR }}/harbor/cert"
+
+- name: Create Directory Under /etc/docker/certs.d to Store Cert File
+  file:
+    path: "/etc/docker/certs.d/{{ HarborIP }}:443"
+    state: directory
+
+- name: Copy Cert File to the New Directory Under /etc/docker/certs.d
+  copy:
+    src: "{{ HARBOR_DIR }}/harbor/cert/ca.cert"
+    dest: "/etc/docker/certs.d/{{ HarborIP }}:443"
+    remote_src: yes
+
+- name: Set Hostname for Harbor
+  replace:
+    path: "{{ HARBOR_DIR }}/harbor/harbor.yml"
+    regexp: "hostname: .*"
+    replace: "hostname: {{ HarborIP }}"
+
+- name: Set Certificate for Harbor
+  replace:
+    path: "{{ HARBOR_DIR }}/harbor/harbor.yml"
+    regexp: "certificate: .*"
+    replace: "certificate: {{ HARBOR_DIR }}/harbor/cert/ca.crt"
+
+- name: Set Key for Harbor
+  replace:
+    path: "{{ HARBOR_DIR }}/harbor/harbor.yml"
+    regexp: "private_key: .*"
+    replace: "private_key: {{ HARBOR_DIR }}/harbor/cert/ca.key"
+
+- name: Remove Old Harbor Root When ENABLE_PERSISTENCE is false
+  file:
+    path: "{{ HARBOR_ROOT }}"
+    state: absent
+
+- name: Create Directory for Harbor Root
+  file:
+    path: "{{ HARBOR_ROOT }}"
+    state: directory
+
+- name: Set Data Volume for Harbor
+  replace:
+    path: "{{ HARBOR_DIR }}/harbor/harbor.yml"
+    regexp: "data_volume: .*"
+    replace: "data_volume: {{ HARBOR_DATA_VOLUME }}"
+
+- name: Set Password for Harbor Admin User
+  replace:
+    path: "{{ HARBOR_DIR }}/harbor/harbor.yml"
+    regexp: "harbor_admin_password: .*"
+    replace: "harbor_admin_password: {{ HARBOR_ADMIN_PASSWORD }}"
+
+- name: Install Harbor
+  shell: bash install.sh
+  args:
+    chdir: "{{ HARBOR_DIR }}/harbor"
