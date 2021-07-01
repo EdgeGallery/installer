@@ -22,6 +22,15 @@
 - name: Cat nodetoken
   shell: cat {{K8S_OFFLINE_DIR}}/node-token
   register: NODE_TOKEN
+  
+- name: Load k3s Images
+  shell: for f in "{{ TARBALL_PATH }}"/k3s-airgap-images-amd64.tar; do docker load -i $f; done
+
+- name: k3s files chmod
+  command: sudo chmod a+x "{{ TARBALL_PATH }}"/k3s "{{ TARBALL_PATH }}"/k3s-install.sh
+
+- name: k3s files copy
+  command: sudo cp "{{ TARBALL_PATH }}"/k3s /usr/local/bin/
 
 - name: Install k3s
   shell: INSTALL_K3S_SKIP_DOWNLOAD=true K3S_URL=https://{{ groups.master[0] }}:6443 K3S_TOKEN={{ NODE_TOKEN.stdout }}  "{{ TARBALL_PATH }}"/k3s-install.sh
