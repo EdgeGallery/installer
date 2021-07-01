@@ -75,7 +75,10 @@
     --set mecm.docker.fsgroup={{ dockerGroup.gid }} \
     --set global.persistence.enabled={{ ENABLE_PERSISTENCE }} \
     --set mecm.repository.dockerRepoEndpoint={{ PORTAL_IP }} \
-    --set mecm.repository.sourceRepos="repo={{ PORTAL_IP }} userName=admin password={{ HARBOR_ADMIN_PASSWORD }}"
+    --set mecm.repository.sourceRepos="repo={{ PORTAL_IP }} userName=admin password={{ HARBOR_ADMIN_PASSWORD }}" \
+    --set mecm.postgres.inventoryDbPass={{ postgresPassword }} \
+    --set mecm.postgres.appoDbPass={{ postgresPassword }} \
+    --set mecm.postgres.apmDbPass={{ postgresPassword }}
   no_log: true
   ignore_errors: yes
   register: mecmMeoout
