@@ -67,6 +67,7 @@
     --set images.mepmFe.pullPolicy={{ mepm_images_mepmFe_pullPolicy }} \
     --set images.postgres.pullPolicy={{ mepm_images_postgres_pullPolicy }} \
     --set global.persistence.enabled={{ ENABLE_PERSISTENCE }} \
+    --set mepm.postgres.postgresPass={{ postgresPassword }} \
     --set mepm.postgres.lcmcontrollerDbPass={{ postgresPassword }} \
     --set mepm.postgres.k8spluginDbPass={{ postgresPassword }} \
     --set mepm.postgres.ospluginDbPass={{ postgresPassword }} \
