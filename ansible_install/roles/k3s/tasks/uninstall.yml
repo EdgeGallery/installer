@@ -54,8 +54,8 @@
   when: NODE_MODE == "muno" and K8S_NODE_TYPE == "master"
   ignore_errors: yes
 
-- name: Uninstall K8S
-  import_tasks: "k8s_uninstall.yml"
+- name: Uninstall K3S
+  import_tasks: "k3s_uninstall.yml"
 
 - name: Uninstall Docker Registry
   import_tasks: "docker_registry_uninstall.yml"
