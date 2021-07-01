@@ -1,3 +1,4 @@
+#!/bin/sh
 #
 #   Copyright 2021 Huawei Technologies Co., Ltd.
 #
@@ -13,13 +14,8 @@
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
 
-# postgresPassword is used for all postgres DB of all roles
-postgresPassword: te9Fmv%qaq
-
-# oauth2ClientPassword is used for user mgmt
-oauth2ClientPassword: te9Fmv%qaq
-
-# certPassword is used for generating SSL keys
-certPassword: te9Fmv%qaq
-
-userMgmtRedisPassword: te9Fmv%qaq
+# NFS data backup
+timestamp=`date "+%Y%m%d%H%M"`
+BACKUP_FILE_NAME="eg-data-backup-$timestamp.tar.gz"
+tar -zcPf /home/$BACKUP_FILE_NAME /edgegallery/data
+echo "All data have been backup to /home/$BACKUP_FILE_NAME"

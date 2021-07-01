@@ -1,3 +1,4 @@
+#!/bin/sh
 #
 #   Copyright 2021 Huawei Technologies Co., Ltd.
 #
@@ -13,13 +14,17 @@
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
 
-# postgresPassword is used for all postgres DB of all roles
-postgresPassword: te9Fmv%qaq
+# Restore NFS backup data
 
-# oauth2ClientPassword is used for user mgmt
-oauth2ClientPassword: te9Fmv%qaq
+if [ -z $1 ]; then
+    echo "Error: Failed to restore nfs data"
+    echo "Usage: bash restore_nfs_data.sh /home/eg-data-backup-xxx.tar.gz"
+    exit 1
+fi
 
-# certPassword is used for generating SSL keys
-certPassword: te9Fmv%qaq
+# Restart docker service to make nfs stop temporarily before unarchive data
+systemctl restart docker.service
 
-userMgmtRedisPassword: te9Fmv%qaq
+DATA_FILE=$1
+tar -zxf $DATA_FILE -C /
+echo "NFS data have been restored to /edgegallery/data"

@@ -54,5 +54,8 @@ ATP_PORT: 30094
 USER_MGMT_PORT: 30067
 LAB_PORT: 30096
 
+# Set the Passwords for developer OpenStack Ubuntu VM
+developerVMImagePassword: 123456
+
 # If harbor is setup in a remote system, then mention the remote system IP as harbor IP
 #HarborIP:
