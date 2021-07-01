@@ -15,19 +15,10 @@
 
 ---
 
-- name: Reset Kubeadm
-  command: kubeadm reset -f
+- name: K3S remove
+  command: /usr/local/bin/k3s-uninstall.sh
   ignore_errors: yes
 
-- name: Remove k8s Exec Files
-  file:
-    path: "/usr/bin/{{ item }}"
-    state: absent
-  loop:
-    - kubectl
-    - kubeadm
-    - kubelet
-  ignore_errors: yes
 
 - name: Stop Kubelet Services
   service:
@@ -78,7 +69,7 @@
   shell: modprobe -r ipip
   ignore_errors: yes
 
-- name: remove k8s docker images
+- name: remove k3s docker images
   shell: docker rmi "{{ item }}"
-  loop: "{{ K8S_DOCKER_IMAGES }}"
+  loop: "{{ K3S_DOCKER_IMAGES }}"
   ignore_errors: yes
