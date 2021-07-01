@@ -26,7 +26,6 @@
 - name: Delete MECM-MEPM Secret
   shell: "kubectl delete secret {{ item }}"
   loop:
-    - edgegallery-mepm-secret
     - mecm-mepm-ssl-secret
     - mecm-mepm-jwt-public-secret
   ignore_errors: yes

@@ -40,29 +40,6 @@
       --from-file=server_tls.crt={{ TARBALL_PATH }}/conf/keys/tls.crt \
       --from-file=ca.crt={{ TARBALL_PATH }}/conf/keys/ca.crt
 
-- name: Create Secret edgegallery-mepm-secret
-  shell: |
-    kubectl create secret generic edgegallery-mepm-secret \
-      --from-file=postgres_init.sql={{ TARBALL_PATH }}/conf/keys/postgres_init.sql \
-      --from-literal=postgresPassword={{ postgresPassword }} \
-      --from-literal=postgresLcmCntlrPassword={{ postgresPassword }} \
-      --from-literal=postgresk8sPluginPassword={{ postgresPassword }} \
-      --from-literal=postgresosPluginPassword={{ postgresPassword }} \
-      --from-literal=postgresRuleMgrPassword={{ postgresPassword }}
-  no_log: true
-  ignore_errors: yes
-  register: mepm_secretedge
-
-- name: Output of "Create Secret edgegallery-mepm-secret" task
-  debug:
-    msg: "rc: {{mepm_secretedge.rc}}, stderr: {{mepm_secretedge.stderr}}, stderr_lines: {{mepm_secretedge.stderr_lines}}, stdout: {{mepm_secretedge.stdout}}, stdout_lines: {{mepm_secretedge.stdout_lines}}"
-  when: mepm_secretedge is failed
-
-- name: Failing as task "Create Secret edgegallery-mepm-secret" failed
-  fail:
-    msg: The task Create Secret edgegallery-mepm-secret has failed
-  when: mepm_secretedge is failed
-
 - name: Create MECM-MEPM Service Account
   shell: "kubectl apply -f {{ TARBALL_PATH }}/conf/manifest/mepm/mepm-service-account.yaml"
 
@@ -70,7 +47,6 @@
   shell: |
     helm install --wait mecm-mepm-edgegallery {{ HELM_CHARTS_PATH }}/edgegallery/mecm-mepm-{{ HELM_TAG }}.tgz \
     --set jwt.publicKeySecretName=mecm-mepm-jwt-public-secret \
-    --set mepm.secretName=edgegallery-mepm-secret \
     --set ssl.secretName=mecm-mepm-ssl-secret \
     --set images.lcmcontroller.repository={{ mepm_images_lcmcontroller_repository }} \
     --set images.k8splugin.repository={{ mepm_images_k8splugin_repository }} \

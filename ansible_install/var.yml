@@ -14,7 +14,7 @@
 #   limitations under the License.
 
 # Set the Password of Harbor admin account, no default value, must set by users here
-HARBOR_ADMIN_PASSWORD:
+HARBOR_ADMIN_PASSWORD: xxxxx
 
 # Set the regex name of the network interface for calico
 NETWORK_INTERFACE: eth.*
@@ -36,7 +36,7 @@ ENABLE_PERSISTENCE: true
 # Email Server Config for User Mgmt
 usermgmt_mail_enabled: false
 # If usermgmt_mail_enabled is true, then the following 4 params need to be set
-# usermgmt_mail_host:
-# usermgmt_mail_port:
-# usermgmt_mail_sender:
-# usermgmt_mail_authcode:
+# usermgmt_mail_host: xxxxx
+# usermgmt_mail_port: xxxxx
+# usermgmt_mail_sender: xxxxx
+# usermgmt_mail_authcode: xxxxx

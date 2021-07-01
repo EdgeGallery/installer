@@ -15,30 +15,6 @@
 
 ---
 
-- name : Create Secret edgegallery-mecm-secret
-  shell: |
-    kubectl create secret generic {{ meo_mecm_secretName }} \
-      --from-file=postgres_init.sql={{ TARBALL_PATH }}/conf/keys/postgres_init.sql \
-      --from-literal=postgresPassword={{ postgresPassword }} \
-      --from-literal=postgresApmPassword={{ postgresPassword }} \
-      --from-literal=postgresAppoPassword={{ postgresPassword }} \
-      --from-literal=postgresInventoryPassword={{ postgresPassword }} \
-      --from-literal=dockerRepoUserName=admin \
-      --from-literal=dockerRepoPassword={{ HARBOR_ADMIN_PASSWORD }}
-  no_log: true
-  ignore_errors: yes
-  register: secret_edge
-
-- name: Output of "Create Secret edgegallery-mecm-secret" task
-  debug:
-    msg: "rc: {{secret_edge.rc}}, stderr: {{secret_edge.stderr}}, stderr_lines: {{secret_edge.stderr_lines}}, stdout: {{secret_edge.stdout}}, stdout_lines: {{secret_edge.stdout_lines}}"
-  when: secret_edge is failed
-
-- name: Failing as task "Create Secret edgegallery-mecm-secret" failed
-  fail:
-    msg: The task Create Secret edgegallery-mecm-secret has failed
-  when: secret_edge is failed
-
 - name: Ensure User Group "docker" Exists
   group:
     name: docker
@@ -59,7 +35,6 @@
     --set global.ssl.enabled={{ mecm_fe_global_ssl_enabled }} \
     --set global.ssl.secretName={{ meo_ssl_secretName }} \
     --set global.ssl.enabled={{ meo_global_ssl_enabled }} \
-    --set mecm.secretName={{ meo_mecm_secretName }} \
     --set images.inventory.repository={{ meo_images_inventory_repository }} \
     --set images.appo.repository={{ meo_images_appo_repository }} \
     --set images.apm.repository={{ meo_images_apm_repository }} \

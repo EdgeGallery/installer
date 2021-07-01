@@ -19,10 +19,6 @@
   shell: helm uninstall mecm-meo-edgegallery
   ignore_errors: yes
 
-- name: Delete MECM-MEO Secret
-  shell: "kubectl delete secret {{ meo_mecm_secretName }}"
-  ignore_errors: yes
-
 - name: Wait For Cleanup All MECM-MEO K8S Resources
   shell: |
     kubectl get all -A | grep -E "mecm-apm|mecm-appo|mecm-inventory|mecm-postgres|mecm-fe"

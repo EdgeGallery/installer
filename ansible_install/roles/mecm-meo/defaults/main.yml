@@ -13,12 +13,9 @@
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
 
-edgeRepoUserName: admin
-
 meo_global_ssl_enabled: true
 mecm_fe_global_ssl_enabled: true
 meo_ssl_secretName: edgegallery-ssl-secret
-meo_mecm_secretName: edgegallery-mecm-secret
 meo_images_inventory_repository: "{{ REGISTRY_URL }}edgegallery/mecm-inventory"
 meo_images_appo_repository: "{{ REGISTRY_URL }}edgegallery/mecm-appo"
 meo_images_apm_repository: "{{ REGISTRY_URL }}edgegallery/mecm-apm"
