@@ -57,5 +57,8 @@ LAB_PORT: 30096
 # Set the Passwords for developer OpenStack Ubuntu VM
 developerVMImagePassword: 123456
 
+# certPassword is used for generating SSL keys
+certPassword: te9Fmv%qaq
+
 # If harbor is setup in a remote system, then mention the remote system IP as harbor IP
 #HarborIP:

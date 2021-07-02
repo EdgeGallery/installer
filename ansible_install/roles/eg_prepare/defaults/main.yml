@@ -27,7 +27,7 @@ CERT_VALIDITY_IN_DAYS: 365
 keystoreType: PKCS12
 keyAlias: edgegallery
 
-servicecenter_images_repository: eg-common/service-center
+servicecenter_images_repository: "{{ REGISTRY_URL }}eg-common/service-center"
 servicecenter_images_pullPolicy: IfNotPresent
 servicecenter_global_ssl_enabled: true
 servicecenter_global_ssl_secretName: edgegallery-ssl-secret
