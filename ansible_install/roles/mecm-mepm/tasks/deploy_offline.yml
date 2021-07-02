@@ -26,7 +26,7 @@
       --set controller.admissionWebhooks.patch.image.repository={{ ingress_controller_admissionWebhooks_patch_image_repository }} \
       --set defaultBackend.image.repository={{ ingress_defaultBackend_image_repository }} \
       -f "{{role_path}}"/files/ingress.yaml
-  when: K8S_NODE_TYPE == "master" and EG_MODE != "controller" and ENABLE_INGRESS == true and ARCH == "amd64"
+  when: K8S_NODE_TYPE == "master" and EG_MODE != "controller" and ENABLE_INGRESS == true
 
 - name: Create Secret mecm-mepm-jwt-public-secret
   shell: |

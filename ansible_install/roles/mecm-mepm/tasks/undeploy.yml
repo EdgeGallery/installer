@@ -15,6 +15,10 @@
 
 ---
 
+- name: Undeploy Ingress
+  shell: helm uninstall eg-ingress
+  ignore_errors: yes
+
 - name: Undeploy MECM-MEPM
   shell: helm uninstall mecm-mepm-edgegallery
   ignore_errors: yes

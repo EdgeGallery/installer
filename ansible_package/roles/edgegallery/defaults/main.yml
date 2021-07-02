@@ -52,14 +52,15 @@ EG_IMAGE_LIST_EDGE_COMMON:
   - swr.ap-southeast-1.myhuaweicloud.com/eg-common/dougbtv/whereabouts:latest
   - swr.ap-southeast-1.myhuaweicloud.com/eg-common/elasticsearch:7.9.0
   - swr.ap-southeast-1.myhuaweicloud.com/eg-common/cturra/ntp:latest
+  - swr.ap-southeast-1.myhuaweicloud.com/eg-common/us.gcr.io/k8s-artifacts-prod/ingress-nginx/controller:v0.34.1
 
 EG_IMAGE_LIST_EDGE_X86:
   - swr.ap-southeast-1.myhuaweicloud.com/eg-common/metallb/speaker:v0.9.3
   - swr.ap-southeast-1.myhuaweicloud.com/eg-common/metallb/controller:v0.9.3
-  - swr.ap-southeast-1.myhuaweicloud.com/eg-common/us.gcr.io/k8s-artifacts-prod/ingress-nginx/controller:v0.34.1
   - swr.ap-southeast-1.myhuaweicloud.com/eg-common/k8s.gcr.io/defaultbackend-amd64:1.5
   - swr.ap-southeast-1.myhuaweicloud.com/eg-common/jettech/kube-webhook-certgen:v1.0.0
 
 EG_IMAGE_LIST_EDGE_ARM64:
   - swr.ap-southeast-1.myhuaweicloud.com/eg-common/metallb/speaker:v0.9.3-arm64
   - swr.ap-southeast-1.myhuaweicloud.com/eg-common/metallb/controller:v0.9.3-arm64
+  - swr.ap-southeast-1.myhuaweicloud.com/eg-common/k8s.gcr.io/defaultbackend-arm64:1.5

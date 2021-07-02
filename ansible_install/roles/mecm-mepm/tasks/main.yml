@@ -46,6 +46,16 @@
     REGISTRY_URL: ""
   when: NODE_MODE == "aio"
 
+- name: Set Ingress admissionWebhooks image name
+  set_fact:
+    WEBHOOK_REPO: "{{ REGISTRY_URL }}eg-common/jettech/kube-webhook-certgen"
+  when: ARCH == "amd64"
+
+- name: Set Ingress admissionWebhooks image name
+  set_fact:
+    WEBHOOK_REPO: ""
+  when: ARCH == "arm64"
+
 - name: Check EG_MODE for MECM-MEPM
   fail:
     msg: "Could not {{ OPERATION }} MECM-MEPM with EG_MODE: {{ EG_MODE }}"
