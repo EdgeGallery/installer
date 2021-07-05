@@ -97,11 +97,11 @@ Users need to choose the package with exact architecture (x86 or arm64) and EG M
 The following guide takes x86 architecture and "all" mode (edge + controller) as the example to introduce
 how to deploy EG in both single node and multi nodes cases.
 
-1. [Download EG offline package ("all" mode on x86)](https://edgegallery.obs.cn-east-3.myhuaweicloud.com/releases/v1.1/x86/EdgeGallery-v1.1-all-x86.tar.gz) on a machine that can access Internet, and copy it to Ansible controller node, e.g. `/home`
+1. [Download EG offline package ("all" mode on x86)](https://edgegallery.obs.cn-east-3.myhuaweicloud.com/releases/v1.2/x86/EdgeGallery-v1.2.0-all-x86.tar.gz) on a machine that can access Internet, and copy it to Ansible controller node, e.g. `/home`
 
     ```
     cd /home
-    tar -xvf EdgeGallery-v1.1-all-x86.tar.gz
+    tar -xvf EdgeGallery-v1.2.0-all-x86.tar.gz
     ```
 
 2. Set password-less ssh from Ansible controller node to other nodes
@@ -113,7 +113,7 @@ how to deploy EG in both single node and multi nodes cases.
     sshpass -V
 
     # If not, install sshpass
-    cd /home/ansible-all-x86-latest
+    cd /home/EdgeGallery-v1.2.0-all-x86
     dpkg -i -G -E sshpass_1.06-1_amd64.deb
 
     # Check whether sshpass installed successfully
@@ -145,7 +145,7 @@ However, when deploying on arm64 machines, you should prepare a x86 machine and 
 deploying EG on those arm64 machines. That's because Harbor hasn't provided arm64 Docker images now.
 Please [refer to Section 6 to install Harbor manually](#6-how-to-install-harbor-manually-on-x86) before deploying EG.
 
-The following table gives all deployment scenarios pre-defineded in the EG offline package (under `/home/ansible-all-x86-latest/install/` directory),
+The following table gives all deployment scenarios pre-defineded in the EG offline package (under `/home/EdgeGallery-v1.2.0-all-x86/install/` directory),
 and you can use them directly to deploy EG.
 
 
@@ -162,7 +162,7 @@ and you can use them directly to deploy EG.
 ### 3.1. How to Config Ansible Inventory
 
 Ansible inventory is used to set the master and worker nodes info which used to ssh to these nodes by Ansible.
-Please refer to the files, `hosts-aio` and `hosts-muno` under `/home/ansible-all-x86-latest/install`, to do the Ansible inventory configuration.
+Please refer to the files, `hosts-aio` and `hosts-muno` under `/home/EdgeGallery-v1.2.0-all-x86/install`, to do the Ansible inventory configuration.
 
 - AIO Inventory, replace the exactly master node IP in file `host-aio`:
 
@@ -219,7 +219,7 @@ Also the Ansible controller node can also act as one of the master or worker nod
 
 ### 3.2. How to Set the Parameters
 
-  All parameters that user could set are in file `/home/ansible-all-x86-latest/install/var.yml`.
+  All parameters that user could set are in file `/home/EdgeGallery-v1.2.0-all-x86/install/var.yml`.
 
   ```
   # Set the regex name of the network interface for calico
@@ -251,7 +251,7 @@ Also the Ansible controller node can also act as one of the master or worker nod
 
 ### 3.3. How to Set the Passwords
 
-  All passwords needed are in file `/home/ansible-all-x86-latest/install/password-var.yml`. The Ansible scripts
+  All passwords needed are in file `/home/EdgeGallery-v1.2.0-all-x86/install/password-var.yml`. The Ansible scripts
   don't provide any default password now, and all passwords are needed to be given by users before deploying.
   There should include capital letters, lowercase letters, numbers and special characters in the password whose
   length is no less than 8 characters.
@@ -275,7 +275,7 @@ Also the Ansible controller node can also act as one of the master or worker nod
 It only needs to specify the inventory file (`host-aio` or `host-muno`) and the scenario file when deploying.
 
 ```
-cd /home/ansible-all-x86-latest/install
+cd /home/EdgeGallery-v1.2.0-all-x86/install
 
 # AIO Deployment
 ansible-playbook --inventory hosts-aio eg_all_aio_install.yml
@@ -401,7 +401,7 @@ When you want to deploy EG on arm64 machines, you need to install Harbor manuall
 ### 6.2 Config Harbor on Ansible Controller Node
 
    The params related to Harbor should be set on Ansible controller Node before deploying EG.
-   Please set `HarborIP` in the end of file `/home/ansible-all-x86-latest/install/default-var.yml` as the IP given in step 2 in the previous section.
+   Please set `HarborIP` in the end of file `/home/EdgeGallery-v1.2.0-all-x86/install/default-var.yml` as the IP given in step 2 in the previous section.
 
    ```
    # If harbor is setup in a remote system, then mention the remote system IP as harbor IP

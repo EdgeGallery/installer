@@ -87,11 +87,11 @@ EdgeGallery的所有离线安装包均可在EdgeGallery官网进行下载。请[
 
 本指导以x86-all为例，介绍如何在x86环境下进行EdgeGallery的单节点与多节点部署。
 
-1. 在有互联网访问权限的机器上[下载EdgeGallery中心+边缘的x86架构离线包](https://edgegallery.obs.cn-east-3.myhuaweicloud.com/releases/v1.1/x86/EdgeGallery-v1.1-all-x86.tar.gz)，拷贝到部署控制节点上，假设为`/home`目录。登录部署控制节点，解压EG离线安装包。
+1. 在有互联网访问权限的机器上[下载EdgeGallery中心+边缘的x86架构离线包](https://edgegallery.obs.cn-east-3.myhuaweicloud.com/releases/v1.2/x86/EdgeGallery-v1.2.0-all-x86.tar.gz)，拷贝到部署控制节点上，假设为`/home`目录。登录部署控制节点，解压EG离线安装包。
 
     ```
     cd /home
-    tar -xvf EdgeGallery-v1.1-all-x86.tar.gz
+    tar -xvf EdgeGallery-v1.2.0-all-x86.tar.gz
     ```
 
 2. 配置从部署控制节点到master和worker节点的ssh免密登录
@@ -103,7 +103,7 @@ EdgeGallery的所有离线安装包均可在EdgeGallery官网进行下载。请[
     sshpass -V
 
     # 若未安装，则安装sshpass
-    cd /home/ansible-all-x86-latest
+    cd /home/EdgeGallery-v1.2.0-all-x86
     dpkg -i -G -E sshpass_1.06-1_amd64.deb
 
     # 查看sshpass是否安装成功
@@ -144,7 +144,7 @@ EdgeGallery的所有离线安装包均可在EdgeGallery官网进行下载。请[
  
 ### 3.1. 配置待部署节点信息
 
-请参考部署控制节点的`/home/ansible-all-x86-latest/install`文件夹里的`hosts-aio`和`hosts-muno`进行节点配置。
+请参考部署控制节点的`/home/EdgeGallery-v1.2.0-all-x86/install`文件夹里的`hosts-aio`和`hosts-muno`进行节点配置。
 
 - 单节点部署配置，将`host-aio`中的信息改成待部署节点IP，如下所示：
 
@@ -198,7 +198,7 @@ EdgeGallery的所有离线安装包均可在EdgeGallery官网进行下载。请[
 
 ### 3.2. 部署涉及的参数配置
 
-  部署输入参数在文件`/home/ansible-all-x86-latest/install/var.yml`中。输入参数请参考以下信息进行配置：
+  部署输入参数在文件`/home/EdgeGallery-v1.2.0-all-x86/install/var.yml`中。输入参数请参考以下信息进行配置：
 
   ```
   # 设置calico所使用的网卡的匹配模式，如下表示使用名为eth0、eth1等的网卡
@@ -229,7 +229,7 @@ EdgeGallery的所有离线安装包均可在EdgeGallery官网进行下载。请[
 
 ### 3.3. 部署涉及的密码配置
 
-  部署所需密码在文件`/home/ansible-all-x86-latest/install/password-var.yml`中。 **部署脚本自身不提供密码默认值，需要用户在安装前自行设定密码值**。密码建议同时使用大小写字母、数字和特殊符号组合，长度不小于8位。
+  部署所需密码在文件`/home/EdgeGallery-v1.2.0-all-x86/install/password-var.yml`中。 **部署脚本自身不提供密码默认值，需要用户在安装前自行设定密码值**。密码建议同时使用大小写字母、数字和特殊符号组合，长度不小于8位。
 
   ```
   # 部署过程中搭建的Harbor服务器的admin用户的密码，不提供默认值，必须由用户自行设定
@@ -252,7 +252,7 @@ EdgeGallery的所有离线安装包均可在EdgeGallery官网进行下载。请[
 执行部署时只需要指定相应的inventory文件（`host-aio`或`host-muno`）和模板文件即可。
 
 ```
-cd /home/ansible-all-x86-latest/install
+cd /home/EdgeGallery-v1.2.0-all-x86/install
 
 # 单节点部署
 ansible-playbook --inventory hosts-aio eg_all_aio_install.yml
@@ -374,7 +374,7 @@ ansible-playbook --inventory hosts-muno eg_all_muno_install.yml --skip-tags=mep,
 
 ### 6.2 在Ansible控制节点上配置Harbor
 
-  Harbor参数配置在文件`/home/ansible-all-x86-latest/install/default-var.yml`中。需要设置文件末尾的HarborIP参数为6.1节中第2步的x86机器的IP：
+  Harbor参数配置在文件`/home/EdgeGallery-v1.2.0-all-x86/install/default-var.yml`中。需要设置文件末尾的HarborIP参数为6.1节中第2步的x86机器的IP：
 
   ```
   # 如果Harbor是手动部署在本k8s或k3s集群master节点之外的机器，需要设置其IP
