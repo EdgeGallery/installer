@@ -1,9 +1,8 @@
 # EdgeGallery Ansible离线安装指导
 
+EdgeGallery离线安装是为单机环境提供的安装方式，便于各种只有局域网无公网环境进行Kubernetes、k3s与EdgeGallery安装。
 
-EdgeGallery离线安装是为单机环境提供的安装方式，便于各种只有局域网无公网环境进行Kubernetes与EdgeGallery安装。
-
-与在线部署一致，离线部署也是基于Ubuntu系统，Kubernetes，支持x86_64和ARM64架构。
+与在线部署一致，离线部署也是基于Ubuntu系统，Kubernetes或k3s，支持x86_64和ARM64架构。
 
 ## 1. 节点设置与各节点依赖组件及版本
 
@@ -15,7 +14,7 @@ EdgeGallery离线安装是为单机环境提供的安装方式，便于各种只
 
     部署控制节点建议选择有互联网访问权限的机器，便于进行Python，pip3与Ansible安装，以及下载EdgeGallery离线安装包。
 
-    部署控制节点需预安装如下依赖组件，若部署控制节点无互联网访问权限，可以参考下一节内容进行Ansible的离线安装，python与pip3安装请自行安装。
+    部署控制节点需预安装如下依赖组件，若部署控制节点无互联网访问权限，可以参考[2.2节进行Ansible的离线安装](#22-部署控制节点需要安装ansible工具)，python与pip3安装请自行安装。
 
     以下版本为经过开发与测试验证的可使用版本，推荐使用，其他版本未经验证。
 
@@ -45,17 +44,17 @@ EdgeGallery离线安装是为单机环境提供的安装方式，便于各种只
 
 2. 多个待部署节点
 
-    待部署节点分为一个Master节点与一个或多个Worker节点。节点要求与单节点部署要求一致。
+    待部署节点分为一个Master节点与一个或多个（少于12）Worker节点。节点要求与单节点部署要求一致。
 
 ## 2. 部署控制节点配置
 
-  本文所涉及的所有操作均是在部署控制节点进行，整个部署过程， **无需** 登录待部署节点进行任何操作。
+  本文所涉及的所有操作均是在部署控制节点进行，整个部署过程，**无需**登录待部署节点进行任何操作。
 
 ### 2.1 登录部署控制节点
 
   部署控制节点已提前安装好Ubuntu 18.04操作系统，python3.6与pip3。
 
-### 2.2 部署控制节点需要安装Ansible工具：
+### 2.2 部署控制节点需要安装Ansible工具
 
   - 在线安装Ansible：
 
@@ -68,7 +67,7 @@ EdgeGallery离线安装是为单机环境提供的安装方式，便于各种只
   - 离线安装Ansible：
 
       1. 在可访问互联网的机器上下载[ _X86 Ansible离线安装包_ ](https://edgegallery.obs.cn-east-3.myhuaweicloud.com/ansible-offline-install-python3-x86.tar.gz)或者[ _ARM64 Ansible离线安装包_  ](https://edgegallery.obs.cn-east-3.myhuaweicloud.com/ansible-offline-install-python3-arm64.tar.gz)
-      2. 拷贝安装包到部署控制节点任意目录，此处假设下载的是x86的Ansible离线安装包，拷贝到部署控制节点的/home目录
+      2. 拷贝安装包到部署控制节点任意目录，此处假设下载的是x86的Ansible离线安装包，拷贝到部署控制节点的`/home`目录
       3. 在部署控制节点上执行以下操作，安装Ansible
 
             ```
@@ -88,7 +87,7 @@ EdgeGallery的所有离线安装包均可在EdgeGallery官网进行下载。请[
 
 本指导以x86-all为例，介绍如何在x86环境下进行EdgeGallery的单节点与多节点部署。
 
-1. 在有互联网访问权限的机器上[ _下载EdgeGallery中心+边缘的x86架构离线包_ ](https://edgegallery.obs.cn-east-3.myhuaweicloud.com/releases/v1.1/x86/EdgeGallery-v1.1-all-x86.tar.gz)，拷贝到部署控制节点上，假设为/home目录。登录部署控制节点，解压EG离线安装包。
+1. 在有互联网访问权限的机器上[下载EdgeGallery中心+边缘的x86架构离线包](https://edgegallery.obs.cn-east-3.myhuaweicloud.com/releases/v1.1/x86/EdgeGallery-v1.1-all-x86.tar.gz)，拷贝到部署控制节点上，假设为`/home`目录。登录部署控制节点，解压EG离线安装包。
 
     ```
     cd /home
@@ -111,7 +110,7 @@ EdgeGallery的所有离线安装包均可在EdgeGallery官网进行下载。请[
     sshpass -V
     ```
 
-    2.2 部署控制节点/root/.ssh/目录下需要有id_rsa和id_rsa.pub文件，若没有，执行以下命令，并连按三次Enter键生成：
+    2.2 部署控制节点`/root/.ssh/`目录下需要有`id_rsa`和`id_rsa.pub`文件，若没有，执行以下命令，并连按三次Enter键生成：
 
     ```
     ssh-keygen -t rsa
@@ -123,22 +122,15 @@ EdgeGallery的所有离线安装包均可在EdgeGallery官网进行下载。请[
     sshpass -p <master-or-worker-node-root-password> ssh-copy-id -p <ssh-port> -o StrictHostKeyChecking=no root@<master-or-worker-node-ip>
     ```
 
-## 3. EdgeGallery部署--部署k8s与EdgeGallery
+## 3. EdgeGallery部署
 
-本安装部署使用EG Ansible部署脚本，可进行IaaS层（k8s）和PaaS层（EdgeGallery）安装部署。
+本安装部署使用EG Ansible部署脚本，可进行IaaS层（k8s或k3s）和PaaS层（EdgeGallery）安装部署。
 
-其中PaaS层部署中的harbor安装，当前仅支持x86_64架构，本部署过程会自动安装并配置好Harbor，无需额外操作。
-ARM64架构因为无对应容器镜像，暂不支持自动部署。在ARM64架构上部署EG时会跳过harbor的部署步骤，用户请手动在k8s master节点上进行如下/etc/docker/daemon.json文件的设置，成功安装EG后，再参考第6节内容手动进行harbor安装和配置。
+其中PaaS层部署中会进行Harbor安装，当前仅支持x86_64架构，本部署过程会自动安装并配置好Harbor，无需额外操作。
 
-在k8s master节点配置/etc/docker/daemon.json，新增如下字段，若已有该字段，在该列表中新增6.1节的x86_64机器HARBOR_IP，以逗号分隔，若无该文件，需新建
+但是Harbor当前暂未提供基于ARM64架构的容器镜像，暂不支持在ARM64架构上进行部署。在ARM64架构上部署EG时需要用户在安装前参考[第6节内容手动进行harbor安装](#6-x86机器手动部署harbor)，成功后再进行EG安装。
 
-```
-{
-    "insecure-registries" : ["xxx.xxx.xxx.xxx"]
-}
-```
-
-下表中列出当前Ansible脚本提供的一些配置场景模板，可直接使用离线安装包中的这些模板（在install文件夹下）进行相应场景的安装与卸载。
+下表中列出当前Ansible脚本提供的一些配置场景模板，可直接使用离线安装包中的这些模板（在`install`文件夹下）进行相应场景的安装与卸载。
 
 | EG_MODE    | NODE_MODE  | install yml                    | uninstall yml                    |
 |------------|------------|--------------------------------|----------------------------------|
@@ -152,16 +144,16 @@ ARM64架构因为无对应容器镜像，暂不支持自动部署。在ARM64架�
  
 ### 3.1. 配置待部署节点信息
 
-请参考部署控制节点的/home/ansible-all-x86-latest/install文件夹里的hosts-aio和hosts-muno进行节点配置。
+请参考部署控制节点的`/home/ansible-all-x86-latest/install`文件夹里的`hosts-aio`和`hosts-muno`进行节点配置。
 
-- 单节点部署配置，将host-aio中的信息改成待部署节点IP，如下所示：
+- 单节点部署配置，将`host-aio`中的信息改成待部署节点IP，如下所示：
 
     ```
     [master]
     xxx.xxx.xxx.xxx
     ```
 
-- 多节点部署配置，参考hosts-muno文件进行master和worker节点的配置，当前仅支持一台master节点，一台或多台worker节点。部署控制节点也可同时作为某一个master或者worker节点。
+- 多节点部署配置，参考`hosts-muno`文件进行master和worker节点的配置，当前仅支持一台master节点，一台或多台worker节点。部署控制节点也可同时作为某一个master或者worker节点。
 
     ```
     [master]
@@ -206,16 +198,14 @@ ARM64架构因为无对应容器镜像，暂不支持自动部署。在ARM64架�
 
 ### 3.2. 部署涉及的参数配置
 
-  部署输入参数在文件/home/ansible-all-x86-latest/install/var.yml中。输入参数请参考以下信息进行配置：
+  部署输入参数在文件`/home/ansible-all-x86-latest/install/var.yml`中。输入参数请参考以下信息进行配置：
 
   ```
-  # 部署过程中搭建的Harbor服务器的admin用户的密码，不提供默认值，必须由用户自行设定
-  HARBOR_ADMIN_PASSWORD:
-
   # 设置calico所使用的网卡的匹配模式，如下表示使用名为eth0、eth1等的网卡
   NETWORK_INTERFACE: eth.*
 
   # 是否需要开启数据持久化，开启后，重新部署EdgeGallery某个模块，可以恢复之前的数据
+  # 若基于k3s部署EG，则持久化必须设置成false，当前暂不支持k3s场景下的数据持久化
   ENABLE_PERSISTENCE: true
 
   # Appstore，developer等页面的访问ip，默认为host inventory文件中给出的master节点的IP，可在此设置为master节点的公网IP
@@ -229,17 +219,37 @@ ARM64架构因为无对应容器镜像，暂不支持自动部署。在ARM64架�
 
   # 是否设置邮箱服务器，设置为false，则无法使用用户登录时的找回密码功能，其他功能无任何影响
   usermgmt_mail_enabled: false
-  # 如果上述参数设置为true，则需要给出如下参数值，可根据自己选定的邮箱类型，自行搜索如何开启邮箱SMTP服务并获取如下值
-  # usermgmt_mail_host:
-  # usermgmt_mail_port:
-  # usermgmt_mail_sender:
-  # usermgmt_mail_authcode:
+  # 如果上述参数设置为true，则需要给出如下参数值，可根据自己选定的发件邮箱类型，自行搜索如何开启对应邮箱SMTP服务并获取如下值
+  # usermgmt_mail_host: xxxxx
+  # usermgmt_mail_port: xxxxx
+  # usermgmt_mail_sender: xxxxx
+  # usermgmt_mail_authcode: xxxxx
 
   ```
 
-### 3.3. 执行部署
+### 3.3. 部署涉及的密码配置
 
-执行部署时只需要指定相应的inventory文件（host-aio或host-muno）和模板文件即可。
+  部署所需密码在文件`/home/ansible-all-x86-latest/install/password-var.yml`中。 **部署脚本自身不提供密码默认值，需要用户在安装前自行设定密码值**。密码建议同时使用大小写字母、数字和特殊符号组合，长度不小于8位。
+
+  ```
+  # 部署过程中搭建的Harbor服务器的admin用户的密码，不提供默认值，必须由用户自行设定
+  # x86环境为用户自行设置的密码，后续会使用该密码自动部署Harbor，用户可用该密码登录Harbor
+  # arm64环境为用户在另一台x86上预先安装的Harbor的密码，后续会使用该密码连接预先安装的Harbor
+  HARBOR_ADMIN_PASSWORD: xxxxx
+
+  # 部署过程中涉及的所有postgres数据库密码，不提供默认值，必须由用户自行设定
+  postgresPassword: xxxxx
+
+  # 部署过程中涉及的所有用户信息鉴权的密码，不提供默认值，必须由用户自行设定
+  oauth2ClientPassword: xxxxx
+
+  # user-mgmt模块涉及的redis密码，不提供默认值，必须由用户自行设定
+  userMgmtRedisPassword: xxxxx
+  ```
+
+### 3.4. 执行部署
+
+执行部署时只需要指定相应的inventory文件（`host-aio`或`host-muno`）和模板文件即可。
 
 ```
 cd /home/ansible-all-x86-latest/install
@@ -274,19 +284,21 @@ ansible-playbook --inventory hosts-muno eg_all_muno_uninstall.yml
 
 ## 5. EdgeGallery用户自定义部署
 
-除以上给出的部署模板，用户也可以进行自定义部署，通过添加选项--skip-tags和--tags到ansible-playbook命令行，自定义需要部署或跳过的EdgeGallery组件。
+除以上给出的部署模板，用户也可以进行自定义部署，以满足更多、更灵活的个性化需求。通过添加选项`--skip-tags`和`--tags`到`ansible-playbook`命令行，自定义需要跳过或部署的EdgeGallery组件。
+如下命令表示进行EG的多节点部署，但是跳过其中的mep与mecm-mepm两个模块，部署其他所有模块。
 
 ```
 ansible-playbook --inventory hosts-muno eg_all_muno_install.yml --skip-tags=mep,mecm-mepm
 ```
 
-如上所列，此处以多节点部署为例，指导用户如何进行自定义部署。若待部署环境已部署k8s，则无需重复部署k8s，参考第4节内容进行设置。
-本节仅介绍如何自定义EdgeGallery各模块。
+当前EG部署涉及的所有模块如下所示，用户可以根据需要选择其中的多个模块进行自定义部署。
 
 - init（ **必选** ）：对离线安装包进行解压操作，并将所需文件传输到各待部署节点进行部署准备工作。
+- k8s（可选）：k8s与k3s二选一即可
+- k3s（可选）：k8s与k3s二选一即可
 - eg_prepare（ **必选** ）：EG部署前的必要准备工作，会进行一些特殊的网络配置，harbor安装，其他所需资源创建等。
-- mep（可选）：与EG的其他模块无特殊依赖关系，可以选择部署或者不部署。
-- mecm-mepm（可选）：与EG的其他模块无特殊依赖关系，可以选择部署或者不部署。
+- mep（**必选**）：与EG的其他模块无特殊依赖关系，可以选择部署或者不部署。
+- mecm-mepm（可选）：除依赖mep外，与其他模块无特殊依赖关系。
 - user-mgmt（**必选**）：是以下所有模块的依赖，若部署以下任意模块，需提前部署user-mgmt模块(用户管理)。
 - mecm-meo（可选）：除依赖user-mgmt外，与其他模块无特殊依赖关系。
 - mecm-fe（可选）：除依赖user-mgmt外，与其他模块无特殊依赖关系。
@@ -295,17 +307,17 @@ ansible-playbook --inventory hosts-muno eg_all_muno_install.yml --skip-tags=mep,
 - atp（可选）：除依赖user-mgmt外，与其他模块无特殊依赖关系。
 - eg_check（可选）：不依赖任何模块，仅对已安装的模块进行检查，打印前台界面访问IP+Port。
 
-上述列出的所有模块，除init，eg_prepare与user-mgmt是必须的之外，其他均为可选。
+上述列出的所有模块，除init，eg_prepare，mep与mecm-mepm之外，其他均为可选。其中mep是边缘侧必选模块，user-mgmt是中心侧必选模块。
 
-## 6. x86_64机器部署Harbor并连接ARM64架构部署的EG
+## 6. x86机器手动部署Harbor
 
-当EG部署是在ARM64架构机器上时，由于Harbor本身当前并未支持ARM64架构，所以需要在一台x86_64机器上手动部署Harbor，并在EG所在机器上连接该Harbor。
+当需要将EG部署在ARM64架构机器上时，由于Harbor本身当前并未支持ARM64架构部署，所以需要先在一台x86_64机器上手动部署Harbor，之后再在ARM64架构机器上部署EG。
 
-### 6.1 在x86_64机器上部署Harbor
+### 6.1 在x86机器上部署Harbor
 
 1. 安装docker与docker-compose，Harbor安装是依赖docker-compose方式的
 
-2. 配置/etc/docker/daemon.json，新增如下字段，其中`xxx.xxx.xxx.xxx`为本x86_64机器的私有或公网IP，需要与EG所在机器互通，若无该文件，需新建
+2. 配置`/etc/docker/daemon.json`，新增如下字段，其中`xxx.xxx.xxx.xxx`为本x86_64机器的私有或公网IP，需要与EG所在机器互通，若无该文件，需新建
 
     ```
     {
@@ -319,7 +331,7 @@ ansible-playbook --inventory hosts-muno eg_all_muno_install.yml --skip-tags=mep,
     systemctl restart docker.service
     ```
 
-4. [点击下载Harbor安装包](https://edgegallery.obs.cn-east-3.myhuaweicloud.com/harbor.tar.gz)，放在x86_64机器的/home目录
+4. [点击下载Harbor安装包](https://edgegallery.obs.cn-east-3.myhuaweicloud.com/harbor.tar.gz)，放在x86_64机器的`/home`目录
 
 5. 安装Harbor，其中`xxx.xxx.xxx.xxx`与第2步相同，`<password>`为用户设置的harbor admin登录密码，其他命令直接拷贝即可
 
@@ -354,34 +366,21 @@ ansible-playbook --inventory hosts-muno eg_all_muno_install.yml --skip-tags=mep,
     bash install.sh
     ```
 
-6. docker登录Harbor
+6. docker登录Harbor，成功登录表示Harbor安装成功，否则表示Harbor安装失败
 
     ```
     docker login -u admin -p $HARBOR_ADMIN_PASSWORD $HARBOR_IP
     ```
 
-7. 创建appstore、developer和mecm项目
+### 6.2 在Ansible控制节点上配置Harbor
 
-    ```
-    #查看appstore项目是否存在，返回码为200表示存在，404表示不存在，500表示其他错误
-    curl -i -k -u admin:$HARBOR_ADMIN_PASSWORD --head https://$HARBOR_IP/api/v2.0/projects?project_name=appstore
+  Harbor参数配置在文件`/home/ansible-all-x86-latest/install/default-var.yml`中。需要设置文件末尾的HarborIP参数为6.1节中第2步的x86机器的IP：
 
-    #若返回码404，appstore项目不存在，需要创建，创建成功返回码为201
-    curl -i -k -u admin:$HARBOR_ADMIN_PASSWORD -X POST -H "accept: application/json" -H "Content-Type: application/json" -d '{"project_name":"appstore","metadata":{"public":"true"}}' https://$HARBOR_IP/api/v2.0/projects
+  ```
+  # 如果Harbor是手动部署在本k8s或k3s集群master节点之外的机器，需要设置其IP
+  HarborIP: xxx.xxx.xxx.xxx
+  ```
 
-    #查看并创建developer项目
-    curl -i -k -u admin:$HARBOR_ADMIN_PASSWORD --head https://$HARBOR_IP/api/v2.0/projects?project_name=developer
-    curl -i -k -u admin:$HARBOR_ADMIN_PASSWORD -X POST -H "accept: application/json" -H "Content-Type: application/json" -d '{"project_name":"developer","metadata":{"public":"true"}}' https://$HARBOR_IP/api/v2.0/projects
+### 6.3 在Ansible控制节点上部署EG
 
-    #查看并创建mecm项目
-    curl -i -k -u admin:$HARBOR_ADMIN_PASSWORD --head https://$HARBOR_IP/api/v2.0/projects?project_name=mecm
-    curl -i -k -u admin:$HARBOR_ADMIN_PASSWORD -X POST -H "accept: application/json" -H "Content-Type: application/json" -d '{"project_name":"mecm","metadata":{"public":"true"}}' https://$HARBOR_IP/api/v2.0/projects
-    ```
-
-### 6.2 在ARM64机器上连接Harbor
-
-登录k8s集群中的所有node，docker登录Harbor
-
-```
-docker login -u admin -p $HARBOR_ADMIN_PASSWORD $HARBOR_IP
-```
+  Harbor部署成功后，可回到[第3节继续进行EG的部署](#3-edgegallery部署)。
