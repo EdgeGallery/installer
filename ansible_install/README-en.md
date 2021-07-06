@@ -252,9 +252,9 @@ Also the Ansible controller node can also act as one of the master or worker nod
 ### 3.3. How to Set the Passwords
 
   All passwords needed are in file `/home/EdgeGallery-v1.2.0-all-x86/install/password-var.yml`. The Ansible scripts
-  don't provide any default password now, and all passwords are needed to be given by users before deploying.
-  There should include capital letters, lowercase letters, numbers and special characters in the password whose
-  length is no less than 8 characters.
+  don't provide any default password now, and  **all passwords are needed to be given by users before deploying.
+  All passwords must include capital letters, lowercase letters, numbers and special characters and whose
+  length must be no less than 8 characters. Otherwise, the deployment will failed because of these simple passwords.** 
 
   ```
   # Set the Password of Harbor admin account, no default value, must set by users here
