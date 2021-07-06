@@ -12,6 +12,10 @@ EdgeGallery离线包制作以及离线安装、在线安装、docker compose方�
 
 提供基于直接基于Docker Compose方式（无k8s、k3s）的安装脚本，请参考[EdgeGallery_docker_compose_install](EdgeGallery_docker_compose_install/README.md)。
 
+### 树莓派安装指导
+
+提供基于Docker Compose方式在树莓派上安装EG的指导文档，请参考[EdgeGallery_Raspberry_pi_instructions](EdgeGallery_Raspberry_pi_instructions.md)。
+
 ### 离线安装包制作脚本
 
 提供离线安装包制作的自动化脚本，与离线安装自动化脚本配套使用。
