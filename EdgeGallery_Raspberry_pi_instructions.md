@@ -1,4 +1,4 @@
-# raspberrypi
+# install EdgeGallery on raspberrypi
 
 ### 介绍
 在树莓派上安装EdgeGallery。
