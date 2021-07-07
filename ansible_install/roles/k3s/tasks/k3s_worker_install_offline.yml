@@ -43,5 +43,11 @@
     src: "{{role_path}}"/files/registries.yaml
     dest: /etc/rancher/k3s/registries.yaml
 
+- name: Set insecure-registries IP in /etc/rancher/k3s/registries.yaml
+  replace:
+    path: /etc/rancher/k3s/registries.yaml
+    regexp: PRIVATE_REGISTRY_IP
+    replace: "{{ groups.master[0] }}"
+
 - name: Restart k3s-agent
   shell: systemctl restart k3s-agent

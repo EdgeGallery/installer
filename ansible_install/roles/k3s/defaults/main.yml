@@ -13,8 +13,8 @@
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
 
-#K8S_TARBALL_FILE: "{{ TARBALL_PATH }}/kubernetes_offline_installer.tar.gz"
-#K8S_OFFLINE_DIR: "{{ TARBALL_PATH }}/kubernetes_offline_installer"
+K8S_TARBALL_FILE: "{{ TARBALL_PATH }}/kubernetes_offline_installer.tar.gz"
+K8S_OFFLINE_DIR: "{{ TARBALL_PATH }}/kubernetes_offline_installer"
 
 K3S_TARBALL_FILE: "{{ TARBALL_PATH }}/k3s-airgap-images-amd64.tar"
 

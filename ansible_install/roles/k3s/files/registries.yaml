@@ -1,4 +1,4 @@
 mirrors:
-  "{{ groups.master[0] }}:5000":
+  "PRIVATE_REGISTRY_IP:5000":
     endpoint:
-      - "http://{{ groups.master[0] }}:5000"
+      - "http://PRIVATE_REGISTRY_IP:5000"
