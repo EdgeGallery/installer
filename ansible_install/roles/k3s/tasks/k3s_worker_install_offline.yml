@@ -40,7 +40,7 @@
 
 - name: Copy registries.yaml From Deploy Node to Worker Node
   copy:
-    src: "{{role_path}}"/files/registries.yaml
+    src: "{{role_path}}/files/registries.yaml”
     dest: /etc/rancher/k3s/registries.yaml
 
 - name: Set insecure-registries IP in /etc/rancher/k3s/registries.yaml
