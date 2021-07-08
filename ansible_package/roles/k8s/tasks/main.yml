@@ -84,7 +84,7 @@
     path: "{{ K8S_OFFLINE_DIR }}/*"
     dest: "{{ TARBALL_PATH }}/kubernetes_offline_installer.tar.gz"
     format: gz
-    remove: yes
+    remove: no
     force_archive: yes
 
 - name: Remove Original Files
