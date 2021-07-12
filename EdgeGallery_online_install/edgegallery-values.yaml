@@ -19,11 +19,13 @@ global:
     enabled: true
   developer:
     enabled: true
-  mecm-fe:
+  atp:
+    enabled: true
+  mecm-meo:
     enabled: true
   mecm-mepm:
     enabled: true
-  mecm-meo:
+  mep:
     enabled: true
   persistence:
     enabled: true
@@ -49,35 +51,35 @@ global:
     clients:
       appstore:
         clientId: appstore-fe
-        clientSecret: te9Fmv%qaq
         clientUrl: https://192.168.1.11:30091
       developer:
         clientId: developer-fe
-        clientSecret: te9Fmv%qaq
         clientUrl: https://192.168.1.11:30092
       mecm:
         clientId: mecm-fe
-        clientSecret: te9Fmv%qaq
         clientUrl: https://192.168.1.11:30093
       atp:
         clientId: atp-fe
-        clientSecret: te9Fmv%qaq
         clientUrl: https://192.168.1.11:30094
       lab:
         clientId: lab-fe
-        clientSecret: te9Fmv%qaq
         clientUrl: https://192.168.1.11:30096
-jwt:
-  secretName: user-mgmt-jwt-secret
+
 
 images:
+  service-center:
+    repository: swr.ap-southeast-1.myhuaweicloud.com/edgegallery/service-center
+    tag: latest 
+    pullPolicy: IfNotPresent
+
+
   usermgmt:
     repository: swr.ap-southeast-1.myhuaweicloud.com/edgegallery/user-mgmt
-    tag: latest
-    pullPolicy: Always
+    tag: v1.2.0
+    pullPolicy: IfNotPresent
   postgres:
     repository: swr.ap-southeast-1.myhuaweicloud.com/edgegallery/postgres
-    tag: 12.2
+    tag: 12.3
     pullPolicy: IfNotPresent
   redis:
     repository: swr.ap-southeast-1.myhuaweicloud.com/edgegallery/redis
@@ -85,30 +87,30 @@ images:
     pullPolicy: IfNotPresent
   initservicecenter:
     repository: swr.ap-southeast-1.myhuaweicloud.com/edgegallery/curl
-    tag: latest
+    tag: 7.75.0
     pullPolicy: IfNotPresent
 
   appstoreBe:
     repository: swr.ap-southeast-1.myhuaweicloud.com/edgegallery/appstore-be
-    tag: latest
-    pullPolicy: Always
+    tag: v1.2.0
+    pullPolicy: IfNotPresent
   appstoreFe:
     repository: swr.ap-southeast-1.myhuaweicloud.com/edgegallery/appstore-fe
-    tag: latest
-    pullPolicy: Always
+    tag: v1.2.0
+    pullPolicy: IfNotPresent
 
   developerBe:
     repository: swr.ap-southeast-1.myhuaweicloud.com/edgegallery/developer-be
-    tag: latest
-    pullPolicy: Always
+    tag: v1.2.0
+    pullPolicy: IfNotPresent
   developerFe:
     repository: swr.ap-southeast-1.myhuaweicloud.com/edgegallery/developer-fe
-    tag: latest
-    pullPolicy: Always
+    tag: v1.2.0
+    pullPolicy: IfNotPresent
   toolChain:
     repository: swr.ap-southeast-1.myhuaweicloud.com/edgegallery/tool-chain
-    tag: latest
-    pullPolicy: Always
+    tag: v1.2.0
+    pullPolicy: IfNotPresent
   portingAdvisor:
     repository: swr.ap-southeast-1.myhuaweicloud.com/edgegallery/porting-advisor
     tag: latest
@@ -116,93 +118,75 @@ images:
 
   atp:
     repository: swr.ap-southeast-1.myhuaweicloud.com/edgegallery/atp-be
-    tag: latest
-    pullPolicy: Always
+    tag: v1.2.0
+    pullPolicy: IfNotPresent
   atpFe:
     repository: swr.ap-southeast-1.myhuaweicloud.com/edgegallery/atp-fe
-    tag: latest
-    pullPolicy: Always
-  
-  labFe:
-    repository: swr.ap-southeast-1.myhuaweicloud.com/edgegallery/lab-fe
-    tag: latest
-    pullPolicy: Always
-  labBe:
-    repository: swr.ap-southeast-1.myhuaweicloud.com/edgegallery/lab-be
-    tag: latest
-    pullPolicy: Always
-
+    tag: v1.2.0
+    pullPolicy: IfNotPresent
+ 
   mecmFe:
     repository: swr.ap-southeast-1.myhuaweicloud.com/edgegallery/mecm-fe
-    tag: latest
-    pullPolicy: Always
-  service-center:
-    repository: swr.ap-southeast-1.myhuaweicloud.com/edgegallery/service-center
-    tag: latest
-    pullPolicy: Always
-
+    tag: v1.2.0
+    pullPolicy: IfNotPresent
   inventory:
     repository: swr.ap-southeast-1.myhuaweicloud.com/edgegallery/mecm-inventory
-    tag: latest
-    pullPolicy: Always
+    tag: v1.2.0
+    pullPolicy: IfNotPresent
   appo:
     repository: swr.ap-southeast-1.myhuaweicloud.com/edgegallery/mecm-appo
-    tag: latest
-    pullPolicy: Always
+    tag: v1.2.0
+    pullPolicy: IfNotPresent
   apm:
     repository: swr.ap-southeast-1.myhuaweicloud.com/edgegallery/mecm-apm
-    tag: latest
-    pullPolicy: Always
-  postgres:
-    repository: swr.ap-southeast-1.myhuaweicloud.com/edgegallery/postgres
-    tag: 12.3
+    tag: v1.2.0
     pullPolicy: IfNotPresent
-  
+   
   lcmcontroller:
     repository: swr.ap-southeast-1.myhuaweicloud.com/edgegallery/mecm-applcm
-    tag: latest
-    pullPolicy: Always
+    tag: v1.2.0
+    pullPolicy: IfNotPresent
   k8splugin:
     repository: swr.ap-southeast-1.myhuaweicloud.com/edgegallery/mecm-applcm-k8splugin
-    tag: latest
-    pullPolicy: Always
+    tag: v1.2.0
+    pullPolicy: IfNotPresent
+  osplugin:
+    repository: swr.ap-southeast-1.myhuaweicloud.com/edgegallery/mecm-applcm-osplugin
+    tag: v1.2.0
+    pullPolicy: IfNotPresent
   apprulemgr:
     repository: swr.ap-southeast-1.myhuaweicloud.com/edgegallery/mecm-apprulemgr
-    tag: latest
-    pullPolicy: Always
+    tag: v1.2.0
+    pullPolicy: IfNotPresent
   mepmFe:
     repository: swr.ap-southeast-1.myhuaweicloud.com/edgegallery/mepm-fe
-    tag: latest
-    pullPolicy: Always
+    tag: v1.2.0
+    pullPolicy: IfNotPresent
  
   mep:
     repository: swr.ap-southeast-1.myhuaweicloud.com/edgegallery/mep
-    tag: latest
-    pullPolicy: Always
+    tag: v1.2.0
+    pullPolicy: IfNotPresent
   mepauth:
     repository: swr.ap-southeast-1.myhuaweicloud.com/edgegallery/mepauth
-    tag: latest
-    pullPolicy: Always
-  kong:
-    repository: kong
-    tag: 2.0.4-ubuntu
+    tag: v1.2.0
     pullPolicy: IfNotPresent
-  postgres:
-    repository: postgres
-    tag: 12.3
+  kong:
+    repository: swr.ap-southeast-1.myhuaweicloud.com/eg-common/kong
+    tag: 2.0.4-ubuntu
     pullPolicy: IfNotPresent
   dns:
     repository: swr.ap-southeast-1.myhuaweicloud.com/edgegallery/mep-dns-server
-    tag: latest
-    pullPolicy: Always
+    tag: v1.2.0
+    pullPolicy: IfNotPresent
   elasticsearch:
     repository: swr.ap-southeast-1.myhuaweicloud.com/eg-common/elasticsearch
     tag: 7.9.0
-    pullPolicy: Always
-  mepFe:
-    repository: swr.ap-southeast-1.myhuaweicloud.com/edgegallery/mep-fe
+    pullPolicy: IfNotPresent
+  ntp:
+    repository: swr.ap-southeast-1.myhuaweicloud.com/eg-common/cturra/ntp
     tag: latest
-    pullPolicy: Always
+    pullPolicy: IfNotPresent
   
 # appShare config
 appShare:
@@ -210,3 +194,4 @@ appShare:
   platformName: EdgeGallery AppStore
   platformUrl:  https://192.168.1.11:30099
   atpReportUrl:  https://192.168.1.11:30094/#/atpreport?taskid=%s
+  appDetailUrl:  https://192.168.1.11:30091/#/detail?appId=%s&packageId=%s
