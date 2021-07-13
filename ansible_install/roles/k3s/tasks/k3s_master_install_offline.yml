@@ -14,7 +14,7 @@
 
 ---
 - name: k3s install offline
-  shell: INSTALL_K3S_SKIP_DOWNLOAD=true INSTALL_K3S_EXEC="--node-ip={{ groups.master[0] }} --node-external-ip={{ groups.master[0] }} --bind-address={{ groups.master[0] }} --flannel-iface=eth0 --docker --no-deploy=servicelb --no-deploy=traefik --write-kubeconfig-mode 644 --kube-apiserver-arg="service-node-port-range=30000-36000""  "{{ TARBALL_PATH }}"/k3s-install.sh
+  shell: INSTALL_K3S_SKIP_DOWNLOAD=true INSTALL_K3S_EXEC="--node-ip={{ groups.master[0] }} --node-external-ip={{ groups.master[0] }} --bind-address={{ groups.master[0] }} --docker --no-deploy=servicelb --no-deploy=traefik --write-kubeconfig-mode 644 --kube-apiserver-arg="service-node-port-range=30000-36000""  "{{ TARBALL_PATH }}"/k3s-install.sh
 
 - name: Stop Firewalld Service
   service:
