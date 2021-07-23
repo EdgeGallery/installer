@@ -56,5 +56,10 @@
     name: docker.service
     state: restarted
 
-- name: Check whether Docker is installed
-  command: docker version
+  ignore_errors: yes
+- name: Wait For Docker Service Has Been Started
+  shell: docker version
+  register: dockerStatus
+  until: dockerStatus.rc == 0
+  retries: 12
+  delay: 5
