@@ -17,19 +17,14 @@ developer_images_developerFe_repository: "{{ REGISTRY_URL }}edgegallery/develope
 developer_images_developerBe_repository: "{{ REGISTRY_URL }}edgegallery/developer-be"
 developer_images_postgres_repository: "{{ REGISTRY_URL }}eg-common/postgres"
 developer_images_initservicecenter_repository: "{{ REGISTRY_URL }}eg-common/curl"
-developer_images_toolChain_repository: "{{ REGISTRY_URL }}edgegallery/tool-chain"
-developer_images_portingAdvisor_repository: "{{ REGISTRY_URL }}eg-common/porting-advisor"
 developer_images_developerFe_tag: "{{ EG_IMAGE_TAG }}"
 developer_images_developerBe_tag: "{{ EG_IMAGE_TAG }}"
-developer_images_toolChain_tag: "{{ EG_IMAGE_TAG }}"
 developer_images_postgres_tag: 12.3
 developer_images_initservicecenter_tag: 7.75.0
-developer_images_portingAdvisor_tag: latest
 developer_images_developerFe_pullPolicy: IfNotPresent
 developer_images_developerBe_pullPolicy: IfNotPresent
 developer_images_postgres_pullPolicy: IfNotPresent
 developer_images_initservicecenter_pullPolicy: IfNotPresent
-developer_images_toolChain_pullPolicy: IfNotPresent
-developer_images_portingAdvisor_pullPolicy: IfNotPresent
 developer_global_ssl_enabled: true
 developer_global_ssl_secretName: edgegallery-ssl-secret
+toolchain_enabled: false
