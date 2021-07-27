@@ -14,9 +14,15 @@
 #   limitations under the License.
 
 ---
+
+- name: Create interface.d directory if it doesn't exist
+  file:
+    path: /etc/network/interfaces.d/
+    state: directory
+
 - name: Creating an interface config file
   copy:
-       src: "{{ TARBALL_PATH }}/conf/edge/network-isolation/eg-if.cfg"
-       dest: /etc/network/interfaces.d/
-       mode: u=rw,g=r,o=r
-       remote_src: yes
+    src: "{{ TARBALL_PATH }}/conf/edge/network-isolation/eg-if.cfg"
+    dest: /etc/network/interfaces.d/
+    mode: u=rw,g=r,o=r
+    remote_src: yes
