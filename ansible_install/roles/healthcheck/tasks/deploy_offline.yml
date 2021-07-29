@@ -25,5 +25,5 @@
 
 - name: Check healthcheck Status
   uri:
-    url: "https://{{ groups.master[0] }}:{{ HEALTHCHECK_PORT }}/health-check/v1/edge/action/start"
+    url: "http://{{ groups.master[0] }}:{{ HEALTHCHECK_PORT }}/health-check/v1/edge/action/start"
     validate_certs: no

@@ -25,5 +25,5 @@
 
 - name: Check healthcheck-m Status
   uri:
-    url: "https://{{ groups.master[0] }}:{{ HEALTHCHECK_M_PORT }}/health-check/v1/center/health"
+    url: "http://{{ groups.master[0] }}:{{ HEALTHCHECK_M_PORT }}/health-check/v1/center/health"
     validate_certs: no
