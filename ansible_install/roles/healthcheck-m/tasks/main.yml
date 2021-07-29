@@ -1,0 +1,70 @@
+#
+#   Copyright 2021 Huawei Technologies Co., Ltd.
+#
+#   Licensed under the Apache License, Version 2.0 (the "License");
+#   you may not use this file except in compliance with the License.
+#   You may obtain a copy of the License at
+#
+#       http://www.apache.org/licenses/LICENSE-2.0
+#
+#   Unless required by applicable law or agreed to in writing, software
+#   distributed under the License is distributed on an "AS IS" BASIS,
+#   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+#   See the License for the specific language governing permissions and
+#   limitations under the License.
+
+---
+
+- name: Set ARCH Value to be amd64
+  set_fact:
+    ARCH: amd64
+  when: ansible_architecture == "x86_64"
+
+- name: Set ARCH Value to be arm64
+  set_fact:
+    ARCH: arm64
+  when: ansible_architecture == "aarch64"
+
+- name: Set Registry URL for Multi Node
+  set_fact:
+    REGISTRY_URL: "{{ groups.master[0] }}:5000/"
+  when: NODE_MODE == "muno"
+
+- name: Set Registry URL for AIO
+  set_fact:
+    REGISTRY_URL: ""
+  when: NODE_MODE == "aio"
+
+- name: Check EG_MODE for healthcheck-m
+  fail:
+    msg: "Could not {{ OPERATION }} healthcheck-m with EG_MODE: {{ EG_MODE }}"
+  when: EG_MODE != "all" and EG_MODE != "controller"
+
+- name: Check whether healthcheck-m is Deployed
+  shell: helm list -A | grep healthcheck-m-edgegallery 
+  register: healthcheckMDeployed
+  ignore_errors: yes
+
+- debug:
+    msg: healthcheck-m is already deployed, no need to be deployed again
+  when: healthcheckMDeployed is succeeded and OPERATION == "install"
+
+- debug:
+    msg: healthcheck-m is not deployed, will be deployed
+  when: healthcheckMDeployed is failed and OPERATION == "install"
+
+- debug:
+    msg: healthcheck-m is already deployed or not deployed successfully, will be undeployed
+  when: OPERATION == "uninstall"
+
+- name: Deploy healthcheck-m Online
+  include: "deploy_online.yml"
+  when: healthcheckMDeployed is failed and OPERATION == "install" and NETWORK_MODE == "online"
+
+- name: Deploy healthcheck-m Offline
+  include: "deploy_offline.yml"
+  when: healthcheckMDeployed is failed and OPERATION == "install" and NETWORK_MODE == "offline"
+
+- name: Undeploy healthcheck-m
+  include: "undeploy.yml"
+  when: OPERATION == "uninstall"

@@ -39,8 +39,8 @@
     kubectl get all -A | grep "mepm"
     rc=$?
     echo $rc
-  register: atpResourceRC
-  until: atpResourceRC.stdout == "1"
+  register: mepmResourceRC
+  until: mepmResourceRC.stdout == "1"
   retries: 60
   delay: 5
   ignore_errors: yes

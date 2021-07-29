@@ -15,21 +15,15 @@
 
 ---
 
-- hosts: master
-  become: yes
-  vars:
-    - OPERATION: uninstall
-    - EG_MODE: edge
-    - NODE_MODE: aio
-    - K8S_NODE_TYPE: master
-  vars_files:
-    - ./var.yml
-    - ./default-var.yml
-    - ./password-var.yml
-  roles:
-    - { role: healthcheck, tags: ['healthcheck'] }
-    - { role: mecm-mepm, tags: ['mecm-mepm'] }
-    - { role: mep, tags: ['mep'] }
-    - { role: eg_prepare, tags: ['eg_prepare'] }
-    - { role: k8s, tags: ['k8s'] }
-    - { role: init, tags: ['init'] }
+- name: Deploy healthcheck
+  shell: |
+    helm install --wait healthcheck-edgegallery {{ HELM_CHARTS_PATH }}/edgegallery/healthcheck-{{ HELM_TAG }}.tgz \
+    --set images.healthcheck.repository={{ healthcheck_images_repository }} \
+    --set images.healthcheck.tag={{ EG_IMAGE_TAG }} \
+    --set images.healthcheck.pullPolicy={{ healthcheck_images_pullPolicy }} \
+    --set healthcheck.localIp={{ groups.master[0] }}
+
+- name: Check healthcheck Status
+  uri:
+    url: "https://{{ groups.master[0] }}:{{ HEALTHCHECK_PORT }}/health-check/v1/edge/action/start"
+    validate_certs: no

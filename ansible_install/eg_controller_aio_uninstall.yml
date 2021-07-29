@@ -27,6 +27,7 @@
     - ./default-var.yml
     - ./password-var.yml
   roles:
+    - { role: healthcheck-m, tags: ['healthcheck-m'] }
     - { role: atp, tags: ['atp'] }
     - { role: developer, tags: ['developer'] }
     - { role: appstore, tags: ['appstore'] }

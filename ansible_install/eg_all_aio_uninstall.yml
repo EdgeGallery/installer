@@ -27,11 +27,13 @@
     - ./default-var.yml
     - ./password-var.yml
   roles:
+    - { role: healthcheck-m, tags: ['healthcheck-m'] }
     - { role: atp, tags: ['atp'] }
     - { role: developer, tags: ['developer'] }
     - { role: appstore, tags: ['appstore'] }
     - { role: mecm-meo, tags: ['mecm-meo'] }
     - { role: user-mgmt, tags: ['user-mgmt'] }
+    - { role: healthcheck, tags: ['healthcheck'] }
     - { role: mecm-mepm, tags: ['mecm-mepm'] }
     - { role: mep, tags: ['mep'] }
     - { role: eg_prepare, tags: ['eg_prepare'] }

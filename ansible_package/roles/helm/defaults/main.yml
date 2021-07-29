@@ -26,10 +26,13 @@ EG_HELM_LIST_CONTROLLER:
   - appstore
   - mecm-meo
   - atp
+  - healthcheck-m
+  - filesystem
 
 EG_HELM_LIST_EDGE:
   - mecm-mepm
   - mep
+  - healthcheck
 
 STABLE_NGINX_HELM_URL: https://kubernetes-charts.storage.googleapis.com/nginx-ingress-1.41.2.tgz
 STABLE_NGINX_HELM_NAME: nginx-ingress-1.41.2.tgz

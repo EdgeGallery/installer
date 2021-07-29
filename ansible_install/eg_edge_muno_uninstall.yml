@@ -27,6 +27,7 @@
     - ./default-var.yml
     - ./password-var.yml
   roles:
+    - { role: healthcheck, tags: ['healthcheck'] }
     - { role: mecm-mepm, tags: ['mecm-mepm'] }
     - { role: mep, tags: ['mep'] }
 

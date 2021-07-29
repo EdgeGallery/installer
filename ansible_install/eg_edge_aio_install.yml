@@ -32,4 +32,5 @@
     - { role: eg_prepare, tags: ['eg_prepare'] }
     - { role: mep, tags: ['mep'] }
     - { role: mecm-mepm, tags: ['mecm-mepm'] }
+    - { role: healthcheck, tags: ['healthcheck'] }
     - { role: eg_check, tags: ['eg_check'] }
