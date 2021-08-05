@@ -37,6 +37,7 @@
     --set global.persistence.enabled={{ ENABLE_PERSISTENCE }} \
     --set appShare.platformUrl=https://{{ PORTAL_IP }}:30099 \
     --set appShare.atpReportUrl=https://{{ PORTAL_IP }}:30094/#/atpreport?taskid=%s \
+    --set appstoreBe.secretName={{ SIGNATURE_SECRET_NAME }} \
     --set appstoreBe.dockerRepo.endpoint={{ PORTAL_IP }} \
     --set appstoreBe.dockerRepo.appstore.password={{ HARBOR_ADMIN_PASSWORD }} \
     --set appstoreBe.dockerRepo.appstore.username=admin \

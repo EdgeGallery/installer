@@ -62,5 +62,15 @@ developerVMImagePassword: 123456
 # certPassword is used for generating SSL keys
 certPassword: te9Fmv%qaq
 
+# used for signature
+SIGNATURE_SECRET_NAME: edgegallery-signature-secret
+
 # If harbor is setup in a remote system, then mention the remote system IP as harbor IP
-#HarborIP:
+#HarborIP: xxx.xxx.xxx.xxx
+
+# If SIGNATURE_CERT_P12 and SIGNATURE_CERT_CER are set here, will use it. Otherwise will generate them automatically
+#SIGNATURE_CERT_P12: xxx/xxx/xxx.p12
+#SIGNATURE_CERT_CER: xxx/xxx/xxx.cer
+
+# If the above 2 files are given, should also give the password used to generate them
+#SIGNATURE_PWD: xxx
