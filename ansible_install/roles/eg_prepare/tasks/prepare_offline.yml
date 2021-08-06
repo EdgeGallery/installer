@@ -81,3 +81,70 @@
   fail:
     msg: The task Login Harbor on Worker Node has failed
   when: harbor_login is failed
+
+- name: add rc-local intall configure  
+  blockinfile:
+    path:  /lib/systemd/system/rc.local.service
+    insertafter: "GuessMainPID=no"
+    state: present
+    marker:
+    block: | 
+      [Install]
+      WantedBy=multi-user.target
+  ignore_errors: yes
+  
+- name: Remove rc.local.service file blank lines blockinfile put in
+  replace:
+    path: /lib/systemd/system/rc.local.service
+    regexp: 'None'
+    replace: ""
+
+- name: add docker-harbor start cmd 
+  blockinfile:
+    path: /etc/rc.local
+    create: yes
+    mode: 0733
+    insertafter: ""
+    state: present
+    marker: ""
+    block: | 
+      #!/bin/sh -e
+      sleep 10 
+      swapoff -a
+      systemctl start docker 
+      cd  /home/edgegallery-offline/harbor/harbor
+      docker-compose start  
+      exit 0
+  when: K8S_NODE_TYPE == "master" and EG_MODE != "edge"
+  ignore_errors: yes
+
+- name: add docker start cmd to /etc/rc.local
+  blockinfile:
+    path: /etc/rc.local
+    create: yes
+    mode: 0733
+    insertafter: ""
+    state: present
+    marker: ""
+    block: | 
+      #!/bin/sh -e
+      sleep 10 
+      swapoff -a
+      systemctl start docker 
+      exit 0
+  when: K8S_NODE_TYPE == "worker" or EG_MODE == "edge"
+  ignore_errors: yes
+  
+- name: Remove blank lines blockinfile put in
+  lineinfile:
+    path: /etc/rc.local
+    state: absent
+    regexp: '^$'
+  ignore_errors: yes
+
+- name: Restart rc.local.service
+  service:
+    name: rc.local.service
+    enabled: yes
+    state: restarted 
+  ignore_errors: yes 

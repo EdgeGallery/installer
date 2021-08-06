@@ -60,6 +60,20 @@
   when: K8S_NODE_TYPE == "master" and EG_MODE != "edge" and ARCH == "amd64"
   ignore_errors: yes
 
+- name: Deleting rc.local file
+  file:
+    path: /etc/rc.local   
+    state: absent
+  ignore_errors: yes
+ 
+- name: remove  rc.local.service confuigure
+  copy:
+    src: /lib/systemd/system/rc-local.service
+    dest: /lib/systemd/system/rc.local.service
+    force: yes
+  ignore_errors: yes
+
+
 - name: Cleanup Network Setting
   shell: |
     ip link set dev eg-mp1 down
