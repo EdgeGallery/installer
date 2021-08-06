@@ -118,3 +118,10 @@
 
      kubectl delete pod --all -n mep
  
+- 3 在线升级
+
+    如果想在线升级可以将EdgeGallery-upgrade-value.yaml中镜像地址前加上镜像地址，例如：
+
+    本地：repository: edgegallery/user-mgmt
+
+    在线：repository: swr.ap-southeast-1.myhuaweicloud.com/edgegallery/user-mgmt

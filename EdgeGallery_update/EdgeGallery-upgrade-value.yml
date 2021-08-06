@@ -1,0 +1,201 @@
+#
+#   Copyright 2021 Huawei Technologies Co., Ltd.
+#
+#   Licensed under the Apache License, Version 2.0 (the "License");
+#   you may not use this file except in compliance with the License.
+#   You may obtain a copy of the License at
+#
+#       http://www.apache.org/licenses/LICENSE-2.0
+#
+#   Unless required by applicable law or agreed to in writing, software
+#   distributed under the License is distributed on an "AS IS" BASIS,
+#   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+#   See the License for the specific language governing permissions and
+#   limitations under the License.
+
+global:
+  servicecenter:
+    enabled: true
+  usermgmt:
+    enabled: true
+  appstore:
+    enabled: true
+  developer:
+    enabled: true
+  atp:
+    enabled: true
+  mecm-meo:
+    enabled: true
+  mecm-mepm:
+    enabled: true
+  mep:
+    enabled: true
+  persistence:
+    enabled: true
+    storageClassName: nfs-client
+  ingress:
+    enabled: false
+    tls:
+      enabled: false
+      secretName: edgegallery-ingress-secret
+    annotations:
+      bodySize: 20m
+    hosts:
+      auth: 192.168.100.100:30067
+      developer: 192.168.100.100:30092
+      appstore: 192.168.100.100:30091
+      mecm: 192.168.100.100:30093
+      atp: 192.168.100.100:30094
+  ssl:
+    enabled: true
+    secretName: edgegallery-ssl-secret
+  oauth2:
+    authServerAddress: https://192.168.100.100:30067
+    clients:
+      appstore:
+        clientId: appstore-fe
+        clientUrl: https://192.168.100.100:30091
+      developer:
+        clientId: developer-fe
+        clientUrl: https://192.168.100.100:30092
+      mecm:
+        clientId: mecm-fe
+        clientUrl: https://192.168.100.100:30093
+      atp:
+        clientId: atp-fe
+        clientUrl: https://192.168.100.100:30094
+      lab:
+        clientId: lab-fe
+        clientUrl: https://192.168.100.100:30096
+jwt:
+  secretName: user-mgmt-jwt-secret
+
+images:
+  service-center:
+    repository: eg-common/service-center
+    tag: latest
+    pullPolicy: IfNotPresent
+
+
+  usermgmt:
+    repository: edgegallery/user-mgmt
+    tag: latest
+    pullPolicy: IfNotPresent
+  postgres:
+    repository: eg-common//postgres
+    tag: 12.3
+    pullPolicy: IfNotPresent
+  redis:
+    repository: eg-common/redis
+    tag: 6.0.3
+    pullPolicy: IfNotPresent
+  initservicecenter:
+    repository: eg-common/curl
+    tag: 7.75.0
+    pullPolicy: IfNotPresent
+
+  appstoreBe:
+    repository: edgegallery/appstore-be
+    tag: latest
+    pullPolicy: IfNotPresent
+  appstoreFe:
+    repository: edgegallery/appstore-fe
+    tag: latest
+    pullPolicy: IfNotPresent
+
+  developerBe:
+    repository: edgegallery/developer-be
+    tag: latest
+    pullPolicy: IfNotPresent
+  developerFe:
+    repository: edgegallery/developer-fe
+    tag: latest
+    pullPolicy: IfNotPresent
+  toolChain:
+    repository: swr.ap-southeast-1.myhuaweicloud.com/edgegallery/tool-chain
+    tag: latest
+    pullPolicy: IfNotPresent
+  portingAdvisor:
+    repository: swr.ap-southeast-1.myhuaweicloud.com/edgegallery/porting-advisor
+    tag: latest
+    pullPolicy: IfNotPresent
+
+  atp:
+    repository: edgegallery/atp-be
+    tag: latest
+    pullPolicy: IfNotPresent
+  atpFe:
+    repository: edgegallery/atp-fe
+    tag: latest
+    pullPolicy: IfNotPresent
+
+  mecmFe:
+    repository: edgegallery/mecm-fe
+    tag: latest
+    pullPolicy: IfNotPresent
+  inventory:
+    repository: edgegallery/mecm-inventory
+    tag: latest
+    pullPolicy: IfNotPresent
+  appo:
+    repository: edgegallery/mecm-appo
+    tag: latest
+    pullPolicy: IfNotPresent
+  apm:
+    repository: edgegallery/mecm-apm
+    tag: latest
+    pullPolicy: IfNotPresent
+
+  lcmcontroller:
+    repository: edgegallery/mecm-applcm
+    tag: latest
+    pullPolicy: IfNotPresent
+  k8splugin:
+    repository: edgegallery/mecm-applcm-k8splugin
+    tag: latest
+    pullPolicy: IfNotPresent
+  osplugin:
+    repository: edgegallery/mecm-applcm-osplugin
+    tag: latest
+    pullPolicy: IfNotPresent
+  apprulemgr:
+    repository: edgegallery/mecm-apprulemgr
+    tag: latest
+    pullPolicy: IfNotPresent
+  mepmFe:
+    repository: sedgegallery/mepm-fe
+    tag: latest
+    pullPolicy: IfNotPresent
+
+  mep:
+    repository: edgegallery/mep
+    tag: latest
+    pullPolicy: IfNotPresent
+  mepauth:
+    repository: edgegallery/mepauth
+    tag: latest
+    pullPolicy: IfNotPresent
+  kong:
+    repository: eg-common/kong
+    tag: 2.0.4-ubuntu
+    pullPolicy: IfNotPresent
+  dns:
+    repository: edgegallery/mep-dns-server
+    tag: latest
+    pullPolicy: IfNotPresent
+  elasticsearch:
+    repository: eg-common/elasticsearch
+    tag: 7.9.0
+    pullPolicy: IfNotPresent
+  ntp:
+    repository: eg-common/cturra/ntp
+    tag: latest
+    pullPolicy: IfNotPresent
+
+# appShare config
+appShare:
+  enabled: true
+  platformName: EdgeGallery AppStore
+  platformUrl:  https://192.168.100.100:30099
+  atpReportUrl:  https://192.168.100.100:30094/#/atpreport?taskid=%s
+  appDetailUrl:  https://192.168.100.100:30091/#/detail?appId=%s&packageId=%s
