@@ -58,11 +58,14 @@
 - name: Get Appstore Packages Data for All Worker Nodes
   set_fact:
     worker_appstore_str: "{{ groups.worker|join('(rw,sync,no_root_squash,no_subtree_check) ') }}(rw,sync,no_root_squash,no_subtree_check)"
+  when: NODE_MODE == "muno"
 
 - name: Add All IPs of Worker Nodes into /etc/exports File
   lineinfile:
     path: /etc/exports
     line: "{{ APPSTORE_PACKAGES }} {{ worker_appstore_str }}"
+  when: NODE_MODE == "muno"
 
 - name: Apply New File Mounts
   shell: exportfs -a
+  when: NODE_MODE == "muno"

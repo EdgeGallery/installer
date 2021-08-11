@@ -16,9 +16,9 @@
 ---
 
 - name: Mount Appstore Packages Directory to Master
-  shell: mount "{{ groups.master[0]:APPSTORE_PACKAGES APPSTORE_PACKAGES }}"
+  shell: "mount {{ groups.master[0] }}:{{ APPSTORE_PACKAGES }} {{ APPSTORE_PACKAGES }}"
 
 - name: Add Mount data on Worker Nodes into /etc/fstab File
   lineinfile:
     path: /etc/fstab
-    line: "{{ groups.master[0]:APPSTORE_PACKAGES APPSTORE_PACKAGES }} nfs auto,nofail,noatime,nolock,intr,tcp,actimeo=1800 0 0"
+    line: "{{ groups.master[0] }}:{{ APPSTORE_PACKAGES }} {{ APPSTORE_PACKAGES }} nfs auto,nofail,noatime,nolock,intr,tcp,actimeo=1800 0 0"
