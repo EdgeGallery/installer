@@ -34,3 +34,23 @@
     copy: "{{ COPY_TAR_TO_TARGET }}"
   register: unarchivePackage
   when: pathCreated is succeeded
+
+- name: Create Group eggroup
+  group:
+    name: "{{ EGGROUP_NAME }}"
+    gid: "{{ EGGROUP_GID }}"
+
+- name: Create User eguser
+  user:
+    name: "{{ EGUSER_NAME }}"
+    uid: "{{ EGUSER_UID }}"
+    group: "{{ EGGROUP_NAME }}"
+    create_home: no
+
+- name: Create Appstore Packages Directory
+  file:
+    path: "{{ APPSTORE_PACKAGES }}"
+    state: directory
+    group: "{{ EGGROUP_NAME }}"
+    owner: "{{ EGUSER_NAME }}"
+    mode: 0750

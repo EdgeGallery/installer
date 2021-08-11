@@ -15,16 +15,10 @@
 
 ---
 
-- name: Delete Appstore Packages Directory
-  file:
-    path: "{{ APPSTORE_PACKAGES }}"
-    state: absent
-  when: ENABLE_PERSISTENCE == false
-  ignore_errors: yes
+- name: Mount Appstore Packages Directory to Master
+  shell: mount "{{ groups.master[0]:APPSTORE_PACKAGES APPSTORE_PACKAGES }}"
 
-- name: Clean the Directory for EdgeGallery Offline Tarball File
-  file:
-    path: "{{ TARBALL_PATH }}"
-    state: absent
-  when: TARBALL_PATH_CLEANUP
-  ignore_errors: yes
+- name: Add Mount data on Worker Nodes into /etc/fstab File
+  lineinfile:
+    path: /etc/fstab
+    line: "{{ groups.master[0]:APPSTORE_PACKAGES APPSTORE_PACKAGES }} nfs auto,nofail,noatime,nolock,intr,tcp,actimeo=1800 0 0"

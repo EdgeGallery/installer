@@ -138,3 +138,7 @@
 - name: Setup NFS for Storage Persistent on Master Node
   import_tasks: nfs_setup.yml
   when: K8S_NODE_TYPE == "master" and ENABLE_PERSISTENCE == true
+
+- name: Setup NFS Mount on Worker Node
+  import_tasks: nfs_mount_worker_setup.yml
+  when: K8S_NODE_TYPE == "worker" and ENABLE_PERSISTENCE == true

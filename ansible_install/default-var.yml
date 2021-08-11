@@ -74,3 +74,10 @@ SIGNATURE_SECRET_NAME: edgegallery-signature-secret
 
 # If the above 2 files are given, should also give the password used to generate them
 #SIGNATURE_PWD: xxx
+
+# Params used by EG NFS persistence storage
+EGUSER_NAME: eguser
+EGGROUP_NAME: eggroup
+EGUSER_UID: 166
+EGGROUP_GID: 166
+APPSTORE_PACKAGES: /edgegallery/data/appstore/packages
