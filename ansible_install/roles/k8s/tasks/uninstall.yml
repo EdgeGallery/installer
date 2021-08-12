@@ -15,6 +15,10 @@
 
 ---
 
+- name: Umount Appstore Packages Directory on Worker Node
+  shell: "umount {{ APPSTORE_PACKAGES }}"
+  when: K8S_NODE_TYPE == "worker" and ENABLE_PERSISTENCE == true
+
 - name: Uninstall nfs-client-provisioner
   shell: helm uninstall nfs-client-provisioner
   when: K8S_NODE_TYPE == "master" and ENABLE_PERSISTENCE == true
