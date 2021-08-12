@@ -36,4 +36,5 @@
     - { role: developer, tags: ['developer'] }
     - { role: atp, tags: ['atp'] }
     - { role: healthcheck-m, tags: ['healthcheck-m'] }
+    - { role: file-system, tags: ['file-system'] }
     - { role: eg_check, tags: ['eg_check'] }

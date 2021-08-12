@@ -27,6 +27,7 @@
     - ./default-var.yml
     - ./password-var.yml
   roles:
+    - { role: file-system, tags: ['file-system'] }
     - { role: healthcheck-m, tags: ['healthcheck-m'] }
     - { role: atp, tags: ['atp'] }
     - { role: developer, tags: ['developer'] }
