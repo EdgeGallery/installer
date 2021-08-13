@@ -43,6 +43,7 @@
     --set appstoreBe.dockerRepo.appstore.username=admin \
     --set appstoreBe.dockerRepo.developer.password={{ HARBOR_ADMIN_PASSWORD }} \
     --set appstoreBe.dockerRepo.developer.username=admin \
+    --set appstoreBe.hostPackagesPath={{ APPSTORE_PACKAGES }} \
     --set postgres.password={{ postgresPassword }}
   no_log: true
   ignore_errors: true

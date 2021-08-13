@@ -80,4 +80,4 @@ EGUSER_NAME: eguser
 EGGROUP_NAME: eggroup
 EGUSER_UID: 166
 EGGROUP_GID: 166
-APPSTORE_PACKAGES: /edgegallery/data/appstore/packages
+APPSTORE_PACKAGES: /edgegallery/appstore/packages
