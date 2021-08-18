@@ -113,7 +113,8 @@
       swapoff -a
       systemctl start docker 
       cd  /home/edgegallery-offline/harbor/harbor
-      docker-compose start  
+      docker-compose start 
+      chmod 0666 /var/run/docker.sock 
       exit 0
   when: K8S_NODE_TYPE == "master" and EG_MODE != "edge"
   ignore_errors: yes
@@ -130,7 +131,8 @@
       #!/bin/sh -e
       sleep 10 
       swapoff -a
-      systemctl start docker 
+      systemctl start docker
+      chmod 0666 /var/run/docker.sock 
       exit 0
   when: K8S_NODE_TYPE == "worker" or EG_MODE == "edge"
   ignore_errors: yes
