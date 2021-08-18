@@ -15,6 +15,16 @@
 
 ---
 
+- name: Set Harbor IP to HarborIP
+  set_fact:
+    HarborIP: "{{ HarborIP }}"
+  when: HarborIP is defined and HarborIP is not none
+
+- name: Set Harbor IP to PORTAL IP on amd64
+  set_fact:
+    HarborIP: "{{ PORTAL_IP }}"
+  when: ARCH == "amd64" and PORTAL_IP is defined and K8S_NODE_TYPE == "master" and (HarborIP is undefined or HarborIP is none)
+
 - name: Ensure User Group "docker" Exists
   group:
     name: docker
@@ -51,8 +61,8 @@
     --set mecm.docker.dockerRepoUserName=admin \
     --set mecm.docker.dockerRepopassword={{ HARBOR_ADMIN_PASSWORD }} \
     --set global.persistence.enabled={{ ENABLE_PERSISTENCE }} \
-    --set mecm.repository.dockerRepoEndpoint={{ PORTAL_IP }} \
-    --set mecm.repository.sourceRepos="repo={{ PORTAL_IP }} userName=admin password={{ HARBOR_ADMIN_PASSWORD }}" \
+    --set mecm.repository.dockerRepoEndpoint={{ HarborIP }} \
+    --set mecm.repository.sourceRepos="repo={{ HarborIP }} userName=admin password={{ HARBOR_ADMIN_PASSWORD }}" \
     --set mecm.postgres.postgresPass={{ postgresPassword }} \
     --set mecm.postgres.inventoryDbPass={{ postgresPassword }} \
     --set mecm.postgres.appoDbPass={{ postgresPassword }} \
