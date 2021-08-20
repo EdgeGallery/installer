@@ -15,6 +15,16 @@
 
 ---
 
+- name: Set Harbor IP to HarborIP
+  set_fact:
+    HarborIP: "{{ HarborIP }}"
+  when: HarborIP is defined and HarborIP is not none
+
+- name: Set Harbor IP to PORTAL IP on amd64
+  set_fact:
+    HarborIP: "{{ PORTAL_IP }}"
+  when: ARCH == "amd64" and PORTAL_IP is defined and K8S_NODE_TYPE == "master" and (HarborIP is undefined or HarborIP is none)
+
 - name: Deploy DEVELOPER
   shell: |
     helm install --wait {{ DEVELOPER_HELM_RELEASE_NAME }} {{ HELM_CHARTS_PATH }}/edgegallery/developer-{{ HELM_TAG }}.tgz \
@@ -35,7 +45,7 @@
     --set global.ssl.enabled={{ developer_global_ssl_enabled }} \
     --set global.ssl.secretName={{ developer_global_ssl_secretName }} \
     --set global.persistence.enabled={{ ENABLE_PERSISTENCE }} \
-    --set developer.dockerRepo.endpoint={{ PORTAL_IP }} \
+    --set developer.dockerRepo.endpoint={{ HarborIP }} \
     --set developer.dockerRepo.password={{ HARBOR_ADMIN_PASSWORD }} \
     --set developer.dockerRepo.username=admin \
     --set postgres.password={{ postgresPassword }} \
