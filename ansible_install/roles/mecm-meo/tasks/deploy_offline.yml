@@ -15,16 +15,6 @@
 
 ---
 
-- name: Set Harbor IP to HarborIP
-  set_fact:
-    HarborIP: "{{ HarborIP }}"
-  when: HarborIP is defined and HarborIP is not none
-
-- name: Set Harbor IP to PORTAL IP on amd64
-  set_fact:
-    HarborIP: "{{ PORTAL_IP }}"
-  when: ARCH == "amd64" and PORTAL_IP is defined and K8S_NODE_TYPE == "master" and (HarborIP is undefined or HarborIP is none)
-
 - name: Ensure User Group "docker" Exists
   group:
     name: docker
