@@ -15,6 +15,18 @@
 
 ---
 
+- name: Delete Signature Secret
+  shell: "kubectl delete secret {{ SIGNATURE_SECRET_NAME }}"
+  when: K8S_NODE_TYPE == "master"
+  ignore_errors: yes
+
+- name: Delete Signature Cert Files
+  file:
+    path: "{{ SIGNATURE_CERTS_GENERATE_PATH }}"
+    state: absent
+  when: K8S_NODE_TYPE == "master"
+  ignore_errors: yes
+
 - name: Delete Harbor Secret
   shell: kubectl delete secret harbor
   when: K8S_NODE_TYPE == "master" and EG_MODE != "edge" and ARCH == "amd64"

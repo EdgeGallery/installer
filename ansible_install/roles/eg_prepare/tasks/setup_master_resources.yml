@@ -54,3 +54,6 @@
     --set global.ssl.enabled={{ servicecenter_global_ssl_enabled }} \
     --set global.ssl.secretName={{ servicecenter_global_ssl_secretName }}
   when: EG_MODE == "all" or EG_MODE == "controller"
+
+- name: Create Signature Secret
+  include: "create_signature_secret.yml"
