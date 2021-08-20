@@ -25,6 +25,16 @@
     PORTAL_IP: "{{ groups.master[0] }}"
   when: PORTAL_IP is undefined
 
+- name: Set Harbor IP to HarborIP
+  set_fact:
+    HarborIP: "{{ HarborIP }}"
+  when: HarborIP is defined and HarborIP is not none
+
+- name: Set Harbor IP to PORTAL IP on amd64
+  set_fact:
+    HarborIP: "{{ PORTAL_IP }}"
+  when: ARCH == "amd64" and K8S_NODE_TYPE == "master" and (HarborIP is undefined or HarborIP is none)
+
 - name: Check USER_MGMT Status
   uri:
     url: "https://{{ PORTAL_IP }}:{{ USER_MGMT_PORT }}/health"
