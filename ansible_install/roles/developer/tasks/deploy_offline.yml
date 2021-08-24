@@ -24,20 +24,14 @@
     --set images.developerBe.repository={{ developer_images_developerBe_repository }} \
     --set images.postgres.repository={{ developer_images_postgres_repository }} \
     --set images.initservicecenter.repository={{ developer_images_initservicecenter_repository }} \
-    --set images.toolChain.repository={{ developer_images_toolChain_repository }} \
-    --set images.portingAdvisor.repository={{ developer_images_portingAdvisor_repository }} \
     --set images.developerFe.tag={{ developer_images_developerFe_tag }} \
     --set images.developerBe.tag={{ developer_images_developerBe_tag }} \
-    --set images.toolChain.tag={{ developer_images_toolChain_tag }} \
     --set images.postgres.tag={{ developer_images_postgres_tag }} \
     --set images.initservicecenter.tag={{ developer_images_initservicecenter_tag }} \
-    --set images.portingAdvisor.tag={{ developer_images_portingAdvisor_tag }} \
     --set images.developerFe.pullPolicy={{ developer_images_developerFe_pullPolicy }} \
     --set images.developerBe.pullPolicy={{ developer_images_developerBe_pullPolicy }} \
     --set images.postgres.pullPolicy={{ developer_images_postgres_pullPolicy }} \
     --set images.initservicecenter.pullPolicy={{ developer_images_initservicecenter_pullPolicy }} \
-    --set images.toolChain.pullPolicy={{ developer_images_toolChain_pullPolicy }} \
-    --set images.portingAdvisor.pullPolicy={{ developer_images_portingAdvisor_pullPolicy }} \
     --set global.ssl.enabled={{ developer_global_ssl_enabled }} \
     --set global.ssl.secretName={{ developer_global_ssl_secretName }} \
     --set global.persistence.enabled={{ ENABLE_PERSISTENCE }} \
@@ -46,7 +40,8 @@
     --set developer.dockerRepo.username=admin \
     --set postgres.password={{ postgresPassword }} \
     --set developer.vmImage.fileSystemAddress=http://{{ PORTAL_IP }}:30090 \
-    --set developer.vmImage.password={{ developerVMImagePassword }}
+    --set developer.vmImage.password={{ developerVMImagePassword }} \
+    --set developer.toolChain.enabled={{ toolchain_enabled }}
   no_log: true
   ignore_errors: yes
   register: developer_out
