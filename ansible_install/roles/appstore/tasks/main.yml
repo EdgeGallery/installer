@@ -25,6 +25,16 @@
     PORTAL_IP: "{{ groups.master[0] }}"
   when: PORTAL_IP is undefined
 
+- name: Set ARCH Value to be amd64
+  set_fact:
+    ARCH: amd64
+  when: ansible_architecture == "x86_64"
+
+- name: Set ARCH Value to be arm64
+  set_fact:
+    ARCH: arm64
+  when: ansible_architecture == "aarch64"
+
 - name: Set Harbor IP to HarborIP
   set_fact:
     HarborIP: "{{ HarborIP }}"
@@ -33,7 +43,12 @@
 - name: Set Harbor IP to PORTAL IP on amd64
   set_fact:
     HarborIP: "{{ PORTAL_IP }}"
-  when: ARCH == "amd64" and K8S_NODE_TYPE == "master" and (HarborIP is undefined or HarborIP is none)
+  when: ARCH == "amd64" and (HarborIP is undefined or HarborIP is none)
+
+- name: Fail on arm64 when HarborIP is undefined
+  fail:
+    msg: "Must define HarborIP in default-var.yml on arm64 Arch"
+  when: ARCH == "arm64" and (HarborIP is undefined or HarborIP is none)
 
 - name: Check USER_MGMT Status
   uri:
