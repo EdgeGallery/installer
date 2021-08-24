@@ -45,6 +45,7 @@
     --set developer.dockerRepo.password={{ HARBOR_ADMIN_PASSWORD }} \
     --set developer.dockerRepo.username=admin \
     --set postgres.password={{ postgresPassword }} \
+    --set developer.vmImage.fileSystemAddress=http://{{ PORTAL_IP }}:30090 \
     --set developer.vmImage.password={{ developerVMImagePassword }}
   no_log: true
   ignore_errors: yes
