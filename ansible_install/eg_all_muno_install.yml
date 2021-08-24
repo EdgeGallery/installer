@@ -79,4 +79,5 @@
     - { role: appstore, tags: ['appstore'] }
     - { role: developer, tags: ['developer'] }
     - { role: atp, tags: ['atp'] }
+    - { role: file-system, tags: ['file-system'] }
     - { role: eg_check, tags: ['eg_check'] }

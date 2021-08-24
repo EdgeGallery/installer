@@ -15,24 +15,17 @@
 
 ---
 
-- hosts: master
-  become: yes
-  vars:
-    - OPERATION: uninstall
-    - EG_MODE: controller
-    - NODE_MODE: aio
-    - K8S_NODE_TYPE: master
-  vars_files:
-    - ./var.yml
-    - ./default-var.yml
-    - ./password-var.yml
-  roles:
-    - { role: file-system, tags: ['file-system'] }
-    - { role: atp, tags: ['atp'] }
-    - { role: developer, tags: ['developer'] }
-    - { role: appstore, tags: ['appstore'] }
-    - { role: mecm-meo, tags: ['mecm-meo'] }
-    - { role: user-mgmt, tags: ['user-mgmt'] }
-    - { role: eg_prepare, tags: ['eg_prepare'] }
-    - { role: k8s, tags: ['k8s'] }
-    - { role: init, tags: ['init'] }
+- name: Undeploy file-system
+  shell: helm uninstall file-system-edgegallery
+  ignore_errors: yes
+
+- name: Wait For Cleanup All file-system K8S Resources
+  shell: |
+    kubectl get all -A | grep "file-system|filesystem"
+    rc=$?
+    echo $rc
+  register: filesystemResourceRC
+  until: filesystemResourceRC.stdout == "1"
+  retries: 60
+  delay: 5
+  ignore_errors: yes
