@@ -20,12 +20,12 @@ ARCH: amd64
 EG_MODE: all
 
 # Docker image tag for EdgeGallery images to pull
-EG_IMAGE_TAG: latest
+EG_IMAGE_TAG: v1.2.1
 
-GIT_BRANCH: master
+GIT_BRANCH: Release-v1.2
 
 # Helm tag for EdgeGallery helm charts to pull
-HELM_TAG: 1.1.0
+HELM_TAG: 1.2.1
 
 # Target path where to store all download files and output tar.gz file
 PACKAGE_PATH: /home/edgegallery-offline-package
