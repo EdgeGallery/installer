@@ -61,8 +61,4 @@
     ip link add eg-mm5 link vxlan-mm5 type macvlan mode bridge
     ip addr add 100.1.1.{{ ipPrefix }}/24 dev eg-mm5
     ip link set dev eg-mm5 up
-
-    sed -i '$ a\auto vxlan-mp1\niface vxlan-mp1 inet manual\n up ip link add vxlan-mp1 type vxlan id 100 group 239.1.1.1 dstport 4789 dev {{EG_NODE_EDGE_MP1}}\n up ip link set vxlan-mp1 up\nauto eg-mp1\niface eg-mp1 inet manual\n up ip link add eg-mp1 link vxlan-mp1 type macvlan mode bridge\n up ip addr add 200.1.1.{{ipPrefix}}/24 dev eg-mp1\n up ip link set dev eg-mp1 up\n' /etc/network/interfaces.d/eg-if.cfg
-    sed -i '$ a\auto vxlan-mm5\niface vxlan-mm5 inet manual\n up ip link add vxlan-mm5 type vxlan id 200 group 239.1.1.1 dstport 4789 dev {{EG_NODE_EDGE_MM5}}\n up ip link set vxlan-mm5 up\nauto eg-mm5\niface eg-mm5 inet manual\n up ip link add eg-mm5 link vxlan-mm5 type macvlan mode bridge\n up ip addr add 100.1.1.{{ipPrefix}}/24 dev eg-mm5\n up ip link set dev eg-mm5 up\n' /etc/network/interfaces.d/eg-if.cfg
-
   when: NODE_MODE == "muno"
