@@ -99,7 +99,7 @@
     regexp: 'None'
     replace: ""
 
-- name: add docker-harbor start cmd 
+- name: add docker-harbor and aio mode network_interface cmd  
   blockinfile:
     path: /etc/rc.local
     create: yes
@@ -108,18 +108,24 @@
     state: present
     marker: ""
     block: | 
-      #!/bin/sh -e
+      #!/bin/bash
       sleep 10 
       swapoff -a
+      chmod 0666 /var/run/docker.sock 
       systemctl start docker 
       cd  /home/edgegallery-offline/harbor/harbor
       docker-compose start 
-      chmod 0666 /var/run/docker.sock 
+      ip link add eg-mp1 link {{ EG_NODE_EDGE_MP1}} type macvlan mode bridge
+      ip addr add 200.1.1.{{ ipPrefix }}/24 dev eg-mp1
+      ip link set dev eg-mp1 up
+      ip link add eg-mm5 link {{EG_NODE_EDGE_MM5}} type macvlan mode bridge
+      ip addr add 100.1.1.{{ ipPrefix }}/24 dev eg-mm5
+      ip link set dev eg-mm5 up
       exit 0
-  when: K8S_NODE_TYPE == "master" and EG_MODE != "edge"
+  when: NODE_MODE == "aio"
   ignore_errors: yes
 
-- name: add docker start cmd to /etc/rc.local
+- name: add docker-harbor and aio muno mode network_interface cmd
   blockinfile:
     path: /etc/rc.local
     create: yes
@@ -128,13 +134,25 @@
     state: present
     marker: ""
     block: | 
-      #!/bin/sh -e
+      #!/bin/bash
       sleep 10 
       swapoff -a
-      systemctl start docker
       chmod 0666 /var/run/docker.sock 
+      systemctl start docker
+      cd  /home/edgegallery-offline/harbor/harbor
+      docker-compose start 
+      ip link add vxlan-mp1 type vxlan id 100 group 239.1.1.1 dstport 4789 dev {{EG_NODE_EDGE_MP1}}
+      ip link set vxlan-mp1 up
+      ip link add vxlan-mm5 type vxlan id 200 group 239.1.1.1 dstport 4789 dev {{EG_NODE_EDGE_MM5}}
+      ip link set vxlan-mm5 up
+      ip link add eg-mp1 link vxlan-mp1 type macvlan mode bridge
+      ip addr add 200.1.1.{{ ipPrefix }}/24 dev eg-mp1
+      ip link set dev eg-mp1 up
+      ip link add eg-mm5 link vxlan-mm5 type macvlan mode bridge
+      ip addr add 100.1.1.{{ ipPrefix }}/24 dev eg-mm5
+      ip link set dev eg-mm5 up
       exit 0
-  when: K8S_NODE_TYPE == "worker" or EG_MODE == "edge"
+  when: NODE_MODE == "muno"
   ignore_errors: yes
   
 - name: Remove blank lines blockinfile put in
