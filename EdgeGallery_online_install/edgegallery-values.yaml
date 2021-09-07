@@ -69,7 +69,7 @@ jwt:
 
 images:
   service-center:
-    repository: swr.ap-southeast-1.myhuaweicloud.com/edgegallery/service-center
+    repository: swr.ap-southeast-1.myhuaweicloud.com/eg-common/service-center
     tag: latest 
     pullPolicy: IfNotPresent
 
@@ -79,15 +79,15 @@ images:
     tag: v1.2.0
     pullPolicy: IfNotPresent
   postgres:
-    repository: swr.ap-southeast-1.myhuaweicloud.com/edgegallery/postgres
+    repository: swr.ap-southeast-1.myhuaweicloud.com/eg-common/postgres
     tag: 12.3
     pullPolicy: IfNotPresent
   redis:
-    repository: swr.ap-southeast-1.myhuaweicloud.com/edgegallery/redis
+    repository: swr.ap-southeast-1.myhuaweicloud.com/eg-common/redis
     tag: 6.0.3
     pullPolicy: IfNotPresent
   initservicecenter:
-    repository: swr.ap-southeast-1.myhuaweicloud.com/edgegallery/curl
+    repository: swr.ap-southeast-1.myhuaweicloud.com/eg-common/curl
     tag: 7.75.0
     pullPolicy: IfNotPresent
 
@@ -113,7 +113,7 @@ images:
     tag: v1.2.0
     pullPolicy: IfNotPresent
   portingAdvisor:
-    repository: swr.ap-southeast-1.myhuaweicloud.com/edgegallery/porting-advisor
+    repository: swr.ap-southeast-1.myhuaweicloud.com/eg-common/porting-advisor
     tag: latest
     pullPolicy: IfNotPresent
 
