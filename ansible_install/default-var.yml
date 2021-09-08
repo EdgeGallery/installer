@@ -34,8 +34,12 @@ COPY_TAR_TO_TARGET: yes
 TARBALL_PATH_CLEANUP: true
 
 # Whether enable ingress
-#true means enable and false means disable
+# true means enable and false means disable
 ENABLE_INGRESS: true
+
+# Whether deploy appPkgTransTool
+# true means deploy and false means undeploy
+ENABLE_APPD: true
 
 HELM_CHARTS_PATH: "{{ TARBALL_PATH }}/helm/helm-charts"
 

@@ -44,6 +44,8 @@
     --set appstoreBe.dockerRepo.developer.password={{ HARBOR_ADMIN_PASSWORD }} \
     --set appstoreBe.dockerRepo.developer.username=admin \
     --set appstoreBe.hostPackagesPath={{ APPSTORE_PACKAGES }} \
+    --set appstoreBe.appdtranstool.enabled={{ ENABLE_APPD }} \
+    --set appstoreBe.fileSystemAddress=http://{{ PORTAL_IP }}:30090 \
     --set postgres.password={{ postgresPassword }}
   no_log: true
   ignore_errors: true

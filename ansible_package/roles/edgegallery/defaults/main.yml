@@ -17,6 +17,7 @@ HARBOR_DIR: "{{ TARBALL_PATH }}/harbor"
 EG_IMAGE_LIST_CONTROLLER:
   - swr.ap-southeast-1.myhuaweicloud.com/edgegallery/appstore-fe:{{ EG_IMAGE_TAG }}
   - swr.ap-southeast-1.myhuaweicloud.com/edgegallery/appstore-be:{{ EG_IMAGE_TAG }}
+  - swr.ap-southeast-1.myhuaweicloud.com/edgegallery/appdtranstool:{{ EG_IMAGE_TAG }}
   - swr.ap-southeast-1.myhuaweicloud.com/edgegallery/developer-fe:{{ EG_IMAGE_TAG }}
   - swr.ap-southeast-1.myhuaweicloud.com/edgegallery/developer-be:{{ EG_IMAGE_TAG }}
   - swr.ap-southeast-1.myhuaweicloud.com/edgegallery/mecm-fe:{{ EG_IMAGE_TAG }}
