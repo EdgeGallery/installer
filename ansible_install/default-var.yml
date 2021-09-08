@@ -49,6 +49,7 @@ APPSTORE_HELM_RELEASE_NAME: appstore-edgegallery
 DEVELOPER_HELM_RELEASE_NAME: developer-edgegallery
 MECM_MEO_HELM_RELEASE_NAME: mecm-meo-edgegallery
 ATP_HELM_RELEASE_NAME: atp-edgegallery
+EG_VIEW_HELM_RELEASE_NAME: eg-view-edgegallery
 
 MEPM_PORT: 30097
 APPSTORE_PORT: 30091

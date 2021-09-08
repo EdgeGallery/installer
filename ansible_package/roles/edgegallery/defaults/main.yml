@@ -20,6 +20,7 @@ EG_IMAGE_LIST_CONTROLLER:
   - swr.ap-southeast-1.myhuaweicloud.com/edgegallery/appdtranstool:{{ EG_IMAGE_TAG }}
   - swr.ap-southeast-1.myhuaweicloud.com/edgegallery/developer-fe:{{ EG_IMAGE_TAG }}
   - swr.ap-southeast-1.myhuaweicloud.com/edgegallery/developer-be:{{ EG_IMAGE_TAG }}
+  - swr.ap-southeast-1.myhuaweicloud.com/edgegallery/eg-view:{{ EG_IMAGE_TAG }}
   - swr.ap-southeast-1.myhuaweicloud.com/edgegallery/mecm-fe:{{ EG_IMAGE_TAG }}
   - swr.ap-southeast-1.myhuaweicloud.com/edgegallery/mecm-inventory:{{ EG_IMAGE_TAG }}
   - swr.ap-southeast-1.myhuaweicloud.com/edgegallery/mecm-appo:{{ EG_IMAGE_TAG }}

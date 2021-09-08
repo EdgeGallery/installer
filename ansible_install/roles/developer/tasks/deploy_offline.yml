@@ -15,6 +15,34 @@
 
 ---
 
+- name: Create Secret eg-view-ssl-secret
+  shell: |
+    kubectl create secret generic {{ egView_ssl_secretName }} \
+      --from-file=ca.crt={{ TARBALL_PATH }}/conf/keys/ca.crt \
+      --from-file=server_tls.crt={{ TARBALL_PATH }}/conf/keys/tls.crt \
+      --from-file=server_tls.key={{ TARBALL_PATH }}/conf/keys/tls.key
+  no_log: true
+  ignore_errors: yes
+  register: egview_secret_out
+
+- name: Output of "Create Secret eg-view-ssl-secret" task
+  debug:
+    msg: "rc: {{egview_secret_out.rc}}, stderr: {{egview_secret_out.stderr}}, stderr_lines: {{egview_secret_out.stderr_lines}}, stdout: {{egview_secret_out.stdout}}, stdout_lines: {{egview_secret_out.stdout_lines}}"
+  when: egview_secret_out is failed
+
+- name: Failing as task "Create Secret eg-view-ssl-secret" failed
+  fail:
+    msg: The task Create Secret eg-view-ssl-secret has failed
+  when: egview_secret_out is failed
+
+- name: Deploy EG-VIEW
+  shell: |
+    helm install --wait {{ EG_VIEW_HELM_RELEASE_NAME }} {{ HELM_CHARTS_PATH }}/edgegallery/eg-view-{{ HELM_TAG }}.tgz \
+    --set ssl.secretName={{ egView_ssl_secretName }} \
+    --set images.egView.repository={{ egView_images_repository }} \
+    --set images.egView.tag={{ egView_images_tag }} \
+    --set images.egView.pullPolicy={{ egView_images_pullPolicy }}
+
 - name: Deploy DEVELOPER
   shell: |
     helm install --wait {{ DEVELOPER_HELM_RELEASE_NAME }} {{ HELM_CHARTS_PATH }}/edgegallery/developer-{{ HELM_TAG }}.tgz \

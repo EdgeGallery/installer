@@ -13,6 +13,11 @@
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
 
+egView_images_repository: "{{ REGISTRY_URL }}edgegallery/eg-view"
+egView_images_tag: "{{ EG_IMAGE_TAG }}"
+egView_images_pullPolicy: IfNotPresent
+egView_ssl_secretName: eg-view-ssl-secret
+
 developer_images_developerFe_repository: "{{ REGISTRY_URL }}edgegallery/developer-fe"
 developer_images_developerBe_repository: "{{ REGISTRY_URL }}edgegallery/developer-be"
 developer_images_postgres_repository: "{{ REGISTRY_URL }}eg-common/postgres"
