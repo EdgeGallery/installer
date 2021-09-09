@@ -15,14 +15,17 @@
 
 appstore_images_appstoreFe_repository: "{{ REGISTRY_URL }}edgegallery/appstore-fe"
 appstore_images_appstoreBe_repository: "{{ REGISTRY_URL }}edgegallery/appstore-be"
+appstore_images_appdtranstool_repository: "{{ REGISTRY_URL }}edgegallery/appdtranstool"
 appstore_images_postgres_repository: "{{ REGISTRY_URL }}eg-common/postgres"
 appstore_images_initservicecenter_repository: "{{ REGISTRY_URL }}eg-common/curl"
 appstore_images_appstoreFe_tag: "{{ EG_IMAGE_TAG }}"
 appstore_images_appstoreBe_tag: "{{ EG_IMAGE_TAG }}"
+appstore_images_appdtranstool_tag: "{{ EG_IMAGE_TAG }}"
 appstore_images_postgres_tag: 12.3
 appstore_images_initservicecenter_tag: 7.75.0
 appstore_images_appstoreFe_pullPolicy: IfNotPresent
 appstore_images_appstoreBe_pullPolicy: IfNotPresent
+appstore_images_appdtranstool_pullPolicy: IfNotPresent
 appstore_images_postgres_pullPolicy: IfNotPresent
 appstore_images_initservicecenter_pullPolicy: IfNotPresent
 appstore_global_ssl_enabled: true

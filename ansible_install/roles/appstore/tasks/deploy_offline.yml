@@ -22,14 +22,17 @@
     --set global.oauth2.clients.appstore.clientSecret={{ oauth2ClientPassword }} \
     --set images.appstoreFe.repository={{ appstore_images_appstoreFe_repository }} \
     --set images.appstoreBe.repository={{ appstore_images_appstoreBe_repository }} \
+    --set images.appdtranstool.repository={{ appstore_images_appdtranstool_repository }} \
     --set images.postgres.repository={{ appstore_images_postgres_repository }} \
     --set images.initservicecenter.repository={{ appstore_images_initservicecenter_repository }} \
     --set images.appstoreFe.tag={{ appstore_images_appstoreFe_tag }} \
     --set images.appstoreBe.tag={{ appstore_images_appstoreBe_tag }} \
+    --set images.appdtranstool.tag={{ appstore_images_appdtranstool_tag }} \
     --set images.postgres.tag={{ appstore_images_postgres_tag }} \
     --set images.initservicecenter.tag={{ appstore_images_initservicecenter_tag }} \
     --set images.appstoreFe.pullPolicy={{ appstore_images_appstoreFe_pullPolicy }} \
     --set images.appstoreBe.pullPolicy={{ appstore_images_appstoreBe_pullPolicy }} \
+    --set images.appdtranstool.pullPolicy={{ appstore_images_appdtranstool_pullPolicy }} \
     --set images.postgres.pullPolicy={{ appstore_images_postgres_pullPolicy }} \
     --set images.initservicecenter.pullPolicy={{ appstore_images_initservicecenter_pullPolicy }} \
     --set global.ssl.enabled={{ appstore_global_ssl_enabled }} \
