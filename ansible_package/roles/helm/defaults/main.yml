@@ -28,6 +28,7 @@ EG_HELM_LIST_CONTROLLER:
   - atp
   - healthcheck-m
   - filesystem
+  - eg-view
 
 EG_HELM_LIST_EDGE:
   - mecm-mepm
