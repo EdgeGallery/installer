@@ -36,10 +36,8 @@
 - name: Download K8S Offline Packages
   import_tasks: download_k8s.yml
 
-- name: Download CNI Tar File
-  get_url:
-    url: "https://github.com/containernetworking/plugins/releases/download/v0.8.7/cni-plugins-linux-{{ ARCH }}-v0.8.7.tgz"
-    dest: "{{ K8S_OFFLINE_DIR }}"
+- name: Copy CNI Tar File From FTP Server
+  shell: "scp -r -P {{ FTP_SSH_PORT }} root@{{ FTP_SERVER }}:/home/cni/cni-plugins-linux-{{ ARCH }}-v0.8.7.tgz {{ K8S_OFFLINE_DIR }}"
 
 - name: Unarchive CNI Tar File
   unarchive:
