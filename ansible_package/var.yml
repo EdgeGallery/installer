@@ -34,5 +34,5 @@ TARBALL_PATH: "{{ PACKAGE_PATH }}/eg-offline"
 # Whether clean the TARBALL_PATH before package
 TARBALL_PATH_CLEANUP: true
 
-FTP_SERVER: 192.168.100.65
+FTP_SERVER: 192.168.1.7
 FTP_SSH_PORT: 33
