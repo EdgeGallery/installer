@@ -28,10 +28,8 @@
     - "{{ HELM_CHARTS_EG }}"
     - "{{ HELM_CHARTS_STABLE }}"
 
-- name: Download Helm Offline Install Package
-  get_url:
-    url: "https://get.helm.sh/helm-v3.2.4-linux-{{ ARCH }}.tar.gz"
-    dest: "{{ HELM_OFFLINE_DIR }}"
+- name: Copy Helm Offline Install Package from FTP Server
+  shell: "scp -P {{ FTP_SSH_PORT }} {{ FTP_SERVER }}:/home/helm/helm-v3.2.4-linux-{{ ARCH }}.tar.gz {{ HELM_OFFLINE_DIR }}"
 
 - name: Check Whether Helm is Installed
   shell: helm version
