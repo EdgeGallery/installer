@@ -60,13 +60,13 @@
 - name: Pull and Retag All EG Docker Images
   shell: |
     docker pull {{ item }}
-    new_image_name=`echo {{ item }} | sed -e "s/swr.ap-southeast-1.myhuaweicloud.com\///g"`
+    new_image_name=`echo {{ item }} | sed -e "s/swr.cn-north-4.myhuaweicloud.com\///g"`
     docker image tag {{ item }} $new_image_name
   loop: "{{ eg_image_list }}"
 
 - name: Save All EG Docker Images Together
   shell: |
-    new_image_list=`echo {{ eg_image_str }} | sed -e "s/swr.ap-southeast-1.myhuaweicloud.com\///g"`
+    new_image_list=`echo {{ eg_image_str }} | sed -e "s/swr.cn-north-4.myhuaweicloud.com\///g"`
     docker save $new_image_list | gzip > {{ EG_IMAGES_DIR }}/eg_images.tar.gz
     echo $new_image_list >> {{ EG_IMAGES_DIR }}/eg_images_list.txt
 

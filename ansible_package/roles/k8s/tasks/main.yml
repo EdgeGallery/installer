@@ -65,7 +65,7 @@
 - name: Pull and Retag All K8S Related Docker Images
   shell: |
     docker pull {{ item }}
-    new_image_name=`echo {{ item }} | sed -e "s#swr.ap-southeast-1.myhuaweicloud.com/eg-common/##g" | sed -e "s#-arm64##g"`
+    new_image_name=`echo {{ item }} | sed -e "s#swr.cn-north-4.myhuaweicloud.com/eg-common/##g" | sed -e "s#-arm64##g"`
     docker image tag {{ item }} $new_image_name
   loop: "{{ k8s_image_list }}"
 
@@ -75,7 +75,7 @@
 
 - name: Save All K8S Docker Images Together
   shell: |
-    new_image_list=`echo {{ k8s_image_str }} | sed -e "s#swr.ap-southeast-1.myhuaweicloud.com/eg-common/##g" | sed -e "s#-arm64##g"`
+    new_image_list=`echo {{ k8s_image_str }} | sed -e "s#swr.cn-north-4.myhuaweicloud.com/eg-common/##g" | sed -e "s#-arm64##g"`
     docker save $new_image_list | gzip > {{ K8S_OFFLINE_DIR }}/docker/images/k8s_images.tar.gz
     echo $new_image_list >> {{ K8S_OFFLINE_DIR }}/docker/images/k8s_images_list.txt
 
@@ -108,7 +108,7 @@
 - name: Pull Retag and Save NFS Images For AMD64
   shell: |
     docker pull {{ NFS_DOCKER_IMAGES_AMD64 }}
-    new_image_name=`echo {{ NFS_DOCKER_IMAGES_AMD64 }} | sed -e "s#swr.ap-southeast-1.myhuaweicloud.com/##g"`
+    new_image_name=`echo {{ NFS_DOCKER_IMAGES_AMD64 }} | sed -e "s#swr.cn-north-4.myhuaweicloud.com/##g"`
     docker image tag {{ NFS_DOCKER_IMAGES_AMD64 }} $new_image_name
     docker save $new_image_name | gzip > {{ NFS_OFFLINE_DIR }}/images/nfs_images.tar.gz
   when: ARCH == "amd64"
@@ -116,7 +116,7 @@
 - name: Pull and Retag NFS Images For ARM64
   shell: |
     docker pull {{ NFS_DOCKER_IMAGES_ARM64 }}
-    new_image_name=`echo {{ NFS_DOCKER_IMAGES_ARM64 }} | sed -e "s#swr.ap-southeast-1.myhuaweicloud.com/##g"`
+    new_image_name=`echo {{ NFS_DOCKER_IMAGES_ARM64 }} | sed -e "s#swr.cn-north-4.myhuaweicloud.com/##g"`
     docker image tag {{ NFS_DOCKER_IMAGES_ARM64 }} $new_image_name
     docker save $new_image_name | gzip > {{ NFS_OFFLINE_DIR }}/images/nfs_images.tar.gz
   when: ARCH == "arm64"
