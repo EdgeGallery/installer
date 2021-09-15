@@ -15,6 +15,18 @@
 
 ---
 
+- name: create non existent directory
+  shell: |
+    mkdir -p "{{ role_path }}/files"
+
+- name: copying file with owner and permissions
+  copy:
+    src: "{{ role_path }}/files/ingress.yaml"
+    dest: "{{role_path}}/files/ingress.yaml"
+    owner: root
+    group: root
+    mode: 0644
+
 - name: Setup Nginx Ingress Controller
   shell: |
     helm install --wait eg-ingress {{ HELM_CHARTS_PATH }}/stable/nginx-ingress-1.41.2.tgz \
