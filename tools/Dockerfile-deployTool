@@ -1,4 +1,4 @@
-FROM ubuntu:16.04
+FROM swr.cn-north-4.myhuaweicloud.com/eg-common/ubuntu:16.04
 RUN apt-get update
 RUN apt-get install -y build-essential cmake zlib1g-dev libcppunit-dev git subversion wget && rm -rf /var/lib/apt/lists/*
 RUN wget https://www.openssl.org/source/openssl-1.0.2g.tar.gz -O - | tar -xz
