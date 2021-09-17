@@ -48,6 +48,8 @@
     --set global.oauth2.clients.atp.clientSecret={{ oauth2ClientPassword }} \
     --set global.oauth2.clients.lab.clientUrl=https://{{ PORTAL_IP }}:{{ LAB_PORT }} \
     --set global.oauth2.clients.lab.clientSecret={{ oauth2ClientPassword }} \
+    --set global.oauth2.clients.edgegallery.clientUrl=https://{{ PORTAL_IP }}:{{ EDGEGALLERY_PORT }} \
+    --set global.oauth2.clients.edgegallery.clientSecret={{ oauth2ClientPassword }} \
     --set jwt.secretName={{ usermgmt_jwt_secretName }} \
     --set images.usermgmt.repository={{ usermgmt_images_usermgmt_repository }} \
     --set images.postgres.repository={{ usermgmt_images_postgres_repository }} \
