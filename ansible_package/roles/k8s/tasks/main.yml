@@ -37,7 +37,7 @@
   import_tasks: download_k8s.yml
 
 - name: Copy CNI Tar File From FTP Server
-  shell: "scp -r -P {{ FTP_SSH_PORT }} root@{{ FTP_SERVER }}:/home/cni/cni-plugins-linux-{{ ARCH }}-v0.8.7.tgz {{ K8S_OFFLINE_DIR }}"
+  shell: "scp -r -P {{ FTP_SSH_PORT }} {{ FTP_USER }}@{{ FTP_SERVER }}:/home/jenkins/cni/cni-plugins-linux-{{ ARCH }}-v0.8.7.tgz {{ K8S_OFFLINE_DIR }}"
 
 - name: Unarchive CNI Tar File
   unarchive:
@@ -96,7 +96,7 @@
     state: directory
 
 - name: Copy NFS Packages From FTP Server
-  shell: "scp -r -P {{ FTP_SSH_PORT }} root@{{ FTP_SERVER }}:/home/nfs/{{ ARCH }} {{ NFS_OFFLINE_DIR }}/deb"
+  shell: "scp -r -P {{ FTP_SSH_PORT }} {{ FTP_USER }}@{{ FTP_SERVER }}:/home/jenkins/nfs/{{ ARCH }} {{ NFS_OFFLINE_DIR }}/deb"
 
 - name: Create NFS Images Directory
   file:

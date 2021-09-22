@@ -83,5 +83,5 @@
   when: ARCH == "amd64" and EG_MODE != "edge"
 
 - name: Copy harbor.tar.gz From FTP Server
-  shell: "scp -P {{ FTP_SSH_PORT }} root@{{ FTP_SERVER }}:/home/harbor.tar.gz {{ HARBOR_DIR }}"
+  shell: "scp -P {{ FTP_SSH_PORT }} {{ FTP_USER }}@{{ FTP_SERVER }}:/home/jenkins/harbor.tar.gz {{ HARBOR_DIR }}"
   when: ARCH == "amd64" and EG_MODE != "edge"

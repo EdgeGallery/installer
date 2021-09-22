@@ -14,7 +14,7 @@
 ---
 
 - name: Copy K3S Files From FTP Server
-  shell: "scp -r -P {{ FTP_SSH_PORT }} root@{{ FTP_SERVER }}:/root/k3s/{{ item }} {{ TARBALL_PATH }}"
+  shell: "scp -r -P {{ FTP_SSH_PORT }} {{ FTP_USER }}@{{ FTP_SERVER }}:/home/jenkins/k3s/{{ item }} {{ TARBALL_PATH }}"
   loop:
     - k3s
     - k3s-airgap-images-amd64.tar

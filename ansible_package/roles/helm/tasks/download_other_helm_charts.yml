@@ -21,7 +21,7 @@
   ignore_errors: yes
 
 - name: Copy NGINX From Local Directory
-  shell: "scp -P {{ FTP_SSH_PORT }} {{ FTP_SERVER }}:/home/helm-charts-stable/{{ STABLE_NGINX_HELM_NAME }} {{ HELM_CHARTS_STABLE }}"
+  shell: "scp -P {{ FTP_SSH_PORT }} {{ FTP_USER }}@{{ FTP_SERVER }}:/home/jenkins/helm-charts-stable/{{ STABLE_NGINX_HELM_NAME }} {{ HELM_CHARTS_STABLE }}"
   when: pullNginxHelmCharts is failed
 
 - name: Pull NFS Helm Charts
@@ -32,9 +32,9 @@
   ignore_errors: yes
 
 - name: Copy NFS AMD64 From Local Directory
-  shell: "scp -P {{ FTP_SSH_PORT }} {{ FTP_SERVER }}:/home/helm-charts-stable/nfs-amd/{{ STABLE_NFS_HELM_NAME }} {{ HELM_CHARTS_STABLE }}"
+  shell: "scp -P {{ FTP_SSH_PORT }} {{ FTP_USER }}@{{ FTP_SERVER }}:/home/jenkins/helm-charts-stable/nfs-amd/{{ STABLE_NFS_HELM_NAME }} {{ HELM_CHARTS_STABLE }}"
   when: pullNFSHelmCharts is failed and ARCH == "amd64"
 
 - name: Copy NFS ARM64 From Local Directory
-  shell: "scp -P {{ FTP_SSH_PORT }} {{ FTP_SERVER }}:/home/helm-charts-stable/nfs-arm/{{ STABLE_NFS_HELM_NAME }} {{ HELM_CHARTS_STABLE }}"
+  shell: "scp -P {{ FTP_SSH_PORT }} {{ FTP_USER }}@{{ FTP_SERVER }}:/home/jenkins/helm-charts-stable/nfs-arm/{{ STABLE_NFS_HELM_NAME }} {{ HELM_CHARTS_STABLE }}"
   when: pullNFSHelmCharts is failed and ARCH == "arm64"
