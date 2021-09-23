@@ -18,9 +18,8 @@
 - name: Create Secret eg-view-ssl-secret
   shell: |
     kubectl create secret generic {{ egView_ssl_secretName }} \
-      --from-file=ca.crt={{ TARBALL_PATH }}/conf/keys/ca.crt \
-      --from-file=server_tls.crt={{ TARBALL_PATH }}/conf/keys/tls.crt \
-      --from-file=server_tls.key={{ TARBALL_PATH }}/conf/keys/tls.key
+      --from-file=server.crt={{ TARBALL_PATH }}/conf/keys/server.crt \
+      --from-file=server.key={{ TARBALL_PATH }}/conf/keys/server.key
   no_log: true
   ignore_errors: yes
   register: egview_secret_out
