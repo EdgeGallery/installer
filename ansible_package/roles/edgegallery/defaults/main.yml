@@ -31,6 +31,7 @@ EG_IMAGE_LIST_CONTROLLER:
   - swr.cn-north-4.myhuaweicloud.com/edgegallery/deploy-tool:{{ EG_IMAGE_TAG }}
   - swr.cn-north-4.myhuaweicloud.com/edgegallery/healthcheck-m:{{ EG_IMAGE_TAG }}
   - swr.cn-north-4.myhuaweicloud.com/edgegallery/filesystem:{{ EG_IMAGE_TAG }}
+  - swr.cn-north-4.myhuaweicloud.com/edgegallery/imageops:{{ EG_IMAGE_TAG }}
   - swr.cn-north-4.myhuaweicloud.com/eg-common/curl:7.75.0
   - swr.cn-north-4.myhuaweicloud.com/eg-common/redis:6.0.3
   - swr.cn-north-4.myhuaweicloud.com/eg-common/postgres:12.3
@@ -49,6 +50,7 @@ EG_IMAGE_LIST_EDGE_COMMON:
   - swr.cn-north-4.myhuaweicloud.com/edgegallery/mepm-fe:{{ EG_IMAGE_TAG }}
   - swr.cn-north-4.myhuaweicloud.com/edgegallery/deploy-tool:{{ EG_IMAGE_TAG }}
   - swr.cn-north-4.myhuaweicloud.com/edgegallery/healthcheck:{{ EG_IMAGE_TAG }}
+  - swr.cn-north-4.myhuaweicloud.com/edgegallery/imageops:{{ EG_IMAGE_TAG }}
   - swr.cn-north-4.myhuaweicloud.com/eg-common/postgres:12.3
   - swr.cn-north-4.myhuaweicloud.com/eg-common/kong:2.0.4-ubuntu
   - swr.cn-north-4.myhuaweicloud.com/eg-common/nfvpe/multus:stable
