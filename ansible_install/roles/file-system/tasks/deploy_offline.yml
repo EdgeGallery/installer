@@ -22,7 +22,11 @@
     --set images.filesystem.repository={{ filesystem_images_repository }} \
     --set images.filesystem.tag={{ EG_IMAGE_TAG }} \
     --set images.filesystem.pullPolicy={{ filesystem_images_pullPolicy }} \
+    --set images.imageops.repository={{ imageops_images_repository }} \
+    --set images.imageops.tag={{ EG_IMAGE_TAG }} \
+    --set images.imageops.pullPolicy={{ imageops_images_pullPolicy }} \
     --set images.postgres.repository={{ filesystem_postgres_images_repository }} \
     --set images.postgres.tag={{ filesystem_postgres_images_tag }} \
     --set images.postgres.pullPolicy={{ filesystem_postgres_images_pullPolicy }} \
+    --set filesystem.hostVMImagePath={{ FILE_SYSTEM_PACKAGES }} \
     --set postgres.password={{ postgresPassword }}
