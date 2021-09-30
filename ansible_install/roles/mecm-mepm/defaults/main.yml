@@ -18,6 +18,7 @@ mepm_images_k8splugin_repository: "{{ REGISTRY_URL }}edgegallery/mecm-applcm-k8s
 mepm_images_osplugin_repository: "{{ REGISTRY_URL }}edgegallery/mecm-applcm-osplugin"
 mepm_images_apprulemgr_repository: "{{ REGISTRY_URL }}edgegallery/mecm-apprulemgr"
 mepm_images_mepmFe_repository: "{{ REGISTRY_URL }}edgegallery/mepm-fe"
+mepm_images_imageops_repository: "{{ REGISTRY_URL }}edgegallery/imageops"
 mepm_images_postgres_repository: "{{ REGISTRY_URL }}eg-common/postgres"
 mepm_images_postgres_tag: 12.3
 mepm_images_lcmcontroller_pullPolicy: IfNotPresent
@@ -25,6 +26,7 @@ mepm_images_k8splugin_pullPolicy: IfNotPresent
 mepm_images_osplugin_pullPolicy: IfNotPresent
 mepm_images_apprulemgr_pullPolicy: IfNotPresent
 mepm_images_mepmFe_pullPolicy: IfNotPresent
+mepm_images_imageops_pullPolicy: IfNotPresent
 mepm_images_postgres_pullPolicy: IfNotPresent
 ingress_controller_image_repository: "{{ REGISTRY_URL }}eg-common/us.gcr.io/k8s-artifacts-prod/ingress-nginx/controller"
 ingress_controller_admissionWebhooks_patch_image_repository: "{{ WEBHOOK_REPO }}"
