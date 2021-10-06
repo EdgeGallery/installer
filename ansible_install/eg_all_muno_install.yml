@@ -27,6 +27,7 @@
     - ./default-var.yml
     - ./password-var.yml
   roles:
+    - { role: precheck, tags: ['precheck'] }
     - { role: init, tags: ['init-master','init-worker'] }
 
 - hosts: master

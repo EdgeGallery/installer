@@ -27,6 +27,7 @@
     - ./default-var.yml
     - ./password-var.yml
   roles:
+    - { role: precheck, tags: ['precheck'] }
     - { role: init, tags: ['init'] }
     - { role: k8s, tags: ['k8s'] }
     - { role: eg_prepare, tags: ['eg_prepare'] }
