@@ -12,3 +12,13 @@
 #   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
+
+edgegalleryFe_global_ssl_enabled: true
+edgegalleryFe_global_ssl_secretName: edgegallery-ssl-secret
+
+edgegalleryFe_repository: "{{ REGISTRY_URL }}edgegallery/developer-fe"
+edgegalleryFe_initservicecenter_repository: "{{ REGISTRY_URL }}eg-common/curl"
+edgegalleryFe_tag: "{{ EG_IMAGE_TAG }}"
+edgegalleryFe_initservicecenter_tag: 7.75.0
+edgegalleryFe_pullPolicy: IfNotPresent
+edgegalleryFe_initservicecenter_pullPolicy: IfNotPresent

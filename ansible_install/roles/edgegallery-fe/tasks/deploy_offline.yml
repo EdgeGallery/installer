@@ -18,6 +18,26 @@
 - name: Deploy edgegallery-fe
   shell: |
     helm install --wait edgegallery-fe {{ HELM_CHARTS_PATH }}/edgegallery/edgegallery-fe-{{ HELM_TAG }}.tgz \
+    --set global.ssl.enabled={{ edgegalleryFe_global_ssl_enabled }} \
+    --set global.ssl.secretName={{ edgegalleryFe_global_ssl_secretName }} \
     --set global.oauth2.authServerAddress=https://{{ PORTAL_IP }}:{{ USER_MGMT_PORT }} \
     --set global.oauth2.clients.edgegalleryFe.clientSecret={{ oauth2ClientPassword }} \
-    --set global.ssl.enabled=true
+    --set images.edgegalleryFe.repository={{ edgegalleryFe_repository }} \
+    --set images.edgegalleryFe.tag={{ edgegalleryFe_tag }} \
+    --set images.edgegalleryFe.pullPolicy={{ edgegalleryFe_pullPolicy }} \
+    --set images.initservicecenter.repository={{ edgegalleryFe_initservicecenter_repository }} \
+    --set images.initservicecenter.tag={{ edgegalleryFe_initservicecenter_tag }} \
+    --set images.initservicecenter.pullPolicy={{ edgegalleryFe_initservicecenter_pullPolicy }}
+  no_log: true
+  ignore_errors: yes
+  register: eg_fe_out
+
+- name: Output of "Deploy edgegallery-fe" task
+  debug:
+    msg: "rc: {{eg_fe_out.rc}}, stderr: {{eg_fe_out.stderr}}, stderr_lines: {{eg_fe_out.stderr_lines}}, stdout: {{eg_fe_out.stdout}}, stdout_lines: {{eg_fe_out.stdout_lines}}"
+  when: eg_fe_out is failed
+
+- name: Failing as task "Deploy edgegallery-fe" failed
+  fail:
+    msg: The task Deploy edgegallery-fe has failed
+  when: eg_fe_out is failed

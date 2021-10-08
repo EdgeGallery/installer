@@ -15,15 +15,23 @@
 
 ---
 
-- name: Set ARCH Value to be amd64
+- name: Set Portal IP
   set_fact:
-    ARCH: amd64
-  when: ansible_architecture == "x86_64"
+    PORTAL_IP: "{{ groups.master[0] }}"
+  when: PORTAL_IP is undefined
 
-- name: Set ARCH Value to be arm64
-  set_fact:
-    ARCH: arm64
-  when: ansible_architecture == "aarch64"
+- name: Check USER_MGMT Status
+  uri:
+    url: "https://{{ PORTAL_IP }}:{{ USER_MGMT_PORT }}/health"
+    validate_certs: no
+  register: user_mgmt_reachable
+  when: OPERATION == "install"
+  ignore_errors: yes
+
+- name: Failing the Installation as 'user-mgmt' deployement needs to be completed before 'edgegallery-fe'
+  fail:
+    msg: "'user_mgmt' is not reachable, complete user_mgmt deployment before 'edgegallery-fe'"
+  when: user_mgmt_reachable is failed and OPERATION == "install"
 
 - name: Set Registry URL for Multi Node
   set_fact:
