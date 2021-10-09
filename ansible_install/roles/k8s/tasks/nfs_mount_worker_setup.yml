@@ -18,7 +18,15 @@
 - name: Mount Appstore Packages Directory to Master
   shell: "mount {{ groups.master[0] }}:{{ APPSTORE_PACKAGES }} {{ APPSTORE_PACKAGES }}"
 
-- name: Add Mount data on Worker Nodes into /etc/fstab File
+- name: Add Appstore Mount data on Worker Nodes into /etc/fstab File
   lineinfile:
     path: /etc/fstab
     line: "{{ groups.master[0] }}:{{ APPSTORE_PACKAGES }} {{ APPSTORE_PACKAGES }} nfs auto,nofail,noatime,nolock,intr,tcp,actimeo=1800 0 0"
+
+- name: Mount file-system VM Image Directory to Master
+  shell: "mount {{ groups.master[0] }}:{{ FILE_SYSTEM_PACKAGES }} {{ FILE_SYSTEM_PACKAGES }}"
+
+- name: Add file-system Mount data on Worker Nodes into /etc/fstab File
+  lineinfile:
+    path: /etc/fstab
+    line: "{{ groups.master[0] }}:{{ FILE_SYSTEM_PACKAGES }} {{ FILE_SYSTEM_PACKAGES }} nfs auto,nofail,noatime,nolock,intr,tcp,actimeo=1800 0 0"

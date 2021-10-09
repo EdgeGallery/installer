@@ -54,3 +54,11 @@
     group: "{{ EGGROUP_NAME }}"
     owner: "{{ EGUSER_NAME }}"
     mode: 0750
+
+- name: Create File-System VM Images Directory
+  file:
+    path: "{{ FILE_SYSTEM_PACKAGES }}"
+    state: directory
+    group: "{{ EGGROUP_NAME }}"
+    owner: "{{ EGUSER_NAME }}"
+    mode: 0750

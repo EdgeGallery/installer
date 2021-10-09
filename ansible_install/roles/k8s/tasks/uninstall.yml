@@ -20,6 +20,11 @@
   when: K8S_NODE_TYPE == "worker" and ENABLE_PERSISTENCE == true
   ignore_errors: yes
 
+- name: Umount file-system VM Image Directory on Worker Node
+  shell: "umount {{ FILE_SYSTEM_PACKAGES }}"
+  when: K8S_NODE_TYPE == "worker" and ENABLE_PERSISTENCE == true
+  ignore_errors: yes
+
 - name: Uninstall nfs-client-provisioner
   shell: helm uninstall nfs-client-provisioner
   when: K8S_NODE_TYPE == "master" and ENABLE_PERSISTENCE == true

@@ -22,6 +22,13 @@
   when: ENABLE_PERSISTENCE == false
   ignore_errors: yes
 
+- name: Delete File-System VM Images Directory
+  file:
+    path: "{{ FILE_SYSTEM_PACKAGES }}"
+    state: absent
+  when: ENABLE_PERSISTENCE == false
+  ignore_errors: yes
+
 - name: Clean the Directory for EdgeGallery Offline Tarball File
   file:
     path: "{{ TARBALL_PATH }}"

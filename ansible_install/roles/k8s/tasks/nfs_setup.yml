@@ -55,15 +55,21 @@
     --set image.tag={{ nfs_image_tag_arm64 }}
   when: ARCH == "arm64"
 
-- name: Get Appstore Packages Data for All Worker Nodes
+- name: Get /etc/exports Data for All Worker Nodes
   set_fact:
-    worker_appstore_str: "{{ groups.worker|join('(rw,sync,no_root_squash,no_subtree_check) ') }}(rw,sync,no_root_squash,no_subtree_check)"
+    worker_exports_str: "{{ groups.worker|join('(rw,sync,no_root_squash,no_subtree_check) ') }}(rw,sync,no_root_squash,no_subtree_check)"
   when: NODE_MODE == "muno"
 
-- name: Add All IPs of Worker Nodes into /etc/exports File
+- name: Add All IPs of Worker Nodes into /etc/exports File For APPSTORE
   lineinfile:
     path: /etc/exports
-    line: "{{ APPSTORE_PACKAGES }} {{ worker_appstore_str }}"
+    line: "{{ APPSTORE_PACKAGES }} {{ worker_exports_str }}"
+  when: NODE_MODE == "muno"
+
+- name: Add All IPs of Worker Nodes into /etc/exports File For file-system
+  lineinfile:
+    path: /etc/exports
+    line: "{{ FILE_SYSTEM_PACKAGES }} {{ worker_exports_str }}"
   when: NODE_MODE == "muno"
 
 - name: Apply New File Mounts
