@@ -1,6 +1,7 @@
 ### Profile Management Architecture
 
 
+![输入图片说明](https://images.gitee.com/uploads/images/2021/1010/112210_37b1f2b2_7624977.png "ProfileManagement.png")
 
 ### Prerequisites
 - Docker
