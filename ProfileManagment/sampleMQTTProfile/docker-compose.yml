@@ -1,0 +1,79 @@
+# Run docker-compose build
+# Run docker-compose up
+
+version: '3.1'
+
+services:
+  fledge-gui:
+    container_name: fledge-gui
+    image: libujacob/fledge-gui:latest
+    ports:
+      - "8080:80"
+      # - "443:443"
+
+    networks:
+      - app-network
+
+  fledge:
+    container_name: fledge
+    image: libujacob/fledge:latest
+    ports:
+      - "8081:8081"
+    networks:
+      - app-network
+
+  # docker run -d --name emqx -p 18083:18083 -p 1883:1883 -p 8089:8081 emqx/emqx:latest
+  mqtt-broker:
+    container_name: mqtt-broker
+    image: emqx/emqx:latest
+    # ports:
+    #   - "18083:18083"
+    #   - "1883:1883"
+    #   - "8089:8081"
+    networks:
+      - app-network
+
+  # docker run -p 9081:9081 -d --name kuiper -e MQTT_SOURCE__DEFAULT__SERVERS=[$MQTT_BROKER_ADDRESS] emqx/kuiper:1.2.1-slim
+  kuiper:
+    container_name: kuiper
+    image: emqx/kuiper:1.2.1-slim
+    ports:
+      - "9081:9081"
+    environment:
+      - MQTT_SOURCE__DEFAULT__SERVERS=[tcp://mqtt-broker:1883]
+    networks:
+      - app-network
+
+  # docker run -d -P 6041:6041 tdengine/tdengine
+  mqtt-td-engine-adapter:
+    container_name: mqtt-td-engine-adapter
+    image: libujacob/mqtt-tdengine-adapter:latest
+    ports:
+      - "9085:9085"
+    networks:
+      - app-network
+
+  # docker run -d -P 6041:6041 tdengine/tdengine
+  td-engine:
+    container_name: td-engine
+    image: tdengine/tdengine:2.2.0.2
+    # ports:
+    #   - "6030-6045:6030-6045"
+    networks:
+      - app-network
+
+  # docker run -d --name=grafana -p 3000:3000 grafana/grafana
+  mec-app-visual:
+    container_name: mec-app-visual
+    image: libujacob/mec-app-visual-demo:latest
+    ports:
+      - "3000:3000"
+    environment:
+      - GF_PLUGINS_ALLOW_LOADING_UNSIGNED_PLUGINS=taosdata-tdengine-datasource
+    networks:
+      - app-network
+
+
+networks:
+  app-network:
+    driver: bridge
