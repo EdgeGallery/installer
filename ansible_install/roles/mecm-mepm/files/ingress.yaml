@@ -2,3 +2,7 @@ controller:
   config:
     enable-underscores-in-headers: "true"
     use-forwarded-headers: "true"
+    server-tokens: "False"
+  addHeaders:
+    X-Content-Type-Options: nosniff
+    X-XSS-Protection: 1; mode=block
