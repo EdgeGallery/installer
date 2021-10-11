@@ -29,7 +29,6 @@ EG_HELM_LIST_CONTROLLER:
   - healthcheck-m
   - filesystem
   - eg-view
-  - edgegallery-fe
 
 EG_HELM_LIST_EDGE:
   - mecm-mepm

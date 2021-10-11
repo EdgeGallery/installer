@@ -32,7 +32,6 @@ EG_IMAGE_LIST_CONTROLLER:
   - swr.cn-north-4.myhuaweicloud.com/edgegallery/healthcheck-m:{{ EG_IMAGE_TAG }}
   - swr.cn-north-4.myhuaweicloud.com/edgegallery/filesystem:{{ EG_IMAGE_TAG }}
   - swr.cn-north-4.myhuaweicloud.com/edgegallery/imageops:{{ EG_IMAGE_TAG }}
-  - swr.cn-north-4.myhuaweicloud.com/edgegallery/edgegallery-fe:{{ EG_IMAGE_TAG }}
   - swr.cn-north-4.myhuaweicloud.com/eg-common/curl:7.75.0
   - swr.cn-north-4.myhuaweicloud.com/eg-common/redis:6.0.3
   - swr.cn-north-4.myhuaweicloud.com/eg-common/postgres:12.3
