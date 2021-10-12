@@ -24,6 +24,10 @@ ENABLE_PERSISTENCE: true
 # ip for portals, will be set to private IP of master node default or reset it to be the public IP of master node here
 # PORTAL_IP: xxx.xxx.xxx.xxx
 
+# IP of the Controller master which is used for Edge to connect
+# If you deploy Controller and Edge together in one cluster, then ther is no need to set this param
+# CONTROLLER_MASTER_IP: xxx.xxx.xxx.xxx
+
 # NIC name of master node
 # If master node is with single NIC, not need to set it here and will get the default NIC name during the run time
 # If master node is with multiple NICs, should set it here to be 2 different NICs
