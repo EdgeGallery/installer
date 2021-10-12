@@ -3,17 +3,36 @@ apiVersion: v1
 data:
   config.yaml: |-
     config:
-      fledgeUrl: http://fledge:8081
-      kuiperUrl: http://kuiper:9081
-      tdengineUrl: http://td-engine:9085
-      pubSubHost: mqtt
-      pubSubPort: 1883
+      fledge:
+        hostUrl: http://fledge:8081
+        north:
+          default:
+            type: mqtt
+            topic: fledge
+        readiness:
+          httpGet: /fledge/ping
+      kuiper:
+        hostUrl: http://kuiper:9081
+        rules:
+          default:
+            type: mqtt
+            topic: kuiper
+      tdengine:
+        hostUrl: http://td-engine:9085
+        south:
+          default:
+            dbName: iotdb
+            sTable: meters
+    broker:
+      host: mqtt
+      port: 1883
   profile.yaml: |-
     profile:
       - fledge:
           south:
             - type: mqtt-readings
               topic: Room1/Condition
+              installPlugin: true
       - kuiper:
           stream:
             - sql: 'create stream events () WITH ( datasource = \"fledge\", FORMAT = \"json\")'
@@ -23,17 +42,18 @@ data:
               actions:
                 - type: mqtt
       - tdengine:
-          dbName: iotdb
-          sTable: meters
-          topic: kuiper
-          tableNameJqPath: .asset
-          dataMapping:
-            - field: ts
-              jqPath: .timestamp
-              dataType: TIMESTAMP
-            - field: temperature
-              jqPath: .temperature
-              dataType: TINYINT
+          south:
+            - dbName: iotdb
+              sTable: meters
+              topic: kuiper
+              tableNameJqPath: .asset
+              dataMapping:
+                - field: ts
+                  jqPath: .timestamp
+                  dataType: TIMESTAMP
+                - field: temperature
+                  jqPath: .temperature
+                  dataType: TINYINT
 kind: ConfigMap
 metadata:
   name: profile-conf
