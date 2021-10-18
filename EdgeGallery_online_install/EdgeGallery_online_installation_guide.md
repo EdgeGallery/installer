@@ -1,5 +1,5 @@
 
-### 1.2 Version EdgeGallery Online Install Guide 
+### 1.3 Version EdgeGallery Online Install Guide 
 #### 安装环境要求：
 1.服务器或虚拟机架构：x86_64或 arm_64  \
 2.服务器或虚拟机的配置要求：不低于4cpu 16G内存 100G硬盘  \
@@ -19,7 +19,7 @@ https://gitee.com/edgegallery/installer/blob/master/EdgeGallery_online_install/d
 #### 四、安装nfs持久化
 ##### 1. 安装nfs服务
   apt-get install nfs-kernel-server \
-  mkdir -p /edgegallery/data/   \
+  mkdir -p /edgegallery/data   \
   chmod -R 755 /edgegallery/data/  \
   vim /etc/exports  \
   /nfs/data/ 192.168.11.0/24(rw,no_root_squash,sync) #设置挂载本机数据的机器ip或网段  \
@@ -185,6 +185,7 @@ https://gitee.com/edgegallery/installer/blob/master/EdgeGallery_online_install/d
       --set mepm.postgres.k8spluginDbPass=XXXXX   \ \
       --set mepm.postgres.ospluginDbPass=XXXXX  \ \
       --set mepm.postgres.apprulemgrDbPass=XXXXX
+
 ##### 10、install mep 
 ##### 10.1 创建路由 
   ip link add eg-mp1 link eth0 type macvlan mode bridge  #用自己本机的网卡名替代eth0  \
@@ -198,6 +199,9 @@ https://gitee.com/edgegallery/installer/blob/master/EdgeGallery_online_install/d
   eg-if.cfg文件地址：
   https://gitee.com/edgegallery/installer/blob/master/EdgeGallery_online_install/eg-if.cfg
   cp eg-if.cfg  /etc/network/interfaces.d/  
+
+##### 10.2 create namespaces mep
+  kubectl create ns mep 
 
 ##### 10.3 安装mep-network
   multus.yaml、eg-sp-rbac.yaml、eg-sp-controller.yaml的下载地址:
@@ -222,3 +226,11 @@ https://gitee.com/edgegallery/installer/blob/master/EdgeGallery_online_install/d
      --set networkIsolation.phyInterface.mm5=eth0   \ \
      --set ssl.secretName=mep-ssl \ \
      --set postgres.kongPass=XXXXX      #需要把eth0替换为自己的网卡名
+##### 11. 安装file-system
+  helm install file-system-edgegallery --set filesystem.hostVMImagePath=/edgegallery/filesystem/images    --set postgres.password=XXXXX   -f  edgegallery-values.yaml 
+##### 12. 安装healthcheck
+  helm install healthcheck-edgegallery   helm-charts/healthcheck  --set healthcheck.localIp=PORT_IP  -f    edgegallery-values.yaml
+##### 13. 安装healthcheck-m
+  helm install healthcheck-m-edgegallery   helm-charts/healthcheck-m  --set healthcheckm.localIp=PORT_IP   -f    edgegallery-values.yaml
+##### 13. 安装edgegallery-fe
+  helm install edgegallery-fe   helm-charts/edgegallery-fe  --set global.oauth2.clients.appstore.clientSecret=YYYYY  -f   edgegallery-values.yaml
