@@ -16,7 +16,7 @@
 ---
 
 - name: Create SSL Certs
-  shell: "docker run --rm -e CERT_VALIDITY_IN_DAYS={{ CERT_VALIDITY_IN_DAYS }} -v {{ TARBALL_PATH }}/conf/keys/:/certs edgegallery/deploy-tool:{{ EG_IMAGE_TAG }}"
+  shell: "docker run --rm -e CERT_VALIDITY_IN_DAYS={{ CERT_VALIDITY_IN_DAYS }} -e CERT_PASSWORD={{ certPassword }} -v {{ TARBALL_PATH }}/conf/keys/:/certs edgegallery/deploy-tool:{{ EG_IMAGE_TAG }}"
 
 - name: Create Secret edgegallery-ssl-secret
   shell: |

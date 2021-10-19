@@ -65,9 +65,6 @@ HEALTHCHECK_M_PORT: 32757
 # Set the Passwords for developer OpenStack Ubuntu VM
 developerVMImagePassword: 123456
 
-# certPassword is used for generating SSL keys
-certPassword: te9Fmv%qaq
-
 # used for signature
 SIGNATURE_SECRET_NAME: edgegallery-signature-secret
 
