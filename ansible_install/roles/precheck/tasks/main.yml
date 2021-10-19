@@ -1,0 +1,69 @@
+#
+#   Copyright 2021 Huawei Technologies Co., Ltd.
+#
+#   Licensed under the Apache License, Version 2.0 (the "License");
+#   you may not use this file except in compliance with the License.
+#   You may obtain a copy of the License at
+#
+#       http://www.apache.org/licenses/LICENSE-2.0
+#
+#   Unless required by applicable law or agreed to in writing, software
+#   distributed under the License is distributed on an "AS IS" BASIS,
+#   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+#   See the License for the specific language governing permissions and
+#   limitations under the License.
+
+---
+- name: Set Disk threshold
+  set_fact:
+    DISK_THRESHOLD: 100
+
+- name: Set Image count threshold
+  set_fact:
+    IMAGE_THRESHOLD: 10
+
+- name: Read Disk Space
+  shell: df -h / | awk 'NR==2 {print substr($4, 1, length($4)-1)}'
+  register: diskSize
+
+- name: Read EG image count
+  shell: docker images | grep edgegallery | wc -l
+  register: imageCount
+
+- name: Check Disk Space
+  fail:
+    msg: Atleast 100GB disk space is required.
+  when: diskSize.stdout | int < DISK_THRESHOLD and imageCount.stdout | int < IMAGE_THRESHOLD
+
+- name: Check Disk Space
+  debug:
+    msg: Atleast 100GB disk space is required.
+  when: diskSize.stdout | int < DISK_THRESHOLD and imageCount.stdout | int > IMAGE_THRESHOLD
+
+- name: Read Ram Size
+  shell: free -g | awk 'NR==2 {print $2}'
+  register: ramSize
+
+- name: Check RAM
+  fail:
+    msg: Atleast 16GB RAM is required.
+  when: ramSize.stdout | int < 15
+
+- name: Read CPU Size
+  shell: lscpu | grep CPU\(s\) | awk 'NR==1 {print $2}'
+  register: cpuSize
+
+- name: Check CPU
+  fail:
+    msg: Atleast 4 CPU's are required.
+  when: cpuSize.stdout | int < 4
+
+- name: print info
+  vars:
+    msg: |
+      Hardware requirements are satisfied...
+      Available Disk Space: {{ diskSize.stdout }} GB
+      RAM: {{ ramSize.stdout | int + 1 }} GB
+      CPU: {{ cpuSize.stdout }}
+  debug:
+    msg: "{{ msg.split('\n') }}"
