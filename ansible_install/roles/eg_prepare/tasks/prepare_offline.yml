@@ -91,7 +91,7 @@
     block: | 
       [Install]
       WantedBy=multi-user.target
-  ignore_errors: yes
+  
   
 - name: Remove rc.local.service file blank lines blockinfile put in
   replace:
@@ -111,8 +111,7 @@
       #!/bin/bash
       sleep 10 
       swapoff -a
-      chmod 0666 /var/run/docker.sock 
-      systemctl start docker 
+      systemctl start docker
       cd  /home/edgegallery-offline/harbor/harbor
       docker-compose start 
       ip link add eg-mp1 link {{ EG_NODE_EDGE_MP1}} type macvlan mode bridge
@@ -121,11 +120,16 @@
       ip link add eg-mm5 link {{EG_NODE_EDGE_MM5}} type macvlan mode bridge
       ip addr add 100.1.1.{{ ipPrefix }}/24 dev eg-mm5
       ip link set dev eg-mm5 up
+      DOCKER_STATUS =`systemctl status dpcker | grep Active | awk '{print $3}' | cut -d "(" -f2 | cut -d ")" -f1`
+      while [ "$DOCKER_STATUS" == "running" ]  
+      do 
+          chmod 0666 /var/run/docker.sock  
+      done
       exit 0
   when: NODE_MODE == "aio"
-  ignore_errors: yes
+  
 
-- name: add docker-harbor and aio muno mode network_interface cmd
+- name: add docker-harbor and  muno mode network_interface cmd
   blockinfile:
     path: /etc/rc.local
     create: yes
@@ -137,7 +141,6 @@
       #!/bin/bash
       sleep 10 
       swapoff -a
-      chmod 0666 /var/run/docker.sock 
       systemctl start docker
       cd  /home/edgegallery-offline/harbor/harbor
       docker-compose start 
@@ -151,20 +154,25 @@
       ip link add eg-mm5 link vxlan-mm5 type macvlan mode bridge
       ip addr add 100.1.1.{{ ipPrefix }}/24 dev eg-mm5
       ip link set dev eg-mm5 up
-      exit 0
+      DOCKER_STATUS =`systemctl status dpcker | grep Active | awk '{print $3}' | cut -d "(" -f2 | cut -d ")" -f1`
+      while [ "$DOCKER_STATUS" == "running" ]  
+      do 
+           chmod 0666 /var/run/docker.sock  
+      done
+      exit 0  
   when: NODE_MODE == "muno"
-  ignore_errors: yes
+  
   
 - name: Remove blank lines blockinfile put in
   lineinfile:
     path: /etc/rc.local
     state: absent
     regexp: '^$'
-  ignore_errors: yes
+  
 
 - name: Restart rc.local.service
   service:
     name: rc.local.service
     enabled: yes
     state: restarted 
-  ignore_errors: yes 
+  
