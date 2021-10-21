@@ -715,7 +715,7 @@ spec:
               metadataPort:
                 description: 'MetadataPort is the port of the metadata server. This,
                   combined with global.MetadataAddr (if not ‘None’), is used to set
-                  up a NAT rule, from 169.254.169.254:80 to MetadataAddr:MetadataPort.
+                  up a NAT rule, from xxx.xxx.xxx.xxx:80 to MetadataAddr:MetadataPort.
                   In most cases this should not need to be changed [Default: 8775].'
                 type: integer
               natOutgoingAddress:
