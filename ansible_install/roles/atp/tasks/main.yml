@@ -17,7 +17,7 @@
  
 - name: Set Portal IP
   set_fact:
-    PORTAL_IP: "{{ groups.master[0] }}"
+    PORTAL_IP: "{{ MASTER_IP }}"
   when: PORTAL_IP is undefined
 
 - name: Check USER_MGMT Status
@@ -35,7 +35,7 @@
 
 - name: Set Registry URL for Multi Node
   set_fact:
-    REGISTRY_URL: "{{ groups.master[0] }}:5000/"
+    REGISTRY_URL: "{{ MASTER_IP }}:5000/"
   when: NODE_MODE == "muno"
 
 - name: Set Registry URL for AIO

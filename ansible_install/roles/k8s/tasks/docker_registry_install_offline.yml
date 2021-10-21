@@ -21,11 +21,11 @@
     dest: /tmp/docker-daemon-update.py
 
 - name: Running script docker-daemon-update.py to append daemon.json for amd64
-  shell: "python3 /tmp/docker-daemon-update.py {{ groups.master[0] }}:5000 {{ HarborIP }}"
+  shell: "python3 /tmp/docker-daemon-update.py {{ MASTER_IP }}:5000 {{ HarborIP }}"
   when: HarborIP is defined
 
 - name: Running script docker-daemon-update.py to append daemon.json for arm64
-  shell: "python3 /tmp/docker-daemon-update.py {{ groups.master[0] }}:5000"
+  shell: "python3 /tmp/docker-daemon-update.py {{ MASTER_IP }}:5000"
   when: HarborIP is undefined
 
 - name: Copy Docker daemon.json From Master Node to Deploy Node

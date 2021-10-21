@@ -21,9 +21,9 @@
     --set images.healthcheckm.repository={{ healthcheckm_images_repository }} \
     --set images.healthcheckm.tag={{ EG_IMAGE_TAG }} \
     --set images.healthcheckm.pullPolicy={{ healthcheckm_images_pullPolicy }} \
-    --set healthcheckm.localIp={{ groups.master[0] }}
+    --set healthcheckm.localIp={{ MASTER_IP }}
 
 - name: Check healthcheck-m Status
   uri:
-    url: "http://{{ groups.master[0] }}:{{ HEALTHCHECK_M_PORT }}/health-check/v1/center/health"
+    url: "http://{{ MASTER_IP }}:{{ HEALTHCHECK_M_PORT }}/health-check/v1/center/health"
     validate_certs: no

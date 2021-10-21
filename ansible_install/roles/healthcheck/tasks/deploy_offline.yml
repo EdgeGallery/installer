@@ -21,9 +21,9 @@
     --set images.healthcheck.repository={{ healthcheck_images_repository }} \
     --set images.healthcheck.tag={{ EG_IMAGE_TAG }} \
     --set images.healthcheck.pullPolicy={{ healthcheck_images_pullPolicy }} \
-    --set healthcheck.localIp={{ groups.master[0] }}
+    --set healthcheck.localIp={{ MASTER_IP }}
 
 - name: Check healthcheck Status
   uri:
-    url: "http://{{ groups.master[0] }}:{{ HEALTHCHECK_PORT }}/health-check/v1/edge/action/start"
+    url: "http://{{ MASTER_IP }}:{{ HEALTHCHECK_PORT }}/health-check/v1/edge/action/start"
     validate_certs: no

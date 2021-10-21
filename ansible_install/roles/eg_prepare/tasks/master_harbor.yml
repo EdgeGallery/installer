@@ -17,7 +17,7 @@
 
 - name: Install Harbor on Master Node
   include: "install_harbor.yml"
-  when: ((PORTAL_IP is defined and HarborIP == PORTAL_IP) or HarborIP == groups.master[0]) and ARCH == "amd64"
+  when: ((PORTAL_IP is defined and HarborIP == PORTAL_IP) or HarborIP == MASTER_IP) and ARCH == "amd64"
 
 - name: Docker Login Harbor
   shell: docker login -u admin -p {{ HARBOR_ADMIN_PASSWORD }} {{ HarborIP }}

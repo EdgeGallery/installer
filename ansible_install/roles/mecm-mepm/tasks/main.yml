@@ -38,7 +38,7 @@
 
 - name: Set Registry URL for Multi Node
   set_fact:
-    REGISTRY_URL: "{{ groups.master[0] }}:5000/"
+    REGISTRY_URL: "{{ MASTER_IP }}:5000/"
   when: NODE_MODE == "muno"
 
 - name: Set Registry URL for AIO
@@ -58,7 +58,7 @@
 
 - name: Set CONTROLLER_MASTER_IP for osplugin
   set_fact:
-    CONTROLLER_MASTER_IP: "{{ groups.master[0] }}"
+    CONTROLLER_MASTER_IP: "{{ MASTER_IP }}"
   when: CONTROLLER_MASTER_IP is undefined
 
 - name: Check EG_MODE for MECM-MEPM

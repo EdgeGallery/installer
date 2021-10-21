@@ -27,7 +27,7 @@
 
 - name: Set Registry URL for Multi Node
   set_fact:
-    REGISTRY_URL: "{{ groups.master[0] }}:5000/"
+    REGISTRY_URL: "{{ MASTER_IP }}:5000/"
   when: NODE_MODE == "muno"
 
 - name: Set Registry URL for AIO
@@ -42,7 +42,7 @@
 
 - name: Set Harbor IP to Matser IP
   set_fact:
-    HarborIP: "{{ groups.master[0] }}"
+    HarborIP: "{{ MASTER_IP }}"
   when: PORTAL_IP is undefined and K8S_NODE_TYPE == "master"
 
 - name: Check whether k3s is installed

@@ -16,7 +16,7 @@
 ---
 
 - name: Install k8s with kubeadm
-  shell: "kubeadm init --kubernetes-version=v1.18.7 --apiserver-advertise-address={{ groups.master[0] }} --pod-network-cidr=10.244.0.0/16 -v=5"
+  shell: "kubeadm init --kubernetes-version=v1.18.7 --apiserver-advertise-address={{ MASTER_IP }} --pod-network-cidr=10.244.0.0/16 -v=5"
 
 - name: Create the Directory for Kube Config
   file:

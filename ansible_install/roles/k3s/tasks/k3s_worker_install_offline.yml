@@ -16,7 +16,7 @@
 
 - name: Copy k3s nodeToken From Deploy Node to Worker Node
   copy:
-    src: "/home/{{ groups.master[0] }}/var/lib/rancher/k3s/server/node-token"
+    src: "/home/{{ MASTER_IP }}/var/lib/rancher/k3s/server/node-token"
     dest: "{{K8S_OFFLINE_DIR}}/node-token"
 
 - name: Cat nodetoken
@@ -33,7 +33,7 @@
   command: sudo cp "{{ TARBALL_PATH }}"/k3s /usr/local/bin/
 
 - name: Install k3s
-  shell: INSTALL_K3S_SKIP_DOWNLOAD=true K3S_URL=https://{{ groups.master[0] }}:6443 K3S_TOKEN={{ NODE_TOKEN.stdout }}  "{{ TARBALL_PATH }}"/k3s-install.sh
+  shell: INSTALL_K3S_SKIP_DOWNLOAD=true K3S_URL=https://{{ MASTER_IP }}:6443 K3S_TOKEN={{ NODE_TOKEN.stdout }}  "{{ TARBALL_PATH }}"/k3s-install.sh
 
 - name: Create k3s directory
   shell: mkdir -p /etc/rancher/k3s
@@ -47,7 +47,7 @@
   replace:
     path: /etc/rancher/k3s/registries.yaml
     regexp: PRIVATE_REGISTRY_IP
-    replace: "{{ groups.master[0] }}"
+    replace: "{{ MASTER_IP }}"
 
 - name: Restart k3s-agent
   shell: systemctl restart k3s-agent

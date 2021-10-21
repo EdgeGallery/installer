@@ -58,7 +58,7 @@
 
 - name: Set Docker daemon.json on Worker Node
   copy:
-    src: "/home/{{ groups.master[0] }}/etc/docker/daemon.json"
+    src: "/home/{{ MASTER_IP }}/etc/docker/daemon.json"
     dest: /etc/docker/
   when: NODE_MODE == "muno" and K8S_NODE_TYPE == "worker"
 
