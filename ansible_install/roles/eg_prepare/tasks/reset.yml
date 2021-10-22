@@ -29,7 +29,6 @@
 
 - name: Delete Harbor Secret
   shell: kubectl delete secret harbor
-  when: K8S_NODE_TYPE == "master" and EG_MODE != "edge" and ARCH == "amd64"
   ignore_errors: yes
 
 - name: Remove Harbor Certs
