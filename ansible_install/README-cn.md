@@ -83,7 +83,7 @@ EdgeGallery离线安装是为单机环境提供的安装方式，便于各种只
 
 ### 2.3 下载EdgeGallery离线安装包
 
-EdgeGallery的所有离线安装包均可在EdgeGallery官网进行下载。请[点击进入官网下载页面](https://www.edgegallery.org/download/)，选择对应架构（x86或arm64）下的边缘（edge）部署、中心（controller）部署或边缘+中心（all）部署对应的离线安装包。
+EdgeGallery的所有离线安装包均可在EdgeGallery官网进行下载。请[点击进入官网下载页面](https://www.edgegallery.org/software-download-4/)，选择对应架构（x86或arm64）下的边缘（edge）部署、中心（controller）部署或边缘+中心（all）部署对应的离线安装包。
 
 本指导以x86-all为例，介绍如何在x86环境下进行EdgeGallery的单节点与多节点部署。
 
@@ -164,6 +164,12 @@ EdgeGallery的所有离线安装包均可在EdgeGallery官网进行下载。请[
     xxx.xxx.xxx.xxx
     ```
 
+- Ansible控制节点与master是同一节点，可以使用localhost替代IP，以加快文件拷贝速度。
+    ```
+    [master]
+    localhost ansible_connection=local
+    ```
+
 - ssh的端口不是默认的22端口时：
 
     ```
@@ -208,6 +214,9 @@ EdgeGallery的所有离线安装包均可在EdgeGallery官网进行下载。请[
   # 若基于k3s部署EG，则持久化必须设置成false，当前暂不支持k3s场景下的数据持久化
   ENABLE_PERSISTENCE: true
 
+  # 集群的Master节点的私网IP
+  MASTER_IP: xxx.xxx.xxx.xxx
+
   # Appstore，developer等页面的访问ip，默认为host inventory文件中给出的master节点的IP，可在此设置为master节点的公网IP
   # PORTAL_IP: xxx.xxx.xxx.xxx
 
@@ -249,6 +258,9 @@ EdgeGallery的所有离线安装包均可在EdgeGallery官网进行下载。请[
 
   # user-mgmt模块涉及的redis密码，不提供默认值，必须由用户自行设定
   userMgmtRedisPassword: xxxxx
+
+  # 所有用到的证书生成时使用的密码
+  certPassword: xxxxx
   ```
 
 ### 3.4. 执行部署

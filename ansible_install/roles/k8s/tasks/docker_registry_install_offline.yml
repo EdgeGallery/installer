@@ -31,7 +31,7 @@
 - name: Copy Docker daemon.json From Master Node to Deploy Node
   fetch:
     src: /etc/docker/daemon.json
-    dest: "/home"
+    dest: "/home/{{ MASTER_IP }}/"
 
 - name: Restart Docker Service
   service:

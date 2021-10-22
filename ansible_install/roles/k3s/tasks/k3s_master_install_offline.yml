@@ -46,4 +46,4 @@
 - name: Copy nodeToken to Deploy Node
   fetch:
     src: "/var/lib/rancher/k3s/server/node-token"
-    dest: "/home/"
+    dest: "/home/{{ MASTER_IP }}/"

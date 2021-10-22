@@ -36,6 +36,11 @@
     ARCH: arm64
   when: ansible_architecture == "aarch64"
 
+- name: Check MASTER_IP Param
+  fail:
+    msg: "Param MASTER_IP in var.yml is not defined"
+  when: MASTER_IP is undefined or MASTER_IP is none
+
 - name: Set Registry URL for Multi Node
   set_fact:
     REGISTRY_URL: "{{ MASTER_IP }}:5000/"

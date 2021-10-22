@@ -16,7 +16,7 @@
 
 - name: Copy k3s nodeToken From Deploy Node to Worker Node
   copy:
-    src: "/home/{{ MASTER_IP }}/var/lib/rancher/k3s/server/node-token"
+    src: "/home/{{ MASTER_IP }}/{{ groups.master[0] }}/var/lib/rancher/k3s/server/node-token"
     dest: "{{K8S_OFFLINE_DIR}}/node-token"
 
 - name: Cat nodetoken

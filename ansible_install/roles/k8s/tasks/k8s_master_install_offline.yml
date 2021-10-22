@@ -41,7 +41,7 @@
 - name: Copy k8s-worker.sh to Deploy Node
   fetch:
     src: "{{ item }}"
-    dest: "/home/"
+    dest: "/home/{{ MASTER_IP }}/"
   loop:
     - "{{ K8S_OFFLINE_DIR }}/k8s-worker.sh"
     - "/root/.kube/config"

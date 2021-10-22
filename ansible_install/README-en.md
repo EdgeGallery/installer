@@ -91,7 +91,7 @@ The same as online installation, the offline installation is also based on Ubunt
 
 ### 2.3 Download EdgeGallery Offline Package
 
-All EG offline packages could be found on [EdgeGallery Download Page](https://www.edgegallery.org/en/downloaden/).
+All EG offline packages could be found on [EdgeGallery Download Page](https://www.edgegallery.org/en/software-download-2-2/).
 Users need to choose the package with exact architecture (x86 or arm64) and EG Mode (edge, controller or all).
 
 The following guide takes x86 architecture and "all" mode (edge + controller) as the example to introduce
@@ -182,6 +182,13 @@ Please refer to the files, `hosts-aio` and `hosts-muno` under `/home/EdgeGallery
     xxx.xxx.xxx.xxx
     ```
 
+- If Ansible Controller Node and the cluster master node are the same one, can use localhost instead of IP which can speed up the deployment.
+
+    ```
+    [master]
+    localhost ansible_connection=local
+    ```
+
 - SSH port is not the default value 22, should add some more info about the ssh port
 
     ```
@@ -231,6 +238,9 @@ Also the Ansible controller node can also act as one of the master or worker nod
   # for k3s, could only be false because k3s doesn't support persistence storage now
   ENABLE_PERSISTENCE: true
 
+  # One IP of the cluster master node
+  MASTER_IP: xxx.xxx.xxx.xxx
+
   # ip for portals, will be set to private IP of master node default or reset it to be the public IP of master node here
   # PORTAL_IP: xxx.xxx.xxx.xxx
 
@@ -272,6 +282,9 @@ Also the Ansible controller node can also act as one of the master or worker nod
 
   # Redis Password used by user mgmt, no default value, must set by users here
   userMgmtRedisPassword: xxxxx
+
+  # certPassword is used for generating SSL keys
+  certPassword: xxxxx
   ```
 
 ### 3.4. How to Deploy

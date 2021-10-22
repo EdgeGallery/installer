@@ -17,7 +17,7 @@
 
 - name: Copy k8s-worker.sh From Deploy Node to Worker Node
   copy:
-    src: "/home/{{ MASTER_IP }}{{ K8S_OFFLINE_DIR }}/k8s-worker.sh"
+    src: "/home/{{ MASTER_IP }}/{{ groups.master[0] }}/{{ K8S_OFFLINE_DIR }}/k8s-worker.sh"
     dest: "{{K8S_OFFLINE_DIR}}/k8s-worker.sh"
 
 - name: Create ~/.kube Directory on Worker Node
@@ -27,7 +27,7 @@
 
 - name: Copy kube config From Deploy Node to Worker Node
   copy:
-    src: "/home/{{ MASTER_IP }}/root/.kube/config"
+    src: "/home/{{ MASTER_IP }}/{{ groups.master[0] }}/root/.kube/config"
     dest: "/root/.kube/"
 
 - name: Execute File k8s-worker.sh
