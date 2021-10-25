@@ -14,8 +14,8 @@
 #   limitations under the License.
 
 # The image tag here could only be latest, and helm tag could only be 1.1.0
-EG_IMAGE_TAG: v1.3.0
-HELM_TAG: 1.3.0
+EG_IMAGE_TAG: v1.3.1
+HELM_TAG: 1.3.1
 
 # Mode for online or offline install, currently only support offline
 NETWORK_MODE: offline
