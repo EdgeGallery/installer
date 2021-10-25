@@ -171,7 +171,7 @@
     block: |
       cd /home/edgegallery-offline/harbor/harbor
       docker-compose start
-  when: ((PORTAL_IP is defined and HarborIP == PORTAL_IP) or HarborIP == MASTER_IP) and ARCH == "amd64"
+  when: ((PORTAL_IP is defined and HarborIP == PORTAL_IP) or HarborIP == groups.master[0]) and ARCH == "amd64"
 
 - name: Remove blank lines blockinfile put in
   lineinfile:
