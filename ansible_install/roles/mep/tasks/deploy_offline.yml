@@ -91,7 +91,8 @@
     --set images.ntp.pullPolicy={{ mep_images_ntp_pullPolicy }} \
     --set ssl.secretName={{ mep_ssl_secretName }} \
     --set global.persistence.enabled={{ ENABLE_PERSISTENCE }} \
-    --set postgres.kongPass={{ postgresPassword }}
+    --set postgres.kongPass={{ postgresPassword }} \
+    --set mepauthProperties.jwtPrivateKey={{ certPassword }}
   no_log: true
   ignore_errors: yes
   register: mep_outp
