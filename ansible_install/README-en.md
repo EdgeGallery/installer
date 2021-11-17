@@ -337,8 +337,7 @@ ansible-playbook --inventory hosts-muno eg_all_muno_install.yml --skip-tags=mep,
 All roles in the deployment are list below. Users could choose some of them according to your own demand.
 
 - init (**mandatory**): Unarchive EG offline package and copy related files to master or worker nodes
-- k8s (optional): choose either k8s or k3s
-- k3s (optional): choose either k8s or k3s
+- k8s (**mandatory**): If you want to install k3s instead pf k8s, please refer [Section 7 install EG based on k3s](#7-install-eg-based-on-k3s)
 - eg_prepare (**mandatory**): Setup for deploying EG which do some network configuration, install Harbor, create some k8s resources et al.
 - mep (**mandatory**): Independent with other EG modules, could deploy or not deploy
 - mecm-mepm (optional): Independent with other EG modules except mep
@@ -429,7 +428,46 @@ When you want to deploy EG on arm64 machines, you need to install Harbor manuall
 
    After installing Harbor successfully on that x86 machine, go on to refer to [Section 3 to deploy EG](#3-edgegallery-deployment) on Ansible Controller Node. 
 
-## 7. Trouble Shoot
+## 7. Install EG Based on k3s
+
+EdgeGallery supports to be installed based on k8s as well as k3s. The configuration of them are totally the same.
+Please refer to [Section 3 to deploy EG](#3-edgegallery-deployment), and then following the next steps to install k3s and EdgeGallery.
+
+### 7.1 Init EG, unarchive EG offline package
+
+```
+# AIO
+ansible-playbook --inventory hosts-aio eg_all_aio_install.yml --tags=init
+
+# Multi-node
+ansible-playbook --inventory hosts-muno eg_all_muno_install.yml --tags=init
+```
+
+### 7.2 Download k3s offline packages and put them in certain path
+
+All the k3s installation packages should be put under the directory define in file `default-var.yml` with section `TARBALL_PATH`.
+The default value is `/home/edgegallery-offline`.
+
+```
+cd /home/edgegallery-offline
+wget https://k3s-offline-install.obs.cn-north-4.myhuaweicloud.com/k3s
+wget https://k3s-offline-install.obs.cn-north-4.myhuaweicloud.com/k3s-install.sh
+wget https://k3s-offline-install.obs.cn-north-4.myhuaweicloud.com/k3s-airgap-images-amd64.tar
+```
+
+### 7.3 Install all other roles
+
+Edit file `g_all_aio_install.yml` or `eg_all_muno_install.yml` and change 'k8s' into 'k3s'. Then run the following commands:
+
+```
+# AIO
+ansible-playbook --inventory hosts-aio eg_all_aio_install.yml --skip-tags=init
+
+# Multi-node
+ansible-playbook --inventory hosts-muno eg_all_muno_install.yml --skip-tags=init
+```
+
+## 8. Trouble Shoot
 
 1. **error**:    fatal: [1.2.3.4]: FAILED! => {"msg": "Timeout (12s) waiting for privilege escalation prompt: "}
 - **solution**: deploy eg as a 'root' user

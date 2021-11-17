@@ -28,7 +28,7 @@
     - ./password-var.yml
   roles:
     - { role: precheck, tags: ['precheck'] }
-    - { role: init, tags: ['init-master','init-worker'] }
+    - { role: init, tags: ['init'] }
 
 - hosts: master
   become: yes

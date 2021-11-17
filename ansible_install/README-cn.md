@@ -310,8 +310,7 @@ ansible-playbook --inventory hosts-muno eg_all_muno_install.yml --skip-tags=mep,
 当前EG部署涉及的所有模块如下所示，用户可以根据需要选择其中的多个模块进行自定义部署。
 
 - init（ **必选** ）：对离线安装包进行解压操作，并将所需文件传输到各待部署节点进行部署准备工作。
-- k8s（可选）：k8s与k3s二选一即可
-- k3s（可选）：k8s与k3s二选一即可
+- k8s（**必选**）：此处仅考虑k8s部署，如果要部署k3s,请参考[第7节基于k3s部署EG](#7-基于k3s部署eg)。
 - eg_prepare（ **必选** ）：EG部署前的必要准备工作，会进行一些特殊的网络配置，harbor安装，其他所需资源创建等。
 - mep（**必选**）：与EG的其他模块无特殊依赖关系，可以选择部署或者不部署。
 - mecm-mepm（可选）：除依赖mep外，与其他模块无特殊依赖关系。
@@ -400,3 +399,46 @@ ansible-playbook --inventory hosts-muno eg_all_muno_install.yml --skip-tags=mep,
 ### 6.3 在Ansible控制节点上部署EG
 
   Harbor部署成功后，可回到[第3节继续进行EG的部署](#3-edgegallery部署)。
+
+## 7. 基于k3s部署EG
+
+  EdgeGallery不仅支持在k8s上部署，也支持在k3s上部署（当前仅提供x86环境的k3s安装包）。
+
+  配置与k8s完全相同，请参考[第3节EG的部署](#3-edgegallery部署)进行部署前的配置工作，然后按照下面步骤进行部署。
+
+### 7.1 初始化EG部署，解压离线安装包
+
+```
+# 单节点部署
+ansible-playbook --inventory hosts-aio eg_all_aio_install.yml --tags=init
+
+# 多节点部署
+ansible-playbook --inventory hosts-muno eg_all_muno_install.yml --tags=init
+```
+
+### 7.2 下载k3s相关安装包，并放置在相应位置
+
+安装包应该放在`default-var.yml`文件中`TARBALL_PATH`所显示的目录下面，默认为`/home/edgegallery-offline`。
+如果是多节点部署，需要在每个节点上做如下操作。
+
+```
+cd /home/edgegallery-offline
+wget https://k3s-offline-install.obs.cn-north-4.myhuaweicloud.com/k3s
+wget https://k3s-offline-install.obs.cn-north-4.myhuaweicloud.com/k3s-install.sh
+wget https://k3s-offline-install.obs.cn-north-4.myhuaweicloud.com/k3s-airgap-images-amd64.tar
+```
+
+### 7.3 安装除init外的所有模块
+
+将`eg_all_aio_install.yml`或者`eg_all_muno_install.yml`里面的k8s换成k3s，然后执行如下命令运行安装部署。
+
+```
+# 单节点部署
+ansible-playbook --inventory hosts-aio eg_all_aio_install.yml --skip-tags=init
+
+# 多节点部署
+ansible-playbook --inventory hosts-muno eg_all_muno_install.yml --skip-tags=init
+```
+
+
+

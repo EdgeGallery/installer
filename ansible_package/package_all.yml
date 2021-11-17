@@ -21,7 +21,6 @@
     - ./var.yml
   roles:
     - init
-    - k3s
     - k8s
     - helm
     - edgegallery
