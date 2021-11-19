@@ -62,9 +62,6 @@ LAB_PORT: 30096
 HEALTHCHECK_PORT: 32759
 HEALTHCHECK_M_PORT: 32757
 
-# Set the Passwords for developer OpenStack Ubuntu VM
-developerVMImagePassword: 123456
-
 # used for signature
 SIGNATURE_SECRET_NAME: edgegallery-signature-secret
 
