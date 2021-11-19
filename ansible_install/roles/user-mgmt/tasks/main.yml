@@ -40,6 +40,39 @@
     PORTAL_IP: "{{ MASTER_IP }}"
   when: PORTAL_IP is undefined
 
+- name: Set Mail Related Params
+  set_fact:
+    usermgmt_mail_host: ""
+    usermgmt_mail_port: ""
+    usermgmt_mail_sender: ""
+    usermgmt_mail_authcode: ""
+  when: usermgmt_mail_authcode == false
+
+- name: Set APPSTORE_ACCESS_URL
+  set_fact:
+    APPSTORE_ACCESS_URL: "https://{{ PORTAL_IP }}:{{ APPSTORE_PORT }}"
+  when: APPSTORE_ACCESS_URL is undefined or APPSTORE_ACCESS_URL is none
+
+- name: Set DEVELOPER_ACCESS_URL
+  set_fact:
+    DEVELOPER_ACCESS_URL: "https://{{ PORTAL_IP }}:{{ DEVELOPER_PORT }}"
+  when: DEVELOPER_ACCESS_URL is undefined or DEVELOPER_ACCESS_URL is none
+
+- name: Set MECM_ACCESS_URL
+  set_fact:
+    MECM_ACCESS_URL: "https://{{ PORTAL_IP }}:{{ MECM_PORT }}"
+  when: MECM_ACCESS_URL is undefined or MECM_ACCESS_URL is none
+
+- name: Set ATP_ACCESS_URL
+  set_fact:
+    ATP_ACCESS_URL: "https://{{ PORTAL_IP }}:{{ ATP_PORT }}"
+  when: ATP_ACCESS_URL is undefined or ATP_ACCESS_URL is none
+
+- name: Set EDGEGALLERY_ACCESS_URL
+  set_fact:
+    EDGEGALLERY_ACCESS_URL: "https://{{ PORTAL_IP }}:{{ EDGEGALLERY_PORT }}"
+  when: EDGEGALLERY_ACCESS_URL is undefined or EDGEGALLERY_ACCESS_URL is none
+
 - name: Check whether USER_MGMT is Deployed
   shell: helm list -A | grep user-mgmt-edgegallery 
   register: userMgmtDeployed

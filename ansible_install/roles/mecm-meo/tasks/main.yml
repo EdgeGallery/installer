@@ -83,6 +83,16 @@
     msg: "Could not {{ OPERATION }} MECM_MEO with EG_MODE: {{ EG_MODE }}"
   when: EG_MODE != "all" and EG_MODE != "controller"
 
+- name: Set MECM_MEO_REDIRECT_URI_PARAM
+  set_fact:
+    MECM_MEO_REDIRECT_URI_PARAM: ""
+  when: MECM_MEO_REDIRECT_URI_PARAM is undefined or MECM_MEO_REDIRECT_URI_PARAM is none
+
+- name: Set AUTH_SERVER_ADDRESS_CLIENT_ACCESS
+  set_fact:
+    AUTH_SERVER_ADDRESS_CLIENT_ACCESS: "https://{{ PORTAL_IP }}:{{ USER_MGMT_PORT }}"
+  when: AUTH_SERVER_ADDRESS_CLIENT_ACCESS is undefined or AUTH_SERVER_ADDRESS_CLIENT_ACCESS is none
+
 - name: Check whether MECM_MEO is Deployed
   shell: helm list -A | grep mecm-meo-edgegallery
   register: mecmMeoDeployed

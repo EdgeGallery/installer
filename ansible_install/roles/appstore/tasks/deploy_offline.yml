@@ -19,6 +19,8 @@
   shell: |
     helm install --wait {{ APPSTORE_HELM_RELEASE_NAME }} {{ HELM_CHARTS_PATH }}/edgegallery/appstore-{{ HELM_TAG }}.tgz \
     --set global.oauth2.authServerAddress=https://{{ PORTAL_IP }}:{{ USER_MGMT_PORT }} \
+    --set global.oauth2.authServerAddressClientAccess={{ AUTH_SERVER_ADDRESS_CLIENT_ACCESS }} \
+    --set global.oauth2.redirectUriParam={{ APPSTORE_REDIRECT_URI_PARAM }} \
     --set global.oauth2.clients.appstore.clientSecret={{ oauth2ClientPassword }} \
     --set images.appstoreFe.repository={{ appstore_images_appstoreFe_repository }} \
     --set images.appstoreBe.repository={{ appstore_images_appstoreBe_repository }} \

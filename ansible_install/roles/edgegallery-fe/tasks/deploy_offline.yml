@@ -21,6 +21,8 @@
     --set global.ssl.enabled={{ edgegalleryFe_global_ssl_enabled }} \
     --set global.ssl.secretName={{ edgegalleryFe_global_ssl_secretName }} \
     --set global.oauth2.authServerAddress=https://{{ PORTAL_IP }}:{{ USER_MGMT_PORT }} \
+    --set global.oauth2.authServerAddressClientAccess={{ AUTH_SERVER_ADDRESS_CLIENT_ACCESS }} \
+    --set global.oauth2.redirectUriParam={{ EDGEGALLERY_FE_REDIRECT_URI_PARAM }} \
     --set global.oauth2.clients.edgegalleryFe.clientSecret={{ oauth2ClientPassword }} \
     --set images.edgegalleryFe.repository={{ edgegalleryFe_repository }} \
     --set images.edgegalleryFe.tag={{ edgegalleryFe_tag }} \

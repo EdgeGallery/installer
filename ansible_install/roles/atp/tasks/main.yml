@@ -53,6 +53,16 @@
     msg: "Could not {{ OPERATION }} ATP with EG_MODE: {{ EG_MODE }}"
   when: EG_MODE != "all" and EG_MODE != "controller"
 
+- name: Set ATP_REDIRECT_URI_PARAM
+  set_fact:
+    ATP_REDIRECT_URI_PARAM: ""
+  when: ATP_REDIRECT_URI_PARAM is undefined or ATP_REDIRECT_URI_PARAM is none
+
+- name: Set AUTH_SERVER_ADDRESS_CLIENT_ACCESS
+  set_fact:
+    AUTH_SERVER_ADDRESS_CLIENT_ACCESS: "https://{{ PORTAL_IP }}:{{ USER_MGMT_PORT }}"
+  when: AUTH_SERVER_ADDRESS_CLIENT_ACCESS is undefined or AUTH_SERVER_ADDRESS_CLIENT_ACCESS is none
+
 - name: Check whether ATP is Deployed
   shell: "helm list -A | grep {{ ATP_HELM_RELEASE_NAME }}"
   register: atpDeployed 
