@@ -21,6 +21,7 @@
     --set images.healthcheck.repository={{ healthcheck_images_repository }} \
     --set images.healthcheck.tag={{ EG_IMAGE_TAG }} \
     --set images.healthcheck.pullPolicy={{ healthcheck_images_pullPolicy }} \
+    --set global.persistence.enabled={{ ENABLE_PERSISTENCE }} \
     --set healthcheck.localIp={{ MASTER_IP }}
 
 - name: Check healthcheck Status
