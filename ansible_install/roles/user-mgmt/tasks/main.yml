@@ -46,7 +46,7 @@
     usermgmt_mail_port: ""
     usermgmt_mail_sender: ""
     usermgmt_mail_authcode: ""
-  when: usermgmt_mail_authcode == false
+  when: usermgmt_mail_enabled == false
 
 - name: Set APPSTORE_ACCESS_URL
   set_fact:
