@@ -56,7 +56,6 @@
     name: docker.service
     state: restarted
 
-  ignore_errors: yes
 - name: Wait For Docker Service Has Been Started
   shell: docker version
   register: dockerStatus

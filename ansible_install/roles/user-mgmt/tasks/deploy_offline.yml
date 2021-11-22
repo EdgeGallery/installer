@@ -51,6 +51,7 @@
     --set global.oauth2.clients.atp.clientAccessUrl={{ ATP_ACCESS_URL }} \
     --set global.oauth2.clients.atp.clientSecret={{ oauth2ClientPassword }} \
     --set global.oauth2.clients.lab.clientUrl=https://{{ PORTAL_IP }}:{{ LAB_PORT }} \
+    --set global.oauth2.clients.lab.clientAccessUrl=https://{{ PORTAL_IP }}:{{ LAB_PORT }} \
     --set global.oauth2.clients.lab.clientSecret={{ oauth2ClientPassword }} \
     --set global.oauth2.clients.edgegallery.clientUrl=https://{{ PORTAL_IP }}:{{ EDGEGALLERY_PORT }} \
     --set global.oauth2.clients.edgegallery.clientAccessUrl={{ EDGEGALLERY_ACCESS_URL }} \
