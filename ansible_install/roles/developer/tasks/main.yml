@@ -83,10 +83,15 @@
     msg: "Could not {{ OPERATION }} DEVELOPER with EG_MODE: {{ EG_MODE }}"
   when: EG_MODE != "all" and EG_MODE != "controller"
 
-- name: Set DEVELOPER_REDIRECT_URI_PARAM
+- name: Set DEVELOPER_REDIRECT_URI_PARAM empty
   set_fact:
     DEVELOPER_REDIRECT_URI_PARAM: ""
-  when: DEVELOPER_REDIRECT_URI_PARAM is undefined or DEVELOPER_REDIRECT_URI_PARAM is none
+  when: DEVELOPER_CLIENT_ACCESS_URL is undefined or DEVELOPER_CLIENT_ACCESS_URL is none
+  
+- name: Set DEVELOPER_REDIRECT_URI_PARAM as DEVELOPER_CLIENT_ACCESS_URL
+  set_fact:
+    DEVELOPER_REDIRECT_URI_PARAM: "?redirect_uri={{ DEVELOPER_CLIENT_ACCESS_URL }}/login"
+  when: DEVELOPER_CLIENT_ACCESS_URL is defined and DEVELOPER_CLIENT_ACCESS_URL is not none
 
 - name: Set AUTH_SERVER_ADDRESS_CLIENT_ACCESS
   set_fact:

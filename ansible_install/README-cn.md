@@ -240,7 +240,12 @@ EdgeGallery的所有离线安装包均可在EdgeGallery官网进行下载。请[
 
   ```
 
-### 3.3. 部署涉及的密码配置
+### 3.3. 通过代理访问EdgeGallery的配置
+
+  如果您需要通过代理来访问EdgeGallery，请按照`EdgeGallery_ProxyAccessConfig_Guide-cn.md`文档说明来配置代理访问所需要的参数。
+
+
+### 3.4. 部署涉及的密码配置
 
   部署所需密码在文件`/home/EdgeGallery-v1.3.0-all-x86/install/password-var.yml`中。 **部署脚本自身不提供密码默认值，需要用户在安装前自行设定密码值。密码必须同时使用大小写字母、数字和特殊符号组合，长度不小于8位，否则会因为密码复杂度无法满足要求而造成部署失败。** 
 
@@ -263,7 +268,7 @@ EdgeGallery的所有离线安装包均可在EdgeGallery官网进行下载。请[
   certPassword: xxxxx
   ```
 
-### 3.4. 执行部署
+### 3.5. 执行部署
 
 执行部署时只需要指定相应的inventory文件（`host-aio`或`host-muno`）和模板文件即可。
 

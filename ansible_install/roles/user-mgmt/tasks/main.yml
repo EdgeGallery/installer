@@ -48,30 +48,55 @@
     usermgmt_mail_authcode: ""
   when: usermgmt_mail_enabled == false
 
-- name: Set APPSTORE_ACCESS_URL
+- name: Set APPSTORE_ACCESS_URL as PORTAL_IP
   set_fact:
     APPSTORE_ACCESS_URL: "https://{{ PORTAL_IP }}:{{ APPSTORE_PORT }}"
-  when: APPSTORE_ACCESS_URL is undefined or APPSTORE_ACCESS_URL is none
+  when: APPSTORE_CLIENT_ACCESS_URL is undefined or APPSTORE_CLIENT_ACCESS_URL is none
 
-- name: Set DEVELOPER_ACCESS_URL
+- name: Set APPSTORE_ACCESS_URL as APPSTORE_CLIENT_ACCESS_URL
+  set_fact:
+    APPSTORE_ACCESS_URL: "{{ APPSTORE_CLIENT_ACCESS_URL }}"
+  when: APPSTORE_CLIENT_ACCESS_URL is defined and APPSTORE_CLIENT_ACCESS_URL is not none
+
+- name: Set DEVELOPER_ACCESS_URL as PORTAL_IP
   set_fact:
     DEVELOPER_ACCESS_URL: "https://{{ PORTAL_IP }}:{{ DEVELOPER_PORT }}"
-  when: DEVELOPER_ACCESS_URL is undefined or DEVELOPER_ACCESS_URL is none
+  when: DEVELOPER_CLIENT_ACCESS_URL is undefined or DEVELOPER_CLIENT_ACCESS_URL is none
 
-- name: Set MECM_ACCESS_URL
+- name: Set DEVELOPER_ACCESS_URL as DEVELOPER_CLIENT_ACCESS_URL
+  set_fact:
+    DEVELOPER_ACCESS_URL: "{{ DEVELOPER_CLIENT_ACCESS_URL }}"
+  when: DEVELOPER_CLIENT_ACCESS_URL is defined and DEVELOPER_CLIENT_ACCESS_URL is not none
+
+- name: Set MECM_ACCESS_URL as PORTAL_IP
   set_fact:
     MECM_ACCESS_URL: "https://{{ PORTAL_IP }}:{{ MECM_PORT }}"
-  when: MECM_ACCESS_URL is undefined or MECM_ACCESS_URL is none
+  when: MECM_CLIENT_ACCESS_URL is undefined or MECM_CLIENT_ACCESS_URL is none
 
-- name: Set ATP_ACCESS_URL
+- name: Set MECM_ACCESS_URL as MECM_CLIENT_ACCESS_URL
+  set_fact:
+    MECM_ACCESS_URL: "{{ MECM_CLIENT_ACCESS_URL }}"
+  when: MECM_CLIENT_ACCESS_URL is defined and MECM_CLIENT_ACCESS_URL is not none
+
+- name: Set ATP_ACCESS_URL as PORTAL_IP
   set_fact:
     ATP_ACCESS_URL: "https://{{ PORTAL_IP }}:{{ ATP_PORT }}"
-  when: ATP_ACCESS_URL is undefined or ATP_ACCESS_URL is none
+  when: ATP_CLIENT_ACCESS_URL is undefined or ATP_CLIENT_ACCESS_URL is none
 
-- name: Set EDGEGALLERY_ACCESS_URL
+- name: Set ATP_ACCESS_URL as ATP_CLIENT_ACCESS_URL
+  set_fact:
+    ATP_ACCESS_URL: "{{ ATP_CLIENT_ACCESS_URL }}"
+  when: ATP_CLIENT_ACCESS_URL is defined and ATP_CLIENT_ACCESS_URL is not none
+
+- name: Set EDGEGALLERY_ACCESS_URL as PORTAL_IP
   set_fact:
     EDGEGALLERY_ACCESS_URL: "https://{{ PORTAL_IP }}:{{ EDGEGALLERY_PORT }}"
-  when: EDGEGALLERY_ACCESS_URL is undefined or EDGEGALLERY_ACCESS_URL is none
+  when: EDGEGALLERY_CLIENT_ACCESS_URL is undefined or EDGEGALLERY_CLIENT_ACCESS_URL is none
+
+- name: Set EDGEGALLERY_ACCESS_URL as EDGEGALLERY_CLIENT_ACCESS_URL
+  set_fact:
+    EDGEGALLERY_ACCESS_URL: "{{ EDGEGALLERY_CLIENT_ACCESS_URL }}"
+  when: EDGEGALLERY_CLIENT_ACCESS_URL is defined and EDGEGALLERY_CLIENT_ACCESS_URL is not none
 
 - name: Check whether USER_MGMT is Deployed
   shell: helm list -A | grep user-mgmt-edgegallery 

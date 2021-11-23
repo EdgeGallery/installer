@@ -83,10 +83,15 @@
     msg: "Could not {{ OPERATION }} APPSTORE with EG_MODE: {{ EG_MODE }}"
   when: EG_MODE != "all" and EG_MODE != "controller"
 
-- name: Set APPSTORE_REDIRECT_URI_PARAM
+- name: Set APPSTORE_REDIRECT_URI_PARAM empty
   set_fact:
     APPSTORE_REDIRECT_URI_PARAM: ""
-  when: APPSTORE_REDIRECT_URI_PARAM is undefined or APPSTORE_REDIRECT_URI_PARAM is none
+  when: APPSTORE_CLIENT_ACCESS_URL is undefined or APPSTORE_CLIENT_ACCESS_URL is none
+
+- name: Set APPSTORE_REDIRECT_URI_PARAM as APPSTORE_CLIENT_ACCESS_URL
+  set_fact:
+    APPSTORE_REDIRECT_URI_PARAM: "?redirect_uri={{ APPSTORE_CLIENT_ACCESS_URL }}/login"
+  when: APPSTORE_CLIENT_ACCESS_URL is defined and APPSTORE_CLIENT_ACCESS_URL is not none
 
 - name: Set AUTH_SERVER_ADDRESS_CLIENT_ACCESS
   set_fact:

@@ -83,10 +83,15 @@
     msg: "Could not {{ OPERATION }} MECM_MEO with EG_MODE: {{ EG_MODE }}"
   when: EG_MODE != "all" and EG_MODE != "controller"
 
-- name: Set MECM_MEO_REDIRECT_URI_PARAM
+- name: Set MECM_MEO_REDIRECT_URI_PARAM empty
   set_fact:
     MECM_MEO_REDIRECT_URI_PARAM: ""
-  when: MECM_MEO_REDIRECT_URI_PARAM is undefined or MECM_MEO_REDIRECT_URI_PARAM is none
+  when: MECM_CLIENT_ACCESS_URL is undefined or MECM_CLIENT_ACCESS_URL is none
+
+- name: Set MECM_MEO_REDIRECT_URI_PARAM as MECM_CLIENT_ACCESS_URL
+  set_fact:
+    MECM_MEO_REDIRECT_URI_PARAM: "?redirect_uri={{ MECM_CLIENT_ACCESS_URL }}/login"
+  when: MECM_CLIENT_ACCESS_URL is defined and MECM_CLIENT_ACCESS_URL is not none
 
 - name: Set AUTH_SERVER_ADDRESS_CLIENT_ACCESS
   set_fact:

@@ -84,14 +84,10 @@ APPSTORE_PACKAGES: /edgegallery/appstore/packages
 FILE_SYSTEM_PACKAGES: /edgegallery/filesystem/images
 
 # Access by proxy for all frontend projects
-# AUTH_SERVER_ADDRESS_CLIENT_ACCESS: http://xxx.xxx.xxx.xxx/xx/xx
-# APPSTORE_REDIRECT_URI_PARAM: http://xxx.xxx.xxx.xxx/xx/xx
-# ATP_REDIRECT_URI_PARAM: http://xxx.xxx.xxx.xxx/xx/xx
-# DEVELOPER_REDIRECT_URI_PARAM: http://xxx.xxx.xxx.xxx/xx/xx
-# EDGEGALLERY_FE_REDIRECT_URI_PARAM: http://xxx.xxx.xxx.xxx/xx/xx
-# MECM_MEO_REDIRECT_URI_PARAM: http://xxx.xxx.xxx.xxx/xx/xx
-# APPSTORE_ACCESS_URL: http://xxx.xxx.xxx.xxx/xx/xx
-# DEVELOPER_ACCESS_URL: http://xxx.xxx.xxx.xxx/xx/xx
-# MECM_ACCESS_URL: http://xxx.xxx.xxx.xxx/xx/xx
-# ATP_ACCESS_URL: http://xxx.xxx.xxx.xxx/xx/xx
-# EDGEGALLERY_ACCESS_URL: http://xxx.xxx.xxx.xxx/xx/xx
+# AUTH_SERVER_ADDRESS_CLIENT_ACCESS: https://xxx.xxx.xxx.xxx/xx/xx
+
+# EDGEGALLERY_CLIENT_ACCESS_URL: https://xxx.xxx.xxx.xxx/xx/xx
+# APPSTORE_CLIENT_ACCESS_URL: https://xxx.xxx.xxx.xxx/xx/xx
+# DEVELOPER_CLIENT_ACCESS_URL: https://xxx.xxx.xxx.xxx/xx/xx
+# MECM_CLIENT_ACCESS_URL: https://xxx.xxx.xxx.xxx/xx/xx
+# ATP_CLIENT_ACCESS_URL: https://xxx.xxx.xxx.xxx/xx/xx
