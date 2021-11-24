@@ -16,7 +16,7 @@
 edgegalleryFe_global_ssl_enabled: true
 edgegalleryFe_global_ssl_secretName: edgegallery-ssl-secret
 
-edgegalleryFe_repository: "{{ REGISTRY_URL }}edgegallery/developer-fe"
+edgegalleryFe_repository: "{{ REGISTRY_URL }}edgegallery/edgegallery-fe"
 edgegalleryFe_initservicecenter_repository: "{{ REGISTRY_URL }}eg-common/curl"
 edgegalleryFe_tag: "{{ EG_IMAGE_TAG }}"
 edgegalleryFe_initservicecenter_tag: 7.75.0
