@@ -98,6 +98,16 @@
     AUTH_SERVER_ADDRESS_CLIENT_ACCESS: "https://{{ PORTAL_IP }}:{{ USER_MGMT_PORT }}"
   when: AUTH_SERVER_ADDRESS_CLIENT_ACCESS is undefined or AUTH_SERVER_ADDRESS_CLIENT_ACCESS is none
 
+- name: Set ATP_ACCESS_URL as PORTAL_IP
+  set_fact:
+    ATP_ACCESS_URL: "https://{{ PORTAL_IP }}:{{ ATP_PORT }}"
+  when: ATP_CLIENT_ACCESS_URL is undefined or ATP_CLIENT_ACCESS_URL is none
+
+- name: Set ATP_ACCESS_URL as ATP_CLIENT_ACCESS_URL
+  set_fact:
+    ATP_ACCESS_URL: "{{ ATP_CLIENT_ACCESS_URL }}"
+  when: ATP_CLIENT_ACCESS_URL is defined and ATP_CLIENT_ACCESS_URL is not none
+
 - name: Check whether APPSTORE is Deployed
   shell: "helm list -A | grep {{ APPSTORE_HELM_RELEASE_NAME }}"
   register: appstoreDeployed 

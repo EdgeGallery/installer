@@ -58,7 +58,7 @@ NAT即网络地址转换。EdgeGallery对这种代理模式的配置无要求。
 
 ## EdgeGallery配置
 
-通过代理访问EdgeGallery，需要在部署EdgeGallery时配置相应的参数。这些参数请在文件`/install/deault-var.yml`中进行配置。
+通过代理访问EdgeGallery，需要在部署EdgeGallery时配置相应的参数。这些参数请在文件`/install/default-var.yml`中进行配置。
 
 ```
 # Auth Server(即User Management）对应的代理访问地址
