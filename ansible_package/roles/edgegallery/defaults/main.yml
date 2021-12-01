@@ -48,6 +48,7 @@ EG_IMAGE_LIST_EDGE_COMMON:
   - swr.cn-north-4.myhuaweicloud.com/edgegallery/mecm-applcm-k8splugin:{{ EG_IMAGE_TAG }}
   - swr.cn-north-4.myhuaweicloud.com/edgegallery/mecm-applcm-osplugin:{{ EG_IMAGE_TAG }}
   - swr.cn-north-4.myhuaweicloud.com/edgegallery/mecm-apprulemgr:{{ EG_IMAGE_TAG }}
+  - swr.cn-north-4.myhuaweicloud.com/edgegallery/mecm-applcm-rescontroller:{{ EG_IMAGE_TAG }}
   - swr.cn-north-4.myhuaweicloud.com/edgegallery/mepm-fe:{{ EG_IMAGE_TAG }}
   - swr.cn-north-4.myhuaweicloud.com/edgegallery/deploy-tool:{{ EG_IMAGE_TAG }}
   - swr.cn-north-4.myhuaweicloud.com/edgegallery/healthcheck:{{ EG_IMAGE_TAG }}

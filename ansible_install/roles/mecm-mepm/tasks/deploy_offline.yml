@@ -65,6 +65,7 @@
     --set images.osplugin.repository={{ mepm_images_osplugin_repository }} \
     --set images.imageops.repository={{ mepm_images_imageops_repository }} \
     --set images.apprulemgr.repository={{ mepm_images_apprulemgr_repository }} \
+    --set images.rescontroller.repository={{ mepm_images_rescontroller_repository }} \
     --set images.mepmFe.repository={{ mepm_images_mepmFe_repository }} \
     --set images.postgres.repository={{ mepm_images_postgres_repository }} \
     --set images.lcmcontroller.tag={{ EG_IMAGE_TAG }} \
@@ -72,6 +73,7 @@
     --set images.osplugin.tag={{ EG_IMAGE_TAG }} \
     --set images.imageops.tag={{ EG_IMAGE_TAG }} \
     --set images.apprulemgr.tag={{ EG_IMAGE_TAG }} \
+    --set images.rescontroller.tag={{ EG_IMAGE_TAG }} \
     --set images.mepmFe.tag={{ EG_IMAGE_TAG }} \
     --set images.postgres.tag={{ mepm_images_postgres_tag }} \
     --set images.lcmcontroller.pullPolicy={{ mepm_images_lcmcontroller_pullPolicy }} \
@@ -79,6 +81,7 @@
     --set images.osplugin.pullPolicy={{ mepm_images_osplugin_pullPolicy }} \
     --set images.imageops.pullPolicy={{ mepm_images_imageops_pullPolicy }} \
     --set images.apprulemgr.pullPolicy={{ mepm_images_apprulemgr_pullPolicy }} \
+    --set images.rescontroller.pullPolicy={{ mepm_images_rescontroller_pullPolicy }} \
     --set images.mepmFe.pullPolicy={{ mepm_images_mepmFe_pullPolicy }} \
     --set images.postgres.pullPolicy={{ mepm_images_postgres_pullPolicy }} \
     --set global.persistence.enabled={{ ENABLE_PERSISTENCE }} \
