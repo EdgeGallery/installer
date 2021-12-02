@@ -51,14 +51,17 @@
     --set global.oauth2.clients.developer.clientSecret={{ oauth2ClientPassword }} \
     --set images.developerFe.repository={{ developer_images_developerFe_repository }} \
     --set images.developerBe.repository={{ developer_images_developerBe_repository }} \
+    --set images.commoncbb.repository={{ developer_images_commoncbb_repository }} \
     --set images.postgres.repository={{ developer_images_postgres_repository }} \
     --set images.initservicecenter.repository={{ developer_images_initservicecenter_repository }} \
     --set images.developerFe.tag={{ developer_images_developerFe_tag }} \
     --set images.developerBe.tag={{ developer_images_developerBe_tag }} \
+    --set images.commoncbb.tag={{ developer_images_commoncbb_tag }} \    
     --set images.postgres.tag={{ developer_images_postgres_tag }} \
     --set images.initservicecenter.tag={{ developer_images_initservicecenter_tag }} \
     --set images.developerFe.pullPolicy={{ developer_images_developerFe_pullPolicy }} \
     --set images.developerBe.pullPolicy={{ developer_images_developerBe_pullPolicy }} \
+    --set images.commoncbb.pullPolicy={{ developer_images_commoncbb_pullPolicy }} \
     --set images.postgres.pullPolicy={{ developer_images_postgres_pullPolicy }} \
     --set images.initservicecenter.pullPolicy={{ developer_images_initservicecenter_pullPolicy }} \
     --set global.ssl.enabled={{ developer_global_ssl_enabled }} \

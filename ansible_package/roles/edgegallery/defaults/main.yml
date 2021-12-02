@@ -43,6 +43,7 @@ EG_IMAGE_LIST_EDGE_COMMON:
   - swr.cn-north-4.myhuaweicloud.com/edgegallery/mep:{{ EG_IMAGE_TAG }}
   - swr.cn-north-4.myhuaweicloud.com/edgegallery/mep-agent:{{ EG_IMAGE_TAG }}
   - swr.cn-north-4.myhuaweicloud.com/edgegallery/mep-dns-server:{{ EG_IMAGE_TAG }}
+  - swr.cn-north-4.myhuaweicloud.com/edgegallery/common-service-cbb:{{ EG_IMAGE_TAG }}
   - swr.cn-north-4.myhuaweicloud.com/edgegallery/edgegallery-secondary-ep-controller:{{ EG_IMAGE_TAG }}
   - swr.cn-north-4.myhuaweicloud.com/edgegallery/mecm-applcm:{{ EG_IMAGE_TAG }}
   - swr.cn-north-4.myhuaweicloud.com/edgegallery/mecm-applcm-k8splugin:{{ EG_IMAGE_TAG }}

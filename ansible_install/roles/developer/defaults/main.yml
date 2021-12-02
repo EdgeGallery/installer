@@ -20,14 +20,17 @@ egView_ssl_secretName: eg-view-ssl-secret
 
 developer_images_developerFe_repository: "{{ REGISTRY_URL }}edgegallery/developer-fe"
 developer_images_developerBe_repository: "{{ REGISTRY_URL }}edgegallery/developer-be"
+developer_images_commoncbb_repository: "{{ REGISTRY_URL }}edgegallery/common-service-cbb"
 developer_images_postgres_repository: "{{ REGISTRY_URL }}eg-common/postgres"
 developer_images_initservicecenter_repository: "{{ REGISTRY_URL }}eg-common/curl"
 developer_images_developerFe_tag: "{{ EG_IMAGE_TAG }}"
 developer_images_developerBe_tag: "{{ EG_IMAGE_TAG }}"
+developer_images_commoncbb_tag: "{{ EG_IMAGE_TAG }}"
 developer_images_postgres_tag: 12.3
 developer_images_initservicecenter_tag: 7.75.0
 developer_images_developerFe_pullPolicy: IfNotPresent
 developer_images_developerBe_pullPolicy: IfNotPresent
+developer_images_commoncbb_pullPolicy: IfNotPresent
 developer_images_postgres_pullPolicy: IfNotPresent
 developer_images_initservicecenter_pullPolicy: IfNotPresent
 developer_global_ssl_enabled: true
