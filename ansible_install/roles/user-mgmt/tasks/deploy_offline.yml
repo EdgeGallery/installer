@@ -78,7 +78,9 @@
     --set mail.host={{ usermgmt_mail_host }} \
     --set mail.port={{ usermgmt_mail_port }} \
     --set mail.sender={{ usermgmt_mail_sender }} \
-    --set mail.authCode={{ usermgmt_mail_authcode }}
+    --set mail.authCode={{ usermgmt_mail_authcode }} \
+    --set externalIam.enabled={{ ENABLE_EXTERNAL_IAM }} \
+    --set externalIam.endpoint={{ EXTERNAL_IAM_ENDPOINT }}
   no_log: true
   ignore_errors: true
   register: user_mgmtout

@@ -83,6 +83,11 @@ EGGROUP_GID: 166
 APPSTORE_PACKAGES: /edgegallery/appstore/packages
 FILE_SYSTEM_PACKAGES: /edgegallery/filesystem/images
 
+# External IAM Config
+ENABLE_EXTERNAL_IAM: false
+# If ENABLE_EXTERNAL_IAM is true, then the following need to be set
+# EXTERNAL_IAM_ENDPOINT: https://xxx.xxx.xxx.xxx
+
 # Access by proxy for all frontend projects
 # AUTH_SERVER_ADDRESS_CLIENT_ACCESS: https://xxx.xxx.xxx.xxx/xx/xx
 

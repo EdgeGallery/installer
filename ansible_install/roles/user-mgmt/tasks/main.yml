@@ -48,6 +48,11 @@
     usermgmt_mail_authcode: ""
   when: usermgmt_mail_enabled == false
 
+- name: Set External IAM Related Params
+  set_fact:
+    EXTERNAL_IAM_ENDPOINT: ""
+  when: ENABLE_EXTERNAL_IAM == false
+
 - name: Set APPSTORE_ACCESS_URL as PORTAL_IP
   set_fact:
     APPSTORE_ACCESS_URL: "https://{{ PORTAL_IP }}:{{ APPSTORE_PORT }}"

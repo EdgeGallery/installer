@@ -268,7 +268,21 @@ EdgeGallery的所有离线安装包均可在EdgeGallery官网进行下载。请[
   certPassword: xxxxx
   ```
 
-### 3.5. 执行部署
+### 3.5. 第三方IAM对接配置
+
+  如果您需要对接使用第三方IAM帐号系统，请修改`/install/default-var.yml`文件，参考如下说明进行配置：
+
+  ```
+  # 打开与第三方IAM对接的配置开关
+  ENABLE_EXTERNAL_IAM: true
+
+  # 使用第三方IAM系统的场景下，需要第三方IAM按照EdgeGallery的要求实现相关接口，这些接口会被EdgeGallery调用
+  # 请参考[开发者指导](http://docs.edgegallery.org/zh_CN/latest/Developer%20Guide/ReadMe.html)中要求第三方IAM实现的接口列表
+  # 该配置项则是EdgeGallery调用第三方IAM的endpoint
+  EXTERNAL_IAM_ENDPOINT: xxxxxxx
+  ```
+
+### 3.6. 执行部署
 
 执行部署时只需要指定相应的inventory文件（`host-aio`或`host-muno`）和模板文件即可。
 
