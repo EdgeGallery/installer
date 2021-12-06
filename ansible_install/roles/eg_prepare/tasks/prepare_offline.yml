@@ -142,24 +142,6 @@
       ip link set dev eg-mm5 up
   when: NODE_MODE == "muno"
 
-- name: Set Mode of docker.sock Autimatically After Reboot VM
-  blockinfile:
-    path: /etc/rc.local
-    create: yes
-    mode: 0733
-    state: present
-    marker: ""
-    insertafter: EOF
-    block: |
-      systemctl start docker
-      timeout=360
-      while [[ ! `docker ps` && $timeout -gt 0 ]];
-      do
-          sleep 5
-          let timeout=$timeout-5
-      done
-      chmod 0666 /var/run/docker.sock
-
 - name: Start Harbor Autimatically After Reboot VM
   blockinfile:
     path: /etc/rc.local
