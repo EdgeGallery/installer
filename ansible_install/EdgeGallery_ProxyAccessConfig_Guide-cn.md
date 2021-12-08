@@ -16,36 +16,43 @@ EdgeGallery支持两种代理访问模式，Nginx反向代理访问模式与NAT�
 
 ### Nginx反向代理配置
 
-针对通过Nginx反向代理访问的场景，EdgeGallery要求按照如下配置来设置路由规则。
+针对通过Nginx反向代理访问的场景，EdgeGallery要求按照如下配置来设置参数与路由规则。
 
 ```
-        location /edgegallery/web/ {
-            proxy_pass https://{PORTAL_IP}:30095/; 
-        }
-        location /edgegallery/usermgmt/ { 
-            proxy_pass https://{PORTAL_IP}:30067/;
-        }
-        location /edgegallery/appstore/ { 
-            proxy_pass https://{PORTAL_IP}:30091/; 
-        }
-        location /edgegallery/developer/ { 
-            proxy_pass https://{PORTAL_IP}:30092/; 
-        }
-        location /edgegallery/mecm/ { 
-            proxy_pass https://{PORTAL_IP}:30093/; 
-        }
-        location /edgegallery/atp/ { 
-            proxy_pass https://{PORTAL_IP}:30094/; 
-        }
-        location /edgegallery/appd/ { 
-            proxy_pass https://{PORTAL_IP}:30087/; 
-        }
-        location /edgegallery/egviewdoc/ { 
-            proxy_pass https://{PORTAL_IP}:30089/; 
-        }
-        location /edgegallery/healthcheck/ { 
-            proxy_pass https://{PORTAL_IP}:32757/; 
-        }
+        proxy_read_timeout 300s;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection "upgrade";
+        client_max_body_size 100m;
+
+        server {
+			location /edgegallery/web/ {
+				proxy_pass https://{PORTAL_IP}:30095/; 
+			}
+			location /edgegallery/usermgmt/ { 
+				proxy_pass https://{PORTAL_IP}:30067/;
+			}
+			location /edgegallery/appstore/ { 
+				proxy_pass https://{PORTAL_IP}:30091/; 
+			}
+			location /edgegallery/developer/ { 
+				proxy_pass https://{PORTAL_IP}:30092/; 
+			}
+			location /edgegallery/mecm/ { 
+				proxy_pass https://{PORTAL_IP}:30093/;
+			}
+			location /edgegallery/atp/ { 
+				proxy_pass https://{PORTAL_IP}:30094/;
+			}
+			location /edgegallery/appd/ { 
+				proxy_pass https://{PORTAL_IP}:30087/; 
+			}
+			location /edgegallery/egviewdoc/ { 
+				proxy_pass https://{PORTAL_IP}:30089/; 
+			}
+			location /edgegallery/healthcheck/ { 
+				proxy_pass https://{PORTAL_IP}:32757/; 
+			}
+		}
 ```
 
 ### NAT访问模式
