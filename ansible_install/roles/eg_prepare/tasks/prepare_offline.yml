@@ -110,6 +110,7 @@
       #!/bin/bash
       sleep 10
       swapoff -a
+      systemctl start docker 
       ip link add eg-mp1 link {{ EG_NODE_EDGE_MP1}} type macvlan mode bridge
       ip addr add 200.1.1.{{ ipPrefix }}/24 dev eg-mp1
       ip link set dev eg-mp1 up
@@ -130,6 +131,7 @@
       #!/bin/bash
       sleep 10
       swapoff -a
+      systemctl start docker 
       ip link add vxlan-mp1 type vxlan id 100 group 239.1.1.1 dstport 4789 dev {{EG_NODE_EDGE_MP1}}
       ip link set vxlan-mp1 up
       ip link add vxlan-mm5 type vxlan id 200 group 239.1.1.1 dstport 4789 dev {{EG_NODE_EDGE_MM5}}
