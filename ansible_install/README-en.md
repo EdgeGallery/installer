@@ -91,7 +91,7 @@ The same as online installation, the offline installation is also based on Ubunt
 
 ### 2.3 Download EdgeGallery Offline Package
 
-All EG offline packages could be found on [EdgeGallery Download Page](https://www.edgegallery.org/en/software-download-2-2/).
+All EG offline packages could be found on [EdgeGallery Download Page](https://www.edgegallery.org/en/).
 Users need to choose the package with exact architecture (x86 or arm64) and EG Mode (edge, controller or all).
 
 The following guide takes x86 architecture and "all" mode (edge + controller) as the example to introduce
@@ -101,7 +101,7 @@ how to deploy EG in both single node and multi nodes cases.
 
     ```
     cd /home
-    tar -xvf EdgeGallery-v1.3.0-all-x86.tar.gz
+    tar -xvf EdgeGallery-v1.5.0-all-x86.tar.gz
     ```
 
 2. Set password-less ssh from Ansible controller node to other nodes
@@ -113,7 +113,7 @@ how to deploy EG in both single node and multi nodes cases.
     sshpass -V
 
     # If not, install sshpass
-    cd /home/EdgeGallery-v1.3.0-all-x86
+    cd /home/EdgeGallery-v1.5.0-all-x86
     dpkg -i -G -E sshpass_1.06-1_amd64.deb
 
     # Check whether sshpass installed successfully
@@ -145,7 +145,7 @@ However, when deploying on arm64 machines, you should prepare a x86 machine and 
 deploying EG on those arm64 machines. That's because Harbor hasn't provided arm64 Docker images now.
 Please [refer to Section 6 to install Harbor manually](#6-how-to-install-harbor-manually-on-x86) before deploying EG.
 
-The following table gives all deployment scenarios pre-defineded in the EG offline package (under `/home/EdgeGallery-v1.3.0-all-x86/install/` directory),
+The following table gives all deployment scenarios pre-defineded in the EG offline package (under `/home/EdgeGallery-v1.5.0-all-x86/install/` directory),
 and you can use them directly to deploy EG.
 
 
@@ -162,7 +162,7 @@ and you can use them directly to deploy EG.
 ### 3.1. How to Config Ansible Inventory
 
 Ansible inventory is used to set the master and worker nodes info which used to ssh to these nodes by Ansible.
-Please refer to the files, `hosts-aio` and `hosts-muno` under `/home/EdgeGallery-v1.3.0-all-x86/install`, to do the Ansible inventory configuration.
+Please refer to the files, `hosts-aio` and `hosts-muno` under `/home/EdgeGallery-v1.5.0-all-x86/install`, to do the Ansible inventory configuration.
 
 - AIO Inventory, replace the exactly master node IP in file `host-aio`:
 
@@ -226,7 +226,7 @@ Also the Ansible controller node can also act as one of the master or worker nod
 
 ### 3.2. How to Set the Parameters
 
-  All parameters that user could set are in file `/home/EdgeGallery-v1.3.0-all-x86/install/var.yml`.
+  All parameters that user could set are in file `install/var.yml`.
 
   ```
   # Set the regex name of the network interface for calico
@@ -263,12 +263,18 @@ Also the Ansible controller node can also act as one of the master or worker nod
   # usermgmt_mail_authcode: xxxxx
   ```
 
-### 3.3. How to Set the Passwords
+### 3.3 How to Config Access of EdgeGallery with Proxy
 
-  All passwords needed are in file `/home/EdgeGallery-v1.3.0-all-x86/install/password-var.yml`. The Ansible scripts
-  don't provide any default password now, and  **all passwords are needed to be given by users before deploying.
-  All passwords must include capital letters, lowercase letters, numbers and special characters and whose
-  length must be no less than 8 characters. Otherwise, the deployment will failed because of these simple passwords.** 
+  If you want to access EdgeGallery portal with proxy, you can following the [doc EdgeGallery_ProxyAccessConfig_Guide-cn.md](https://gitee.com/edgegallery/installer/blob/master/ansible_install/EdgeGallery_ProxyAccessConfig_Guide-cn.md) to do the configuration.
+
+### 3.4 How to Set the Passwords
+
+  All passwords needed are in file `install/password-var.yml`. The Ansible scripts
+  don't provide any default password now, and  **all passwords are needed to be given by users before deploying.**
+
+  **Note: All passwords must include capital letters, lowercase letters, numbers and special characters and whose
+  length must be no less than 8 characters. Also there should be no special characters `&` in it. 
+  Otherwise, the deployment will failed because of these simple passwords.** 
 
   ```
   # Set the Password of Harbor admin account, no default value, must set by users here
@@ -287,12 +293,27 @@ Also the Ansible controller node can also act as one of the master or worker nod
   certPassword: xxxxx
   ```
 
-### 3.4. How to Deploy
+### 3.5 How to Collaborate with 3rd party IAM
+
+  If you want to use the 3rd party IAM system instead of EdgeGallery default one, you can config like below:
+
+  ```
+  # External IAM Config
+  ENABLE_EXTERNAL_IAM: true
+
+  # If ENABLE_EXTERNAL_IAM is true, then the following need to be set
+  EXTERNAL_IAM_ENDPOINT: https://xxx.xxx.xxx.xxx
+  ```
+
+  In this case, the 3rd party IAM system is required to realize the APIs according to the requirements of EdgGallery.
+  Please refer to the [API list](http://docs.edgegallery.org/zh_CN/latest/Developer%20Guide/ReadMe.html).
+
+### 3.6 How to Deploy
 
 It only needs to specify the inventory file (`host-aio` or `host-muno`) and the scenario file when deploying.
 
 ```
-cd /home/EdgeGallery-v1.3.0-all-x86/install
+cd /home/EdgeGallery-v1.5.0-all-x86/install
 
 # AIO Deployment
 ansible-playbook --inventory hosts-aio eg_all_aio_install.yml
@@ -417,7 +438,7 @@ When you want to deploy EG on arm64 machines, you need to install Harbor manuall
 ### 6.2 Config Harbor on Ansible Controller Node
 
    The params related to Harbor should be set on Ansible controller Node before deploying EG.
-   Please set `HarborIP` in the end of file `/home/EdgeGallery-v1.3.0-all-x86/install/default-var.yml` as the IP given in step 2 in the previous section.
+   Please set `HarborIP` in the end of file `install/default-var.yml` as the IP given in step 2 in the previous section.
 
    ```
    # If harbor is setup in a remote system, then mention the remote system IP as harbor IP

@@ -83,7 +83,7 @@ EdgeGallery离线安装是为单机环境提供的安装方式，便于各种只
 
 ### 2.3 下载EdgeGallery离线安装包
 
-EdgeGallery的所有离线安装包均可在EdgeGallery官网进行下载。请[点击进入官网下载页面](https://www.edgegallery.org/software-download-4/)，选择对应架构（x86或arm64）下的边缘（edge）部署、中心（controller）部署或边缘+中心（all）部署对应的离线安装包。
+EdgeGallery的所有离线安装包均可在EdgeGallery官网进行下载。请[点击进入官网下载页面](https://www.edgegallery.org/)，选择对应架构（x86或arm64）下的边缘（edge）部署、中心（controller）部署或边缘+中心（all）部署对应的离线安装包。
 
 本指导以x86-all为例，介绍如何在x86环境下进行EdgeGallery的单节点与多节点部署。
 
@@ -91,7 +91,7 @@ EdgeGallery的所有离线安装包均可在EdgeGallery官网进行下载。请[
 
     ```
     cd /home
-    tar -xvf EdgeGallery-v1.3.0-all-x86.tar.gz
+    tar -xvf EdgeGallery-v1.5.0-all-x86.tar.gz
     ```
 
 2. 配置从部署控制节点到master和worker节点的ssh免密登录
@@ -103,7 +103,7 @@ EdgeGallery的所有离线安装包均可在EdgeGallery官网进行下载。请[
     sshpass -V
 
     # 若未安装，则安装sshpass
-    cd /home/EdgeGallery-v1.3.0-all-x86
+    cd /home/EdgeGallery-v1.5.0-all-x86
     dpkg -i -G -E sshpass_1.06-1_amd64.deb
 
     # 查看sshpass是否安装成功
@@ -144,7 +144,7 @@ EdgeGallery的所有离线安装包均可在EdgeGallery官网进行下载。请[
  
 ### 3.1. 配置待部署节点信息
 
-请参考部署控制节点的`/home/EdgeGallery-v1.3.0-all-x86/install`文件夹里的`hosts-aio`和`hosts-muno`进行节点配置。
+请参考部署控制节点的`/home/EdgeGallery-v1.5.0-all-x86/install`文件夹里的`hosts-aio`和`hosts-muno`进行节点配置。
 
 - 单节点部署配置，将`host-aio`中的信息改成待部署节点IP，如下所示：
 
@@ -204,7 +204,7 @@ EdgeGallery的所有离线安装包均可在EdgeGallery官网进行下载。请[
 
 ### 3.2. 部署涉及的参数配置
 
-  部署输入参数在文件`/home/EdgeGallery-v1.3.0-all-x86/install/var.yml`中。输入参数请参考以下信息进行配置：
+  部署输入参数在文件`install/var.yml`中。输入参数请参考以下信息进行配置：
 
   ```
   # 设置calico所使用的网卡的匹配模式，如下表示使用名为eth0、eth1等的网卡
@@ -242,12 +242,14 @@ EdgeGallery的所有离线安装包均可在EdgeGallery官网进行下载。请[
 
 ### 3.3. 通过代理访问EdgeGallery的配置
 
-  如果您需要通过代理来访问EdgeGallery，请按照`EdgeGallery_ProxyAccessConfig_Guide-cn.md`文档说明来配置代理访问所需要的参数。
+  如果您需要通过代理来访问EdgeGallery，请按照[EdgeGallery_ProxyAccessConfig_Guide-cn.md](https://gitee.com/edgegallery/installer/blob/master/ansible_install/EdgeGallery_ProxyAccessConfig_Guide-cn.md)文档说明来配置代理访问所需要的参数。
 
 
 ### 3.4. 部署涉及的密码配置
 
-  部署所需密码在文件`/home/EdgeGallery-v1.3.0-all-x86/install/password-var.yml`中。 **部署脚本自身不提供密码默认值，需要用户在安装前自行设定密码值。密码必须同时使用大小写字母、数字和特殊符号组合，长度不小于8位，否则会因为密码复杂度无法满足要求而造成部署失败。** 
+  部署所需密码在文件`install/password-var.yml`中。 **部署脚本自身不提供密码默认值，需要用户在安装前自行设定密码值**。
+
+  **注意：密码必须同时使用大小写字母、数字和特殊符号组合，长度不小于8位，不得包含`&`特殊字符，否则会因为密码复杂度无法满足要求或格式错误而造成部署失败。** 
 
   ```
   # 部署过程中搭建的Harbor服务器的admin用户的密码，不提供默认值，必须由用户自行设定
@@ -270,24 +272,24 @@ EdgeGallery的所有离线安装包均可在EdgeGallery官网进行下载。请[
 
 ### 3.5. 第三方IAM对接配置
 
-  如果您需要对接使用第三方IAM帐号系统，请修改`/install/default-var.yml`文件，参考如下说明进行配置：
+  如果您需要对接使用第三方IAM帐号系统，请修改`install/default-var.yml`文件，参考如下说明进行配置。
 
   ```
   # 打开与第三方IAM对接的配置开关
   ENABLE_EXTERNAL_IAM: true
 
-  # 使用第三方IAM系统的场景下，需要第三方IAM按照EdgeGallery的要求实现相关接口，这些接口会被EdgeGallery调用
-  # 请参考[开发者指导](http://docs.edgegallery.org/zh_CN/latest/Developer%20Guide/ReadMe.html)中要求第三方IAM实现的接口列表
   # 该配置项则是EdgeGallery调用第三方IAM的endpoint
   EXTERNAL_IAM_ENDPOINT: xxxxxxx
   ```
+
+  使用第三方IAM系统的场景下，需要第三方IAM按照EdgeGallery的要求实现相关接口，这些接口会被EdgeGallery调用。请参考[开发者指导](http://docs.edgegallery.org/zh_CN/latest/Developer%20Guide/ReadMe.html)中要求第三方IAM实现的接口列表
 
 ### 3.6. 执行部署
 
 执行部署时只需要指定相应的inventory文件（`host-aio`或`host-muno`）和模板文件即可。
 
 ```
-cd /home/EdgeGallery-v1.3.0-all-x86/install
+cd /home/EdgeGallery-v1.5.0-all-x86/install
 
 # 单节点部署
 ansible-playbook --inventory hosts-aio eg_all_aio_install.yml
@@ -408,7 +410,7 @@ ansible-playbook --inventory hosts-muno eg_all_muno_install.yml --skip-tags=mep,
 
 ### 6.2 在Ansible控制节点上配置Harbor
 
-  Harbor参数配置在文件`/home/EdgeGallery-v1.3.0-all-x86/install/default-var.yml`中。需要设置文件末尾的HarborIP参数为6.1节中第2步的x86机器的IP：
+  Harbor参数配置在文件`/home/EdgeGallery-v1.5.0-all-x86/install/default-var.yml`中。需要设置文件末尾的HarborIP参数为6.1节中第2步的x86机器的IP：
 
   ```
   # 如果Harbor是手动部署在本k8s或k3s集群master节点之外的机器，需要设置其IP
