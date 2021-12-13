@@ -110,6 +110,7 @@
       #!/bin/bash
       sleep 10
       swapoff -a
+      systemctl satrt docker 
       ip link add eg-mp1 link {{ EG_NODE_EDGE_MP1}} type macvlan mode bridge
       ip addr add 200.1.1.{{ ipPrefix }}/24 dev eg-mp1
       ip link set dev eg-mp1 up
@@ -130,6 +131,7 @@
       #!/bin/bash
       sleep 10 
       swapoff -a
+      systemctl satrt docker 
       ip link add vxlan-mp1 type vxlan id 100 group 239.1.1.1 dstport 4789 dev {{EG_NODE_EDGE_MP1}}
       ip link set vxlan-mp1 up
       ip link add vxlan-mm5 type vxlan id 200 group 239.1.1.1 dstport 4789 dev {{EG_NODE_EDGE_MM5}}
@@ -141,24 +143,6 @@
       ip addr add 100.1.1.{{ ipPrefix }}/24 dev eg-mm5
       ip link set dev eg-mm5 up
   when: NODE_MODE == "muno"
-
-- name: Set Mode of docker.sock Automatically After Reboot VM
-  blockinfile:
-    path: /etc/rc.local
-    create: yes
-    mode: 0733
-    state: present
-    marker: ""
-    insertafter: EOF
-    block: |
-      systemctl start docker
-      timeout=360
-      while [[ ! `docker ps` && $timeout -gt 0 ]];
-      do
-          sleep 5
-          let timeout=$timeout-5
-      done
-      chmod 0666 /var/run/docker.sock
 
 - name: Start Harbor Automatically After Reboot VM
   blockinfile:
