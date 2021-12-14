@@ -1,0 +1,88 @@
+#
+#   Copyright 2021 Huawei Technologies Co., Ltd.
+#
+#   Licensed under the Apache License, Version 2.0 (the "License");
+#   you may not use this file except in compliance with the License.
+#   You may obtain a copy of the License at
+#
+#       http://www.apache.org/licenses/LICENSE-2.0
+#
+#   Unless required by applicable law or agreed to in writing, software
+#   distributed under the License is distributed on an "AS IS" BASIS,
+#   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+#   See the License for the specific language governing permissions and
+#   limitations under the License.
+
+---
+ 
+- name: Check MASTER_IP Param
+  fail:
+    msg: "Param MASTER_IP in var.yml is not defined"
+  when: MASTER_IP is undefined or MASTER_IP is none
+
+- name: Set Portal IP
+  set_fact:
+    PORTAL_IP: "{{ MASTER_IP }}"
+  when: PORTAL_IP is undefined
+
+- name: Check USER_MGMT Status
+  uri:
+    url: "https://{{ PORTAL_IP }}:{{ USER_MGMT_PORT }}/health"
+    validate_certs: no
+  register: user_mgmt_reachable
+  when: OPERATION == "install"
+  ignore_errors: yes
+
+- name: Failing the Installation as 'user-mgmt' deployement needs to be completed before 'thirdsystem'
+  fail:
+    msg: "'user_mgmt' is not reachable, complete user_mgmt deployment before 'atp'"
+  when: user_mgmt_reachable is failed and OPERATION == "install"
+
+- name: Set Registry URL for Multi Node
+  set_fact:
+    REGISTRY_URL: "{{ MASTER_IP }}:5000/"
+  when: NODE_MODE == "muno"
+
+- name: Set Registry URL for AIO
+  set_fact:
+    REGISTRY_URL: ""
+  when: NODE_MODE == "aio"
+
+- name: Check EG_MODE for THIRD_SYSTEM
+  fail:
+    msg: "Could not {{ OPERATION }} ATP with EG_MODE: {{ EG_MODE }}"
+  when: EG_MODE != "all" and EG_MODE != "controller"
+
+- name: Set AUTH_SERVER_ADDRESS_CLIENT_ACCESS
+  set_fact:
+    AUTH_SERVER_ADDRESS_CLIENT_ACCESS: "https://{{ PORTAL_IP }}:{{ USER_MGMT_PORT }}"
+  when: AUTH_SERVER_ADDRESS_CLIENT_ACCESS is undefined or AUTH_SERVER_ADDRESS_CLIENT_ACCESS is none
+
+- name: Check whether THIRD_SYSTEM is Deployed
+  shell: "helm list -A | grep {{ THIRD_SYSTEM_HELM_RELEASE_NAME }}"
+  register: thirdsystemDeployed
+  ignore_errors: yes
+
+- debug:
+    msg: THIRD_SYSTEM is already deployed, no need to be deployed again
+  when: thirdsystemDeployed is succeeded and OPERATION == "install"
+
+- debug:
+    msg: THIRD_SYSTEM is not deployed, will be deployed
+  when: thirdsystemDeployed is failed and OPERATION == "install"
+
+- debug:
+    msg: THIRD_SYSTEM is already deployed or not deployed successfully, will be undeployed
+  when: OPERATION == "uninstall"
+
+- name: Deploy THIRD_SYSTEM Online
+  include: "deploy_online.yml"
+  when: thirdsystemDeployed is failed and OPERATION == "install" and NETWORK_MODE == "online"
+
+- name: Deploy THIRD_SYSTEM Offline
+  include: "deploy_offline.yml"
+  when: thirdsystemDeployed is failed and OPERATION == "install" and NETWORK_MODE == "offline"
+
+- name: Undeploy THIRD_SYSTEM
+  include: "undeploy.yml"
+  when: OPERATION == "uninstall"

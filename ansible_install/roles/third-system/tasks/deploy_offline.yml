@@ -1,0 +1,56 @@
+#
+#   Copyright 2021 Huawei Technologies Co., Ltd.
+#
+#   Licensed under the Apache License, Version 2.0 (the "License");
+#   you may not use this file except in compliance with the License.
+#   You may obtain a copy of the License at
+#
+#       http://www.apache.org/licenses/LICENSE-2.0
+#
+#   Unless required by applicable law or agreed to in writing, software
+#   distributed under the License is distributed on an "AS IS" BASIS,
+#   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+#   See the License for the specific language governing permissions and
+#   limitations under the License.
+
+---
+
+- name: Deploy THIRD_SYSTEM
+  shell: |
+    helm install --wait {{ THIRD_SYSTEM_HELM_RELEASE_NAME }} \
+    {{ HELM_CHARTS_PATH }}/edgegallery/thirdsystem-{{ HELM_TAG }}.tgz \
+    --set global.oauth2.authServerAddress=https://{{ PORTAL_IP }}:{{ USER_MGMT_PORT }} \
+    --set global.oauth2.clients.third-systym.clientSecret={{ oauth2ClientPassword }} \
+    --set images.thirdsystem.repository={{ thirdsystem_images_repository }} \
+    --set images.postgres.repository={{ thirdsystem_images_postgres_repository }} \
+    --set images.initservicecenter.repository={{ thirdsystem_images_initservicecenter_repository }} \
+    --set images.thirdsystem.tag={{ thirdsystem_images_tag }} \
+    --set images.postgres.tag={{ thirdsystem_images_postgres_tag }} \
+    --set images.initservicecenter.tag={{ thirdsystem_images_curl_tag }} \
+    --set images.thirdsystem.pullPolicy={{ thirdsystem_images_pullPolicy }} \
+    --set images.postgres.pullPolicy={{ thirdsystem_images_postgres_pullPolicy }} \
+    --set images.initservicecenter.pullPolicy={{ thirdsystem_images_initservicecenter_pullPolicy }} \
+    --set global.persistence.enabled={{ ENABLE_PERSISTENCE }} \
+    --set global.ssl.enabled={{ thirdsystem_global_ssl_enabled }} \
+    --set global.ssl.secretName={{ thirdsystem_global_ssl_secretName }} \
+    --set postgres.password={{ postgresPassword }}
+  no_log: true
+  ignore_errors: yes
+  register: thirdsystem_out
+
+- name: Output of "Deploy THIRD_SYSTEM" task
+  debug:
+    msg: "rc: {{thirdsystem_out.rc}}, stderr: {{thirdsystem_out.stderr}}, stderr_lines: {{thirdsystem_out.stderr_lines}}, stdout: {{thirdsystem_out.stdout}}, stdout_lines: {{thirdsystem_out.stdout_lines}}"
+  when: thirdsystem_out is failed
+
+- name: Failing as task "Deploy THIRD_SYSTEM" failed
+  fail:
+    msg: The task Deploy THIRD_SYSTEM has failed
+  when: thirdsystem_out is failed
+
+- name: Check THIRD_SYSTEM Status
+  uri:
+    url: "https://{{ PORTAL_IP }}:{{ item }}/health"
+    validate_certs: no
+  loop:
+    - 30197

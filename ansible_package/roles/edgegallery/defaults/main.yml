@@ -32,6 +32,7 @@ EG_IMAGE_LIST_CONTROLLER:
   - swr.cn-north-4.myhuaweicloud.com/edgegallery/deploy-tool:{{ EG_IMAGE_TAG }}
   - swr.cn-north-4.myhuaweicloud.com/edgegallery/healthcheck-m:{{ EG_IMAGE_TAG }}
   - swr.cn-north-4.myhuaweicloud.com/edgegallery/filesystem:{{ EG_IMAGE_TAG }}
+  - swr.cn-north-4.myhuaweicloud.com/edgegallery/third-party-system:{{ EG_IMAGE_TAG }}
   - swr.cn-north-4.myhuaweicloud.com/edgegallery/imageops:{{ EG_IMAGE_TAG }}
   - swr.cn-north-4.myhuaweicloud.com/edgegallery/edgegallery-fe:{{ EG_IMAGE_TAG }}
   - swr.cn-north-4.myhuaweicloud.com/eg-common/curl:7.75.0
