@@ -84,6 +84,11 @@
   loop:
     - macvlan
     - host-local
+    
+- name: Set /var/run/docker.sock Mode From 660 to 666
+  file:
+    path: /var/run/docker.sock
+    mode: 0666
 
 - name: Try to Get Helm Version
   shell: helm version | cut -d \" -f2
