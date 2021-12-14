@@ -1,0 +1,87 @@
+#
+#   Copyright 2021 Huawei Technologies Co., Ltd.
+#
+#   Licensed under the Apache License, Version 2.0 (the "License");
+#   you may not use this file except in compliance with the License.
+#   You may obtain a copy of the License at
+#
+#       http://www.apache.org/licenses/LICENSE-2.0
+#
+#   Unless required by applicable law or agreed to in writing, software
+#   distributed under the License is distributed on an "AS IS" BASIS,
+#   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+#   See the License for the specific language governing permissions and
+#   limitations under the License.
+
+# The image tag here could only be latest, and helm tag could only be 1.1.0
+EG_IMAGE_TAG: v1.3.0
+HELM_TAG: 1.3.0
+
+# Mode for online or offline install, currently only support offline
+NETWORK_MODE: offline
+
+# Absolute file path of source offline .tar.gz file on ansible host node
+TARBALL_FILE: "{{ inventory_dir }}/../ansible-{{ EG_IMAGE_TAG }}.tar.gz"
+
+# Target path where offline tarball be decompossed into
+TARBALL_PATH: /home/edgegallery-offline
+
+# Whether copy the offline package from the ansible host node to other node
+COPY_TAR_TO_TARGET: yes
+
+# Whether clean the TARBALL_PATH before install and after uninstall
+# true means clean and false means not clean
+TARBALL_PATH_CLEANUP: true
+
+# Whether enable ingress
+# true means enable and false means disable
+ENABLE_INGRESS: true
+
+# Whether deploy appPkgTransTool
+# true means deploy and false means undeploy
+ENABLE_APPD: true
+
+HELM_CHARTS_PATH: "{{ TARBALL_PATH }}/helm/helm-charts"
+
+MEP_HELM_RELEASE_NAME: mep-edgegallery
+MEPM_HELM_RELEASE_NAME: mecm-mepm-edgegallery
+APPSTORE_HELM_RELEASE_NAME: appstore-edgegallery
+DEVELOPER_HELM_RELEASE_NAME: developer-edgegallery
+MECM_MEO_HELM_RELEASE_NAME: mecm-meo-edgegallery
+ATP_HELM_RELEASE_NAME: atp-edgegallery
+EG_VIEW_HELM_RELEASE_NAME: eg-view-edgegallery
+
+MEPM_PORT: 30097
+APPSTORE_PORT: 30091
+DEVELOPER_PORT: 30092
+MECM_PORT: 30093
+ATP_PORT: 30094
+EDGEGALLERY_PORT: 30095
+USER_MGMT_PORT: 30067
+LAB_PORT: 30096
+HEALTHCHECK_PORT: 32759
+HEALTHCHECK_M_PORT: 32757
+
+# Set the Passwords for developer OpenStack Ubuntu VM
+developerVMImagePassword: 123456
+
+# used for signature
+SIGNATURE_SECRET_NAME: edgegallery-signature-secret
+
+# If harbor is setup in a remote system, then mention the remote system IP as harbor IP
+#HarborIP: xxx.xxx.xxx.xxx
+
+# If SIGNATURE_CERT_P12 and SIGNATURE_CERT_CER are set here, will use it. Otherwise will generate them automatically
+#SIGNATURE_CERT_P12: xxx/xxx/xxx.p12
+#SIGNATURE_CERT_CER: xxx/xxx/xxx.cer
+
+# If the above 2 files are given, should also give the password used to generate them
+#SIGNATURE_PWD: xxx
+
+# Params used by EG NFS persistence storage
+EGUSER_NAME: eguser
+EGGROUP_NAME: eggroup
+EGUSER_UID: 166
+EGGROUP_GID: 166
+APPSTORE_PACKAGES: /edgegallery/appstore/packages
+FILE_SYSTEM_PACKAGES: /edgegallery/filesystem/images

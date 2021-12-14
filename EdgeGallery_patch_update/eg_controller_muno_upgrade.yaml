@@ -1,0 +1,270 @@
+#
+#   Copyright 2021 Huawei Technologies Co., Ltd.
+#
+#   Licensed under the Apache License, Version 2.0 (the "License");
+#   you may not use this file except in compliance with the License.
+#   You may obtain a copy of the License at
+#
+#       http://www.apache.org/licenses/LICENSE-2.0
+#
+#   Unless required by applicable law or agreed to in writing, software
+#   distributed under the License is distributed on an "AS IS" BASIS,
+#   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+#   See the License for the specific language governing permissions and
+#   limitations under the License.
+
+---
+
+- hosts: master
+  become: yes
+  vars_files:
+    - ./var.yml
+    - ./default-var.yml
+    - ./password-var.yml
+  tasks:
+    - name: Set ARCH Value to be amd64
+      set_fact:
+        ARCH: amd64
+      when: ansible_architecture == "x86_64"
+
+    - name: Set ARCH Value to be arm64
+      set_fact:
+        ARCH: arm64
+      when: ansible_architecture == "aarch64"
+
+    - name: Load All EdgeGallery Patch Docker Images
+      shell: docker load -i {{ playbook_dir }}/edgegallery-controller-image-patch-v1-3-2-{{ ARCH }}.tar.gz
+
+    - name: Get All EG Patch Images List
+      shell: cat {{ playbook_dir }}/eg_patch_images_list.txt
+      register: image_list_str
+
+    - name: Set Patch Image List Str to List
+      set_fact:
+        image_list: "{{ image_list_str.stdout.split(' ') }}"
+
+    - name: Set Registry URL for Multi Node
+      set_fact:
+        REGISTRY_URL: "{{ groups.master[0] }}:5000/"
+
+    - name: Push All EG Patch Images to Registry
+      shell: |
+        docker image tag {{ item }} {{ REGISTRY_URL }}{{ item }}
+        docker push {{ REGISTRY_URL }}{{ item }}
+      loop: "{{ image_list }}"
+
+    - name: Set EG_PATCH_TAG
+      set_fact:
+        EG_PATCH_TAG: v1.3.2
+
+    - name: Check HARBOR_ADMIN_PASSWORD Param
+      fail:
+        msg: "Param HARBOR_ADMIN_PASSWORD in var.yml is not defined"
+      when: HARBOR_ADMIN_PASSWORD is undefined or HARBOR_ADMIN_PASSWORD is none
+    
+    - name: Set Portal IP
+      set_fact:
+        PORTAL_IP: "{{ groups.master[0] }}"
+      when: PORTAL_IP is undefined
+    
+    - name: Set Harbor IP to HarborIP
+      set_fact:
+        HarborIP: "{{ HarborIP }}"
+      when: HarborIP is defined and HarborIP is not none
+    
+    - name: Set Harbor IP to PORTAL IP on amd64
+      set_fact:
+        HarborIP: "{{ PORTAL_IP }}"
+      when: ARCH == "amd64" and (HarborIP is undefined or HarborIP is none)
+    
+    - name: Fail on arm64 when HarborIP is undefined
+      fail:
+        msg: "Must define HarborIP in default-var.yml on arm64 Arch"
+      when: ARCH == "arm64" and (HarborIP is undefined or HarborIP is none)
+    
+    - name: Set Mail Related Params
+      set_fact:
+        usermgmt_mail_host: ""
+        usermgmt_mail_port: ""
+        usermgmt_mail_sender: ""
+        usermgmt_mail_authcode: ""
+      when: usermgmt_mail_enabled == false
+
+    - name: Upgrade USER_MGMT
+      shell: |
+        helm upgrade --wait user-mgmt-edgegallery {{ playbook_dir }}/edgegallery/usermgmt-{{ HELM_TAG }}.tgz \
+        --set global.oauth2.clients.appstore.clientUrl=https://{{ PORTAL_IP }}:{{ APPSTORE_PORT }} \
+        --set global.oauth2.clients.appstore.clientSecret={{ oauth2ClientPassword }} \
+        --set global.oauth2.clients.developer.clientUrl=https://{{ PORTAL_IP }}:{{ DEVELOPER_PORT }} \
+        --set global.oauth2.clients.developer.clientSecret={{ oauth2ClientPassword }} \
+        --set global.oauth2.clients.mecm.clientUrl=https://{{ PORTAL_IP }}:{{ MECM_PORT }} \
+        --set global.oauth2.clients.mecm.clientSecret={{ oauth2ClientPassword }} \
+        --set global.oauth2.clients.atp.clientUrl=https://{{ PORTAL_IP }}:{{ ATP_PORT }} \
+        --set global.oauth2.clients.atp.clientSecret={{ oauth2ClientPassword }} \
+        --set global.oauth2.clients.lab.clientUrl=https://{{ PORTAL_IP }}:{{ LAB_PORT }} \
+        --set global.oauth2.clients.lab.clientSecret={{ oauth2ClientPassword }} \
+        --set global.oauth2.clients.edgegallery.clientUrl=https://{{ PORTAL_IP }}:{{ EDGEGALLERY_PORT }} \
+        --set global.oauth2.clients.edgegallery.clientSecret={{ oauth2ClientPassword }} \
+        --set jwt.secretName=user-mgmt-jwt-secret \
+        --set images.usermgmt.repository={{ REGISTRY_URL }}edgegallery/user-mgmt \
+        --set images.postgres.repository={{ REGISTRY_URL }}eg-common/postgres \
+        --set images.redis.repository={{ REGISTRY_URL }}eg-common/redis \
+        --set images.initservicecenter.repository={{ REGISTRY_URL }}eg-common/curl \
+        --set images.usermgmt.tag={{ EG_PATCH_TAG }} \
+        --set images.postgres.tag=12.3 \
+        --set images.redis.tag=6.0.3 \
+        --set images.initservicecenter.tag=7.75.0 \
+        --set images.usermgmt.pullPolicy=IfNotPresent \
+        --set images.postgres.pullPolicy=IfNotPresent \
+        --set images.redis.pullPolicy=IfNotPresent \
+        --set images.initservicecenter.pullPolicy=IfNotPresent \
+        --set global.ssl.enabled=true \
+        --set global.ssl.secretName=edgegallery-ssl-secret \
+        --set global.persistence.enabled={{ ENABLE_PERSISTENCE }} \
+        --set postgres.password={{ postgresPassword }} \
+        --set redis.password={{ userMgmtRedisPassword }} \
+        --set mail.enabled={{ usermgmt_mail_enabled }} \
+        --set mail.host={{ usermgmt_mail_host }} \
+        --set mail.port={{ usermgmt_mail_port }} \
+        --set mail.sender={{ usermgmt_mail_sender }} \
+        --set mail.authCode={{ usermgmt_mail_authcode }}
+
+    - name: Check USER_MGMT Status
+      uri:
+        url: "https://{{ PORTAL_IP }}:{{ USER_MGMT_PORT }}/health"
+        validate_certs: no
+      register: user_mgmt_interacts
+      ignore_errors: yes
+    
+    - name: Failing the Installation as 'user-mgmt' deployement needs to be completed before 'appstore'
+      fail:
+        msg: "'user_mgmt' is not reachable, complete user_mgmt deployment before 'appstore'"
+      when: user_mgmt_interacts is failed
+
+    - name: Upgrade APPSTORE
+      shell: |
+        helm upgrade --wait {{ APPSTORE_HELM_RELEASE_NAME }} {{ playbook_dir }}/edgegallery/appstore-{{ HELM_TAG }}.tgz \
+        --set global.oauth2.authServerAddress=https://{{ PORTAL_IP }}:{{ USER_MGMT_PORT }} \
+        --set global.oauth2.clients.appstore.clientSecret={{ oauth2ClientPassword }} \
+        --set images.appstoreFe.repository={{ REGISTRY_URL }}edgegallery/appstore-fe \
+        --set images.appstoreBe.repository={{ REGISTRY_URL }}edgegallery/appstore-be \
+        --set images.appdtranstool.repository={{ REGISTRY_URL }}edgegallery/appdtranstool \
+        --set images.postgres.repository={{ REGISTRY_URL }}eg-common/postgres \
+        --set images.initservicecenter.repository={{ REGISTRY_URL }}eg-common/curl \
+        --set images.appstoreFe.tag={{ EG_PATCH_TAG }} \
+        --set images.appstoreBe.tag={{ EG_PATCH_TAG }} \
+        --set images.appdtranstool.tag={{ EG_PATCH_TAG }} \
+        --set images.postgres.tag=12.3 \
+        --set images.initservicecenter.tag=7.75.0 \
+        --set images.appstoreFe.pullPolicy=IfNotPresent \
+        --set images.appstoreBe.pullPolicy=IfNotPresent \
+        --set images.appdtranstool.pullPolicy=IfNotPresent \
+        --set images.postgres.pullPolicy=IfNotPresent \
+        --set images.initservicecenter.pullPolicy=IfNotPresent \
+        --set global.ssl.enabled=true \
+        --set global.ssl.secretName=edgegallery-ssl-secret \
+        --set global.persistence.enabled={{ ENABLE_PERSISTENCE }} \
+        --set appShare.platformUrl=https://{{ PORTAL_IP }}:30099 \
+        --set appShare.atpReportUrl=https://{{ PORTAL_IP }}:30094/#/atpreport?taskid=%s \
+        --set appstoreBe.secretName={{ SIGNATURE_SECRET_NAME }} \
+        --set appstoreBe.dockerRepo.endpoint={{ HarborIP }} \
+        --set appstoreBe.dockerRepo.appstore.password={{ HARBOR_ADMIN_PASSWORD }} \
+        --set appstoreBe.dockerRepo.appstore.username=admin \
+        --set appstoreBe.dockerRepo.developer.password={{ HARBOR_ADMIN_PASSWORD }} \
+        --set appstoreBe.dockerRepo.developer.username=admin \
+        --set appstoreBe.hostPackagesPath={{ APPSTORE_PACKAGES }} \
+        --set appstoreBe.appdtranstool.enabled={{ ENABLE_APPD }} \
+        --set appstoreBe.fileSystemAddress=http://{{ PORTAL_IP }}:30090 \
+        --set postgres.password={{ postgresPassword }}
+
+    - name: Upgrade DEVELOPER
+      shell: |
+        helm upgrade --wait {{ DEVELOPER_HELM_RELEASE_NAME }} {{ playbook_dir }}/edgegallery/developer-{{ HELM_TAG }}.tgz \
+        --set global.oauth2.authServerAddress=https://{{ PORTAL_IP }}:{{ USER_MGMT_PORT }} \
+        --set global.oauth2.clients.developer.clientSecret={{ oauth2ClientPassword }} \
+        --set images.developerFe.repository={{ REGISTRY_URL }}edgegallery/developer-fe \
+        --set images.developerBe.repository={{ REGISTRY_URL }}edgegallery/developer-be \
+        --set images.postgres.repository={{ REGISTRY_URL }}eg-common/postgres \
+        --set images.initservicecenter.repository={{ REGISTRY_URL }}eg-common/curl \
+        --set images.developerFe.tag={{ EG_PATCH_TAG }} \
+        --set images.developerBe.tag={{ EG_PATCH_TAG }} \
+        --set images.postgres.tag=12.3 \
+        --set images.initservicecenter.tag=7.75.0 \
+        --set images.developerFe.pullPolicy=IfNotPresent \
+        --set images.developerBe.pullPolicy=IfNotPresent \
+        --set images.postgres.pullPolicy=IfNotPresent \
+        --set images.initservicecenter.pullPolicy=IfNotPresent \
+        --set global.ssl.enabled=true \
+        --set global.ssl.secretName=edgegallery-ssl-secret \
+        --set global.persistence.enabled={{ ENABLE_PERSISTENCE }} \
+        --set developer.dockerRepo.endpoint={{ HarborIP }} \
+        --set developer.dockerRepo.password={{ HARBOR_ADMIN_PASSWORD }} \
+        --set developer.dockerRepo.username=admin \
+        --set postgres.password={{ postgresPassword }} \
+        --set developer.vmImage.password={{ developerVMImagePassword }} \
+        --set developer.vmImage.fileSystemAddress=http://{{ PORTAL_IP }}:30090 \
+        --set developer.toolChain.enabled=false
+
+    - name: Ensure User Group "docker" Exists
+      group:
+        name: docker
+        state: present
+      register: dockerGroup
+
+    - name: Upgrade MECM-MEO
+      shell: |
+        helm upgrade --wait mecm-meo-edgegallery {{ playbook_dir }}/edgegallery/mecm-meo-{{ HELM_TAG }}.tgz \
+        --set global.oauth2.authServerAddress=https://{{ PORTAL_IP }}:{{ USER_MGMT_PORT }} \
+        --set global.oauth2.clients.mecm.clientSecret={{ oauth2ClientPassword }} \
+        --set images.mecmFe.repository={{ REGISTRY_URL }}edgegallery/mecm-fe \
+        --set images.initservicecenter.repository={{ REGISTRY_URL }}edgegallery/curl \
+        --set images.mecmFe.tag={{ EG_PATCH_TAG }} \
+        --set images.initservicecenter.tag=7.75.0 \
+        --set images.mecmFe.pullPolicy=IfNotPresent \
+        --set images.initservicecenter.pullPolicy=IfNotPresent \
+        --set global.ssl.enabled=true \
+        --set global.ssl.secretName=edgegallery-ssl-secret \
+        --set images.inventory.repository={{ REGISTRY_URL }}edgegallery/mecm-inventory \
+        --set images.appo.repository={{ REGISTRY_URL }}edgegallery/mecm-appo \
+        --set images.apm.repository={{ REGISTRY_URL }}edgegallery/mecm-apm \
+        --set images.postgres.repository={{ REGISTRY_URL }}eg-common/postgres \
+        --set images.inventory.tag={{ EG_PATCH_TAG }} \
+        --set images.appo.tag={{ EG_PATCH_TAG }} \
+        --set images.apm.tag={{ EG_PATCH_TAG }} \
+        --set images.postgres.tag=12.3 \
+        --set images.inventory.pullPolicy=IfNotPresent \
+        --set images.appo.pullPolicy=IfNotPresent \
+        --set images.apm.pullPolicy=IfNotPresent \
+        --set images.postgres.pullPolicy=IfNotPresent \
+        --set mecm.docker.fsgroup={{ dockerGroup.gid }} \
+        --set mecm.docker.dockerRepoUserName=admin \
+        --set mecm.docker.dockerRepopassword={{ HARBOR_ADMIN_PASSWORD }} \
+        --set global.persistence.enabled={{ ENABLE_PERSISTENCE }} \
+        --set mecm.repository.dockerRepoEndpoint={{ HarborIP }} \
+        --set mecm.repository.sourceRepos="repo={{ HarborIP }} userName=admin password={{ HARBOR_ADMIN_PASSWORD }}" \
+        --set mecm.postgres.postgresPass={{ postgresPassword }} \
+        --set mecm.postgres.inventoryDbPass={{ postgresPassword }} \
+        --set mecm.postgres.appoDbPass={{ postgresPassword }} \
+        --set mecm.postgres.apmDbPass={{ postgresPassword }}
+ 
+    - name: Upgrade ATP
+      shell: |
+        helm upgrade --wait {{ ATP_HELM_RELEASE_NAME }} {{ playbook_dir }}/edgegallery/atp-{{ HELM_TAG }}.tgz \
+        --set global.oauth2.authServerAddress=https://{{ PORTAL_IP }}:{{ USER_MGMT_PORT }} \
+        --set global.oauth2.clients.atp.clientSecret={{ oauth2ClientPassword }} \
+        --set images.atpFe.repository={{ REGISTRY_URL }}edgegallery/atp-fe \
+        --set images.atp.repository={{ REGISTRY_URL }}edgegallery/atp-be \
+        --set images.postgres.repository={{ REGISTRY_URL }}eg-common/postgres \
+        --set images.initservicecenter.repository={{ REGISTRY_URL }}eg-common/curl \
+        --set images.atpFe.tag={{ EG_PATCH_TAG }} \
+        --set images.atp.tag={{ EG_PATCH_TAG }} \
+        --set images.postgres.tag=12.3 \
+        --set images.initservicecenter.tag=7.75.0 \
+        --set images.atpFe.pullPolicy=IfNotPresent \
+        --set images.atp.pullPolicy=IfNotPresent \
+        --set images.postgres.pullPolicy=IfNotPresent \
+        --set images.initservicecenter.pullPolicy=IfNotPresent \
+        --set global.persistence.enabled={{ ENABLE_PERSISTENCE }} \
+        --set global.ssl.enabled=true \
+        --set global.ssl.secretName=edgegallery-ssl-secret \
+        --set postgres.password={{ postgresPassword }}

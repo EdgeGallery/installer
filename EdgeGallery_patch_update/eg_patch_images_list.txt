@@ -1,0 +1,1 @@
+edgegallery/appstore-fe:v1.3.2 edgegallery/appstore-be:v1.3.2 edgegallery/appdtranstool:v1.3.2 edgegallery/developer-fe:v1.3.2 edgegallery/developer-be:v1.3.2 edgegallery/mecm-fe:v1.3.2 edgegallery/mecm-inventory:v1.3.2 edgegallery/mecm-appo:v1.3.2 edgegallery/mecm-apm:v1.3.2 edgegallery/user-mgmt:v1.3.2 edgegallery/atp-fe:v1.3.2 edgegallery/atp-be:v1.3.2
