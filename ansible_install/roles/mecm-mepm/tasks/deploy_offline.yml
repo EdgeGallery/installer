@@ -58,6 +58,7 @@
 - name: Deploy MECM-MEPM
   shell: |
     helm install --wait mecm-mepm-edgegallery {{ HELM_CHARTS_PATH }}/edgegallery/mecm-mepm-{{ HELM_TAG }}.tgz \
+    --set global.oauth2.authServerAddress=https://{{ PORTAL_IP }}:{{ USER_MGMT_PORT }} \
     --set jwt.publicKeySecretName=mecm-mepm-jwt-public-secret \
     --set ssl.secretName=mecm-mepm-ssl-secret \
     --set images.lcmcontroller.repository={{ mepm_images_lcmcontroller_repository }} \
@@ -67,6 +68,8 @@
     --set images.apprulemgr.repository={{ mepm_images_apprulemgr_repository }} \
     --set images.rescontroller.repository={{ mepm_images_rescontroller_repository }} \
     --set images.mepmFe.repository={{ mepm_images_mepmFe_repository }} \
+    --set images.commonServiceCbb.repository={{ mepm_images_commoncbb_repository }} \
+    --set images.commonWebssh.repository={{ mepm_images_commonwebssh_repository }} \
     --set images.postgres.repository={{ mepm_images_postgres_repository }} \
     --set images.lcmcontroller.tag={{ EG_IMAGE_TAG }} \
     --set images.k8splugin.tag={{ EG_IMAGE_TAG }} \
@@ -75,6 +78,8 @@
     --set images.apprulemgr.tag={{ EG_IMAGE_TAG }} \
     --set images.rescontroller.tag={{ EG_IMAGE_TAG }} \
     --set images.mepmFe.tag={{ EG_IMAGE_TAG }} \
+    --set images.commonServiceCbb.tag={{ EG_IMAGE_TAG }} \
+    --set images.commonWebssh.tag={{ EG_IMAGE_TAG }} \
     --set images.postgres.tag={{ mepm_images_postgres_tag }} \
     --set images.lcmcontroller.pullPolicy={{ mepm_images_lcmcontroller_pullPolicy }} \
     --set images.k8splugin.pullPolicy={{ mepm_images_k8splugin_pullPolicy }} \
@@ -83,6 +88,8 @@
     --set images.apprulemgr.pullPolicy={{ mepm_images_apprulemgr_pullPolicy }} \
     --set images.rescontroller.pullPolicy={{ mepm_images_rescontroller_pullPolicy }} \
     --set images.mepmFe.pullPolicy={{ mepm_images_mepmFe_pullPolicy }} \
+    --set images.commonServiceCbb.pullPolicy={{ mepm_images_commoncbb_pullPolicy }} \
+    --set images.commonWebssh.pullPolicy={{ mepm_images_commonwebssh_pullPolicy }} \
     --set images.postgres.pullPolicy={{ mepm_images_postgres_pullPolicy }} \
     --set global.persistence.enabled={{ ENABLE_PERSISTENCE }} \
     --set mepm.postgres.postgresPass={{ postgresPassword }} \
@@ -90,6 +97,7 @@
     --set mepm.postgres.k8spluginDbPass={{ postgresPassword }} \
     --set mepm.postgres.ospluginDbPass={{ postgresPassword }} \
     --set mepm.postgres.apprulemgrDbPass={{ postgresPassword }} \
+    --set mepm.postgres.mepmtoolsDbPass={{ postgresPassword }} \
     --set mepm.filesystem.imagePushUrl=http://{{ CONTROLLER_MASTER_IP }}:30090/image-management/v1/images
   no_log: true
   ignore_errors: yes
