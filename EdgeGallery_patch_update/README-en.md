@@ -58,7 +58,7 @@ Do the following command to upgrade the related helm releases which have already
 ansible-playbook -i hosts-aio eg_controller_aio_upgrade.yaml
 
 # MUNO Mode
-ansible-playbook -i hosts-aio eg_controller_muno_upgrade.yaml
+ansible-playbook -i hosts-muno eg_controller_muno_upgrade.yaml
 ```
 
 ### 4. Double Check the Upgrade
