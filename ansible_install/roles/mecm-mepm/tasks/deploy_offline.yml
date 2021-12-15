@@ -58,7 +58,6 @@
 - name: Deploy MECM-MEPM
   shell: |
     helm install --wait mecm-mepm-edgegallery {{ HELM_CHARTS_PATH }}/edgegallery/mecm-mepm-{{ HELM_TAG }}.tgz \
-    --set global.oauth2.authServerAddress=https://{{ PORTAL_IP }}:{{ USER_MGMT_PORT }} \
     --set jwt.publicKeySecretName=mecm-mepm-jwt-public-secret \
     --set ssl.secretName=mecm-mepm-ssl-secret \
     --set images.lcmcontroller.repository={{ mepm_images_lcmcontroller_repository }} \
