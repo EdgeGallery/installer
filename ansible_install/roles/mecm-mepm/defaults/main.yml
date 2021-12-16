@@ -24,6 +24,7 @@ mepm_images_commoncbb_repository: "{{ REGISTRY_URL }}edgegallery/common-service-
 mepm_images_commonwebssh_repository: "{{ REGISTRY_URL }}eg-common/common-webssh"
 mepm_images_postgres_repository: "{{ REGISTRY_URL }}eg-common/postgres"
 mepm_images_postgres_tag: 12.3
+mepm_images_commonwebssh_tag: latest
 mepm_images_lcmcontroller_pullPolicy: IfNotPresent
 mepm_images_k8splugin_pullPolicy: IfNotPresent
 mepm_images_osplugin_pullPolicy: IfNotPresent

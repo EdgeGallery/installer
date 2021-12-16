@@ -78,7 +78,7 @@
     --set images.rescontroller.tag={{ EG_IMAGE_TAG }} \
     --set images.mepmFe.tag={{ EG_IMAGE_TAG }} \
     --set images.commonServiceCbb.tag={{ EG_IMAGE_TAG }} \
-    --set images.commonWebssh.tag={{ EG_IMAGE_TAG }} \
+    --set images.commonWebssh.tag={{ mepm_images_commonwebssh_tag }} \
     --set images.postgres.tag={{ mepm_images_postgres_tag }} \
     --set images.lcmcontroller.pullPolicy={{ mepm_images_lcmcontroller_pullPolicy }} \
     --set images.k8splugin.pullPolicy={{ mepm_images_k8splugin_pullPolicy }} \
