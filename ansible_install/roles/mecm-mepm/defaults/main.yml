@@ -21,7 +21,7 @@ mepm_images_rescontroller_repository: "{{ REGISTRY_URL }}edgegallery/mecm-applcm
 mepm_images_mepmFe_repository: "{{ REGISTRY_URL }}edgegallery/mepm-fe"
 mepm_images_imageops_repository: "{{ REGISTRY_URL }}edgegallery/imageops"
 mepm_images_commoncbb_repository: "{{ REGISTRY_URL }}edgegallery/common-service-cbb"
-mepm_images_commonwebssh_repository: "{{ REGISTRY_URL }}edgegallery/common-webssh"
+mepm_images_commonwebssh_repository: "{{ REGISTRY_URL }}eg-common/common-webssh"
 mepm_images_postgres_repository: "{{ REGISTRY_URL }}eg-common/postgres"
 mepm_images_postgres_tag: 12.3
 mepm_images_lcmcontroller_pullPolicy: IfNotPresent
