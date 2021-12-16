@@ -81,4 +81,5 @@
     - { role: healthcheck-m, tags: ['healthcheck-m'] }
     - { role: file-system, tags: ['file-system'] }
     - { role: edgegallery-fe, tags: ['edgegallery-fe'] }
+    - { role: third-system, tags: ['third-system'] }
     - { role: eg_check, tags: ['eg_check'] }
