@@ -38,14 +38,17 @@
     --set global.ssl.secretName={{ meo_ssl_secretName }} \
     --set global.ssl.enabled={{ meo_global_ssl_enabled }} \
     --set images.inventory.repository={{ meo_images_inventory_repository }} \
+    --set images.north.repository={{ meo_images_north_repository }} \
     --set images.appo.repository={{ meo_images_appo_repository }} \
     --set images.apm.repository={{ meo_images_apm_repository }} \
     --set images.postgres.repository={{ meo_images_postgres_repository }} \
     --set images.inventory.tag={{ meo_images_inventory_tag }} \
+    --set images.north.tag={{ meo_images_north_tag }} \
     --set images.appo.tag={{ meo_images_appo_tag }} \
     --set images.apm.tag={{ meo_images_apm_tag }} \
     --set images.postgres.tag={{ meo_images_postgres_tag }} \
     --set images.inventory.pullPolicy={{ meo_images_inventory_pullPolicy }} \
+    --set images.north.pullPolicy={{ meo_images_north_pullPolicy }} \
     --set images.appo.pullPolicy={{ meo_images_appo_pullPolicy }} \
     --set images.apm.pullPolicy={{ meo_images_apm_pullPolicy }} \
     --set images.postgres.pullPolicy={{ meo_images_postgres_pullPolicy }} \
@@ -57,6 +60,7 @@
     --set mecm.repository.sourceRepos="repo={{ HarborIP }} userName=admin password={{ HARBOR_ADMIN_PASSWORD }}" \
     --set mecm.postgres.postgresPass={{ postgresPassword }} \
     --set mecm.postgres.inventoryDbPass={{ postgresPassword }} \
+    --set mecm.postgres.northDbPass={{ postgresPassword }} \
     --set mecm.postgres.appoDbPass={{ postgresPassword }} \
     --set mecm.postgres.apmDbPass={{ postgresPassword }}
   no_log: true

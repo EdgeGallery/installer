@@ -24,6 +24,7 @@ EG_IMAGE_LIST_CONTROLLER:
   - swr.cn-north-4.myhuaweicloud.com/edgegallery/eg-view:{{ EG_IMAGE_TAG }}
   - swr.cn-north-4.myhuaweicloud.com/edgegallery/mecm-fe:{{ EG_IMAGE_TAG }}
   - swr.cn-north-4.myhuaweicloud.com/edgegallery/mecm-inventory:{{ EG_IMAGE_TAG }}
+  - swr.cn-north-4.myhuaweicloud.com/edgegallery/mecm-north:{{ EG_IMAGE_TAG }}
   - swr.cn-north-4.myhuaweicloud.com/edgegallery/mecm-appo:{{ EG_IMAGE_TAG }}
   - swr.cn-north-4.myhuaweicloud.com/edgegallery/mecm-apm:{{ EG_IMAGE_TAG }}
   - swr.cn-north-4.myhuaweicloud.com/edgegallery/user-mgmt:{{ EG_IMAGE_TAG }}

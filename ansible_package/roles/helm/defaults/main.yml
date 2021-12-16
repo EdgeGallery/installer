@@ -30,6 +30,7 @@ EG_HELM_LIST_CONTROLLER:
   - filesystem
   - eg-view
   - edgegallery-fe
+  - thirdsystem
 
 EG_HELM_LIST_EDGE:
   - mecm-mepm
