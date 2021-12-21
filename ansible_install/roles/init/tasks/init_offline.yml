@@ -35,6 +35,11 @@
   register: unarchivePackage
   when: pathCreated is succeeded
 
+- name: Create Group docker
+  group:
+    name: docker
+    gid: 1000
+
 - name: Create Group eggroup
   group:
     name: "{{ EGGROUP_NAME }}"
