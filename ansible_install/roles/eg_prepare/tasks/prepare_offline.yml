@@ -155,7 +155,7 @@
     block: |
       cd /home/edgegallery-offline/harbor/harbor
       docker-compose start
-  when: ((PORTAL_IP is defined and HarborIP == PORTAL_IP) or HarborIP == MASTER_IP) and ARCH == "amd64" and K8S_NODE_TYPE == "master"
+  when: ((PORTAL_IP is defined and HarborIP == PORTAL_IP) or HarborIP == MASTER_IP) and ARCH == "amd64" and K8S_NODE_TYPE == "master" and EG_MODE != "edge"
 
 - name: Remove blank lines blockinfile put in
   lineinfile:
