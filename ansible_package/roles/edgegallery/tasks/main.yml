@@ -86,6 +86,11 @@
   shell: "scp -P {{ FTP_SSH_PORT }} {{ FTP_USER }}@{{ FTP_SERVER }}:/home/jenkins/harbor.tar.gz {{ HARBOR_DIR }}"
   when: ARCH == "amd64" and EG_MODE != "edge"
 
+- name: Create Wasm Based TF Lite APPs Directories
+  file:
+    path: "{{ WASM_APP_DIR }}"
+    state: directory
+
 - name: Download Wasm Based TF Lite APPs
   get_url:
     url: "https://wasm-tf-app.obs.cn-north-4.myhuaweicloud.com/{{ item }}"
