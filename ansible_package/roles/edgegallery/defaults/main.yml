@@ -13,6 +13,7 @@
 
 EG_IMAGES_DIR: "{{ TARBALL_PATH }}/eg_swr_images"
 HARBOR_DIR: "{{ TARBALL_PATH }}/harbor"
+WASM_APP_DIR: "{{ TARBALL_PATH }}/wasm"
 
 EG_IMAGE_LIST_CONTROLLER:
   - swr.cn-north-4.myhuaweicloud.com/edgegallery/appstore-fe:{{ EG_IMAGE_TAG }}
@@ -77,3 +78,7 @@ EG_IMAGE_LIST_EDGE_ARM64:
   - swr.cn-north-4.myhuaweicloud.com/eg-common/metallb/speaker:v0.9.3-arm64
   - swr.cn-north-4.myhuaweicloud.com/eg-common/metallb/controller:v0.9.3-arm64
   - swr.cn-north-4.myhuaweicloud.com/eg-common/k8s.gcr.io/defaultbackend-arm64:1.5
+
+WASM_APP_LIST:
+  - disease-classification.tar.gz
+  - mushroom-identification.tar.gz
