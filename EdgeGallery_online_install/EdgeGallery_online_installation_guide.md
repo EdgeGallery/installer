@@ -1,7 +1,7 @@
 
 ```
 
-###  1.3 Version EdgeGallery Online Install Guide
+###  1.5 Version EdgeGallery Online Install Guide
  
 
 #### 安装环境要求：
@@ -13,9 +13,7 @@
 #### 一、安装kubernetes 1.18.7
 
 kubernetes 1.18.7 安装参考官方文档   
-  
-给docker.sock文件设置权限（不可缺少此步骤） 
-sudo chmod 666 /var/run/docker.sock
+
 
 #### 二、安装helm 3.2.4
 
@@ -153,7 +151,7 @@ https://gitee.com/edgegallery/installer/blob/master/EdgeGallery_online_install/d
  ***以下安装过程中的'HARBOR__IP' 'HARBOR_PASSWORD'表示[harbor安装指导](https://gitee.com/edgegallery/installer/blob/master/EdgeGallery_online_install/docker_compose_install_harbor.md)中设置的harbor ip和harbor的密码**  
  ***EG_IP 表示Edgegallery的ip**
 ##### 2、下载1.3版本helm-chart
-  git clone -b Release-v1.3  https://gitee.com/edgegallery/helm-charts.git 
+  git clone -b Release-v1.5  https://gitee.com/edgegallery/helm-charts.git 
    
 ##### 3、修改edgegallery-values.yaml文件
   下载edgegallery-values.yaml地址：  
@@ -183,18 +181,20 @@ https://gitee.com/edgegallery/installer/blob/master/EdgeGallery_online_install/d
       --set appstoreBe.dockerRepo.appstore.username=admin  \ 
       --set appstoreBe.dockerRepo.developer.password=HARBOR_PASSWORD    \ 
       --set appstoreBe.dockerRepo.developer.username=admin  \ 
-      --set appstoreBe.hostPackagesPath=/edgegallery/appstore/packages         \ 
+      --set appstoreBe.hostPackagesPath=/edgegallery/appstore/packages      \
+      --set appstoreBe.appdtranstool.enabled=true \
+      --set appstoreBe.fileSystemAddress=http://EG_IP:30090 \
       --set postgres.password=pg_pass
         
 ##### 7、install developer 
-  helm install eg-view-edgegallery     helm-charts/eg-view    -f  edgegallery-values.yaml
+  helm install eg-view-edgegallery     helm-charts/eg-view    -f  edgegallery-values.yaml  --set ssl.secretName=eg-view-ssl-secret 
   helm install developer-edgegallery   helm-charts/developer  -f  edgegallery-values.yaml  \  
      --set global.oauth2.clients.developer.clientSecret=client_pass  \ 
      --set developer.dockerRepo.endpoint=HARBOR__IP   \ 
      --set developer.dockerRepo.password=HARBOR_PASSWORD  \ 
      --set developer.dockerRepo.username=admin   \ 
      --set postgres.password=pg_pass  \ 
-     --set developer.vmImage.password=123456      \ 
+     --set developer.developerBeIp=EG_IP   \ 
      --set developer.vmImage.fileSystemAddress=http://EG_IP:30090 \
      --set developer.toolChain.enabled=false  
 
@@ -211,6 +211,7 @@ https://gitee.com/edgegallery/installer/blob/master/EdgeGallery_online_install/d
       --set mecm.repository.sourceRepos="repo=HARBOR_IP userName=admin password=HARBOR_PASSWORD"  \ 
       --set mecm.postgres.postgresPass=pg_pass      \ 
       --set mecm.postgres.inventoryDbPass=pg_pass    \ 
+      --set mecm.postgres.northDbPass=pg_pass   \ 
       --set mecm.postgres.appoDbPass=pg_pass     \ 
       --set mecm.postgres.apmDbPass=pg_pass
 
@@ -249,7 +250,9 @@ https://gitee.com/edgegallery/installer/blob/master/EdgeGallery_online_install/d
       --set mepm.postgres.lcmcontrollerDbPass=pg_pass  \ 
       --set mepm.postgres.k8spluginDbPass=pg_pass   \ 
       --set mepm.postgres.ospluginDbPass=pg_pass \ 
-      --set mepm.postgres.apprulemgrDbPass=pg_pass
+      --set mepm.postgres.apprulemgrDbPass=pg_pass \
+      --set mepm.postgres.mepmtoolsDbPass=pg_pass \
+      --set mepm.filesystem.imagePushUrl=http://EG_IP:30090/image-management/v1/images
 
 ##### 11、install mep  
 ##### 11.1 deploy metallb 
@@ -299,7 +302,7 @@ https://gitee.com/edgegallery/installer/blob/master/EdgeGallery_online_install/d
      --set networkIsolation.phyInterface.mm5=eth0   \ 
      --set ssl.secretName=mep-ssl \ 
      --set postgres.kongPass=pg_pass    #需要把eth0替换为自己的网卡名
-
+     --set mepauthProperties.jwtPrivateKey=te9Fmv%qaq
 ##### 12. 安装file-system
   helm install file-system-edgegallery --set filesystem.hostVMImagePath=/edgegallery/filesystem/images    --set postgres.password=XXXXX   -f  edgegallery-values.yaml 
 
@@ -311,4 +314,8 @@ https://gitee.com/edgegallery/installer/blob/master/EdgeGallery_online_install/d
 
 ##### 15. 安装edgegallery-fe
   helm install edgegallery-fe   helm-charts/edgegallery-fe  --set global.oauth2.clients.appstore.clientSecret=client_pass  -f   edgegallery-values.yaml
+
+##### 16. 安装third-system
+  helm install third-system-edgegallery  --set postgres.password=XXXXX   -f  edgegallery-values.yaml 
+
 ```
