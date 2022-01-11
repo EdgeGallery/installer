@@ -42,6 +42,25 @@
     --set images.egView.tag={{ egView_images_tag }} \
     --set images.egView.pullPolicy={{ egView_images_pullPolicy }}
 
+- name: Create Secret developer-ssl-secret
+  shell: |
+    kubectl create secret generic {{ developer_ssl_certName }} \
+      --from-file=server.crt={{ TARBALL_PATH }}/conf/keys/server.crt \
+      --from-file=server.key={{ TARBALL_PATH }}/conf/keys/server.key
+  no_log: true
+  ignore_errors: yes
+  register: developer_secret_out
+  
+- name: Output of "Create Secret developer-ssl-secret" task
+  debug:
+    msg: "rc: {{developer_secret_out.rc}}, stderr: {{developer_secret_out.stderr}}, stderr_lines: {{developer_secret_out.stderr_lines}}, stdout: {{developer_secret_out.stdout}}, stdout_lines: {{developer_secret_out.stdout_lines}}"
+  when: developer_secret_out is failed
+
+- name: Failing as task "Create Secret developer-ssl-secret" failed
+  fail:
+    msg: The task Create Secret developer-ssl-secret has failed
+  when: developer_secret_out is failed
+
 - name: Deploy DEVELOPER
   shell: |
     helm install --wait {{ DEVELOPER_HELM_RELEASE_NAME }} {{ HELM_CHARTS_PATH }}/edgegallery/developer-{{ HELM_TAG }}.tgz \
@@ -67,6 +86,7 @@
     --set global.ssl.enabled={{ developer_global_ssl_enabled }} \
     --set global.ssl.secretName={{ developer_global_ssl_secretName }} \
     --set global.persistence.enabled={{ ENABLE_PERSISTENCE }} \
+    --set developer.ssl.certName={{ developer_ssl_certName }} \
     --set developer.dockerRepo.endpoint={{ HarborIP }} \
     --set developer.dockerRepo.password={{ HARBOR_ADMIN_PASSWORD }} \
     --set developer.dockerRepo.username=admin \
