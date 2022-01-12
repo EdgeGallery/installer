@@ -14,6 +14,9 @@
 #   limitations under the License.
 
 ---
+- name: Delete developer-ssl-cert
+  shell: "kubectl delete secret {{ developer_ssl_certName }}"
+  ignore_errors: yes
 
 - name: Undeploy DEVELOPER
   shell: "helm uninstall {{ DEVELOPER_HELM_RELEASE_NAME }}"
