@@ -38,7 +38,7 @@
 - name: Create Group docker
   group:
     name: docker
-    gid: 1000
+    gid: 1166
 
 - name: Create Group eggroup
   group:
