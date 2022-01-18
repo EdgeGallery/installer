@@ -35,7 +35,7 @@ https://gitee.com/edgegallery/installer/blob/master/EdgeGallery_online_install/d
   mkdir -p /edgegallery/data/   
   chmod -R 755 /edgegallery/data/  
   vim /etc/exports  
-  /nfs/data/ 192.168.11.1/32(rw,no_root_squash,sync) #设置挂载本机数据的机器ip  
+  /edgegallery/data/  192.168.11.1/32(rw,no_root_squash,sync) #设置挂载本机数据的机器ip  
   systemctl restart nfs-kernel-server 
   exportfs -v   
 
@@ -53,7 +53,7 @@ https://gitee.com/edgegallery/installer/blob/master/EdgeGallery_online_install/d
   export CERT_VALIDITY_IN_DAYS=365  
   env="-e CERT_VALIDITY_IN_DAYS=$CERT_VALIDITY_IN_DAYS"   
   mkdir /root/keys/       
-  docker run $env -v /root/keys:/certs swr.cn-north-4.myhuaweicloud.com/edgegallery/deploy-tool:latest
+  docker run $env -v /root/keys:/certs   -e CERT_PASSWORD=xxxx  swr.cn-north-4.myhuaweicloud.com/edgegallery/deploy-tool:latest  #需要设置cert的密码
 
 ##### 2、生成edgegallery-ssl-secret 
   kubectl create secret generic edgegallery-ssl-secret \  
@@ -104,8 +104,13 @@ https://gitee.com/edgegallery/installer/blob/master/EdgeGallery_online_install/d
   kubectl create secret generic eg-view-ssl-secret  \ 
       --from-file=server.crt=/root/keys/server.crt   \ 
       --from-file=server.key=/root/keys/server.key  
+
+##### 8.生成developer-ssl-secret 
+   kubectl create secret generic developer-ssl-cert \
+      --from-file=server.crt=/root/keys/server.crt \
+      --from-file=server.key=/root/keys/server.key  
  
-##### 8.生成mep secret以下是生成证书的步骤
+##### 9.生成mep secret以下是生成证书的步骤
   mkdir /root/mep_key  
   cd  /root/  
   openssl rand -writerand .rnd  
@@ -196,7 +201,8 @@ https://gitee.com/edgegallery/installer/blob/master/EdgeGallery_online_install/d
      --set postgres.password=pg_pass  \ 
      --set developer.developerBeIp=EG_IP   \ 
      --set developer.vmImage.fileSystemAddress=http://EG_IP:30090 \
-     --set developer.toolChain.enabled=false  
+     --set developer.toolChain.enabled=false
+     --set developer.ssl.certName=developer-ssl-cert  
 
 ##### 8、install mecm-meo     
   metric-server.yaml下载地址：  
