@@ -1,0 +1,165 @@
+#
+#   Copyright 2021 Huawei Technologies Co., Ltd.
+#
+#   Licensed under the Apache License, Version 2.0 (the "License");
+#   you may not use this file except in compliance with the License.
+#   You may obtain a copy of the License at
+#
+#       http://www.apache.org/licenses/LICENSE-2.0
+#
+#   Unless required by applicable law or agreed to in writing, software
+#   distributed under the License is distributed on an "AS IS" BASIS,
+#   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+#   See the License for the specific language governing permissions and
+#   limitations under the License.
+
+#######################  Ansible Configuration  ##########################
+#default ssh port is 22
+ANSIBLE_SSH_PORT_MASTER: 22
+ANSIBLE_SSH_PORT_WORKER: 22
+
+#default ssh user is root
+ANSIBLE_SSH_USER_MASTER: root
+ANSIBLE_SSH_USER_WORKER: root
+
+#######################  Password Variables  #############################
+
+# Set the Password of Harbor admin account, no default value, must set by users here
+HARBOR_ADMIN_PASSWORD: xxxxx
+
+# postgresPassword is used for all postgres DB of all roles, no default value, must set by users here
+postgresPassword: xxxxx
+
+# oauth2ClientPassword is used for user mgmt, no default value, must set by users here
+oauth2ClientPassword: xxxxx
+
+# Redis Password used by user mgmt, no default value, must set by users here
+userMgmtRedisPassword: xxxxx
+
+# certPassword is used for generating SSL keys
+certPassword: xxxxx
+
+#######################  Generic Variables  #############################
+
+# Set the regex name of the network interface for calico
+NETWORK_INTERFACE: eth.*
+
+# Could be true or false
+# true: Deploy k8s NFS Server to keep the persistence of all pods' data
+# false: No need to keep the persistence of all pods' data
+ENABLE_PERSISTENCE: true
+
+# One IP of the cluster master node
+MASTER_IP: xxx.xxx.xxx.xxx
+
+# list of k8s cluster's worker
+#WORKER_IPS: xxx.xxx.xxx.xxx,xxx.xxx.xxx.xxx,xxx.xxx.xxx.xxx
+
+# ip for portals, will be set to private IP of master node default or reset it to be the public IP of master node here
+# PORTAL_IP: xxx.xxx.xxx.xxx
+
+# IP of the Controller master which is used for Edge to connect
+# If you deploy Controller and Edge together in one cluster, then there is no need to set this param
+# CONTROLLER_MASTER_IP: xxx.xxx.xxx.xxx
+
+# NIC name of master node
+# If master node is with single NIC, not need to set it here and will get the default NIC name during the run time
+# If master node is with multiple NICs, should set it here to be 2 different NICs
+# EG_NODE_EDGE_MP1: eth0
+# EG_NODE_EDGE_MM5: eth0
+
+# Email Server Config for User Mgmt
+usermgmt_mail_enabled: false
+# If usermgmt_mail_enabled is true, then the following 4 params need to be set
+# usermgmt_mail_host: xxxxx
+# usermgmt_mail_port: xxxxx
+# usermgmt_mail_sender: xxxxx
+# usermgmt_mail_authcode: xxxxx
+
+################### Default variables ######################
+
+# The image tag here could only be latest, and helm tag could only be 1.1.0
+EG_IMAGE_TAG: latest
+HELM_TAG: 1.6.0
+MODE: AIO
+
+# Mode for online or offline install, currently only support offline
+NETWORK_MODE: offline
+
+# Absolute file path of source offline .tar.gz file on ansible host node
+TARBALL_FILE: "{{ inventory_dir }}/../ansible-{{ EG_IMAGE_TAG }}.tar.gz"
+
+# Target path where offline tarball be decompossed into
+TARBALL_PATH: /home/edgegallery-offline
+
+# Whether copy the offline package from the ansible host node to other node
+COPY_TAR_TO_TARGET: yes
+
+# Whether clean the TARBALL_PATH before install and after uninstall
+# true means clean and false means not clean
+TARBALL_PATH_CLEANUP: true
+
+# Whether enable ingress
+# true means enable and false means disable
+ENABLE_INGRESS: true
+
+# Whether deploy appPkgTransTool
+# true means deploy and false means undeploy
+ENABLE_APPD: true
+
+HELM_CHARTS_PATH: "{{ TARBALL_PATH }}/helm/helm-charts"
+
+MEP_HELM_RELEASE_NAME: mep-edgegallery
+MEPM_HELM_RELEASE_NAME: mecm-mepm-edgegallery
+APPSTORE_HELM_RELEASE_NAME: appstore-edgegallery
+DEVELOPER_HELM_RELEASE_NAME: developer-edgegallery
+MECM_MEO_HELM_RELEASE_NAME: mecm-meo-edgegallery
+ATP_HELM_RELEASE_NAME: atp-edgegallery
+THIRD_SYSTEM_HELM_RELEASE_NAME: thirdsystem-edgegallery
+EG_VIEW_HELM_RELEASE_NAME: eg-view-edgegallery
+
+MEPM_PORT: 32152
+APPSTORE_PORT: 30091
+DEVELOPER_PORT: 30092
+MECM_PORT: 30093
+ATP_PORT: 30094
+EDGEGALLERY_PORT: 30095
+USER_MGMT_PORT: 30067
+LAB_PORT: 30096
+HEALTHCHECK_PORT: 32759
+HEALTHCHECK_M_PORT: 32757
+
+# used for signature
+SIGNATURE_SECRET_NAME: edgegallery-signature-secret
+
+# If harbor is setup in a remote system, then mention the remote system IP as harbor IP
+#HarborIP: xxx.xxx.xxx.xxx
+
+# If SIGNATURE_CERT_P12 and SIGNATURE_CERT_CER are set here, will use it. Otherwise will generate them automatically
+#SIGNATURE_CERT_P12: xxx/xxx/xxx.p12
+#SIGNATURE_CERT_CER: xxx/xxx/xxx.cer
+
+# If the above 2 files are given, should also give the password used to generate them
+#SIGNATURE_PWD: xxx
+
+# Params used by EG NFS persistence storage
+EGUSER_NAME: eguser
+EGGROUP_NAME: eggroup
+EGUSER_UID: 166
+EGGROUP_GID: 166
+APPSTORE_PACKAGES: /edgegallery/appstore/packages
+FILE_SYSTEM_PACKAGES: /edgegallery/filesystem/images
+
+# External IAM Config
+ENABLE_EXTERNAL_IAM: false
+# If ENABLE_EXTERNAL_IAM is true, then the following need to be set
+# EXTERNAL_IAM_ENDPOINT: https://xxx.xxx.xxx.xxx
+
+# Access by proxy for all frontend projects
+# AUTH_SERVER_ADDRESS_CLIENT_ACCESS: https://xxx.xxx.xxx.xxx/xx/xx
+
+# EDGEGALLERY_CLIENT_ACCESS_URL: https://xxx.xxx.xxx.xxx/xx/xx
+# APPSTORE_CLIENT_ACCESS_URL: https://xxx.xxx.xxx.xxx/xx/xx
+# DEVELOPER_CLIENT_ACCESS_URL: https://xxx.xxx.xxx.xxx/xx/xx
+# MECM_CLIENT_ACCESS_URL: https://xxx.xxx.xxx.xxx/xx/xx
+# ATP_CLIENT_ACCESS_URL: https://xxx.xxx.xxx.xxx/xx/xx

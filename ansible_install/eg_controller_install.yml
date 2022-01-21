@@ -1,0 +1,77 @@
+#
+#   Copyright 2022 Huawei Technologies Co., Ltd.
+#
+#   Licensed under the Apache License, Version 2.0 (the "License");
+#   you may not use this file except in compliance with the License.
+#   You may obtain a copy of the License at
+#
+#       http://www.apache.org/licenses/LICENSE-2.0
+#
+#   Unless required by applicable law or agreed to in writing, software
+#   distributed under the License is distributed on an "AS IS" BASIS,
+#   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+#   See the License for the specific language governing permissions and
+#   limitations under the License.
+
+---
+
+# IaaS Deployment on Master and Worker Node
+- hosts: master:worker
+  become: yes
+  vars:
+    - OPERATION: install
+    - EG_MODE: controller
+    - NODE_MODE: muno
+  vars_files:
+    - ./config.yml
+  roles:
+    - { role: precheck, tags: ['precheck'] }
+    - { role: init, tags: ['init'] }
+
+- hosts: master
+  become: yes
+  vars:
+    - OPERATION: install
+    - EG_MODE: controller
+    - NODE_MODE: muno
+    - K8S_NODE_TYPE: master
+  vars_files:
+    - ./config.yml
+  roles:
+    - { role: k8s, tags: ['k8s-master'] }
+    - { role: eg_prepare, tags: ['eg_prepare-master'] }
+
+- hosts: worker
+  become: yes
+  vars:
+    - OPERATION: install
+    - EG_MODE: controller
+    - NODE_MODE: muno
+    - K8S_NODE_TYPE: worker
+  vars_files:
+    - ./config.yml
+  roles:
+    - { role: k8s, tags: ['k8s-worker'] }
+    - { role: eg_prepare, tags: ['eg_prepare-worker'] }
+
+# PaaS Deployment on Master
+- hosts: master
+  become: yes
+  vars:
+    - OPERATION: install
+    - EG_MODE: controller
+    - NODE_MODE: muno
+    - K8S_NODE_TYPE: master
+  vars_files:
+    - ./config.yml
+  roles:
+    - { role: user-mgmt, tags: ['user-mgmt'] }
+    - { role: mecm-meo, tags: ['mecm-meo'] }
+    - { role: appstore, tags: ['appstore'] }
+    - { role: developer, tags: ['developer'] }
+    - { role: atp, tags: ['atp'] }
+    - { role: healthcheck-m, tags: ['healthcheck-m'] }
+    - { role: file-system, tags: ['file-system'] }
+    - { role: edgegallery-fe, tags: ['edgegallery-fe'] }
+    - { role: third-system, tags: ['third-system'] }
+    - { role: eg_check, tags: ['eg_check'] }
