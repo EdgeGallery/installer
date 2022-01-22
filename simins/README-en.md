@@ -488,7 +488,57 @@ ansible-playbook --inventory hosts-aio eg_all_aio_install.yml --skip-tags=init
 ansible-playbook --inventory hosts-muno eg_all_muno_install.yml --skip-tags=init
 ```
 
-## 8. Trouble Shoot
+## 8. Alternate Option to install EG
+
+### 8.1 Check the required software versions and hardware resources
+Glance the suggested versions by EG developers and testers [here](https://gitee.com/edgegallery/installer/tree/master/ansible_install#1-the-dependencies-and-how-to-set-nodes)
+
+### 8.2 Ansible installation and setup password less ssh among hosts
+Setup ansible controller node and setup password less ssh among hosts.
+Find the required steps [here](https://gitee.com/edgegallery/installer/tree/master/ansible_install#2-how-to-config-the-ansible-controller-node)
+
+### 8.3 How to Config Ansible Inventory
+Replace Master and Worker node IPs in `config.yml` file.
+Configure MASTER_IP for single node k8s cluster deployment.
+Configure both MASTER_IP and WORKER_IPS for multi node k8s cluster deployment.
+Multiple worker node ips can be seperated by comma(,)
+```
+# One IP of the cluster master node
+MASTER_IP: xxx.xxx.xxx.xxx
+
+# list of k8s cluster's worker
+#WORKER_IPS: xxx.xxx.xxx.xxx,xxx.xxx.xxx.xxx,xxx.xxx.xxx.xxx
+```
+
+Replace ssh port and user according to env
+```
+#default ssh port is 22
+ANSIBLE_SSH_PORT_MASTER: 22
+ANSIBLE_SSH_PORT_WORKER: 22
+
+#default ssh user is root
+ANSIBLE_SSH_USER_MASTER: root
+ANSIBLE_SSH_USER_WORKER: root
+```
+
+### 8.4 How to Set the Parameters
+Set the parameters in `config.yml` file.
+more details of parameters are mentioned [here](https://gitee.com/edgegallery/installer/tree/master/ansible_install#32-how-to-set-the-parameters)
+
+### 8.5 How to Set the Passwords
+Set the passwords in `config.yml` file.
+more details of passwords are mentioned [here](https://gitee.com/edgegallery/installer/tree/master/ansible_install#34-how-to-set-the-passwords)
+
+### 8.6 How to Deploy EdgeGalley
+```
+bash install.sh
+```
+### 8.7 How to UnDeploy EdgeGalley
+```
+bash uninstall.sh
+```
+
+## 9. Trouble Shoot
 
 1. **error**:    fatal: [1.2.3.4]: FAILED! => {"msg": "Timeout (12s) waiting for privilege escalation prompt: "}
 - **solution**: deploy eg as a 'root' user
