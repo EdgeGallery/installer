@@ -33,7 +33,6 @@ developer_images_developerBe_pullPolicy: IfNotPresent
 developer_images_commoncbb_pullPolicy: IfNotPresent
 developer_images_postgres_pullPolicy: IfNotPresent
 developer_images_initservicecenter_pullPolicy: IfNotPresent
-developer_global_ssl_enabled: true
 developer_global_ssl_secretName: edgegallery-ssl-secret
 developer_ssl_certName: developer-ssl-cert
 toolchain_enabled: false

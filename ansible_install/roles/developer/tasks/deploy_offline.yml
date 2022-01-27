@@ -83,7 +83,7 @@
     --set images.commonServiceCbb.pullPolicy={{ developer_images_commoncbb_pullPolicy }} \
     --set images.postgres.pullPolicy={{ developer_images_postgres_pullPolicy }} \
     --set images.initservicecenter.pullPolicy={{ developer_images_initservicecenter_pullPolicy }} \
-    --set global.ssl.enabled={{ developer_global_ssl_enabled }} \
+    --set global.ssl.enabled={{ ENABLE_SSL }} \
     --set global.ssl.secretName={{ developer_global_ssl_secretName }} \
     --set global.persistence.enabled={{ ENABLE_PERSISTENCE }} \
     --set developer.ssl.certName={{ developer_ssl_certName }} \

@@ -26,6 +26,5 @@ usermgmt_images_usermgmt_pullPolicy: IfNotPresent
 usermgmt_images_postgres_pullPolicy: IfNotPresent
 usermgmt_images_redis_pullPolicy: IfNotPresent
 usermgmt_images_initservicecenter_pullPolicy: IfNotPresent
-usermgmt_global_ssl_enabled: true
 usermgmt_global_ssl_secretName: edgegallery-ssl-secret
 

@@ -25,5 +25,4 @@ atp_images_atpFe_pullPolicy: IfNotPresent
 atp_images_atp_pullPolicy: IfNotPresent
 atp_images_postgres_pullPolicy: IfNotPresent
 atp_images_initservicecenter_pullPolicy: IfNotPresent
-atp_global_ssl_enabled: true
 atp_global_ssl_secretName: edgegallery-ssl-secret

@@ -13,7 +13,6 @@
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
 
-edgegalleryFe_global_ssl_enabled: true
 edgegalleryFe_global_ssl_secretName: edgegallery-ssl-secret
 
 edgegalleryFe_repository: "{{ REGISTRY_URL }}edgegallery/edgegallery-fe"

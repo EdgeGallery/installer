@@ -28,5 +28,4 @@ appstore_images_appstoreBe_pullPolicy: IfNotPresent
 appstore_images_appdtranstool_pullPolicy: IfNotPresent
 appstore_images_postgres_pullPolicy: IfNotPresent
 appstore_images_initservicecenter_pullPolicy: IfNotPresent
-appstore_global_ssl_enabled: true
 appstore_global_ssl_secretName: edgegallery-ssl-secret

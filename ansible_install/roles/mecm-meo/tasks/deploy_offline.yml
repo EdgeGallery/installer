@@ -34,9 +34,8 @@
     --set images.initservicecenter.tag={{ mecm_fe_images_initservicecenter_tag }} \
     --set images.mecmFe.pullPolicy={{ mecm_fe_images_mecmFe_pullPolicy }} \
     --set images.initservicecenter.pullPolicy={{ mecm_fe_images_initservicecenter_pullPolicy }} \
-    --set global.ssl.enabled={{ mecm_fe_global_ssl_enabled }} \
+    --set global.ssl.enabled={{ ENABLE_SSL }} \
     --set global.ssl.secretName={{ meo_ssl_secretName }} \
-    --set global.ssl.enabled={{ meo_global_ssl_enabled }} \
     --set images.inventory.repository={{ meo_images_inventory_repository }} \
     --set images.north.repository={{ meo_images_north_repository }} \
     --set images.appo.repository={{ meo_images_appo_repository }} \

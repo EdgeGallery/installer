@@ -69,7 +69,7 @@
     --set images.postgres.pullPolicy={{ usermgmt_images_postgres_pullPolicy }} \
     --set images.redis.pullPolicy={{ usermgmt_images_redis_pullPolicy }} \
     --set images.initservicecenter.pullPolicy={{ usermgmt_images_initservicecenter_pullPolicy }} \
-    --set global.ssl.enabled={{ usermgmt_global_ssl_enabled }} \
+    --set global.ssl.enabled={{ ENABLE_SSL }} \
     --set global.ssl.secretName={{ usermgmt_global_ssl_secretName }} \
     --set global.persistence.enabled={{ ENABLE_PERSISTENCE }} \
     --set postgres.password={{ postgresPassword }} \

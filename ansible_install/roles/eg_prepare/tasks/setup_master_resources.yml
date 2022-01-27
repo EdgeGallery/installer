@@ -51,7 +51,7 @@
     helm install --wait service-center-edgegallery {{ HELM_CHARTS_PATH }}/edgegallery/servicecenter-{{ HELM_TAG }}.tgz \
     --set images.repository={{ servicecenter_images_repository }} \
     --set images.pullPolicy={{ servicecenter_images_pullPolicy }} \
-    --set global.ssl.enabled={{ servicecenter_global_ssl_enabled }} \
+    --set global.ssl.enabled={{ ENABLE_SSL }} \
     --set global.ssl.secretName={{ servicecenter_global_ssl_secretName }}
   when: EG_MODE == "all" or EG_MODE == "controller"
 

@@ -37,7 +37,7 @@
     --set images.appdtranstool.pullPolicy={{ appstore_images_appdtranstool_pullPolicy }} \
     --set images.postgres.pullPolicy={{ appstore_images_postgres_pullPolicy }} \
     --set images.initservicecenter.pullPolicy={{ appstore_images_initservicecenter_pullPolicy }} \
-    --set global.ssl.enabled={{ appstore_global_ssl_enabled }} \
+    --set global.ssl.enabled={{ ENABLE_SSL }} \
     --set global.ssl.secretName={{ appstore_global_ssl_secretName }} \
     --set global.persistence.enabled={{ ENABLE_PERSISTENCE }} \
     --set appShare.platformUrl=https://{{ PORTAL_IP }}:30099 \

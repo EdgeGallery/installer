@@ -31,5 +31,4 @@ SIGNATURE_CERTS_GENERATE_PATH: "{{ TARBALL_PATH }}/conf/keys/signature_crets"
 
 servicecenter_images_repository: "{{ REGISTRY_URL }}eg-common/service-center"
 servicecenter_images_pullPolicy: IfNotPresent
-servicecenter_global_ssl_enabled: true
 servicecenter_global_ssl_secretName: edgegallery-ssl-secret

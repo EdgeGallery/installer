@@ -35,7 +35,7 @@
     --set images.postgres.pullPolicy={{ atp_images_postgres_pullPolicy }} \
     --set images.initservicecenter.pullPolicy={{ atp_images_initservicecenter_pullPolicy }} \
     --set global.persistence.enabled={{ ENABLE_PERSISTENCE }} \
-    --set global.ssl.enabled={{ atp_global_ssl_enabled }} \
+    --set global.ssl.enabled={{ ENABLE_SSL }} \
     --set global.ssl.secretName={{ atp_global_ssl_secretName }} \
     --set postgres.password={{ postgresPassword }}
   no_log: true

@@ -41,6 +41,8 @@ ENABLE_INGRESS: true
 # true means deploy and false means undeploy
 ENABLE_APPD: true
 
+ENABLE_SSL: true
+
 HELM_CHARTS_PATH: "{{ TARBALL_PATH }}/helm/helm-charts"
 
 MEP_HELM_RELEASE_NAME: mep-edgegallery

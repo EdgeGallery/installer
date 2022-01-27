@@ -22,5 +22,4 @@ thirdsystem_images_curl_tag: 7.75.0
 thirdsystem_images_pullPolicy: IfNotPresent
 thirdsystem_images_postgres_pullPolicy: IfNotPresent
 thirdsystem_images_initservicecenter_pullPolicy: IfNotPresent
-thirdsystem_global_ssl_enabled: true
 thirdsystem_global_ssl_secretName: edgegallery-ssl-secret

@@ -13,8 +13,6 @@
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
 
-meo_global_ssl_enabled: true
-mecm_fe_global_ssl_enabled: true
 meo_ssl_secretName: edgegallery-ssl-secret
 meo_images_inventory_repository: "{{ REGISTRY_URL }}edgegallery/mecm-inventory"
 meo_images_north_repository: "{{ REGISTRY_URL }}edgegallery/mecm-north"
