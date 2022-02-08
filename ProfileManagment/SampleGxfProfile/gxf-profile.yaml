@@ -1,0 +1,44 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: gxf-publiclight-domain
+  name: gxf-publiclight-domain
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: gxf-publiclight-domain
+  template:
+    metadata:
+      labels:
+        app: gxf-publiclight-domain
+    spec:
+      containers:
+        - env:
+            - name: PGPASSWORD
+              value: ''
+          image: bhanusoni/gxf-publiclight-domain:latest
+          name: gxf-publiclight-domain
+          imagePullPolicy: IfNotPresent
+      restartPolicy: Always
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: gxf-publiclight-domain
+  name: gxf-publiclight-domain
+spec:
+  ports:
+    - name: "gxf-publiclight-fe"
+      port: 443
+      targetPort: 443
+      protocol: TCP
+    - name: "gxf-device-simulator"
+      port: 12122
+      targetPort: 12122
+      protocol: TCP
+  selector:
+    app: gxf-publiclight-domain
