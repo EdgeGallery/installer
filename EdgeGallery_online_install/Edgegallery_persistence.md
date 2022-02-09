@@ -32,6 +32,12 @@ helm install nfs-client-provisioner --set
 nfs.server=&lt;nfs\_sever\_ip&gt; --set nfs.path=/nfs/data/
 nfs-client-provisioner-1.2.8.tgz \# &lt;nfs\_sever\_ip&gt;为本机的ip
 
+#####  **if k8s version is greater than 1.20.0 , install nfs client using below steps**
+```
+helm repo add nfs-subdir-external-provisioner https://kubernetes-sigs.github.io/nfs-subdir-external-provisioner
+helm install nfs-subdir-external-provisioner nfs-subdir-external-provisioner/nfs-subdir-external-provisioner --set nfs.server=<sever_ip> --set nfs.path=/nfs/data/
+```
+
 #### 3.  **开启持久化**
 在线安装将Edgegallery-values.yaml 中设置persistence 状态为true  \
 Edgegallery-values.yaml 网址：https://gitee.com/edgegallery/installer/blob/master/EdgeGallery_online_install/edgegallery-values.yaml

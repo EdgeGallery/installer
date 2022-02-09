@@ -41,7 +41,7 @@ https://gitee.com/edgegallery/installer/blob/master/EdgeGallery_online_install/d
 
 ##### 2.安装nfs客户端
   下载nfs客户端  
-  x86: https://gitee.com/edgegallery/installer/blob/master/EdgeGallery_online_install/nfs-client-amd/nfs-client-provisioner-1.2.8.tgz  
+  x86: https://gitee.com/edgegallery/installer/raw/master/EdgeGallery_online_install/nfs-client-amd/nfs-client-provisioner-1.2.8.tgz  
   ARM: https://gitee.com/edgegallery/installer/blob/master/EdgeGallery_online_install/nfs-client-arm/nfs-client-provisioner-1.2.8.tgz  
   helm install nfs-client-provisioner --set nfs.server=<nfs_sever_ip> --set nfs.path=/edgegallery/data/   nfs-client-provisioner-1.2.8.tgz   
   #<nfs_sever_ip>为本机的ip 
@@ -94,7 +94,7 @@ https://gitee.com/edgegallery/installer/blob/master/EdgeGallery_online_install/d
   1.3.6.1.5.5.7.3.5, 1.3.6.1.5.5.7.3.6, 1.3.6.1.5.5.7.3.7, 1.3.6.1.5.5.8.2.2, 1.3.6.1.4.1.311.20.2.2"   
    
   openssl pkcs12 -passout pass:te9Fmv%qaq -export -out public.p12 -inkey privatekey.pem -in cert.pem  
-  
+  openssl x509 -outform der -in cert.pem -out public.cer
   kubectl create secret generic edgegallery-signature-secret \ 
      --from-file=sign_p12=public.p12 \ 
      --from-file=sign_cer=public.cer \ 
@@ -118,9 +118,10 @@ https://gitee.com/edgegallery/installer/blob/master/EdgeGallery_online_install/d
     
   执行以下命令生成mep证书   
   openssl genrsa -out ca.key 2048 2>&1 >/dev/null   
-  openssl req -new -key ca.key -subj /C=CN/ST=Peking/L=Beijing/O=edgegallery/CN=edgegallery -out ca.csr 2>&1 >/dev/null  
+  openssl req -new -key ca.key -subj /C=CN/ST=Beijing/L=Beijing/O=edgegallery/CN=edgegallery -out ca.csr 2>&1 >/dev/null  
   openssl x509 -req -days 365 -in ca.csr -extensions v3_ca -signkey ca.key -out ca.crt 2>&1 >/dev/null  
 
+  kubectl create ns mep
   openssl genrsa -out mepserver_tls.key 2048 2>&1 >/dev/null  
   openssl rsa -in mepserver_tls.key -aes256 -passout pass:te9Fmv%qaq -out mepserver_encryptedtls.key 2>&1 >/dev/null  
   echo -n te9Fmv%qaq > mepserver_cert_pwd 2>&1 >/dev/null    
@@ -142,6 +143,7 @@ https://gitee.com/edgegallery/installer/blob/master/EdgeGallery_online_install/d
       --from-file=trust.cer=ca.crt
       
 ###### 生成mepauth-secret  
+  kubectl create ns metallb-system
   kubectl -n mep create secret generic mepauth-secret --from-file=server.crt=mepserver_tls.crt --from-file=server.key=mepserver_tls.key   \        
       --from-file=ca.crt=ca.crt --from-file=jwt_publickey=jwt_publickey  --from-file=jwt_encrypted_privatekey=jwt_encrypted_privatekey
 
@@ -289,7 +291,6 @@ https://gitee.com/edgegallery/installer/blob/master/EdgeGallery_online_install/d
   https://gitee.com/edgegallery/installer/tree/master/ansible_package/roles/init/files/conf/edge/network-isolation  
   修改image名称：
   swr.cn-north-4.myhuaweicloud.com/eg-common/nfvpe/multus:stable
-  kubectl create ns mep       
   kubectl apply -f  multus.yaml         
   kubectl apply -f  eg-sp-rbac.yaml       
   sed -i 's?image: edgegallery/edgegallery-secondary-ep-controller:latest?image:swr.cn-north-4.myhuaweicloud.com/edgegallery/edgegallery-secondary-ep-controller:latest:v1.3.0?g' eg-sp-
