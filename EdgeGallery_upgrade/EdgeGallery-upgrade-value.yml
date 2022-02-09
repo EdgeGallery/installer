@@ -185,7 +185,7 @@ images:
     pullPolicy: IfNotPresent
   elasticsearch:
     repository: eg-common/elasticsearch
-    tag: 7.9.0
+    tag: 7.16.2
     pullPolicy: IfNotPresent
   ntp:
     repository: eg-common/cturra/ntp

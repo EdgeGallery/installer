@@ -212,7 +212,7 @@ images:
     pullPolicy: IfNotPresent
   elasticsearch:
     repository: swr.cn-north-4.myhuaweicloud.com/eg-common/elasticsearch
-    tag: 7.9.0
+    tag: 7.16.2
     pullPolicy: IfNotPresent
   ntp:
     repository: swr.cn-north-4.myhuaweicloud.com/eg-common/cturra/ntp

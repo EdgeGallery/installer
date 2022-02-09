@@ -44,7 +44,7 @@ mep_images_mep_tag: "{{ EG_IMAGE_TAG }}"
 mep_images_mepauth_tag: "{{ EG_IMAGE_TAG }}"
 mep_images_dns_tag: "{{ EG_IMAGE_TAG }}"
 mep_images_postgres_tag: 12.3
-mep_images_elasticsearch_tag: 7.9.0
+mep_images_elasticsearch_tag: 7.16.2
 mep_images_kong_tag: 2.0.4-ubuntu
 mep_images_ntp_tag: latest
 mep_images_mep_pullPolicy: IfNotPresent

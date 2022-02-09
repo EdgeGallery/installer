@@ -64,7 +64,7 @@ EG_IMAGE_LIST_EDGE_COMMON:
   - swr.cn-north-4.myhuaweicloud.com/eg-common/kong:2.0.4-ubuntu
   - swr.cn-north-4.myhuaweicloud.com/eg-common/nfvpe/multus:stable
   - swr.cn-north-4.myhuaweicloud.com/eg-common/dougbtv/whereabouts:latest
-  - swr.cn-north-4.myhuaweicloud.com/eg-common/elasticsearch:7.9.0
+  - swr.cn-north-4.myhuaweicloud.com/eg-common/elasticsearch:7.16.2
   - swr.cn-north-4.myhuaweicloud.com/eg-common/cturra/ntp:latest
   - swr.cn-north-4.myhuaweicloud.com/eg-common/us.gcr.io/k8s-artifacts-prod/ingress-nginx/controller:v0.34.1
 
