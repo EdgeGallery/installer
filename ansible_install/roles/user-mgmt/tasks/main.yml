@@ -40,6 +40,16 @@
     PORTAL_IP: "{{ MASTER_IP }}"
   when: PORTAL_IP is undefined
 
+- name: Set PROTOCOL Value to be https
+  set_fact:
+    PROTOCOL: https
+  when: ENABLE_SSL == ture
+
+- name: Set PROTOCOL Value to be http
+  set_fact:
+    PROTOCOL: http
+  when: ENABLE_SSL == false   
+
 - name: Set Mail Related Params
   set_fact:
     usermgmt_mail_host: ""
@@ -55,7 +65,7 @@
 
 - name: Set APPSTORE_ACCESS_URL as PORTAL_IP
   set_fact:
-    APPSTORE_ACCESS_URL: "https://{{ PORTAL_IP }}:{{ APPSTORE_PORT }}"
+    APPSTORE_ACCESS_URL: "{{ PROTOCOL }}://{{ PORTAL_IP }}:{{ APPSTORE_PORT }}"
   when: APPSTORE_CLIENT_ACCESS_URL is undefined or APPSTORE_CLIENT_ACCESS_URL is none
 
 - name: Set APPSTORE_ACCESS_URL as APPSTORE_CLIENT_ACCESS_URL
@@ -65,7 +75,7 @@
 
 - name: Set DEVELOPER_ACCESS_URL as PORTAL_IP
   set_fact:
-    DEVELOPER_ACCESS_URL: "https://{{ PORTAL_IP }}:{{ DEVELOPER_PORT }}"
+    DEVELOPER_ACCESS_URL: "{{ PROTOCOL }}://{{ PORTAL_IP }}:{{ DEVELOPER_PORT }}"
   when: DEVELOPER_CLIENT_ACCESS_URL is undefined or DEVELOPER_CLIENT_ACCESS_URL is none
 
 - name: Set DEVELOPER_ACCESS_URL as DEVELOPER_CLIENT_ACCESS_URL
@@ -75,7 +85,7 @@
 
 - name: Set MECM_ACCESS_URL as PORTAL_IP
   set_fact:
-    MECM_ACCESS_URL: "https://{{ PORTAL_IP }}:{{ MECM_PORT }}"
+    MECM_ACCESS_URL: "{{ PROTOCOL }}://{{ PORTAL_IP }}:{{ MECM_PORT }}"
   when: MECM_CLIENT_ACCESS_URL is undefined or MECM_CLIENT_ACCESS_URL is none
 
 - name: Set MECM_ACCESS_URL as MECM_CLIENT_ACCESS_URL
@@ -85,7 +95,7 @@
 
 - name: Set ATP_ACCESS_URL as PORTAL_IP
   set_fact:
-    ATP_ACCESS_URL: "https://{{ PORTAL_IP }}:{{ ATP_PORT }}"
+    ATP_ACCESS_URL: "{{ PROTOCOL }}://{{ PORTAL_IP }}:{{ ATP_PORT }}"
   when: ATP_CLIENT_ACCESS_URL is undefined or ATP_CLIENT_ACCESS_URL is none
 
 - name: Set ATP_ACCESS_URL as ATP_CLIENT_ACCESS_URL
@@ -95,7 +105,7 @@
 
 - name: Set EDGEGALLERY_ACCESS_URL as PORTAL_IP
   set_fact:
-    EDGEGALLERY_ACCESS_URL: "https://{{ PORTAL_IP }}:{{ EDGEGALLERY_PORT }}"
+    EDGEGALLERY_ACCESS_URL: "{{ PROTOCOL }}://{{ PORTAL_IP }}:{{ EDGEGALLERY_PORT }}"
   when: EDGEGALLERY_CLIENT_ACCESS_URL is undefined or EDGEGALLERY_CLIENT_ACCESS_URL is none
 
 - name: Set EDGEGALLERY_ACCESS_URL as EDGEGALLERY_CLIENT_ACCESS_URL

@@ -25,6 +25,16 @@
     PORTAL_IP: "{{ MASTER_IP }}"
   when: PORTAL_IP is undefined
 
+- name: Set PROTOCOL Value to be https
+  set_fact:
+    PROTOCOL: https
+  when: ENABLE_SSL == ture
+
+- name: Set PROTOCOL Value to be http
+  set_fact:
+    PROTOCOL: http
+  when: ENABLE_SSL == false   
+
 - name: Check EG Deployment
   include: "check.yml"
   when: OPERATION == "install"

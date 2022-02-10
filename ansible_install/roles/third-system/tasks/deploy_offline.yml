@@ -19,7 +19,7 @@
   shell: |
     helm install --wait {{ THIRD_SYSTEM_HELM_RELEASE_NAME }} \
     {{ HELM_CHARTS_PATH }}/edgegallery/thirdsystem-{{ HELM_TAG }}.tgz \
-    --set global.oauth2.authServerAddress=https://{{ PORTAL_IP }}:{{ USER_MGMT_PORT }} \
+    --set global.oauth2.authServerAddress={{ PROTOCOL }}://{{ PORTAL_IP }}:{{ USER_MGMT_PORT }} \
     --set global.oauth2.clients.third-systym.clientSecret={{ oauth2ClientPassword }} \
     --set images.thirdsystem.repository={{ thirdsystem_images_repository }} \
     --set images.postgres.repository={{ thirdsystem_images_postgres_repository }} \
@@ -50,7 +50,7 @@
 
 - name: Check THIRD_SYSTEM Status
   uri:
-    url: "https://{{ PORTAL_IP }}:{{ item }}/health"
+    url: "{{ PROTOCOL }}://{{ PORTAL_IP }}:{{ item }}/health"
     validate_certs: no
   loop:
     - 30197

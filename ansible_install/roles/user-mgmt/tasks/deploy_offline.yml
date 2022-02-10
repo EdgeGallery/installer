@@ -38,22 +38,22 @@
 - name: Deploy USER_MGMT
   shell: |
     helm install --wait user-mgmt-edgegallery {{ HELM_CHARTS_PATH }}/edgegallery/usermgmt-{{ HELM_TAG }}.tgz \
-    --set global.oauth2.clients.appstore.clientUrl=https://{{ PORTAL_IP }}:{{ APPSTORE_PORT }} \
+    --set global.oauth2.clients.appstore.clientUrl={{ PROTOCOL }}://{{ PORTAL_IP }}:{{ APPSTORE_PORT }} \
     --set global.oauth2.clients.appstore.clientAccessUrl={{ APPSTORE_ACCESS_URL }} \
     --set global.oauth2.clients.appstore.clientSecret={{ oauth2ClientPassword }} \
-    --set global.oauth2.clients.developer.clientUrl=https://{{ PORTAL_IP }}:{{ DEVELOPER_PORT }} \
+    --set global.oauth2.clients.developer.clientUrl={{ PROTOCOL }}://{{ PORTAL_IP }}:{{ DEVELOPER_PORT }} \
     --set global.oauth2.clients.developer.clientAccessUrl={{ DEVELOPER_ACCESS_URL }} \
     --set global.oauth2.clients.developer.clientSecret={{ oauth2ClientPassword }} \
-    --set global.oauth2.clients.mecm.clientUrl=https://{{ PORTAL_IP }}:{{ MECM_PORT }} \
+    --set global.oauth2.clients.mecm.clientUrl={{ PROTOCOL }}://{{ PORTAL_IP }}:{{ MECM_PORT }} \
     --set global.oauth2.clients.mecm.clientAccessUrl={{ MECM_ACCESS_URL }} \
     --set global.oauth2.clients.mecm.clientSecret={{ oauth2ClientPassword }} \
-    --set global.oauth2.clients.atp.clientUrl=https://{{ PORTAL_IP }}:{{ ATP_PORT }} \
+    --set global.oauth2.clients.atp.clientUrl={{ PROTOCOL }}://{{ PORTAL_IP }}:{{ ATP_PORT }} \
     --set global.oauth2.clients.atp.clientAccessUrl={{ ATP_ACCESS_URL }} \
     --set global.oauth2.clients.atp.clientSecret={{ oauth2ClientPassword }} \
-    --set global.oauth2.clients.lab.clientUrl=https://{{ PORTAL_IP }}:{{ LAB_PORT }} \
-    --set global.oauth2.clients.lab.clientAccessUrl=https://{{ PORTAL_IP }}:{{ LAB_PORT }} \
+    --set global.oauth2.clients.lab.clientUrl={{ PROTOCOL }}://{{ PORTAL_IP }}:{{ LAB_PORT }} \
+    --set global.oauth2.clients.lab.clientAccessUrl={{ PROTOCOL }}://{{ PORTAL_IP }}:{{ LAB_PORT }} \
     --set global.oauth2.clients.lab.clientSecret={{ oauth2ClientPassword }} \
-    --set global.oauth2.clients.edgegallery.clientUrl=https://{{ PORTAL_IP }}:{{ EDGEGALLERY_PORT }} \
+    --set global.oauth2.clients.edgegallery.clientUrl={{ PROTOCOL }}://{{ PORTAL_IP }}:{{ EDGEGALLERY_PORT }} \
     --set global.oauth2.clients.edgegallery.clientAccessUrl={{ EDGEGALLERY_ACCESS_URL }} \
     --set global.oauth2.clients.edgegallery.clientSecret={{ oauth2ClientPassword }} \
     --set jwt.secretName={{ usermgmt_jwt_secretName }} \
@@ -97,5 +97,5 @@
 
 - name: Check USER_MGMT Status
   uri:
-    url: "https://{{ PORTAL_IP }}:{{ USER_MGMT_PORT }}/health"
+    url: "{{ PROTOCOL }}://{{ PORTAL_IP }}:{{ USER_MGMT_PORT }}/health"
     validate_certs: no

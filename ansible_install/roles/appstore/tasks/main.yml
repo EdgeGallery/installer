@@ -35,6 +35,16 @@
     ARCH: amd64
   when: ansible_architecture == "x86_64"
 
+- name: Set PROTOCOL Value to be https
+  set_fact:
+    PROTOCOL: https
+  when: ENABLE_SSL == ture
+
+- name: Set PROTOCOL Value to be http
+  set_fact:
+    PROTOCOL: http
+  when: ENABLE_SSL == false   
+
 - name: Set ARCH Value to be arm64
   set_fact:
     ARCH: arm64
@@ -57,7 +67,7 @@
 
 - name: Check USER_MGMT Status
   uri:
-    url: "https://{{ PORTAL_IP }}:{{ USER_MGMT_PORT }}/health"
+    url: "{{ PROTOCOL }}://{{ PORTAL_IP }}:{{ USER_MGMT_PORT }}/health"
     validate_certs: no
   register: user_mgmt_interacts
   when: OPERATION == "install"
@@ -95,12 +105,12 @@
 
 - name: Set AUTH_SERVER_ADDRESS_CLIENT_ACCESS
   set_fact:
-    AUTH_SERVER_ADDRESS_CLIENT_ACCESS: "https://{{ PORTAL_IP }}:{{ USER_MGMT_PORT }}"
+    AUTH_SERVER_ADDRESS_CLIENT_ACCESS: "{{ PROTOCOL }}://{{ PORTAL_IP }}:{{ USER_MGMT_PORT }}"
   when: AUTH_SERVER_ADDRESS_CLIENT_ACCESS is undefined or AUTH_SERVER_ADDRESS_CLIENT_ACCESS is none
 
 - name: Set ATP_ACCESS_URL as PORTAL_IP
   set_fact:
-    ATP_ACCESS_URL: "https://{{ PORTAL_IP }}:{{ ATP_PORT }}"
+    ATP_ACCESS_URL: "{{ PROTOCOL }}://{{ PORTAL_IP }}:{{ ATP_PORT }}"
   when: ATP_CLIENT_ACCESS_URL is undefined or ATP_CLIENT_ACCESS_URL is none
 
 - name: Set ATP_ACCESS_URL as ATP_CLIENT_ACCESS_URL

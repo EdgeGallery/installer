@@ -33,23 +33,23 @@
   ignore_errors: yes
 
 - debug:
-    msg: "MEPM PORTAL   : https://{{ PORTAL_IP }}:{{ MEPM_PORT }}"
+    msg: "MEPM PORTAL   : {{ PROTOCOL }}://{{ PORTAL_IP }}:{{ MEPM_PORT }}"
   when: releasesDeployed is succeeded and MEPM_HELM_RELEASE_NAME in releasesDeployed.stdout
 
 - debug:
-    msg: "APPSTORE PORTAL   : https://{{ PORTAL_IP }}:{{ APPSTORE_PORT }}"
+    msg: "APPSTORE PORTAL   : {{ PROTOCOL }}://{{ PORTAL_IP }}:{{ APPSTORE_PORT }}"
   when: releasesDeployed is succeeded and APPSTORE_HELM_RELEASE_NAME in releasesDeployed.stdout
 
 - debug:
-    msg: "DEVELOPER PORTAL   : https://{{ PORTAL_IP }}:{{ DEVELOPER_PORT }}"
+    msg: "DEVELOPER PORTAL   : {{ PROTOCOL }}://{{ PORTAL_IP }}:{{ DEVELOPER_PORT }}"
   when: releasesDeployed is succeeded and DEVELOPER_HELM_RELEASE_NAME in releasesDeployed.stdout
 
 - debug:
-    msg: "MECM PORTAL   : https://{{ PORTAL_IP }}:{{ MECM_PORT }}"
+    msg: "MECM PORTAL   : {{ PROTOCOL }}://{{ PORTAL_IP }}:{{ MECM_PORT }}"
   when: releasesDeployed is succeeded and MECM_MEO_HELM_RELEASE_NAME in releasesDeployed.stdout
 
 - debug:
-    msg: "ATP PORTAL   : https://{{ PORTAL_IP }}:{{ ATP_PORT }}"
+    msg: "ATP PORTAL   : {{ PROTOCOL }}://{{ PORTAL_IP }}:{{ ATP_PORT }}"
   when: releasesDeployed is succeeded and ATP_HELM_RELEASE_NAME in releasesDeployed.stdout
 
 - name: EdgeGallery Got Deployed SuccessFully

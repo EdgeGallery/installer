@@ -30,6 +30,16 @@
     PORTAL_IP: "{{ MASTER_IP }}"
   when: PORTAL_IP is undefined
 
+- name: Set PROTOCOL Value to be https
+  set_fact:
+    PROTOCOL: https
+  when: ENABLE_SSL == ture
+
+- name: Set PROTOCOL Value to be http
+  set_fact:
+    PROTOCOL: http
+  when: ENABLE_SSL == false   
+
 - name: Set ARCH Value to be amd64
   set_fact:
     ARCH: amd64
@@ -57,7 +67,7 @@
 
 - name: Check USER_MGMT Status
   uri:
-    url: "https://{{ PORTAL_IP }}:{{ USER_MGMT_PORT }}/health"
+    url: "{{ PROTOCOL }}://{{ PORTAL_IP }}:{{ USER_MGMT_PORT }}/health"
     validate_certs: no
   register: user_mgmt_reach
   when: OPERATION == "install"
@@ -95,7 +105,7 @@
 
 - name: Set AUTH_SERVER_ADDRESS_CLIENT_ACCESS
   set_fact:
-    AUTH_SERVER_ADDRESS_CLIENT_ACCESS: "https://{{ PORTAL_IP }}:{{ USER_MGMT_PORT }}"
+    AUTH_SERVER_ADDRESS_CLIENT_ACCESS: "{{ PROTOCOL }}://{{ PORTAL_IP }}:{{ USER_MGMT_PORT }}"
   when: AUTH_SERVER_ADDRESS_CLIENT_ACCESS is undefined or AUTH_SERVER_ADDRESS_CLIENT_ACCESS is none
 
 - name: Check whether DEVELOPER is Deployed

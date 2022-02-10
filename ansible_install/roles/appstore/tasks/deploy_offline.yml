@@ -18,7 +18,7 @@
 - name: Deploy APPSTORE
   shell: |
     helm install --wait {{ APPSTORE_HELM_RELEASE_NAME }} {{ HELM_CHARTS_PATH }}/edgegallery/appstore-{{ HELM_TAG }}.tgz \
-    --set global.oauth2.authServerAddress=https://{{ PORTAL_IP }}:{{ USER_MGMT_PORT }} \
+    --set global.oauth2.authServerAddress={{ PROTOCOL }}://{{ PORTAL_IP }}:{{ USER_MGMT_PORT }} \
     --set global.oauth2.authServerAddressClientAccess={{ AUTH_SERVER_ADDRESS_CLIENT_ACCESS }} \
     --set global.oauth2.redirectUriParam={{ APPSTORE_REDIRECT_URI_PARAM }} \
     --set global.oauth2.clients.appstore.clientSecret={{ oauth2ClientPassword }} \
@@ -40,7 +40,7 @@
     --set global.ssl.enabled={{ ENABLE_SSL }} \
     --set global.ssl.secretName={{ appstore_global_ssl_secretName }} \
     --set global.persistence.enabled={{ ENABLE_PERSISTENCE }} \
-    --set appShare.platformUrl=https://{{ PORTAL_IP }}:30099 \
+    --set appShare.platformUrl={{ PROTOCOL }}://{{ PORTAL_IP }}:30099 \
     --set appShare.atpReportUrl={{ ATP_ACCESS_URL }}/#/atpreport?taskid=%s \
     --set appstoreBe.secretName={{ SIGNATURE_SECRET_NAME }} \
     --set appstoreBe.dockerRepo.endpoint={{ HarborIP }} \
@@ -68,7 +68,7 @@
 
 - name: Check APPSTORE Status
   uri:
-    url: "https://{{ PORTAL_IP }}:{{ item }}/health"
+    url: "{{ PROTOCOL }}://{{ PORTAL_IP }}:{{ item }}/health"
     validate_certs: no
   loop:
     - 30091
