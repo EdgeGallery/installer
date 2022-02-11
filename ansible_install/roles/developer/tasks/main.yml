@@ -33,7 +33,7 @@
 - name: Set PROTOCOL Value to be https
   set_fact:
     PROTOCOL: https
-  when: ENABLE_SSL == ture
+  when: ENABLE_SSL == true
 
 - name: Set PROTOCOL Value to be http
   set_fact:
