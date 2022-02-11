@@ -15,18 +15,6 @@
 
 ---
 
-- name: create non existent directory
-  shell: |
-    mkdir -p "{{ role_path }}/files"
-
-- name: copying file with owner and permissions
-  copy:
-    src: "{{ role_path }}/files/ingress.yaml"
-    dest: "{{role_path}}/files/ingress.yaml"
-    owner: root
-    group: root
-    mode: 0644
-
 - name: Setup Nginx Ingress Controller
   shell: |
     helm install --wait eg-ingress {{ HELM_CHARTS_PATH }}/stable/nginx-ingress-1.41.2.tgz \
@@ -37,7 +25,7 @@
       --set controller.image.repository={{ ingress_controller_image_repository }} \
       --set controller.admissionWebhooks.patch.image.repository={{ ingress_controller_admissionWebhooks_patch_image_repository }} \
       --set defaultBackend.image.repository={{ ingress_defaultBackend_image_repository }} \
-      -f "{{role_path}}"/files/ingress.yaml
+      -f "{{ role_path }}"/files/ingress.yaml
   when: K8S_NODE_TYPE == "master" and EG_MODE != "controller" and ENABLE_INGRESS == true
 
 - name: Create Secret mecm-mepm-jwt-public-secret
