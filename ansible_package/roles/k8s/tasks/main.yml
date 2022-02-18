@@ -37,17 +37,17 @@
   import_tasks: download_k8s.yml
 
 - name: Copy CNI Tar File From FTP Server
-  shell: "scp -r -P {{ FTP_SSH_PORT }} {{ FTP_USER }}@{{ FTP_SERVER }}:/home/jenkins/cni/cni-plugins-linux-{{ ARCH }}-v0.8.7.tgz {{ K8S_OFFLINE_DIR }}"
+  shell: "scp -r -P {{ FTP_SSH_PORT }} {{ FTP_USER }}@{{ FTP_SERVER }}:/home/jenkins/cni/cni-plugins-linux-{{ ARCH }}-v1.0.1.tgz {{ K8S_OFFLINE_DIR }}"
 
 - name: Unarchive CNI Tar File
   unarchive:
-    src: "{{ K8S_OFFLINE_DIR }}/cni-plugins-linux-{{ ARCH }}-v0.8.7.tgz"
+    src: "{{ K8S_OFFLINE_DIR }}/cni-plugins-linux-{{ ARCH }}-v1.0.1.tgz"
     dest: "{{ K8S_OFFLINE_DIR }}/cni"
     copy: yes
 
 - name: Remove CNI Tar File
   file:
-    path: "{{ K8S_OFFLINE_DIR }}/cni-plugins-linux-{{ ARCH }}-v0.8.7.tgz"
+    path: "{{ K8S_OFFLINE_DIR }}/cni-plugins-linux-{{ ARCH }}-v1.0.1.tgz"
     state: absent
 
 - name: Set K8S Image List for AMD64

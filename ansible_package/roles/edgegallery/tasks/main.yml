@@ -78,7 +78,7 @@
 
 - name: Download Docker Compose Offline Install Package
   get_url:
-    url: "https://get.daocloud.io/docker/compose/releases/download/1.26.0/docker-compose-{{ ansible_system }}-{{ ansible_architecture }}"
+    url: "https://get.daocloud.io/docker/compose/releases/download/1.29.2/docker-compose-{{ ansible_system }}-{{ ansible_architecture }}"
     dest: "{{ HARBOR_DIR }}/docker-compose"
   when: ARCH == "amd64" and EG_MODE != "edge"
 

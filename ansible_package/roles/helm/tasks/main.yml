@@ -29,7 +29,7 @@
     - "{{ HELM_CHARTS_STABLE }}"
 
 - name: Copy Helm Offline Install Package from FTP Server
-  shell: "scp -P {{ FTP_SSH_PORT }} {{ FTP_USER }}@{{ FTP_SERVER }}:/home/jenkins/helm/helm-v3.2.4-linux-{{ ARCH }}.tar.gz {{ HELM_OFFLINE_DIR }}"
+  shell: "scp -P {{ FTP_SSH_PORT }} {{ FTP_USER }}@{{ FTP_SERVER }}:/home/jenkins/helm/helm-v3.8.0-linux-{{ ARCH }}.tar.gz {{ HELM_OFFLINE_DIR }}"
 
 - name: Check Whether Helm is Installed
   shell: helm version
@@ -44,7 +44,7 @@
 
 - name: Unarchive Helm Offline Install Package
   unarchive:
-    src: "{{ HELM_OFFLINE_DIR }}/helm-v3.2.4-linux-{{ ARCH }}.tar.gz"
+    src: "{{ HELM_OFFLINE_DIR }}/helm-v3.8.0-linux-{{ ARCH }}.tar.gz"
     dest: "/tmp/helm-download"
   when: helmInstalled is failed
 

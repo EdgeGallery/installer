@@ -40,5 +40,5 @@ EG_HELM_LIST_EDGE:
 STABLE_NGINX_HELM_URL: https://kubernetes-charts.storage.googleapis.com/nginx-ingress-1.41.2.tgz
 STABLE_NGINX_HELM_NAME: nginx-ingress-1.41.2.tgz
 
-STABLE_NFS_HELM_URL: https://kubernetes-charts.storage.googleapis.com/nfs-client-provisioner-1.2.8.tgz
-STABLE_NFS_HELM_NAME: nfs-client-provisioner-1.2.8.tgz
+STABLE_NFS_HELM_URL: https://gitee.com/mirrors_kubernetes-sigs/nfs-subdir-external-provisioner/repository/archive/nfs-subdir-external-provisioner-4.0.16.tar.gz
+STABLE_NFS_HELM_NAME: nfs-subdir-external-provisioner-4.0.16.tar.gz

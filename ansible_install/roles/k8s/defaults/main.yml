@@ -23,33 +23,36 @@ REGISTRY_CONTAINER_NAME: docker-registry
 REGISTRY_IMAGE_NAME: eg-common/registry:2
 
 K8S_DOCKER_IMAGES:
-  - k8s.gcr.io/kube-proxy:v1.18.7
-  - k8s.gcr.io/kube-controller-manager:v1.18.7
-  - k8s.gcr.io/kube-apiserver:v1.18.7
-  - k8s.gcr.io/kube-scheduler:v1.18.7
-  - k8s.gcr.io/pause:3.2
-  - k8s.gcr.io/coredns:1.6.7
-  - k8s.gcr.io/etcd:3.4.3-0
-  - k8s.gcr.io/metrics-server/metrics-server:v0.3.7
+  - kube-proxy:v1.23.3
+  - kube-controller-manager:v1.23.3
+  - kube-apiserver:v1.23.3
+  - kube-scheduler:v1.23.3
+  - pause:3.4.1
+  - coredns:1.8.0
+  - etcd:3.4.13-0
+  - metrics-server/metrics-server:v0.3.7
   - calico/node:v3.15.1
   - calico/cni:v3.15.1
   - calico/kube-controllers:v3.15.1
   - calico/pod2daemon-flexvol:v3.15.1
   - nginx:stable
-
+  - pause:3.6
+  - coredns:v1.8.6
+  - etcd:3.5.1-0
+  
 K8S_TAR_IMAGE: k8s_images.tar.gz
 
 CNI_BIN_PATH: /opt/cni/bin
 
-HELM_VERSION: v3.2.4
+HELM_VERSION: v3.8.0
 HELM_TARBALL_FILE: "{{ TARBALL_PATH }}/helm/helm-{{ HELM_VERSION }}-linux-{{ ARCH }}.tar.gz"
 HELM_OFFLINE_DIR: "{{ TARBALL_PATH }}/helm"
 
 NFS_DEB_PATH: "{{ TARBALL_PATH }}/nfs/deb"
 NFS_IMAGE: "{{ TARBALL_PATH }}/nfs/images/nfs_images.tar.gz"
 NFS_PATH: "/edgegallery/data"
-NFS_CHART_FILE: "{{ HELM_CHARTS_DIR }}/stable/nfs-client-provisioner-1.2.8.tgz"
-nfs_image_repository_amd64: eg-common/quay.io/external_storage/nfs-client-provisioner
-nfs_image_tag_amd64: v3.1.0-k8s1.11
+NFS_CHART_FILE: "{{ HELM_CHARTS_DIR }}/stable/nfs-subdir-external-provisioner-4.0.16.tgz"
+nfs_image_repository_amd64: eg-common/nfs-subdir-external-provisioner
+nfs_image_tag_amd64: v4.0.2
 nfs_image_repository_arm64: eg-common/quay.io/codayblue/nfs-subdir-external-provisioner-arm64
 nfs_image_tag_arm64: latest

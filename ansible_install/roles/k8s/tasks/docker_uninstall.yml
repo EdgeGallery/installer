@@ -48,6 +48,7 @@
   loop:
     - containerd
     - containerd-shim
+    - containerd-shim-runc-v2
     - ctr
     - docker
     - dockerd

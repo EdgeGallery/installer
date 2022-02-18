@@ -15,13 +15,13 @@
 
 - name: Download Docker X86 Offline Package
   get_url:
-    url: https://download.docker.com/linux/static/stable/x86_64/docker-18.09.0.tgz
+    url: https://download.docker.com/linux/static/stable/x86_64/docker-20.10.7.tgz
     dest: "{{ K8S_OFFLINE_DIR }}/docker/docker.tgz"
   when: ARCH == "amd64"
 
 - name: Download Docker ARM64 Offline Package
   get_url:
-    url: https://download.docker.com/linux/static/stable/aarch64/docker-18.09.0.tgz
+    url: https://download.docker.com/linux/static/stable/aarch64/docker-20.10.7.tgz
     dest: "{{ K8S_OFFLINE_DIR }}/docker/docker.tgz"
   when: ARCH == "arm64"
 
@@ -60,6 +60,7 @@
   loop:
     - containerd
     - containerd-shim
+    - containerd-shim-runc-v2
     - ctr
     - docker
     - dockerd
