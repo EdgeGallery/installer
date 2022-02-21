@@ -16,14 +16,17 @@ DOCKER_REGISTRY: "{{ TARBALL_PATH }}/registry"
 NFS_OFFLINE_DIR: "{{ TARBALL_PATH }}/nfs"
 
 K8S_DOCKER_IMAGES_AMD64:
-  - swr.cn-north-4.myhuaweicloud.com/eg-common/kube-proxy:v1.23.3
-  - swr.cn-north-4.myhuaweicloud.com/eg-common/kube-controller-manager:v1.23.3
-  - swr.cn-north-4.myhuaweicloud.com/eg-common/kube-apiserver:v1.23.3
-  - swr.cn-north-4.myhuaweicloud.com/eg-common/kube-scheduler:v1.23.3
-  - swr.cn-north-4.myhuaweicloud.com/eg-common/pause:3.4.1
-  - swr.cn-north-4.myhuaweicloud.com/eg-common/coredns:1.8.0
-  - swr.cn-north-4.myhuaweicloud.com/eg-common/etcd:3.4.13-0
-  - swr.cn-north-4.myhuaweicloud.com/eg-common/metrics-server/metrics-server:v0.3.7
+  - swr.cn-north-4.myhuaweicloud.com/eg-common/k8s.gcr.io/kube-proxy:v1.23.3
+  - swr.cn-north-4.myhuaweicloud.com/eg-common/k8s.gcr.io/kube-controller-manager:v1.23.3
+  - swr.cn-north-4.myhuaweicloud.com/eg-common/k8s.gcr.io/kube-apiserver:v1.23.3
+  - swr.cn-north-4.myhuaweicloud.com/eg-common/k8s.gcr.io/kube-scheduler:v1.23.3
+  - swr.cn-north-4.myhuaweicloud.com/eg-common/k8s.gcr.io/pause:3.6
+  - swr.cn-north-4.myhuaweicloud.com/eg-common/k8s.gcr.io/coredns/coredns:v1.8.6
+  - swr.cn-north-4.myhuaweicloud.com/eg-common/k8s.gcr.io/etcd:3.5.1-0
+  - swr.cn-north-4.myhuaweicloud.com/eg-common/k8s.gcr.io/pause:3.4.1
+  - swr.cn-north-4.myhuaweicloud.com/eg-common/k8s.gcr.io/coredns/coredns:v1.8.0
+  - swr.cn-north-4.myhuaweicloud.com/eg-common/k8s.gcr.io/etcd:3.4.13-0
+  - swr.cn-north-4.myhuaweicloud.com/eg-common/k8s.gcr.io/metrics-server/metrics-server:v0.3.7
   - swr.cn-north-4.myhuaweicloud.com/eg-common/calico/node:v3.15.1
   - swr.cn-north-4.myhuaweicloud.com/eg-common/calico/cni:v3.15.1
   - swr.cn-north-4.myhuaweicloud.com/eg-common/calico/kube-controllers:v3.15.1
@@ -33,14 +36,14 @@ K8S_DOCKER_IMAGES_AMD64:
 NFS_DOCKER_IMAGES_AMD64: swr.cn-north-4.myhuaweicloud.com/eg-common/nfs-subdir-external-provisioner:v4.0.2
 
 K8S_DOCKER_IMAGES_ARM64:
-  - swr.cn-north-4.myhuaweicloud.com/eg-common/kube-proxy:v1.23.3-arm64
-  - swr.cn-north-4.myhuaweicloud.com/eg-common/kube-controller-manager:v1.23.3-arm64
-  - swr.cn-north-4.myhuaweicloud.com/eg-common/kube-apiserver:v1.23.3-arm64
-  - swr.cn-north-4.myhuaweicloud.com/eg-common/kube-scheduler:v1.23.3-arm64
-  - swr.cn-north-4.myhuaweicloud.com/eg-common/pause:3.6-arm64
-  - swr.cn-north-4.myhuaweicloud.com/eg-common/coredns:v1.8.6-arm64
-  - swr.cn-north-4.myhuaweicloud.com/eg-common/etcd:3.5.1-0-arm64
-  - swr.cn-north-4.myhuaweicloud.com/eg-common/metrics-server/metrics-server:v0.3.7-arm64
+  - swr.cn-north-4.myhuaweicloud.com/eg-common/k8s.gcr.io/kube-proxy:v1.23.3-arm64
+  - swr.cn-north-4.myhuaweicloud.com/eg-common/k8s.gcr.io/kube-controller-manager:v1.23.3-arm64
+  - swr.cn-north-4.myhuaweicloud.com/eg-common/k8s.gcr.io/kube-apiserver:v1.23.3-arm64
+  - swr.cn-north-4.myhuaweicloud.com/eg-common/k8s.gcr.io/kube-scheduler:v1.23.3-arm64
+  - swr.cn-north-4.myhuaweicloud.com/eg-common/k8s.gcr.io/pause:3.6-arm64
+  - swr.cn-north-4.myhuaweicloud.com/eg-common/k8s.gcr.io/coredns/coredns:v1.8.6-arm64
+  - swr.cn-north-4.myhuaweicloud.com/eg-common/k8s.gcr.io/etcd:3.5.1-0-arm64
+  - swr.cn-north-4.myhuaweicloud.com/eg-common/k8s.gcr.io/metrics-server/metrics-server:v0.3.7-arm64
   - swr.cn-north-4.myhuaweicloud.com/eg-common/calico/node:v3.15.1
   - swr.cn-north-4.myhuaweicloud.com/eg-common/calico/cni:v3.15.1
   - swr.cn-north-4.myhuaweicloud.com/eg-common/calico/kube-controllers:v3.15.1-arm64

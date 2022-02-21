@@ -23,22 +23,24 @@ REGISTRY_CONTAINER_NAME: docker-registry
 REGISTRY_IMAGE_NAME: eg-common/registry:2
 
 K8S_DOCKER_IMAGES:
-  - kube-proxy:v1.23.3
-  - kube-controller-manager:v1.23.3
-  - kube-apiserver:v1.23.3
-  - kube-scheduler:v1.23.3
-  - pause:3.4.1
-  - coredns:1.8.0
-  - etcd:3.4.13-0
-  - metrics-server/metrics-server:v0.3.7
+  - k8s.gcr.io/kube-proxy:v1.23.3
+  - k8s.gcr.io/kube-controller-manager:v1.23.3
+  - k8s.gcr.io/kube-apiserver:v1.23.3
+  - k8s.gcr.io/kube-scheduler:v1.23.3
+  - k8s.gcr.io/pause:3.6
+  - k8s.gcr.io/coredns/coredns:v1.8.6
+  - k8s.gcr.io/etcd:3.5.1-0
+  - k8s.gcr.io/metrics-server/metrics-server:v0.3.7
   - calico/node:v3.15.1
   - calico/cni:v3.15.1
   - calico/kube-controllers:v3.15.1
   - calico/pod2daemon-flexvol:v3.15.1
   - nginx:stable
-  - pause:3.6
-  - coredns:v1.8.6
-  - etcd:3.5.1-0
+  - k8s.gcr.io/pause:3.4.1
+  - k8s.gcr.io/coredns/coredns:1.8.0
+  - k8s.gcr.io/etcd:3.4.13-0
+  
+ 
   
 K8S_TAR_IMAGE: k8s_images.tar.gz
 
