@@ -47,7 +47,6 @@
   shell: |
     helm install --wait mecm-mepm-edgegallery {{ HELM_CHARTS_PATH }}/edgegallery/mecm-mepm-{{ HELM_TAG }}.tgz \
     --set jwt.publicKeySecretName=mecm-mepm-jwt-public-secret \
-    --set ssl.secretName=mecm-mepm-ssl-secret \
     --set images.lcmcontroller.repository={{ mepm_images_lcmcontroller_repository }} \
     --set images.k8splugin.repository={{ mepm_images_k8splugin_repository }} \
     --set images.osplugin.repository={{ mepm_images_osplugin_repository }} \
@@ -79,6 +78,8 @@
     --set images.commonWebssh.pullPolicy={{ mepm_images_commonwebssh_pullPolicy }} \
     --set images.postgres.pullPolicy={{ mepm_images_postgres_pullPolicy }} \
     --set global.persistence.enabled={{ ENABLE_PERSISTENCE }} \
+    --set global.ssl.enabled={{ ENABLE_SSL }} \
+    --set global.ssl.secretName=mecm-mepm-ssl-secret \
     --set mepm.postgres.postgresPass={{ postgresPassword }} \
     --set mepm.postgres.lcmcontrollerDbPass={{ postgresPassword }} \
     --set mepm.postgres.k8spluginDbPass={{ postgresPassword }} \
