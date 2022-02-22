@@ -20,7 +20,7 @@ import sys
 def check_and_update_docker_json(list_of_entries=[],
     daemon_json="/etc/docker/daemon.json"):
     try:
-        daemon_json_obj = {}
+        daemon_json_obj = {"exec-opts": ["native.cgroupdriver=systemd"],}
 
         if not os.path.exists(daemon_json):
             with open(daemon_json, "wt") as fh:
