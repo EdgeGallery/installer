@@ -37,8 +37,8 @@ EG_HELM_LIST_EDGE:
   - mep
   - healthcheck
 
-STABLE_NGINX_HELM_URL: https://edgegallery.obs.cn-east-3.myhuaweicloud.com/ingress-nginx-3.15.2.tgz
-STABLE_NGINX_HELM_NAME: ingress-nginx-3.15.2.tgz
+STABLE_NGINX_HELM_URL: https://edgegallery.obs.cn-east-3.myhuaweicloud.com/ingress-nginx-v1.1.1.tar.gz
+STABLE_NGINX_HELM_NAME: ingress-nginx-v1.1.1.tar.gz
 
 STABLE_NFS_HELM_URL: https://edgegallery.obs.cn-east-3.myhuaweicloud.com/nfs-subdir-external-provisioner-4.0.16.tgz
 STABLE_NFS_HELM_NAME: nfs-subdir-external-provisioner-4.0.16.tgz

@@ -17,7 +17,7 @@
 
 - name: Setup Nginx Ingress Controller
   shell: |
-    helm install --wait eg-ingress {{ HELM_CHARTS_PATH }}/stable/nginx-ingress-1.41.2.tgz \
+    helm install --wait eg-ingress {{ HELM_CHARTS_PATH }}/stable/ingress-nginx-v1.1.1.tar.gz \
       --set controller.service.type=NodePort \
       --set controller.service.nodePorts.http=30102 \
       --set controller.service.nodePorts.https=31252 \
