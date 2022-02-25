@@ -61,6 +61,7 @@
     --set mecm.postgres.inventoryDbPass={{ postgresPassword }} \
     --set mecm.postgres.northDbPass={{ postgresPassword }} \
     --set mecm.postgres.appoDbPass={{ postgresPassword }} \
+    --set mecmNorth.fileSystemAddress=http://{{ PORTAL_IP }}:30090 \
     --set mecm.postgres.apmDbPass={{ postgresPassword }}
   no_log: true
   ignore_errors: yes
