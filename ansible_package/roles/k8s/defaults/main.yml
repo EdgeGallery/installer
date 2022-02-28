@@ -26,7 +26,7 @@ K8S_DOCKER_IMAGES_AMD64:
   - swr.cn-north-4.myhuaweicloud.com/eg-common/k8s.gcr.io/pause:3.4.1
   - swr.cn-north-4.myhuaweicloud.com/eg-common/k8s.gcr.io/coredns/coredns:v1.8.0
   - swr.cn-north-4.myhuaweicloud.com/eg-common/k8s.gcr.io/etcd:3.4.13-0
-  - swr.cn-north-4.myhuaweicloud.com/eg-common/k8s.gcr.io/metrics-server/metrics-server:v0.3.7
+  - swr.cn-north-4.myhuaweicloud.com/eg-common/k8s.gcr.io/metrics-server/metrics-server:v0.6.1
   - swr.cn-north-4.myhuaweicloud.com/eg-common/calico/node:v3.15.1
   - swr.cn-north-4.myhuaweicloud.com/eg-common/calico/cni:v3.15.1
   - swr.cn-north-4.myhuaweicloud.com/eg-common/calico/kube-controllers:v3.15.1
@@ -43,7 +43,7 @@ K8S_DOCKER_IMAGES_ARM64:
   - swr.cn-north-4.myhuaweicloud.com/eg-common/k8s.gcr.io/pause:3.6-arm64
   - swr.cn-north-4.myhuaweicloud.com/eg-common/k8s.gcr.io/coredns/coredns:v1.8.6-arm64
   - swr.cn-north-4.myhuaweicloud.com/eg-common/k8s.gcr.io/etcd:3.5.1-0-arm64
-  - swr.cn-north-4.myhuaweicloud.com/eg-common/k8s.gcr.io/metrics-server/metrics-server:v0.3.7-arm64
+  - swr.cn-north-4.myhuaweicloud.com/eg-common/k8s.gcr.io/metrics-server/metrics-server:v0.6.1
   - swr.cn-north-4.myhuaweicloud.com/eg-common/calico/node:v3.15.1
   - swr.cn-north-4.myhuaweicloud.com/eg-common/calico/cni:v3.15.1
   - swr.cn-north-4.myhuaweicloud.com/eg-common/calico/kube-controllers:v3.15.1-arm64
