@@ -22,13 +22,14 @@
 
 - name: Create ~/.kube Directory on Worker Node
   file:
-    path: "/root/.kube/"
+    path: " ~/.kube/"
     state: directory
 
 - name: Copy kube config From Deploy Node to Worker Node
   copy:
-    src: "/home/{{ MASTER_IP }}/{{ groups.master[0] }}/root/.kube/config"
-    dest: "/root/.kube/"
+    src: "/home/{{ MASTER_IP }}/{{ groups.master[0] }}~/.kube/config"
+    dest: " ~/.kube/"
+    mode: 0600
 
 - name: Execute File k8s-worker.sh
   shell: "bash {{K8S_OFFLINE_DIR}}/k8s-worker.sh"

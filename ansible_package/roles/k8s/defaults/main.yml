@@ -33,7 +33,7 @@ K8S_DOCKER_IMAGES_AMD64:
   - swr.cn-north-4.myhuaweicloud.com/eg-common/calico/pod2daemon-flexvol:v3.15.1
   - swr.cn-north-4.myhuaweicloud.com/eg-common/nginx:stable
 
-NFS_DOCKER_IMAGES_AMD64: swr.cn-north-4.myhuaweicloud.com/eg-common/nfs-subdir-external-provisioner:v4.0.2
+NFS_DOCKER_IMAGES_AMD64: swr.cn-north-4.myhuaweicloud.com/eg-common/k8s.gcr.io/sig-storage/nfs-subdir-external-provisioner:v4.0.2
 
 K8S_DOCKER_IMAGES_ARM64:
   - swr.cn-north-4.myhuaweicloud.com/eg-common/k8s.gcr.io/kube-proxy:v1.23.3-arm64
@@ -50,6 +50,6 @@ K8S_DOCKER_IMAGES_ARM64:
   - swr.cn-north-4.myhuaweicloud.com/eg-common/calico/pod2daemon-flexvol:v3.15.1
   - swr.cn-north-4.myhuaweicloud.com/eg-common/nginx:stable
 
-NFS_DOCKER_IMAGES_ARM64: swr.cn-north-4.myhuaweicloud.com/eg-common/quay.io/codayblue/nfs-subdir-external-provisioner-arm64:latest
+NFS_DOCKER_IMAGES_ARM64: swr.cn-north-4.myhuaweicloud.com/eg-common/k8s.gcr.io/sig-storage/nfs-subdir-external-provisioner:v4.0.2
 
 DOCKER_REGISTRY_IMAGE: swr.cn-north-4.myhuaweicloud.com/eg-common/registry:2

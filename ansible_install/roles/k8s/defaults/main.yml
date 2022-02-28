@@ -54,7 +54,5 @@ NFS_DEB_PATH: "{{ TARBALL_PATH }}/nfs/deb"
 NFS_IMAGE: "{{ TARBALL_PATH }}/nfs/images/nfs_images.tar.gz"
 NFS_PATH: "/edgegallery/data"
 NFS_CHART_FILE: "{{ HELM_CHARTS_DIR }}/stable/nfs-subdir-external-provisioner-4.0.16.tgz"
-nfs_image_repository_amd64: eg-common/nfs-subdir-external-provisioner
-nfs_image_tag_amd64: v4.0.2
-nfs_image_repository_arm64: eg-common/quay.io/codayblue/nfs-subdir-external-provisioner-arm64
-nfs_image_tag_arm64: latest
+nfs_image_repository: eg-common/k8s.gcr.io/sig-storage/nfs-subdir-external-provisioner
+nfs_image_tag: v4.0.2

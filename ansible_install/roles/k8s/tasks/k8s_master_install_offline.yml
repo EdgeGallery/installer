@@ -28,6 +28,11 @@
     src: /etc/kubernetes/admin.conf
     dest: ~/.kube/config
     remote_src: yes
+    mode: 0600
+
+- name：Set Kubeconfig Path
+  shell: export KUBECONFIG=/etc/kubernetes/admin.conf
+  when: USER == "root"
 
 - name: Apply calico
   shell: "kubectl apply -f {{K8S_OFFLINE_DIR}}/k8s/calico.yaml"
@@ -44,7 +49,7 @@
     dest: "/home/{{ MASTER_IP }}/"
   loop:
     - "{{ K8S_OFFLINE_DIR }}/k8s-worker.sh"
-    - "/root/.kube/config"
+    - "~/.kube/config"
 
 - name: K8s Apply Metric Server
   shell: "kubectl apply -f {{ K8S_OFFLINE_DIR }}/k8s/metric-server.yaml"

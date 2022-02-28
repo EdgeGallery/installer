@@ -35,6 +35,6 @@ mepm_images_imageops_pullPolicy: IfNotPresent
 mepm_images_commoncbb_pullPolicy: IfNotPresent
 mepm_images_commonwebssh_pullPolicy: IfNotPresent
 mepm_images_postgres_pullPolicy: IfNotPresent
-ingress_controller_image_repository: "{{ REGISTRY_URL }}eg-common/us.gcr.io/k8s-artifacts-prod/ingress-nginx/controller"
+ingress_controller_image_repository: "{{ REGISTRY_URL }}eg-common/k8s.gcr.io/ingress-nginx/controller"
 ingress_controller_admissionWebhooks_patch_image_repository: "{{ WEBHOOK_REPO }}"
 ingress_defaultBackend_image_repository: "{{ REGISTRY_URL }}eg-common/k8s.gcr.io/defaultbackend-{{ ARCH }}"

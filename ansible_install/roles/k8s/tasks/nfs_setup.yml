@@ -37,23 +37,14 @@
 - name: Load NFS Images
   shell: "docker load --input {{ NFS_IMAGE }}"
 
-- name: Install NFS Client Provisioner For AMD64
+- name: Install NFS Client Provisioner 
   shell: |
     helm install --wait nfs-client-provisioner {{ NFS_CHART_FILE }} \
     --set nfs.server={{ MASTER_IP }} \
     --set nfs.path={{ NFS_PATH }} \
-    --set image.repository={{ nfs_image_repository_amd64 }} \
-    --set image.tag={{ nfs_image_tag_amd64 }}
-  when: ARCH == "amd64"
-
-- name: Install NFS Client Provisioner For ARM64
-  shell: |
-    helm install --wait nfs-client-provisioner {{ NFS_CHART_FILE }} \
-    --set nfs.server={{ MASTER_IP }} \
-    --set nfs.path={{ NFS_PATH }} \
-    --set image.repository={{ nfs_image_repository_arm64 }} \
-    --set image.tag={{ nfs_image_tag_arm64 }}
-  when: ARCH == "arm64"
+    --set image.repository={{ nfs_image_repository }} \
+    --set image.tag={{ nfs_image_tag }}
+ 
 
 - name: Get /etc/exports Data for All Worker Nodes
   set_fact:
