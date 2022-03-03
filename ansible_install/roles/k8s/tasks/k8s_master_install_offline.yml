@@ -30,10 +30,6 @@
     remote_src: yes
     mode: 0600
 
-- name：Set Kubeconfig Path
-  shell: export KUBECONFIG=/etc/kubernetes/admin.conf
-  when: USER == "root"
-
 - name: Apply calico
   shell: "kubectl apply -f {{K8S_OFFLINE_DIR}}/k8s/calico.yaml"
 
