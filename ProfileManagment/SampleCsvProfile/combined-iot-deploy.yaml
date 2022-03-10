@@ -13,7 +13,7 @@ data:
           httpGet: /fledge/ping
       kuiper:
         hostUrl: http://kuiper:9081
-        rules:
+        north:
           default:
             type: mqtt
             topic: kuiper
@@ -23,6 +23,10 @@ data:
           default:
             dbName: iotdb
             sTable: meters
+      exporter:
+        readiness:
+          httpGet: /ping         
+    
     broker:
       host: mqtt
       port: 1883
@@ -56,6 +60,10 @@ data:
                 - field: temperature
                   jqPath: .temperature
                   dataType: TINYINT
+      - exporter:
+          north:
+            - type: http
+              hostUrl: http://http-exporter:9091
 kind: ConfigMap
 metadata:
   name: profile-conf
@@ -349,3 +357,79 @@ spec:
       targetPort: 6041
   selector:
     app: td-engine
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: http-exporter
+  name: http-exporter
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: http-exporter
+  template:
+    metadata:
+      labels:
+        app: http-exporter
+    spec:
+      containers:
+        - image: khemendra/httpexporter
+          imagePullPolicy: IfNotPresent
+          name: http-exporter
+          ports:
+            - containerPort: 8094
+      restartPolicy: Always
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: http-exporter
+  name: http-exporter  
+spec:
+  ports:
+    - name: "exporter"
+      port: 8094
+      targetPort: 8094
+  selector:
+    app: http-exporter
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: iot-app
+  name: iot-app
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: iot-app
+  template:
+    metadata:
+      labels:
+        app: iot-app
+    spec:
+      containers:
+        - image: khemendra/sampleapp
+          imagePullPolicy: IfNotPresent
+          name: iot-app
+          ports:
+            - containerPort: 9092
+      restartPolicy: Always
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: iot-app
+  name: iot-app
+spec:
+  ports:
+    - name: "iot-app"
+      port: 9092
+      targetPort: 9092
+  selector:
+    app: iot-app

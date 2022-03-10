@@ -15,6 +15,10 @@ data:
         hostUrl: http://fledge-adapter:8000
         readiness:
           httpGet: /sogno/fledgeadapter/ping
+      exporter:
+        readiness:
+          httpGet: /ping
+
     broker:
       host: mqtt
       port: 1883
@@ -30,6 +34,10 @@ data:
             - brokerHost: mqtt
               brokerPort: "1883"
               topic: fledge
+      - exporter:
+          north:
+            - type: http
+              hostUrl: https://http-exporter:8094
 kind: ConfigMap
 metadata:
   name: profile-conf
@@ -720,3 +728,86 @@ metadata:
     app.kubernetes.io/instance: pyvolt-demo
     app.kubernetes.io/version: "1.0.0"
     app.kubernetes.io/managed-by: Helm
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: http-exporter
+  name: http-exporter
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: http-exporter
+  template:
+    metadata:
+      labels:
+        app: http-exporter
+    spec:
+      containers:
+        - image: khemendra/httpexporter
+          imagePullPolicy: Always
+          name: http-exporter
+          env:
+            - name: RABBITMQ_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: rabbitmq
+                  key: rabbitmq-password
+          ports:
+            - containerPort: 8094
+      restartPolicy: Always
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: http-exporter
+  name: http-exporter  
+spec:
+  ports:
+    - name: "exporter"
+      port: 8094
+      targetPort: 8094
+  selector:
+    app: http-exporter
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: iot-app
+  name: iot-app
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: iot-app
+  template:
+    metadata:
+      labels:
+        app: iot-app
+    spec:
+      containers:
+        - image: khemendra/sampleapp
+          imagePullPolicy: Always
+          name: iot-app
+          ports:
+            - containerPort: 9092
+      restartPolicy: Always
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: iot-app
+  name: iot-app
+spec:
+  ports:
+    - name: "iot-app"
+      port: 9092
+      targetPort: 9092
+  selector:
+    app: iot-app
+
