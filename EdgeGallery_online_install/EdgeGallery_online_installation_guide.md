@@ -1,328 +1,340 @@
+# EdgeGallery Online Installation
 
+## Deployment Architecture
+1. Deploy Node
+2. Master Node
+3. Worker Node
+4. Storage Node
+
+INFO: The Deploy node and Master Node could be the same node.
+
+INFO: The Storage node and Master Node could be the same node.
+
+INFO: in this guide "All Nodes" refers to "Deploy, Master and Worker nodes"
+
+## 1. Download required gitee repositories on Deploy Node
+```
+cd /root
+git clone -b Release-v1.5 https://gitee.com/edgegallery/helm-charts.git
+git clone -b Release-v1.5 https://gitee.com/edgegallery/installer.git
 ```
 
-###  1.5 Version EdgeGallery Online Install Guide
- 
+## 2. Docker Installation on All Nodes
 
-#### 安装环境要求：
+#### Uninstall old versions:
+```
+apt-get remove docker docker-engine docker.io containerd runc
+```
+#### Install docker 20.10.7 version:
+```
+apt-get update
+apt-get install ca-certificates curl gnupg lsb-release
+curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /usr/share/keyrings/docker-archive-keyring.gpg
+echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/docker-archive-keyring.gpg] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
+apt-get update
+apt-get install -y docker-ce=5:20.10.7~3-0~ubuntu-bionic docker-ce-cli=5:20.10.7~3-0~ubuntu-bionic containerd.io
+```
 
-1.服务器或虚拟机架构：x86_64或 arm_64  
-2.服务器或虚拟机的配置要求：不低于4cpu 16G内存 100G硬盘  
-3.操作系统：ubuntu 18.04
+## 3. Kubernetes Tools Installation on All Nodes
+```
+cat <<EOF | sudo tee /etc/modules-load.d/k8s.conf
+br_netfilter
+EOF
 
-#### 一、安装kubernetes 1.18.7
+cat <<EOF | sudo tee /etc/sysctl.d/k8s.conf
+net.bridge.bridge-nf-call-ip6tables = 1
+net.bridge.bridge-nf-call-iptables = 1
+EOF
 
-kubernetes 1.18.7 安装参考官方文档   
+sysctl --system
 
+apt-get update
+apt-get install -y apt-transport-https ca-certificates curl
+curl -fsSLo /usr/share/keyrings/kubernetes-archive-keyring.gpg https://packages.cloud.google.com/apt/doc/apt-key.gpg
+echo "deb [signed-by=/usr/share/keyrings/kubernetes-archive-keyring.gpg] https://apt.kubernetes.io/ kubernetes-xenial main" | sudo tee /etc/apt/sources.list.d/kubernetes.list
 
-#### 二、安装helm 3.2.4
+apt-get update
+apt-get install -y kubeadm=1.23.4-00 kubelet=1.23.4-00 kubectl=1.23.4-00
+apt-mark hold kubelet kubeadm kubectl
 
-wget -N https://get.helm.sh/helm-v3.2.4-linux-amd64.tar.gz   x86下载helm网址  
-wget -N https://get.helm.sh/helm-v3.2.4-linux-arm64.tar.gz   ARM下载helm网址  
-tar -zxvf helm-v3.2.4-linux-amd64.tar.gz  
-cp ./linux-amd64/helm /usr/local/bin/  
-helm version 
+apt-get update && apt-get upgrade #MAY BE THIS COMMAND IS upgrading docker
+apt-get install docker-ce=5:20.10.7~3-0~ubuntu-bionic docker-ce-cli=5:20.10.7~3-0~ubuntu-bionic containerd.io
 
-#### 三、安装harbor 
+sudo mkdir /etc/docker
+cat <<EOF | sudo tee /etc/docker/daemon.json
+{ "exec-opts": ["native.cgroupdriver=systemd"],
+"log-driver": "json-file",
+"log-opts":
+{ "max-size": "100m" },
+"storage-driver": "overlay2"
+}
+EOF
 
-安装harbor指导链接：
-https://gitee.com/edgegallery/installer/blob/master/EdgeGallery_online_install/docker_compose_install_harbor.md
+systemctl enable docker
+systemctl daemon-reload
+systemctl restart docker
+```
 
-#### 四、安装nfs持久化
+## 4. Initiate kubernetes cluster on Master Node
+```
+kubeadm init --apiserver-advertise-address=10.0.0.18 --pod-network-cidr=10.244.0.0/16
+mkdir -p $HOME/.kube
+sudo cp -i /etc/kubernetes/admin.conf $HOME/.kube/config
+sudo chown $(id -u):$(id -g) $HOME/.kube/config
+```
+### Apply calico.yaml
+```
+kubectl apply -f ./installer/ansible_package/roles/k8s/files/calico.yaml
+```
+### Taint nodes
+```
+kubectl taint nodes --all node-role.kubernetes.io/master-
+```
 
-##### 1. 安装nfs服务
-  apt-get install nfs-kernel-server 
-  mkdir -p /edgegallery/data/   
-  chmod -R 755 /edgegallery/data/  
-  vim /etc/exports  
-  /edgegallery/data/  192.168.11.1/32(rw,no_root_squash,sync) #设置挂载本机数据的机器ip  
-  systemctl restart nfs-kernel-server 
-  exportfs -v   
+## 5. Join all the Worker nodes to kubernetes Master
+```
+[on master node] kubeadm token create --print-join-command
+[on worker node] kubeadm join 10.0.0.18:6443 --token bexqhx.vxxkk0tfwupoo43c --discovery-token-ca-cert-hash sha256:f14a90d7c142aa79486e69603d00145d41a8a4517632e31f505a66eabd0e6670
+```
 
-##### 2.安装nfs客户端
-  下载nfs客户端  
-  x86: https://gitee.com/edgegallery/installer/raw/master/EdgeGallery_online_install/nfs-client-amd/nfs-client-provisioner-1.2.8.tgz  
-  ARM: https://gitee.com/edgegallery/installer/blob/master/EdgeGallery_online_install/nfs-client-arm/nfs-client-provisioner-1.2.8.tgz  
-  helm install nfs-client-provisioner --set nfs.server=<nfs_sever_ip> --set nfs.path=/edgegallery/data/   nfs-client-provisioner-1.2.8.tgz   
-  #<nfs_sever_ip>为本机的ip 
- 
-#### 五、生成edgegallery的secret
+## 6. Enable remote kuernetes cluster access from Deploy node
+INFO: SKIP this step if Deploy node and Master node are same
 
-##### 1、生成所需的证书
-  docker pull swr.cn-north-4.myhuaweicloud.com/edgegallery/deploy-tool:latest  
-  export CERT_VALIDITY_IN_DAYS=365  
-  env="-e CERT_VALIDITY_IN_DAYS=$CERT_VALIDITY_IN_DAYS"   
-  mkdir /root/keys/       
-  docker run $env -v /root/keys:/certs   -e CERT_PASSWORD=xxxx  swr.cn-north-4.myhuaweicloud.com/edgegallery/deploy-tool:latest  #需要设置cert的密码
+```
+mkdir -p $HOME/.kube
+scp <MASTER_IP>:$HOME/.kube/config $HOME/.kube
+chown $(id -u):$(id -g) /root/.kube/config
+```
 
-##### 2、生成edgegallery-ssl-secret 
-  kubectl create secret generic edgegallery-ssl-secret \  
-     --from-file=keystore.p12=/root/keys/keystore.p12 \  
-     --from-file=keystore.jks=/root/keys/keystore.jks  \  
-     --from-literal=keystorePassword=te9Fmv%qaq \  
-     --from-literal=keystoreType=PKCS12 \  
-     --from-literal=keyAlias=edgegallery \  
-     --from-literal=truststorePassword=te9Fmv%qaq  \  
-     --from-file=trust.cer=/root/keys/ca.crt \  
-     --from-file=server.cer=/root/keys/tls.crt \  
-     --from-file=server_key.pem=/root/keys/encryptedtls.key \ 
-     --from-literal=cert_pwd=te9Fmv%qaq
+## 7. Docker Compose Installation on Deploy Node
+```
+curl -L "https://github.com/docker/compose/releases/download/1.29.2/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
+chmod +x /usr/local/bin/docker-compose
+```
 
-##### 3、生成user-mgmt-jwt-secret
-  kubectl create secret generic user-mgmt-jwt-secret \  
-     --from-file=publicKey=/root/keys/rsa_public_key.pem \ 
-     --from-file=encryptedPrivateKey=/root/keys/encrypted_rsa_private_key.pem \ 
-     --from-literal=encryptPassword=te9Fmv%qaq 
-  
-##### 4、生成mecm-mepm-ssl-secret
-  kubectl create secret generic mecm-mepm-ssl-secret \ 
-     --from-file=server_tls.key=/root/keys/tls.key \ 
-     --from-file=server_tls.crt=/root/keys/tls.crt \ 
-     --from-file=ca.crt=/root/keys/ca.crt  
+## 8. Harbor Installation on Deploy Node
 
-##### 5、生成mecm-mepm-jwt-public-secret
-  kubectl create secret generic mecm-mepm-jwt-public-secret  \ 
-     --from-file=publicKey=/root/keys/rsa_public_key.pem
+```
+cat <<EOF | sudo tee /etc/docker/daemon.json
+{ "exec-opts": ["native.cgroupdriver=systemd"],
+"log-driver": "json-file",
+"log-opts":
+{ "max-size": "100m" },
+"storage-driver": "overlay2",
+"insecure-registries":["192.168.17.108"]
+}
+EOF
 
-##### 6.生成edgegallery-signature-secret
-  openssl req -x509 -sha256 -nodes -days 730 -newkey rsa:1024 -passout pass:te9Fmv%qaq \ 
-  -keyout privatekey.pem -out cert.pem -subj /C=CN/ST=Beijing/L=Biejing/O=edgegallery/CN=edgegallery.org \ 
-  -addext "keyUsage = critical,digitalSignature, nonRepudiation,  keyEncipherment, dataEncipherment, keyAgreement, keyCertSign, \ 
-  cRLSign, encipherOnly, decipherOnly" -addext  "extendedKeyUsage = critical,1.3.6.1.5.5.7.3.1, 1.3.6.1.5.5.7.3.2, \ 
-  1.3.6.1.5.5.7.3.3, 1.3.6.1.5.5.7.3.4, 1.3.6.1.5.5.7.3.8, 1.3.6.1.4.1.311.2.1.21, 1.3.6.1.4.1.311.2.1.22, 1.3.6.1.4.1.311.10.3.1, \ 
-  1.3.6.1.4.1.311.10.3.3, 1.3.6.1.4.1.311.10.3.4, 2.16.840.1.113730.4.1, 1.3.6.1.4.1.311.10.3.4.1, \ 
-  1.3.6.1.5.5.7.3.5, 1.3.6.1.5.5.7.3.6, 1.3.6.1.5.5.7.3.7, 1.3.6.1.5.5.8.2.2, 1.3.6.1.4.1.311.20.2.2"   
-   
-  openssl pkcs12 -passout pass:te9Fmv%qaq -export -out public.p12 -inkey privatekey.pem -in cert.pem  
-  openssl x509 -outform der -in cert.pem -out public.cer
-  kubectl create secret generic edgegallery-signature-secret \ 
-     --from-file=sign_p12=public.p12 \ 
-     --from-file=sign_cer=public.cer \ 
-     --from-literal=certPwd=te9Fmv%qaq
+wget https://github.com/goharbor/harbor/releases/download/v2.4.1/harbor-offline-installer-v2.4.1.tgz
+tar -zxvf harbor-offline-installer-v2.4.1.tgz
+cd harbor
+mkdir data_volume
+mkdir cert
+mv harbor.yml.tmpl harbor.yml
+cd /root/
+openssl rand -writerand .rnd
+cd harbor/cert/
+openssl genrsa -out ca.key 4096
+openssl req -x509 -new -nodes -sha512 -days 3650 -subj "/C=CN/ST=Guangzhou/L=Guangzhou/O=example/CN=192.168.17.108" -key ca.key -out ca.crt
+openssl x509 -inform PEM -in ca.crt -out ca.cert
 
-##### 7.生成eg-view-ssl-secret
-  kubectl create secret generic eg-view-ssl-secret  \ 
-      --from-file=server.crt=/root/keys/server.crt   \ 
-      --from-file=server.key=/root/keys/server.key  
+systemctl daemon-reload
+systemctl restart docker
+```
+### Update below lines in /root/harbor/harbor.yml
+```
+hostname: 192.168.1.11
+comment line 8,10 => http port:80
+certificate: /root/harbor/cert/ca.crt #line number: 17
+private_key: /root/harbor/cert/ca.key #line number: 18
+harbor_admin_password: Harbor12345
+data_volume: /root/harbor/data_volume/
+```
 
-##### 8.生成developer-ssl-secret 
-   kubectl create secret generic developer-ssl-cert \
-      --from-file=server.crt=/root/keys/server.crt \
-      --from-file=server.key=/root/keys/server.key  
- 
-##### 9.生成mep secret以下是生成证书的步骤
-  mkdir /root/mep_key  
-  cd  /root/  
-  openssl rand -writerand .rnd  
-  cd   /root/mep_key 
-    
-  执行以下命令生成mep证书   
-  openssl genrsa -out ca.key 2048 2>&1 >/dev/null   
-  openssl req -new -key ca.key -subj /C=CN/ST=Beijing/L=Beijing/O=edgegallery/CN=edgegallery -out ca.csr 2>&1 >/dev/null  
-  openssl x509 -req -days 365 -in ca.csr -extensions v3_ca -signkey ca.key -out ca.crt 2>&1 >/dev/null  
+### install harbor
+```
+cd /root/harbor/
+./install.sh
+docker login -uadmin -pHarbor@12345 192.168.17.108
+kubectl create secret docker-registry harbor --docker-server=https://192.168.17.108 --docker-username=admin --docker-password=Harbor@12345
+kubectl patch serviceaccount default -p '{"imagePullSecrets": [{"name": "harbor"}]}'
+```
 
-  kubectl create ns mep
-  openssl genrsa -out mepserver_tls.key 2048 2>&1 >/dev/null  
-  openssl rsa -in mepserver_tls.key -aes256 -passout pass:te9Fmv%qaq -out mepserver_encryptedtls.key 2>&1 >/dev/null  
-  echo -n te9Fmv%qaq > mepserver_cert_pwd 2>&1 >/dev/null    
+## 9. Harbor Configuration on Worker Nodes
+```
+cat <<EOF | tee /etc/docker/daemon.json
+{
+"insecure-registries":["192.168.17.108"]
+}
+EOF
 
-  openssl req -new -key mepserver_tls.key -subj /C=CN/ST=Beijing/L=Beijing/O=edgegallery/CN=edgegallery -out mepserver_tls.csr 2>&1 >/dev/null  
-  openssl x509 -req -days 365 -in mepserver_tls.csr -extensions v3_req -CA ca.crt -CAkey ca.key -CAcreateserial -out mepserver_tls.crt 2>&1 >/dev/null  
+systemctl daemon-reload
+systemctl restart docker
+```
 
-  openssl genrsa -out jwt_privatekey 2048 2>&1 >/dev/null   
-  openssl rsa -in jwt_privatekey -pubout -out jwt_publickey 2>&1 >/dev/null   
-  openssl rsa -in jwt_privatekey -aes256 -passout pass:te9Fmv%qaq -out jwt_encrypted_privatekey 2>&1 >/dev/null   
+## 10 Helm Installation on Deploy Node
+```
+wget -N https://get.helm.sh/helm-v3.8.0-linux-amd64.tar.gz
+tar -zxvf helm-v3.8.0-linux-amd64.tar.gz
+cp ./linux-amd64/helm /usr/local/bin/
+helm version
+```
 
-###### 生成pg-secret   
-  kubectl -n mep create secret generic pg-secret --from-literal=pg_admin_pwd=admin-Pass123 --from-literal=kong_pg_pwd=kong-Pass123  \ 
-      --from-file=server.key=mepserver_tls.key --from-file=server.crt=mepserver_tls.crt
-  
-###### 生成mep-ssl    
- kubectl -n mep create secret generic mep-ssl --from-literal=root_key="$(openssl rand -base64 256 | tr -d '\n' | tr -dc '[[:alnum:]]' | cut -c -256)"\ 
-     --from-literal=cert_pwd=te9Fmv%qaq --from-file=server.cer=mepserver_tls.crt --from-file=server_key.pem=mepserver_encryptedtls.key   \ 
-      --from-file=trust.cer=ca.crt
-      
-###### 生成mepauth-secret  
-  kubectl create ns metallb-system
-  kubectl -n mep create secret generic mepauth-secret --from-file=server.crt=mepserver_tls.crt --from-file=server.key=mepserver_tls.key   \        
-      --from-file=ca.crt=ca.crt --from-file=jwt_publickey=jwt_publickey  --from-file=jwt_encrypted_privatekey=jwt_encrypted_privatekey
+## 11 NFS Installation
 
-###### 生成memberlist-secret
-  kubectl create secret generic -n metallb-system memberlist --from-literal=secretkey="$(openssl rand -base64 128)"
+### 11.1 NFS Server on Storage Node
+```
+apt-get install nfs-kernel-server 
+mkdir -p /edgegallery/data/
+chmod -R 755 /edgegallery/data/
+vim /etc/exports
+/edgegallery/data/ 192.168.17.108/32(rw,no_root_squash,sync)
+systemctl restart nfs-kernel-server
+exportfs -v
+```
 
-#### 六、安装edgegallery
+### 11.2 NFS provisioner on Deploy Node
+```
+helm repo add nfs-subdir-external-provisioner https://kubernetes-sigs.github.io/nfs-subdir-external-provisioner
+helm install nfs-subdir-external-provisioner nfs-subdir-external-provisioner/nfs-subdir-external-provisioner --set nfs.server=192.168.17.108 --set nfs.path=/edgegallery/data/
+```
 
-##### 1、环境变量
+## 12 Generate Certificates on Deploy Node
+```
+docker pull swr.cn-north-4.myhuaweicloud.com/edgegallery/deploy-tool:latest
+export CERT_VALIDITY_IN_DAYS=365
+env="-e CERT_VALIDITY_IN_DAYS=$CERT_VALIDITY_IN_DAYS"
+mkdir /root/keys/
+docker run $env -v /root/keys:/certs  -e CERT_PASSWORD=te9Fmv%qaq  swr.cn-north-4.myhuaweicloud.com/edgegallery/deploy-tool:latest
+```
 
- ***以下的 'pg_pass' 'client_pass' 'redis_pass' 分别表示 postgresql数据库密码、用户信息鉴权密码 、user-mgmt模块的redis密码,需要用户在安装前自行设定密码值，密码必须同时使用大小写字母、数字和特殊符号组合，长度不小于8位，否则会因密码无法满足要求而造成部署失败。**   
- ***以下安装过程中的'HARBOR__IP' 'HARBOR_PASSWORD'表示[harbor安装指导](https://gitee.com/edgegallery/installer/blob/master/EdgeGallery_online_install/docker_compose_install_harbor.md)中设置的harbor ip和harbor的密码**  
- ***EG_IP 表示Edgegallery的ip**
-##### 2、下载1.3版本helm-chart
-  git clone -b Release-v1.5  https://gitee.com/edgegallery/helm-charts.git 
-   
-##### 3、修改edgegallery-values.yaml文件
-  下载edgegallery-values.yaml地址：  
-  https://gitee.com/edgegallery/installer/blob/master/EdgeGallery_online_install/edgegallery-values.yaml    
-  sed -i 's/192.168.1.11/192.168.1.12/g'   edgegallery-values.yaml     #需要将192.168.1.12 替换为自己的ip 
+## 13 Create Controller kubernetes Secrets on Deploy Node
+```
+kubectl create secret generic edgegallery-ssl-secret --from-file=keystore.p12=/root/keys/keystore.p12 --from-file=keystore.jks=/root/keys/keystore.jks  --from-literal=keystorePassword=te9Fmv%qaq  --from-literal=keystoreType=PKCS12 --from-literal=keyAlias=edgegallery --from-literal=truststorePassword=te9Fmv%qaq  --from-file=trust.cer=/root/keys/ca.crt --from-file=server.cer=/root/keys/tls.crt --from-file=server_key.pem=/root/keys/encryptedtls.key  --from-literal=cert_pwd=te9Fmv%qaq
 
-##### 4、install service-center 
-  helm install service-center-edgegallery  helm-charts/service-center  -f edgegallery-values.yaml  
-  #如果安装失败或安装错误运行 helm delete service-center-edgegallery
+kubectl create secret generic user-mgmt-jwt-secret --from-file=publicKey=/root/keys/rsa_public_key.pem --from-file=encryptedPrivateKey=/root/keys/encrypted_rsa_private_key.pem --from-literal=encryptPassword=te9Fmv%qaq
 
-##### 5、install user-mgmt 
-  helm install user-mgmt-edgegallery   helm-charts/user-mgmt  -f    edgegallery-values.yaml     \ 
-      --set  global.oauth2.clients.appstore.clientSecret=client_pass  \ 
-      --set  global.oauth2.clients.developer.clientSecret=client_pass  \ 
-      --set  global.oauth2.clients.mecm.clientSecret=client_pass   \ 
-      --set  global.oauth2.clients.atp.clientSecret=client_pass     \ 
-      --set  global.oauth2.clients.edgegallery.clientSecret=client_pass \ 
-      --set  postgres.password=pg_pass \ 
-      --set  redis.password=redis_pass
+openssl req -x509 -sha256 -nodes -days 730 -newkey rsa:1024 -passout pass:te9Fmv%qaq -keyout privatekey.pem -out cert.pem -subj /C=CN/ST=Beijing/L=Biejing/O=edgegallery/CN=edgegallery.org -addext "keyUsage = critical,digitalSignature, nonRepudiation,  keyEncipherment, dataEncipherment, keyAgreement, keyCertSign, cRLSign, encipherOnly, decipherOnly" -addext  "extendedKeyUsage = critical,1.3.6.1.5.5.7.3.1, 1.3.6.1.5.5.7.3.2, 1.3.6.1.5.5.7.3.3, 1.3.6.1.5.5.7.3.4, 1.3.6.1.5.5.7.3.8, 1.3.6.1.4.1.311.2.1.21, 1.3.6.1.4.1.311.2.1.22, 1.3.6.1.4.1.311.10.3.1, 1.3.6.1.4.1.311.10.3.3, 1.3.6.1.4.1.311.10.3.4, 2.16.840.1.113730.4.1, 1.3.6.1.4.1.311.10.3.4.1, 1.3.6.1.5.5.7.3.5, 1.3.6.1.5.5.7.3.6, 1.3.6.1.5.5.7.3.7, 1.3.6.1.5.5.8.2.2, 1.3.6.1.4.1.311.20.2.2"
 
-##### 6、install appstore
-  helm install appstore-edgegallery  helm-charts/appstore  -f   edgegallery-values.yaml  \ 
-      --set global.oauth2.clients.appstore.clientSecret=client_pass  \ 
-      --set appstoreBe.secretName=edgegallery-signature-secret        \ 
-      --set appstoreBe.dockerRepo.endpoint=HARBOR__IP  \ 
-      --set appstoreBe.dockerRepo.appstore.password=HARBOR_PASSWORD   \     
-      --set appstoreBe.dockerRepo.appstore.username=admin  \ 
-      --set appstoreBe.dockerRepo.developer.password=HARBOR_PASSWORD    \ 
-      --set appstoreBe.dockerRepo.developer.username=admin  \ 
-      --set appstoreBe.hostPackagesPath=/edgegallery/appstore/packages      \
-      --set appstoreBe.appdtranstool.enabled=true \
-      --set appstoreBe.fileSystemAddress=http://EG_IP:30090 \
-      --set postgres.password=pg_pass
-        
-##### 7、install developer 
-  helm install eg-view-edgegallery     helm-charts/eg-view    -f  edgegallery-values.yaml  --set ssl.secretName=eg-view-ssl-secret 
-  helm install developer-edgegallery   helm-charts/developer  -f  edgegallery-values.yaml  \  
-     --set global.oauth2.clients.developer.clientSecret=client_pass  \ 
-     --set developer.dockerRepo.endpoint=HARBOR__IP   \ 
-     --set developer.dockerRepo.password=HARBOR_PASSWORD  \ 
-     --set developer.dockerRepo.username=admin   \ 
-     --set postgres.password=pg_pass  \ 
-     --set developer.developerBeIp=EG_IP   \ 
-     --set developer.vmImage.fileSystemAddress=http://EG_IP:30090 \
-     --set developer.toolChain.enabled=false
-     --set developer.ssl.certName=developer-ssl-cert  
+openssl pkcs12 -passout pass:te9Fmv%qaq -export -out public.p12 -inkey privatekey.pem -in cert.pem
 
-##### 8、install mecm-meo     
-  metric-server.yaml下载地址：  
-  https://gitee.com/edgegallery/installer/blob/master/ansible_package/roles/k8s/files/metric-server.yaml  
-  kubectl apply -f metric-server.yaml      
-  helm install mecm-meo-edgegallery   helm-charts/mecm-meo   -f   edgegallery-values.yaml  \ 
-      --set global.oauth2.clients.mecm.clientSecret=client_pass \ 
-      --set mecm.docker.fsgroup=$(getent group docker | cut -d: -f3)    \ 
-      --set mecm.docker.dockerRepoUserName=admin     \ 
-      --set mecm.docker.dockerRepopassword=HARBOR_PASSWORD     \ 
-      --set mecm.repository.dockerRepoEndpoint=HARBOR__IP   \ 
-      --set mecm.repository.sourceRepos="repo=HARBOR_IP userName=admin password=HARBOR_PASSWORD"  \ 
-      --set mecm.postgres.postgresPass=pg_pass      \ 
-      --set mecm.postgres.inventoryDbPass=pg_pass    \ 
-      --set mecm.postgres.northDbPass=pg_pass   \ 
-      --set mecm.postgres.appoDbPass=pg_pass     \ 
-      --set mecm.postgres.apmDbPass=pg_pass
+openssl x509 -outform der -in cert.pem -out public.cer
 
-##### 9、install atp
-  helm install atp-edgegallery    helm-charts/atp    -f    edgegallery-values.yaml     \ 
-      --set global.oauth2.clients.atp.clientSecret=client_pass   \ 
-      --set postgres.password=pg_pass
-   
-##### 10、install mecm-mepm
-  mepm-service-account.yaml下载地址:         
-  https://gitee.com/edgegallery/installer/blob/master/ansible_package/roles/init/files/conf/manifest/mepm/mepm-service-account.yaml    
-  kubectl apply -f mepm-service-account.yaml    
+kubectl create secret generic edgegallery-signature-secret --from-file=sign_p12=public.p12 --from-file=sign_cer=public.cer --from-literal=certPwd=te9Fmv%qaq
 
-  ingress helm-chart 下载地址：     
-  https://gitee.com/edgegallery/installer/blob/master/EdgeGallery_online_install/ingress-pankage/nginx-ingress-1.41.2.tgz   
+kubectl create secret generic eg-view-ssl-secret --from-file=server.crt=/root/keys/server.crt --from-file=server.key=/root/keys/server.key
 
-  ingress.yaml下载地址:   
-  https://gitee.com/edgegallery/installer/blob/master/ansible_install/roles/mecm-mepm/files/ingress.yaml 
+kubectl create secret generic developer-ssl-cert --from-file=server.crt=/root/keys/server.crt --from-file=server.key=/root/keys/server.key
+```
 
-  helm install  eg-ingress  nginx-ingress-1.41.2.tgz  \ 
-      --set controller.service.type=NodePort    \ 
-      --set controller.service.nodePorts.http=30102    \ 
-      --set controller.service.nodePorts.https=31252  \ 
-      --set controller.image.registry=""  \ 
-      --set controller.image.repository= \
-      swr.ap-southeast-1.myhuaweicloud.com/eg-common/us.gcr.io/k8s-artifacts-prod/ingress-nginx/controller:v0.34.1 \
-      --set controller.admissionWebhooks.patch.image.repository=  \
-      swr.ap-southeast-1.myhuaweicloud.com/eg-common/jettech/kube-webhook-certgen:v1.0.0 \ 
-      --set defaultBackend.image.repository=swr.ap-southeast-1.myhuaweicloud.com/eg-common/k8s.gcr.io/defaultbackend:1.5 \ 
-      -f ingress.yaml
+## 14 Create Edge kubernetes Secrets on Deploy Node
+```
+kubectl create secret generic mecm-mepm-ssl-secret --from-file=server_tls.key=/root/keys/tls.key --from-file=server_tls.crt=/root/keys/tls.crt --from-file=ca.crt=/root/keys/ca.crt
 
-  helm install mecm-mepm-edgegallery helm-charts/mecm-mepm  -f  edgegallery-values.yaml  \ 
-      --set jwt.publicKeySecretName=mecm-mepm-jwt-public-secret    \    
-      --set ssl.secretName=mecm-mepm-ssl-secret    \ 
-      --set mepm.postgres.postgresPass=pg_pass  \ 
-      --set mepm.postgres.lcmcontrollerDbPass=pg_pass  \ 
-      --set mepm.postgres.k8spluginDbPass=pg_pass   \ 
-      --set mepm.postgres.ospluginDbPass=pg_pass \ 
-      --set mepm.postgres.apprulemgrDbPass=pg_pass \
-      --set mepm.postgres.mepmtoolsDbPass=pg_pass \
-      --set mepm.filesystem.imagePushUrl=http://EG_IP:30090/image-management/v1/images
+kubectl create secret generic mecm-mepm-jwt-public-secret --from-file=publicKey=/root/keys/rsa_public_key.pem
 
-##### 11、install mep  
-##### 11.1 deploy metallb 
- 下载地址：https://gitee.com/installer/tree/master/EdgeGallery_online_install/metallb     
-  kubectl apply -f namespace.yaml  
-  kubectl create secret generic -n metallb-system memberlist --from-literal=secretkey="$(openssl rand -base64 128)"  
-                                          
-  服务器是ARM架构时需要修改metallb.yaml的image的tag   
-  sed -i 's/v0.9.3/v0.9.3-arm64/g'  metallb.yaml  
-  kubectl apply -f  metallb.yaml  
-  kubectl apply -f  config-map.yaml 
+mkdir /root/mep_key;     cd /root/;     openssl rand -writerand .rnd   ;  cd /root/mep_key
+openssl genrsa -out ca.key 2048 2>&1 >/dev/null
+openssl req -new -key ca.key -subj /C=CN/ST=Beijing/L=Beijing/O=edgegallery/CN=edgegallery -out ca.csr 2>&1 >/dev/null
+openssl x509 -req -days 365 -in ca.csr -extensions v3_ca -signkey ca.key -out ca.crt 2>&1 >/dev/null
 
-##### 11.2 创建路由 
-  ip link add eg-mp1 link eth0 type macvlan mode bridge  #用自己本机的网卡名替代eth0  
-  ip addr add 200.1.1.2/24 dev eg-mp1  
-  ip link set dev eg-mp1 up   
+kubectl create ns mep
+openssl genrsa -out mepserver_tls.key 2048 2>&1 >/dev/null
+openssl rsa -in mepserver_tls.key -aes256 -passout pass:te9Fmv%qaq -out mepserver_encryptedtls.key 2>&1 >/dev/null
+echo -n te9Fmv%qaq > mepserver_cert_pwd 2>&1 >/dev/null
+openssl req -new -key mepserver_tls.key -subj /C=CN/ST=Beijing/L=Beijing/O=edgegallery/CN=edgegallery -out mepserver_tls.csr 2>&1 >/dev/null
+openssl x509 -req -days 365 -in mepserver_tls.csr -extensions v3_req -CA ca.crt -CAkey ca.key -CAcreateserial -out mepserver_tls.crt 2>&1 >/dev/null
+openssl genrsa -out jwt_privatekey 2048 2>&1 >/dev/null
+openssl rsa -in jwt_privatekey -pubout -out jwt_publickey 2>&1 >/dev/null
+openssl rsa -in jwt_privatekey -aes256 -passout pass:te9Fmv%qaq -out jwt_encrypted_privatekey 2>&1 >/dev/null
 
-  ip link add eg-mm5 link eth0 type macvlan mode bridge   #用自己本机的网卡名替代eth0  
-  ip addr add 100.1.1.2/24 dev eg-mm5  
-  ip link set dev eg-mm5 up   
- 
-  eg-if.cfg文件地址：
-  https://gitee.com/edgegallery/installer/blob/master/EdgeGallery_online_install/eg-if.cfg
-  cp eg-if.cfg  /etc/network/interfaces.d/  
+kubectl -n mep create secret generic pg-secret --from-literal=pg_admin_pwd=admin-Pass123 --from-literal=kong_pg_pwd=kong-Pass123 --from-file=server.key=mepserver_tls.key --from-file=server.crt=mepserver_tls.crt
 
-##### 11.3 安装mep-network
-  下载地址:  
-  https://gitee.com/edgegallery/installer/tree/master/ansible_package/roles/init/files/conf/edge/network-isolation  
-  修改image名称：
-  swr.cn-north-4.myhuaweicloud.com/eg-common/nfvpe/multus:stable
-  kubectl apply -f  multus.yaml         
-  kubectl apply -f  eg-sp-rbac.yaml       
-  sed -i 's?image: edgegallery/edgegallery-secondary-ep-controller:latest?image:swr.cn-north-4.myhuaweicloud.com/edgegallery/edgegallery-secondary-ep-controller:latest:v1.3.0?g' eg-sp-
-  controller.yaml       
-  kubectl apply -f  eg-sp-controller.yaml 
-  
-##### 11.4 下载并解压macvlan 
-  x86:  curl -LO  https://github.com/containernetworking/plugins/releases/download/v0.8.7/cni-plugins-linux-amd64-v0.8.7.tgz   
-  arm： curl -LO  https://github.com/containernetworking/plugins/releases/download/v0.8.7/cni-plugins-linux-arm64-v0.8.7.tgz 
-  解压下载的cni 文件后copy macvlan和host-local 到/opt/cni/bin 目录下
+kubectl -n mep create secret generic mep-ssl --from-literal=root_key="$(openssl rand -base64 256 | tr -d '\n' | tr -dc '[[:alnum:]]' | cut -c -256)" --from-literal=cert_pwd=te9Fmv%qaq --from-file=server.cer=mepserver_tls.crt --from-file=server_key.pem=mepserver_encryptedtls.key --from-file=trust.cer=ca.crt
 
-##### 11.5 安装mep
-  helm install mep-edgegallery     helm-charts/mep     -f    edgegallery-values.yaml \ 
-     --set networkIsolation.ipamType=host-local   \          
-     --set networkIsolation.phyInterface.mp1=eth0  \  
-     --set networkIsolation.phyInterface.mm5=eth0   \ 
-     --set ssl.secretName=mep-ssl \ 
-     --set postgres.kongPass=pg_pass    #需要把eth0替换为自己的网卡名
-     --set mepauthProperties.jwtPrivateKey=te9Fmv%qaq
-##### 12. 安装file-system
-  helm install file-system-edgegallery --set filesystem.hostVMImagePath=/edgegallery/filesystem/images    --set postgres.password=XXXXX   -f  edgegallery-values.yaml 
+kubectl -n mep create secret generic mepauth-secret --from-file=server.crt=mepserver_tls.crt --from-file=server.key=mepserver_tls.key --from-file=ca.crt=ca.crt --from-file=jwt_publickey=jwt_publickey  --from-file=jwt_encrypted_privatekey=jwt_encrypted_privatekey
 
-##### 13. 安装healthcheck
-  helm install healthcheck-edgegallery   helm-charts/healthcheck  --set healthcheck.localIp=EG_IP  -f    edgegallery-values.yaml
+kubectl create ns metallb-system
 
-##### 14. 安装healthcheck-m
-  helm install healthcheck-m-edgegallery   helm-charts/healthcheck-m  --set healthcheckm.localIp=EG_IP   -f    edgegallery-values.yaml
+kubectl create secret generic -n metallb-system memberlist --from-literal=secretkey="$(openssl rand -base64 128)"
+```
+## 15 Update EdgeGallery values.yaml on Deploy Node
+```
+cd /root
+cp /root/installer/EdgeGallery_online_install/edgegallery-values.yaml /root
+sed -i 's/192.168.1.11/192.168.17.108/g' /root/edgegallery-values.yaml
+```
 
-##### 15. 安装edgegallery-fe
-  helm install edgegallery-fe   helm-charts/edgegallery-fe  --set global.oauth2.clients.appstore.clientSecret=client_pass  -f   edgegallery-values.yaml
+## 16 Deploy Controller components from Deploy Node
+```
+helm install service-center-edgegallery helm-charts/service-center -f edgegallery-values.yaml
 
-##### 16. 安装third-system
-  helm install third-system-edgegallery  --set postgres.password=XXXXX   -f  edgegallery-values.yaml 
+helm install user-mgmt-edgegallery   helm-charts/user-mgmt  -f    edgegallery-values.yaml --set  global.oauth2.clients.appstore.clientSecret=te9Fmv%qaq --set  global.oauth2.clients.developer.clientSecret=te9Fmv%qaq --set  global.oauth2.clients.mecm.clientSecret=te9Fmv%qaq --set  global.oauth2.clients.atp.clientSecret=te9Fmv%qaq --set  global.oauth2.clients.edgegallery.clientSecret=te9Fmv%qaq --set  postgres.password=te9Fmv%qaq --set  redis.password=te9Fmv%qaq
 
+helm install appstore-edgegallery  helm-charts/appstore  -f   edgegallery-values.yaml --set global.oauth2.clients.appstore.clientSecret=te9Fmv%qaq --set appstoreBe.secretName=edgegallery-signature-secret --set appstoreBe.dockerRepo.endpoint=192.168.17.108 --set appstoreBe.dockerRepo.appstore.password=Harbor@12345 --set appstoreBe.dockerRepo.appstore.username=admin --set appstoreBe.dockerRepo.developer.password=Harbor@12345 --set appstoreBe.dockerRepo.developer.username=admin --set appstoreBe.hostPackagesPath=/edgegallery/appstore/packages --set appstoreBe.appdtranstool.enabled=true --set appstoreBe.fileSystemAddress=http://192.168.17.108:30090 --set postgres.password=te9Fmv%qaq
+
+helm install developer-edgegallery   helm-charts/developer  -f  edgegallery-values.yaml --set global.oauth2.clients.developer.clientSecret=te9Fmv%qaq --set developer.dockerRepo.endpoint=192.168.17.108 --set developer.dockerRepo.password=Harbor@12345 --set developer.dockerRepo.username=admin --set postgres.password=te9Fmv%qaq --set developer.developerBeIp=192.168.17.108 --set developer.vmImage.fileSystemAddress=http://192.168.17.108:30090  --set developer.toolChain.enabled=false --set developer.ssl.certName=developer-ssl-cert
+
+kubectl apply -f installer/ansible_package/roles/k8s/files/metric-server.yaml
+
+helm install mecm-meo-edgegallery   helm-charts/mecm-meo   -f   edgegallery-values.yaml --set global.oauth2.clients.mecm.clientSecret=te9Fmv%qaq --set mecm.docker.fsgroup=$(getent group docker | cut -d: -f3) --set mecm.docker.dockerRepoUserName=admin --set mecm.docker.dockerRepopassword=Harbor@12345 --set mecm.repository.dockerRepoEndpoint=192.168.17.108 --set mecm.repository.sourceRepos="repo=192.168.17.108 userName=admin password=Harbor@12345" --set mecm.postgres.postgresPass=te9Fmv%qaq --set mecm.postgres.inventoryDbPass=te9Fmv%qaq --set mecm.postgres.northDbPass=te9Fmv%qaq --set mecm.postgres.appoDbPass=te9Fmv%qaq --set mecm.postgres.apmDbPass=te9Fmv%qaq
+
+helm install atp-edgegallery helm-charts/atp -f edgegallery-values.yaml --set global.oauth2.clients.atp.clientSecret=te9Fmv%qaq --set postgres.password=te9Fmv%qaq
+helm install file-system-edgegallery helm-charts/file-system --set filesystem.hostVMImagePath=/edgegallery/filesystem/images --set postgres.password=te9Fmv%qaq -f edgegallery-values.yaml
+helm install healthcheck-edgegallery helm-charts/healthcheck --set healthcheck.localIp=192.168.17.108  -f edgegallery-values.yaml
+helm install healthcheck-m-edgegallery   helm-charts/healthcheck-m  --set healthcheckm.localIp=192.168.17.108  -f edgegallery-values.yaml
+helm install edgegallery-fe helm-charts/edgegallery-fe  --set global.oauth2.clients.edgegalleryFe.clientSecret=te9Fmv%qaq -f edgegallery-values.yaml
+helm install third-system-edgegallery helm-charts/third-system --set postgres.password=te9Fmv%qaq -f edgegallery-values.yaml
+```
+
+## 17 Deploy Edge components from Deploy Node
+```
+kubectl apply -f installer/ansible_package/roles/init/files/conf/manifest/mepm/mepm-service-account.yaml
+
+cd /root
+wget https://github.com/kubernetes/ingress-nginx/releases/download/helm-chart-4.0.17/ingress-nginx-4.0.17.tgz
+
+kubectl apply -f installer/ansible_package/roles/init/files/conf/manifest/mepm/mepm-service-account.yaml
+
+helm install  eg-ingress  ingress-nginx-4.0.17.tgz --set controller.service.type=NodePort --set controller.service.nodePorts.http=30102 --set controller.service.nodePorts.https=31252 -f installer/ansible_install/roles/mecm-mepm/files/ingress.yaml
+
+Handle below points in helm-charts/mecm-mepm/templates/mepm-ingress/mepm-ingress.yaml
+v1 - service name port number
+pathType: Prefix
+
+helm install mecm-mepm-edgegallery helm-charts/mecm-mepm  -f  edgegallery-values.yaml --set jwt.publicKeySecretName=mecm-mepm-jwt-public-secret --set ssl.secretName=mecm-mepm-ssl-secret --set mepm.postgres.postgresPass=te9Fmv%qaq --set mepm.postgres.lcmcontrollerDbPass=te9Fmv%qaq --set mepm.postgres.k8spluginDbPass=te9Fmv%qaq --set mepm.postgres.ospluginDbPass=te9Fmv%qaq --set mepm.postgres.apprulemgrDbPass=te9Fmv%qaq --set mepm.postgres.mepmtoolsDbPass=te9Fmv%qaq --set mepm.filesystem.imagePushUrl=http://192.168.17.108:30090/image-management/v1/images  --set images.commonWebssh.tag=latest
+
+kubectl apply -f installer/EdgeGallery_online_install/metallb/namespace.yaml
+kubectl create secret generic -n metallb-system memberlist --from-literal=secretkey="$(openssl rand -base64 128)"
+kubectl apply -f installer/EdgeGallery_online_install/metallb/metallb.yaml
+kubectl apply -f installer/EdgeGallery_online_install/metallb/config-map.yaml
+
+ip link add eg-mp1 link ens3 type macvlan mode bridge
+ip addr add 200.1.1.2/24 dev eg-mp1
+ip link set dev eg-mp1 up
+ip link add eg-mm5 link ens3 type macvlan mode bridge
+ip addr add 100.1.1.2/24 dev eg-mm5
+ip link set dev eg-mm5 up
+
+mkdir -p /etc/network/interfaces.d/
+cp installer/EdgeGallery_online_install/eg-if.cfg  /etc/network/interfaces.d/
+cd installer/ansible_package/roles/init/files/conf/edge/network-isolation
+
+Modify the image name: 
+swr.cn-north-4.myhuaweicloud.com/eg-common/nfvpe/multus:stable
+kubectl apply -f multus.yaml
+kubectl apply -f eg-sp-rbac.yaml
+
+sed -i 's?image: edgegallery/edgegallery-secondary-ep-controller:latest?image: swr.cn-north-4.myhuaweicloud.com/edgegallery/edgegallery-secondary-ep-controller:v1.3.0?g' eg-sp-controller.yaml
+kubectl apply -f eg-sp-controller.yaml
+
+mkdir -p /root/cni
+cd /root/cni
+curl -LO https://github.com/containernetworking/plugins/releases/download/v0.8.7/cni-plugins-linux-amd64-v0.8.7.tgz
+tar -xzvf cni-plugins-linux-amd64-v0.8.7.tgz
+cp macvlan /opt/cni/bin
+cp host-local /opt/cni/bin
+
+cd /root
+helm install mep-edgegallery helm-charts/mep -f edgegallery-values.yaml --set networkIsolation.ipamType=host-local --set networkIsolation.phyInterface.mp1=ens3 --set networkIsolation.phyInterface.mm5=ens3 --set ssl.secretName=mep-ssl --set postgres.kongPass=te9Fmv%qaq --set mepauthProperties.jwtPrivateKey=te9Fmv%qaq --set postgres.kongPass=kong-Pass123
 ```
