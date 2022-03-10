@@ -30,16 +30,6 @@
     ARCH: arm64
   when: ansible_architecture == "aarch64"
 
-- name: Set PROTOCOL Value to be https
-  set_fact:
-    PROTOCOL: https
-  when: ENABLE_SSL == true
-
-- name: Set PROTOCOL Value to be http
-  set_fact:
-    PROTOCOL: http
-  when: ENABLE_SSL == false   
-
 - name: Check MASTER_IP Param
   fail:
     msg: "Param MASTER_IP in var.yml is not defined"

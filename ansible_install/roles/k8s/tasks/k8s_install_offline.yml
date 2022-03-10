@@ -54,9 +54,15 @@
     name: kubelet.service
     enabled: yes
 
-- name: Disable ufw Service
+- name: Stop Firewalld Service
   service:
-    name: ufw
+    name: firewalld
+    state: stopped
+  ignore_errors: yes
+
+- name: Disable Firewalld Service
+  service:
+    name: firewalld
     enabled: no
   ignore_errors: yes
 
