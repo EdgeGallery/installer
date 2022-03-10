@@ -47,11 +47,13 @@
   shell: openssl rand -writerand .rnd
   args:
     chdir: /root
+  when: ENABLE_SSL == true
 
 - name: Generate RSA Key File
   shell: openssl genrsa -out ca.key 4096
   args:
     chdir: "{{ HARBOR_DIR }}/harbor/cert"
+  when: ENABLE_SSL == true
 
 - name: Generate RSA Crt File
   shell: |
@@ -60,23 +62,18 @@
     -key ca.key -out ca.crt
   args:
     chdir: "{{ HARBOR_DIR }}/harbor/cert"
+  when: ENABLE_SSL == true
 
 - name: Generate RSA Cert File
   shell: openssl x509 -inform PEM -in ca.crt -out ca.cert
   args:
     chdir: "{{ HARBOR_DIR }}/harbor/cert"
+  when: ENABLE_SSL == true
 
-- name: Create Directory Under /etc/docker/certs.d to Store Cert File
-  file:
-    path: "/etc/docker/certs.d/{{ HarborIP }}:443"
-    state: directory
-
-- name: Copy Cert File to the New Directory Under /etc/docker/certs.d
-  copy:
-    src: "{{ HARBOR_DIR }}/harbor/cert/ca.cert"
-    dest: "/etc/docker/certs.d/{{ HarborIP }}:443"
-    remote_src: yes
-
+- name：Create Http Harbor.yaml
+  shell: mv {{ HARBOR_DIR }}/harbor/harbor-http.yml {{ HARBOR_DIR }}/harbor/harbor.yml
+  when: ENABLE_SSL == false
+   
 - name: Set Hostname for Harbor
   replace:
     path: "{{ HARBOR_DIR }}/harbor/harbor.yml"
@@ -88,12 +85,14 @@
     path: "{{ HARBOR_DIR }}/harbor/harbor.yml"
     regexp: "certificate: .*"
     replace: "certificate: {{ HARBOR_DIR }}/harbor/cert/ca.crt"
+  when: ENABLE_SSL == true
 
 - name: Set Key for Harbor
   replace:
     path: "{{ HARBOR_DIR }}/harbor/harbor.yml"
     regexp: "private_key: .*"
     replace: "private_key: {{ HARBOR_DIR }}/harbor/cert/ca.key"
+  when: ENABLE_SSL == true
 
 - name: Remove Old Harbor Root When ENABLE_PERSISTENCE is false
   file:
