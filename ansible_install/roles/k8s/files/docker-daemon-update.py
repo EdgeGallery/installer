@@ -31,7 +31,7 @@ def check_and_update_docker_json(list_of_entries=[],
 
             if 'insecure-registries' not in daemon_json_obj.keys():
                 daemon_json_obj['insecure-registries'] = []
-            if 'native.cgroupdriver=systemd' not in daemon_json_obj.keys():
+            if 'exec-opts' not in daemon_json_obj.keys():
                 daemon_json_obj['exec-opts'] = ["native.cgroupdriver=systemd"]
 			
             for entry in list_of_entries:
@@ -39,8 +39,7 @@ def check_and_update_docker_json(list_of_entries=[],
                     if daemon_json_obj['insecure-registries'].index(entry):
                         pass
                 except:
-                    daemon_json_obj['insecure-registries'].append(entry)
-                    
+                    daemon_json_obj['insecure-registries'].append(entry)                   
             with open(daemon_json, "wt") as fh:
                 fh.write(json.dumps(daemon_json_obj))
     except:

@@ -70,7 +70,7 @@
     chdir: "{{ HARBOR_DIR }}/harbor/cert"
   when: ENABLE_SSL == true
 
-- name：Create Http Harbor.yaml
+- name: Create Http Harbor.yaml
   shell: mv {{ HARBOR_DIR }}/harbor/harbor-http.yml {{ HARBOR_DIR }}/harbor/harbor.yml
   when: ENABLE_SSL == false
    

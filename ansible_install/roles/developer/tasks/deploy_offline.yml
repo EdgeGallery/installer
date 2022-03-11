@@ -38,7 +38,7 @@
   shell: |
     helm install --wait {{ EG_VIEW_HELM_RELEASE_NAME }} {{ HELM_CHARTS_PATH }}/edgegallery/eg-view-{{ HELM_TAG }}.tgz \
     --set global.ssl.enabled={{ ENABLE_SSL }} \
-    --set ssl.secretName={{ egView_ssl_secretName }} \
+    --set global.ssl.secretName={{ egView_ssl_secretName }} \
     --set images.egView.repository={{ egView_images_repository }} \
     --set images.egView.tag={{ egView_images_tag }} \
     --set images.egView.pullPolicy={{ egView_images_pullPolicy }}
